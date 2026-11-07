@@ -449,3 +449,44 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 
 .new-decoration { animation:decor-arrive 1s ease-out; }
 @keyframes decor-arrive { from {opacity:.2; transform:translateY(-8px) scale(.88)} to {opacity:1; transform:none} }
+
+/* One connected mesh carries the original painted image and all local morphs. */
+.actor-morph { position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none; }
+.actor.morph-ready { animation:none!important;will-change:auto; }
+.morph-ready > .actor-art,.morph-ready > .actor-mouth { visibility:hidden; }
+.morph-ready > .actor-morph { display:block; }
+.actor-art {background-image:var(--sprite-image);background-size:var(--sprite-size,400% 300%);}
+
+/* Grounded seating and a service camera that always keeps the owner centred. */
+.world {width:max(580px,140vw);max-width:1300px;}
+.owner {left:calc(50% - var(--pan,0px));transition:none;}
+.customer {bottom:23%;width:15%;transform:translateX(-50%);}
+.seat-0 {left:26.7%;}.seat-1 {left:52%;}.seat-2 {left:76.8%;}
+.customer.arriving {animation:seated-arrival 1.2s ease-out both;}
+@keyframes seated-arrival {from{opacity:0;transform:translateX(calc(-50% + 35px))}to{opacity:1;transform:translateX(-50%)}}
+.customer-name {bottom:-76%;min-height:28px;padding:3px 8px;font-size:9px;white-space:nowrap;}
+.wait-meter {position:absolute;bottom:-83%;height:3px;width:55%;left:23%;background:#173130;border-radius:5px;overflow:hidden;}
+.wait-meter i {display:block;height:100%;background:#d7b574;transition:width .4s linear;}
+.waiting-long .wait-meter i {background:#c57962;}
+.placed-decoration {aspect-ratio:3/4;filter:none;isolation:isolate;}
+.prop-art {display:block;position:absolute;inset:0;background:url('./assets/decor-real.webp') var(--prop-x) var(--prop-y)/400% 200% no-repeat;}
+.decor-thumbnail {position:relative;overflow:hidden;background:none;aspect-ratio:3/4;}
+.decor-plants::after,.decor-bench::after,.decor-bonsai::after {content:'';position:absolute;bottom:5%;left:12%;width:76%;height:4%;background:#0f1b1688;border-radius:50%;filter:blur(2px);z-index:-1;}
+.decor-lantern {filter:drop-shadow(0 0 13px #f4ad4b44);}
+.decor-sign {filter:drop-shadow(0 1px 3px #0008);}
+.has-lantern:not(.outside) .interior-art {filter:brightness(1.04) saturate(1.04);}
+.outside #owner,.outside #customers {display:none;}
+@media(orientation:landscape){.world{width:max(680px,105vw)}.exterior-world{width:min(55vw,65dvh)}}
+@media(orientation:portrait){.exterior-world{width:min(100vw,70dvh)}}
+
+.food-art {display:inline-block;width:48px;height:48px;background:url('./assets/food-painted.webp') var(--food-x) var(--food-y)/400% 400% no-repeat;vertical-align:middle;}
+.ingredient>.food-art {width:43px;height:43px;flex-shrink:0;}
+.ingredient {min-height:96px;}
+.stock-icon .food-art {width:49px;height:49px;}
+.menu-icon .food-art {width:94px;height:94px;}
+.guest-order h3 .food-art {width:57px;height:57px;flex-shrink:0;}
+.cook-method {min-height:20px;}
+.perfect-zone {transition:left .2s,width .2s;}
+.seated-legs {position:absolute;top:87%;left:0;width:100%;height:78%;background:url('./assets/seated-legs.webp') var(--legs-x) var(--legs-y)/200% 200% no-repeat;pointer-events:none;}
+
+.world {transition:none;}

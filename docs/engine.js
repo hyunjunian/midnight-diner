@@ -27,6 +27,31 @@
     { name: '나오', role: '새벽의 제빵사', age: '38세', style: '묶은 머리와 차분한 셔츠', bio: '반죽이 부푸는 동안 잠깐 쉬러 와요. 정성스러운 밥에서 일할 힘을 얻습니다.', color: '#ac84a0', hair: '#413332', line: '빵 말고 밥이 먹고 싶은 날이 있어요. 오늘 추천으로 주세요.', dish: 'special' },
     { name: '아키', role: '여행 온 손님', age: '27세', style: '편안한 여행 차림', bio: '지도에 없는 골목을 좋아해요. 맛있는 기억이 생기면 며칠 더 머무릅니다.', color: '#b57870', hair: '#343c3d', line: '골목에서 좋은 냄새가 나서요. 주인장 추천으로 부탁해요.', dish: 'special' },
   ];
+  people[2].age='52세';people[3].age='25세';people[4].age='48세';people[4].style='둥근 얼굴과 새치 섞인 묶음머리';people[5].age='22세';
+  people.push({"name": "후미", "role": "은퇴한 국어 선생님", "age": "72세", "style": "은빛 파마머리와 둥근 안경", "bio": "책을 덮은 뒤에는 골목을 천천히 걸어요. 오랫동안 학생들과 나누었던 이야기를 기억합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "다이치", "role": "체육학과 대학생", "age": "19세", "style": "짧은 머리와 청록 후드", "bio": "늦은 연습을 마치면 든든한 한 끼가 필요해요. 누구보다 맛있게 밥을 먹습니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "사치", "role": "골목의 재봉사", "age": "66세", "style": "회색 땋은 머리와 올리브 숄", "bio": "작은 수선집에서 오래된 옷을 고쳐요. 서두르지 않는 식당을 좋아합니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "고로", "role": "현장 반장", "age": "43세", "style": "넓은 어깨와 주황 작업복", "bio": "밤 공사를 마치고 찾아왔어요. 동료들과 나눌 다음 식당 이야기를 찾습니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "마키", "role": "야간 병동 간호사", "age": "39세", "style": "직사각 안경과 단정한 묶음머리", "bio": "다른 사람의 식사를 챙기다 이제야 쉬러 왔어요. 편안한 한 끼가 필요합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "신지", "role": "재즈 연주자", "age": "61세", "style": "은빛 수염과 검은 터틀넥", "bio": "마지막 연주가 끝나면 허기가 찾아와요. 오래된 노래와 담백한 음식을 좋아합니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "케이코", "role": "극장 의상 담당", "age": "58세", "style": "짧은 적갈색 곱슬머리와 자주 코트", "bio": "공연이 끝난 뒤 의상을 정리해요. 따뜻한 가게에서 하루의 긴장을 풀고 싶어 합니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "미나토", "role": "잡지 교정자", "age": "29세", "style": "단정한 정장과 둥근 안경", "bio": "활자 사이의 작은 오자를 찾는 일을 해요. 식사할 때만큼은 천천히 쉬고 싶습니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "메이", "role": "미대 학생", "age": "21세", "style": "적갈색 짧은 곱슬머리와 민트 니트", "bio": "밤새 그린 그림 이야기를 좋아해요. 새로운 맛에서 영감을 얻곤 합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "이사오", "role": "은퇴한 목수", "age": "76세", "style": "흰 옆머리와 갈색 조끼", "bio": "이 골목의 오래된 가게들을 기억해요. 나무 향이 나는 공간을 좋아합니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "레이코", "role": "출판사 영업 담당", "age": "45세", "style": "짙은 일자머리와 붉은 재킷", "bio": "온종일 사람을 만나고 온 날이에요. 말없이 편하게 먹을 수 있는 자리를 찾습니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "히로", "role": "이웃 가게 요리사", "age": "36세", "style": "긴 웨이브 머리와 옅은 수염", "bio": "자기 가게를 마감하고 다른 사람의 요리를 먹으러 와요. 주인장의 정성을 잘 알아봅니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "치요", "role": "동네 차 선생님", "age": "68세", "style": "은빛 단발과 황토색 겉옷", "bio": "차를 가르치며 오래 살아온 동네예요. 조용한 예절과 소박한 맛을 좋아합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "타쿠", "role": "자전거 수리공", "age": "24세", "style": "바가지머리와 청바지 재킷", "bio": "가게 문을 닫고 손을 깨끗이 씻은 뒤 찾아와요. 밝은 웃음이 인상적입니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "아야", "role": "자동차 정비사", "age": "27세", "style": "높이 묶은 곱슬머리와 주근깨", "bio": "늦은 정비를 끝내고 따뜻한 밥을 먹으러 왔어요. 새로운 식당을 발견하면 기뻐합니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "겐", "role": "야간 배송 기사", "age": "55세", "style": "짧은 새치머리와 초록 작업복", "bio": "물건을 모두 전하고 나면 허기가 져요. 든든한 식사와 짧은 인사를 좋아합니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "리나", "role": "도서관 사서", "age": "34세", "style": "긴 검은 땋은 머리와 크림 숄", "bio": "책 정리를 마치고 골목을 걸어요. 마음에 드는 식당은 책갈피처럼 오래 기억합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "오사무", "role": "중고서점 주인", "age": "40세", "style": "소금빛 짧은 머리와 푸른 셔츠", "bio": "서점 불을 끄고 저녁을 먹으러 왔어요. 누군가 골라 준 음식에 작은 기대를 품습니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  const familyNames=['사토','모리','다나카','아오키','하야시','기무라','이노우에','오노','야마모토','다카하시','이시카와','고바야시'];
+  function person(id) {
+    const base=people[id%people.length];
+    if(id<people.length)return base;
+    return {...base,name:`${familyNames[Math.floor(id/people.length)%familyNames.length]} ${base.name}`,bio:base.bio};
+  }
   const upgrades = {
     lantern: { name: '호박빛 종이등', icon: '🏮', price: 1000, level: 1, area: 'inside', description: '카운터 위에 종이등을 달아요. 요리 만족도 +5.' },
     plants: { name: '문 앞 화분', icon: '🪴', price: 900, level: 1, area: 'outside', description: '입구에 초록 화분을 놓아요. 첫 손님 입소문 +2.' },
@@ -49,6 +74,12 @@
     for (const l of levels) if (s.xp >= l.xp && s.reputation >= l.reputation && satisfaction(s) >= l.satisfaction) s.level = Math.max(s.level, l.level);
     return s.level;
   }
+  function patience(g) {return Math.max(0,1-(g.waitMs||0)/(105000+(g.person%4)*15000));}
+  function cookSpec(s,id) {
+    const i=Object.keys(recipes).indexOf(id),shift=((s.night+i)%3-1)*.025;
+    return {ideal:[.65,.56,.74,.48,.68,.77,.61][i]+shift,prepIdeal:.48+((s.night+i)%4)*.055,
+      prepTime:2900-s.level*70,heatTime:5400-s.level*170,tolerance:.18-s.level*.012,band:.11-s.level*.006};
+  }
   function regular(s, person) { return (s.customerBook[person]?.visits || 0) >= 3; }
   function gift(s, id) {
     const g = s.guests.find(g => g.id === id && g.status === 'waiting');
@@ -58,7 +89,7 @@
   function report(s) {
     const start = s.nightStart;
     const next = levels.find(l => l.level > s.level);
-    return { revenue: s.nightRevenue, tips: s.nightTips, money: s.money, net: s.money - start.money,
+    return { revenue: s.nightRevenue, tips: s.nightTips, expenses:s.nightCosts||0, money: s.money, net: s.money - start.money,
       reputation: s.reputation, reputationDelta: s.reputation - start.reputation,
       satisfaction: satisfaction(s), satisfactionDelta: satisfaction(s) - start.satisfaction,
       average: Math.round(s.nightScores.reduce((a,b)=>a+b,0) / Math.max(1,s.nightScores.length)),
@@ -69,11 +100,11 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version: 3, xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    version: 4, nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
-    totalServed: 0, inventory: { rice: 8, nori: 8, egg: 8, dashi: 12, pork: 6, miso: 6, salmon: 0 },
+    totalServed: 0, inventory: { rice: 5, nori: 5, egg: 4, dashi: 6, pork: 2, miso: 2, salmon: 0 },
     unlocked: ['onigiri', 'tamago', 'tonjiru'], upgrades: [], special: 'onigiri',
-    guests: [], arrived: 0, target: 9, nightRevenue: 0, nightTips: 0, nightScores: [],
+    guests: [], arrived: 0, target: 9, nightRevenue: 0, nightTips: 0, nightCosts: 0, nightScores: [],
     event: 'none', eventChoice: null, nightStartRep: 12, lastResult: null,
   });
   function restore(raw, legacy) {
@@ -90,23 +121,23 @@
     if (!raw) return s;
     const v = JSON.parse(raw);
     const integer = (n, min = 0, max = 1e9) => Number.isSafeInteger(n) && n >= min && n <= max;
-    if (!v || ![2, 3].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
+    if (!v || ![2, 3, 4].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
       !['prep', 'open', 'end'].includes(v.phase) || !integer(v.money) || !integer(v.reputation, 0, 100) ||
       !integer(v.totalServed) || !v.inventory || !Object.keys(ingredients).every(id => integer(v.inventory[id], 0, 999)) ||
       !Array.isArray(v.unlocked) || !['onigiri', 'tamago', 'tonjiru'].every(id => v.unlocked.includes(id)) ||
       !v.unlocked.every(id => Object.hasOwn(recipes, id)) || !v.unlocked.includes(v.special) ||
       !Array.isArray(v.upgrades) || !v.upgrades.every(id => Object.hasOwn(upgrades, id)) ||
       !integer(v.arrived, 0, 15) || !integer(v.target, 3, 15) || v.arrived > v.target ||
-      !integer(v.nightRevenue) || !integer(v.nightTips) || !integer(v.nightStartRep, 0, 100) ||
+      (v.nightCosts!==undefined&&!integer(v.nightCosts)) || !integer(v.nightRevenue) || !integer(v.nightTips) || !integer(v.nightStartRep, 0, 100) ||
       !Array.isArray(v.nightScores) || v.nightScores.length > v.arrived || !v.nightScores.every(n => integer(n, 0, 100)) ||
       !['none', 'pending', 'resolved'].includes(v.event) || ![null, 'listen', 'dismiss'].includes(v.eventChoice) ||
       !Array.isArray(v.guests) || v.guests.length > 3 || !v.guests.every(g =>
-        g && integer(g.id, 1, 15) && g.id <= v.arrived && integer(g.person, 0, people.length - 1) &&
+        g && integer(g.id, 1, 15) && g.id <= v.arrived && integer(g.person, 0, 1000000) &&
         integer(g.seat, 0, 2) && v.unlocked.includes(g.recipe) && typeof g.omakase === 'boolean' &&
-        ['waiting', 'eating', 'left'].includes(g.status) && integer(g.score, 0, 100)) ||
+        ['waiting', 'eating', 'left'].includes(g.status) && integer(g.score, 0, 100) && (g.waitMs===undefined || (Number.isFinite(g.waitMs)&&g.waitMs>=0&&g.waitMs<=1e9))) ||
       new Set(v.guests.map(g => g.seat)).size !== v.guests.length ||
       new Set(v.guests.map(g => g.id)).size !== v.guests.length) throw new Error('Invalid save');
-    const restored = { ...s, ...v, version: 3, lastResult: null };
+    const restored = { ...s, ...v, version: 4, lastResult: null };
     if (v.version === 2) {
       restored.xp = v.totalServed * 70;
       restored.satisfactionTotal = v.totalServed * 70;
@@ -117,15 +148,21 @@
       restored.nightStart = { money: Math.max(0, v.money - v.nightRevenue), reputation: v.nightStartRep, satisfaction: 70, xp: restored.xp, level: 1 };
     } else if (!integer(v.xp) || !integer(v.level, 1, 5) || !integer(v.satisfactionTotal) || v.satisfactionTotal > v.totalServed * 100 ||
       !v.nightStart || !integer(v.nightStart.money) || !integer(v.nightStart.reputation,0,100) || !integer(v.nightStart.satisfaction,0,100) || !integer(v.nightStart.xp) || !integer(v.nightStart.level,1,5) ||
-      !v.customerBook || Array.isArray(v.customerBook) || !Object.entries(v.customerBook).every(([id,c]) => /^\d+$/.test(id) && Number(id) < people.length && c && integer(c.visits) && integer(c.lastScore,0,100) && integer(c.lastVisitNight) && integer(c.dueNight))) throw new Error('Invalid progress');
+      !v.customerBook || Array.isArray(v.customerBook) || !Object.entries(v.customerBook).every(([id,c]) => /^\d+$/.test(id) && Number(id) <= 1000000 && c && integer(c.visits) && integer(c.lastScore,0,100) && integer(c.lastVisitNight) && integer(c.dueNight))) throw new Error('Invalid progress');
     for (const g of restored.guests) if (!restored.customerBook[g.person]) restored.customerBook[g.person] = {visits:1,lastScore:g.score,lastVisitNight:restored.night,dueNight:restored.night+2};
+    if(v.version<4){
+      restored.nextVisitor=Math.max(6,...Object.keys(restored.customerBook).map(id=>Number(id)+1));
+      restored.nightVisitors=Object.entries(restored.customerBook).filter(([,c])=>c.lastVisitNight===restored.night).map(([id])=>Number(id));
+      for(const c of Object.values(restored.customerBook))c.dueLevel=c.lastScore>=90?restored.level+2:0;
+    }else if(!integer(v.nextVisitor,0,1000001)||!Array.isArray(v.nightVisitors)||v.nightVisitors.length>9||new Set(v.nightVisitors).size!==v.nightVisitors.length||!v.nightVisitors.every(id=>integer(id,0,1000000))||!Object.values(v.customerBook).every(c=>integer(c.dueLevel,0,7)))throw new Error('Invalid visitor schedule');
+    restored.nextVisitor=Math.max(restored.nextVisitor,...Object.keys(restored.customerBook).map(id=>Number(id)+1));
     progress(restored); return restored;
   }
   function open(s) {
     if (s.phase !== 'prep') return false;
-    Object.assign(s, { phase: 'open', guests: [], arrived: 0, target: 9,
+    Object.assign(s, { phase: 'open', guests: [], arrived: 0, target: 9, nightVisitors: [],
       nightStart: {money:s.money, reputation:s.reputation, satisfaction:satisfaction(s), xp:s.xp, level:s.level},
-      nightRevenue: 0, nightTips: 0, nightScores: [], event: 'none', eventChoice: null, nightStartRep: s.reputation, lastResult: null });
+      nightRevenue: 0, nightTips: 0, nightCosts: 0, nightScores: [], event: 'none', eventChoice: null, nightStartRep: s.reputation, lastResult: null });
     return true;
   }
   function arrive(s) {
@@ -133,15 +170,17 @@
     const seat = [0, 1, 2].find(n => !s.guests.some(g => g.seat === n && g.status !== 'left'));
     if (seat === undefined) return null;
     s.guests = s.guests.filter(g => g.seat !== seat);
-    const due = Object.entries(s.customerBook).find(([id,c]) => c.lastScore >= 90 && c.dueNight <= s.night && c.lastVisitNight < s.night && !s.guests.some(g => g.person === Number(id) && g.status !== 'left'));
-    const preferred = s.arrived < 2 ? s.arrived : (s.arrived + s.night - 1) % people.length;
-    const person = due ? Number(due[0]) : people.map((_,i)=>(preferred+i)%people.length).find(id=>!s.guests.some(g=>g.person===id && g.status!=='left'));
-    const p = people[person];
+    const freshFace=id=>!s.nightVisitors.some(previous=>previous%people.length===id%people.length);
+    const due=Object.entries(s.customerBook).find(([id,c])=>c.lastScore>=90&&c.dueLevel<=s.level&&c.lastVisitNight<s.night&&freshFace(Number(id)));
+    let visitor;
+    if(due)visitor=Number(due[0]);
+    else {while(!freshFace(s.nextVisitor))s.nextVisitor++;visitor=s.nextVisitor++;}
+    const p=person(visitor);
     const recipe = p.dish === 'special' ? s.special : p.dish;
-    const g = { id: ++s.arrived, person, seat, recipe, omakase: p.dish === 'special', status: 'waiting', score: 0 };
-    const memory = s.customerBook[person] || {visits:0,lastScore:0,lastVisitNight:0,dueNight:0};
+    const g = { id: ++s.arrived, person: visitor, seat, recipe, omakase: p.dish === 'special', status: 'waiting', score: 0, waitMs: 0 };
+    const memory = s.customerBook[visitor] || {visits:0,lastScore:0,lastVisitNight:0,dueNight:0,dueLevel:0};
     if (memory.lastVisitNight !== s.night) memory.visits++;
-    memory.lastVisitNight = s.night; memory.dueNight = s.night + 2; s.customerBook[person] = memory;
+    memory.lastVisitNight = s.night; s.customerBook[visitor] = memory; s.nightVisitors.push(visitor);
     s.guests.push(g);
     if (s.arrived === 1 && s.upgrades.includes('plants')) s.reputation = clamp(s.reputation + 2, 0, 100);
     return g;
@@ -164,26 +203,28 @@
     if (!u || s.upgrades.includes(id) || s.money < u.price || s.level < u.level) return false;
     s.money -= u.price; s.upgrades.push(id); return true;
   }
-  function serve(s, guestId, selected, timing) {
+  function serve(s, guestId, selected, timing, preparation=1) {
     const g = s.guests.find(g => g.id === guestId && g.status === 'waiting');
-    if (s.phase !== 'open' || !g || !Array.isArray(selected) || !Number.isFinite(timing) ||
+    if (s.phase !== 'open' || !g || !Array.isArray(selected) || !Number.isFinite(timing) || !Number.isFinite(preparation) ||
       selected.length === 0 || new Set(selected).size !== selected.length ||
       !selected.every(id => Object.hasOwn(ingredients, id) && s.inventory[id] > 0)) return null;
     const r = recipes[g.recipe];
     const matches = selected.filter(id => r.ingredients.includes(id)).length;
     const wrong = selected.filter(id => !r.ingredients.includes(id)).length;
     const recipeScore = Math.max(0, (matches - wrong * 0.5) / r.ingredients.length);
-    const heat = Math.max(0, 1 - Math.abs(clamp(timing, 0, 1) - 0.65) / 0.35);
-    const score = Math.round(clamp(recipeScore * 60 + heat * 40 + (s.upgrades.includes('lantern') ? 5 : 0) + (g.gifted ? 5 : 0), 0, 100));
-    const base = Math.round(r.price * (0.6 + score * 0.004));
-    const tip = Math.round(r.price * Math.max(0, score - 60) / 100 * 0.65);
+    const spec=cookSpec(s,g.recipe),heat=Math.max(0,1-Math.abs(clamp(timing,0,1)-spec.ideal)/spec.tolerance);
+    const waited=Math.min(20,Math.floor(Math.max(0,(g.waitMs||0)-45000)/12000)*2);
+    let score=Math.round(clamp(recipeScore*25+clamp(preparation,0,1)*25+heat*50+(s.upgrades.includes('lantern')?3:0)+(g.gifted?5:0)-waited,0,100));
+    if(recipeScore<1)score=Math.min(Math.round(50*recipeScore),score);
+    const base=Math.round(r.price*(.35+score*.006));
+    const tip=Math.round(r.price*Math.max(0,score-80)/100*.8);
     selected.forEach(id => s.inventory[id]--);
     s.money += base + tip; s.nightRevenue += base + tip; s.nightTips += tip;
     s.totalServed++; s.satisfactionTotal += score; s.xp += score; s.nightScores.push(score);
-    s.customerBook[g.person].lastScore = score; s.customerBook[g.person].dueNight = s.night + 2;
+    s.customerBook[g.person].lastScore = score;
     s.reputation = clamp(s.reputation + (score >= 85 ? 4 : score >= 65 ? 2 : score >= 40 ? -1 : -4), 0, 100);
-    progress(s); g.status = 'eating'; g.score = score;
-    const result = { score, base, tip, total: base + tip, dish: r.name, guest: people[g.person].name };
+    progress(s); s.customerBook[g.person].dueLevel=s.level+2; g.status = 'eating'; g.score = score;
+    const result = { score, base, tip, total: base + tip, preparation:Math.round(clamp(preparation,0,1)*100),heat:Math.round(heat*100),waitPenalty:waited,dish: r.name, guest: person(g.person).name };
     s.lastResult = result; return result;
   }
   function conversation(s) {
@@ -213,12 +254,12 @@
     s.reputation = clamp(s.reputation + (choice === 'listen' ? 5 : -3), 0, 100); progress(s); return true;
   }
   function canClose(s) { return s.phase === 'open' && s.arrived === s.target && s.nightScores.length === s.target && s.event !== 'pending'; }
-  function close(s) { if (!canClose(s)) return false; s.phase = 'end'; return true; }
+  function close(s) { if (!canClose(s)) return false; s.nightCosts=Math.min(s.money,650+s.nightStart.level*250);s.money-=s.nightCosts;s.phase = 'end'; return true; }
   function next(s) {
     if (s.phase !== 'end') return false;
     s.night++; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();
