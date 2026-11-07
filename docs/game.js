@@ -157,19 +157,22 @@
     const button = event.target.closest('[data-choice]');
     if (button && E.resolveEvent(state, button.dataset.choice)) { render(); toast('오늘의 이야기가 식당의 평판에 남았어요.'); }
   });
-  // Adapted from the user-supplied opening; newly drawn animation, no source footage or audio.
+  // Subtitles transcribed from the user-uploaded opening, without added narration.
+  const menuSubtitle = '돈지루(돼지고기 된장국) 정식\n맥주, 일본술, 소주\n술 종류는 한 분이 세잔까지';
   const shots = [
-    { start: 0, scene: '0', line: '하루가 저물고,', sub: '개점 전, 카운터를 천천히 닦습니다.' },
-    { start: 2700, scene: '0', line: '사람들이 집으로 발걸음을 옮길 무렵,', sub: '' },
-    { start: 5700, scene: '0', line: '내 식당의 하루는 그제야 시작된다.', sub: '' },
-    { start: 8800, scene: '1', line: '메뉴판은 단출하다.', sub: '' },
-    { start: 11500, scene: '2', line: '다른 음식은 편하게 말하면 된다.', sub: '' },
-    { start: 14300, scene: '2', line: '냉장고에 재료가 있고,', sub: '' },
-    { start: 17000, scene: '2', line: '내 손으로 만들 수 있으면 내어준다.', sub: '' },
-    { start: 19800, scene: '2', line: '문은 자정에 열어, 아침 일곱 시쯤 닫는다.', sub: '00:00 — 07:00' },
-    { start: 25300, scene: '2', line: '그래서 다들, 심야식당이라 부른다.', sub: '' },
-    { start: 28800, scene: '2', line: '이 늦은 시간에 손님이 오냐고?', sub: '' },
-    { start: 31500, scene: '3', line: '생각보다, 꽤 찾아온다.', sub: '이제 당신의 첫 번째 밤이 시작됩니다.' },
+    { start: 0, scene: '0', line: '', sub: '' },
+    { start: 1100, scene: '0', line: '하루가 끝나고', sub: '' },
+    { start: 3000, scene: '0', line: '사람들이 귀가를\n서두를 무렵', sub: '' },
+    { start: 7000, scene: '0', line: '나의 하루가 시작된다', sub: '' },
+    { start: 9000, scene: '1', line: '메뉴는 이것뿐', sub: menuSubtitle },
+    { start: 11400, scene: '2', line: '나머지는 맘대로 주문하면', sub: menuSubtitle },
+    { start: 15500, scene: '2', line: '가능하면 만든다는 게', sub: '' },
+    { start: 17800, scene: '2', line: '나의 영업 방침이야', sub: '' },
+    { start: 20200, scene: '2', line: '영업시간은 밤 12시부터\n아침 7시경까지', sub: '' },
+    { start: 26000, scene: '2', line: '사람들은...', sub: '' },
+    { start: 27300, scene: '2', line: '심야식당이라 부르지', sub: '' },
+    { start: 30600, scene: '2', line: '손님이 오냐고?', sub: '' },
+    { start: 33000, scene: '3', line: '그게 꽤 많이 와', sub: '' },
   ];
   let shotIndex = -1;
   function updateIntro() {
