@@ -1,15 +1,17 @@
-"""Render the portrait intro with a locked camera and no animated rain.
+"""Render the portrait intro with a locked camera and exterior-only natural rain.
 
-Requires FFmpeg. Reuses the released audio bitstream without re-encoding it.
+Requires FFmpeg and Pillow for the generated rain layer. Reuses the released audio bitstream without re-encoding it.
 """
 from pathlib import Path
 import argparse
 import subprocess
+import sys
 
 REPO = Path(__file__).resolve().parent.parent
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--work', type=Path, required=True)
 parser.add_argument('--audio-from', type=Path, required=True)
+parser.add_argument('--rain-layer', type=Path)
 parser.add_argument('--output', type=Path, default=REPO / 'docs/assets/opening-portrait.mp4')
 args = parser.parse_args()
 args.work.mkdir(parents=True, exist_ok=True)
@@ -23,11 +25,19 @@ def run(*arguments):
 
 
 run('-i', args.audio_from, '-map', '0:a:0', '-vn', '-c:a', 'copy', '-y', audio)
+rain = args.rain_layer or args.work / 'rain.mov'
+if not args.rain_layer:
+    subprocess.run([sys.executable, str(REPO / 'tools/generate-intro-rain.py'), str(rain),
+                    '--stats', str(args.work / 'rain-stats.json')], check=True)
 for scene in range(4):
     x, y = (scene % 2) * 471, (scene // 2) * 836
-    # No zoompan, translated crop, oscillation, brightness animation, or rain overlay.
+    # Camera stays fixed; only the outdoor first scene receives the rain input.
     base = f'[0:v]crop=470:836:{x}:{y},scale=720:1280:flags=lanczos,setsar=1,format=yuv420p[base]'
-    if scene in (1, 3):
+    extra_inputs = []
+    if scene == 0:
+        extra_inputs = ['-i', rain]
+        graph = base + ';[base][1:v]overlay=shortest=1:format=auto,format=yuv420p[out]'
+    elif scene in (1, 3):
         # Only local food steam moves. The camera and all scene geometry stay fixed.
         cx, cy = (120, 160) if scene == 1 else (149, 260)
         alpha = (f'32*exp(-pow((X-{cx}-10*sin(Y/30-T*1.1))/13,2))'
@@ -37,9 +47,9 @@ for scene in range(4):
         graph = base + ';' + steam + ';[base][steam]overlay=shortest=1:format=auto,format=yuv420p[out]'
     else:
         graph = base + ';[base]null[out]'
-    run('-filter_complex_threads', '2', '-loop', '1', '-framerate', '24', '-i', art,
+    run('-filter_complex_threads', '2', '-loop', '1', '-framerate', '24', '-i', art, *extra_inputs,
         '-filter_complex', graph, '-map', '[out]', '-an', '-t', '9.25', '-r', '24',
-        '-c:v', 'libx264', '-threads', '3', '-preset', 'fast', '-crf', '21',
+        '-c:v', 'libx264', '-threads', '3', '-preset', 'fast', '-crf', '18' if scene == 0 else '21',
         '-y', args.work / f'scene-{scene}.mp4')
     print(f'Rendered fixed scene {scene + 1}/4', flush=True)
 
@@ -58,7 +68,7 @@ run('-filter_complex_threads', '2', *inputs, '-filter_complex', graph, '-map', '
 subtitle_filter = f'ass={captions.as_posix()}'
 rendered = args.work / 'opening-fixed.mp4'
 run('-i', silent, '-i', audio, '-vf', subtitle_filter, '-map', '0:v:0', '-map', '1:a:0',
-    '-t', '34', '-c:v', 'libx264', '-threads', '3', '-preset', 'fast', '-crf', '21',
+    '-t', '34', '-c:v', 'libx264', '-threads', '3', '-preset', 'fast', '-crf', '19',
     '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-movflags', '+faststart', '-y', rendered)
 args.output.parent.mkdir(parents=True, exist_ok=True)
 import shutil
