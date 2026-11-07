@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171b22"><meta name="description" content="불을 켜고, 따뜻한 한 끼를 준비하는 작은 심야식당.">
+  <title>심야식당 · 오늘 밤의 한 끼</title>
+  <link rel="stylesheet" href="./style.css"><script src="./game.js" defer></script>
+</head>
+<body>
+  <header><a class="brand" href="./">☾ <span>심야식당</span></a><span class="edition">작은 식당의 첫 번째 밤</span><button id="reset" class="quiet">새로 시작</button></header>
+  <main>
+    <section class="intro"><span class="eyebrow">MIDNIGHT DINER</span><h1>하루가 끝나면,<br>우리의 밤이 시작된다.</h1><p>골목 끝 작은 식당. 오늘은 어떤 손님이 찾아올까요?</p></section>
+    <section class="game" aria-label="식당 운영">
+      <div class="scene">
+        <div class="scene-top"><span id="day">첫 번째 밤</span><span id="clock">00:00</span></div>
+        <div class="shop"><div class="sign">심야식당<span>따뜻한 밥 있습니다</span></div><div class="curtain"><i>심</i><i>야</i><i>식</i><i>당</i></div><div class="interior"><div class="shelf">◡　◡　◡　◡　◡</div><div class="lamp"></div><div class="steam">︵<br>︵</div><div class="bowl">碗</div><div class="counter"></div><div class="stools"><i></i><i></i><i></i></div></div></div>
+        <div class="scene-bottom"><span><b class="dot"></b><span id="open-status">영업 준비 중</span></span><span>00:00 — 07:00</span></div>
+      </div>
+      <aside>
+        <div class="panel-heading"><span class="eyebrow">TONIGHT</span><h2>오늘 밤의 식당</h2></div>
+        <div class="stats"><div><span>매출</span><strong id="money">0원</strong></div><div><span>대접한 한 끼</span><strong id="served">0그릇</strong></div></div>
+        <div class="order"><span class="eyebrow">COUNTER 01</span><h3 id="guest">아직은 고요한 골목</h3><p id="dialogue" aria-live="polite">육수를 올리고, 그릇을 꺼내고.<br>준비가 되면 식당의 불을 켜 주세요.</p><div id="dish" hidden></div></div>
+        <button id="action" class="primary">식당 불 켜기 <span>↗</span></button>
+        <p id="save-status" class="save-status">진행 상황은 이 브라우저에 자동 저장됩니다.</p>
+      </aside>
+    </section>
+    <section class="notes"><div><span>01 / 한 끼</span><p>소박하고 따뜻한 음식을 만들어요.</p></div><div><span>02 / 만남</span><p>늦은 밤 찾아오는 손님을 맞이해요.</p></div><div><span>03 / 이야기</span><p>이곳의 이야기는 이제 함께 만들어 가요.</p></div></section>
+  </main>
+  <footer><span>심야식당</span><span>개발 중인 프로토타입 · 메뉴와 이야기는 바뀔 수 있어요.</span></footer>
+  <dialog id="reset-dialog"><h2>첫날부터 다시 시작할까요?</h2><p>이 브라우저에 저장한 진행 상황이 초기화됩니다.</p><form method="dialog"><button value="cancel">돌아가기</button><button value="reset">새로 시작</button></form></dialog>
+</body>
+</html>
