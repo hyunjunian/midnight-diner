@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="640" viewBox="0 0 1000 640">
+<defs>
+<linearGradient id="wall" x2="0" y2="1"><stop stop-color="#bd9670"/><stop offset="1" stop-color="#8c6c51"/></linearGradient>
+<linearGradient id="floor" x2="0" y2="1"><stop stop-color="#6a5241"/><stop offset="1" stop-color="#3e3934"/></linearGradient>
+<linearGradient id="wood" x2="0" y2="1"><stop stop-color="#c58e59"/><stop offset="1" stop-color="#8a583c"/></linearGradient>
+<radialGradient id="light"><stop stop-color="#ffd685" stop-opacity=".4"/><stop offset="1" stop-color="#ffd685" stop-opacity="0"/></radialGradient>
+<pattern id="grain" width="45" height="35" patternUnits="userSpaceOnUse"><path d="M0 6Q22 0 45 7M0 29Q25 34 45 28" fill="none" stroke="#4b3326" stroke-opacity=".09"/></pattern>
+<pattern id="tiles" width="48" height="32" patternUnits="userSpaceOnUse"><rect width="48" height="32" fill="#b8b7a0"/><path d="M0 0H48V32H0Z" fill="none" stroke="#848978"/></pattern>
+</defs>
+<rect width="1000" height="640" fill="#293b3c"/>
+<path d="M60 49H940V475H60Z" fill="url(#wall)"/><path d="M0 475H1000V640H0Z" fill="url(#floor)"/>
+<path d="M0 639L171 475M180 640L290 475M400 640L432 475M630 640L578 475M850 640L723 475M1000 581L854 475M0 525H1000M0 581H1000" stroke="#ae8d69" stroke-opacity=".17"/>
+<rect x="60" y="50" width="880" height="425" fill="url(#grain)"/>
+<path d="M56 45H944V70H56ZM56 70H81V475H56ZM919 70H944V475H919Z" fill="#594437"/>
+<rect x="130" y="128" width="237" height="111" rx="3" fill="#5b5345"/><path d="M128 182H370M128 237H370" stroke="#453d33" stroke-width="11"/>
+<g fill="#e8dfc4"><path d="M148 157h38l-6 18h-26ZM196 157h38l-6 18h-26ZM244 157h38l-6 18h-26ZM292 157h38l-6 18h-26Z"/></g>
+<g fill="#909f89"><rect x="150" y="201" width="24" height="26" rx="4"/><rect x="183" y="201" width="24" height="26" rx="4"/></g><g fill="#9e6950"><path d="M231 204h30l-5 25h-20ZM272 204h30l-5 25h-20Z"/></g>
+<rect x="413" y="126" width="173" height="158" fill="url(#tiles)" stroke="#6e705f" stroke-width="7"/><path d="M427 243h145v23H427Z" fill="#7b8073"/>
+<g fill="#ece4cd"><rect x="637" y="132" width="43" height="129" transform="rotate(-3 637 132)"/><rect x="691" y="131" width="43" height="129" transform="rotate(2 691 131)"/><rect x="748" y="134" width="43" height="129" transform="rotate(-2 748 134)"/></g>
+<g fill="#514536" font-family="serif" font-size="19" writing-mode="tb"><text x="658" y="145">本日の定食</text><text x="713" y="145">だし巻き卵</text><text x="769" y="147">おにぎり</text></g>
+<rect x="811" y="304" width="91" height="125" rx="7" fill="#a9b6a8" stroke="#586f64" stroke-width="5"/><path d="M813 351H899" stroke="#72877a" stroke-width="4"/><path d="M827 325V343M827 365V393" stroke="#e0deca" stroke-width="5" stroke-linecap="round"/><rect x="840" y="315" width="36" height="19" transform="rotate(-5 840 315)" fill="#eee4bb"/>
+<rect x="115" y="324" width="675" height="100" fill="#6f5740"/><rect x="111" y="316" width="688" height="15" rx="4" fill="#b5a48b"/>
+<path d="M125 344H780M277 343V416M448 343V416M617 343V416" stroke="#4e4739" stroke-width="3"/><g stroke="#a68a66" stroke-width="4"><path d="M184 360h24M350 360h24M522 360h24M696 360h24"/></g>
+<ellipse cx="501" cy="310" rx="46" ry="12" fill="#4b3f32" opacity=".25"/>
+<path d="M458 317Q452 268 471 259H524Q547 277 543 317" fill="#526b6b"/><path d="M480 269h36l16 48H468Z" fill="#e6dbbf"/><path d="M486 273v44M511 273v44" stroke="#b8a887" stroke-width="2"/>
+<rect x="490" y="248" width="18" height="22" rx="8" fill="#d2a27f"/><ellipse cx="499" cy="224" rx="29" ry="33" fill="#dfb690"/><path d="M471 222Q464 186 496 186Q531 183 529 223L518 207Q494 216 479 205Z" fill="#49433d"/><path d="M473 207Q499 197 526 207" fill="none" stroke="#ece2c5" stroke-width="10"/><path d="M487 230h3m18 0h3" stroke="#544438" stroke-width="3" stroke-linecap="round"/><path d="M491 244q8 5 15-1" fill="none" stroke="#8b5e4c" stroke-width="2"/>
+<rect x="186" y="291" width="61" height="26" rx="6" fill="#414f4d"/><path d="M179 295h76M194 288h43" stroke="#8c9c8e" stroke-width="5" stroke-linecap="round"/><path d="M211 281h12" stroke="#394541" stroke-width="6"/>
+<rect x="622" y="303" width="94" height="13" rx="6" fill="#c9a478"/><path d="M648 304l20-16 22 16Z" fill="#eee4c4"/><rect x="736" y="280" width="27" height="36" rx="5" fill="#ac7054"/><path d="M744 280l-5-22m14 22 3-24" stroke="#6d5840" stroke-width="4"/>
+<ellipse cx="314" cy="240" rx="150" ry="165" fill="url(#light)"/><ellipse cx="690" cy="240" rx="150" ry="165" fill="url(#light)"/>
+<path d="M312 52V103M691 52V103" stroke="#453e33" stroke-width="4"/><path d="M281 124Q281 101 312 100Q343 101 343 124ZM660 124Q660 101 691 100Q722 101 722 124Z" fill="#63736a" stroke="#384f48" stroke-width="3"/><ellipse cx="312" cy="124" rx="28" ry="6" fill="#fbe3a3"/><ellipse cx="691" cy="124" rx="28" ry="6" fill="#fbe3a3"/>
+<path d="M121 365H873L926 419H69Z" fill="#d6a571" stroke="#71513b" stroke-width="4"/><path d="M70 419H925V493H70Z" fill="url(#wood)"/><path d="M70 419H925V493H70Z" fill="url(#grain)"/><path d="M70 423H925M70 490H925" stroke="#634735" stroke-width="7"/><path d="M115 442H881" stroke="#d8a572" stroke-width="2" opacity=".6"/>
+<g fill="#f1e2bd" stroke="#957650" stroke-width="2"><ellipse cx="278" cy="390" rx="26" ry="7"/><ellipse cx="499" cy="390" rx="26" ry="7"/><ellipse cx="721" cy="390" rx="26" ry="7"/></g><g stroke="#715139" stroke-width="3"><path d="M312 381l-7 23m14-21-7 23M533 381l-7 23m14-21-7 23M755 381l-7 23m14-21-7 23"/></g>
+<g fill="#695d45"><rect x="408" y="369" width="21" height="27" rx="3"/><rect x="573" y="369" width="21" height="27" rx="3"/></g><g fill="#ac6046"><rect x="413" y="364" width="11" height="7"/><rect x="578" y="364" width="11" height="7"/></g>
+<g stroke="#493b31" stroke-width="10" fill="#8b5d42"><path d="M234 563l-7 57m74-57 7 57M459 563l-7 57m74-57 7 57M684 563l-7 57m74-57 7 57"/><ellipse cx="268" cy="556" rx="47" ry="18"/><ellipse cx="493" cy="556" rx="47" ry="18"/><ellipse cx="718" cy="556" rx="47" ry="18"/></g>
+<path d="M0 0H1000V56H0Z" fill="#233d40"/><g fill="#345756" stroke="#233d40" stroke-width="4"><path d="M65 20h215v56q-108 16-215 0ZM285 20h215v56q-108 16-215 0ZM505 20h215v56q-108 16-215 0ZM725 20h215v56q-108 16-215 0Z"/></g><g fill="#d7caa5" font-size="24" font-family="serif" text-anchor="middle"><text x="172" y="55">夜</text><text x="392" y="55">の</text><text x="612" y="55">台</text><text x="832" y="55">所</text></g>
+<path d="M28 496h43l-8 47H36Z" fill="#a66f50"/><path d="M50 498v-58m0 30q-31-2-25-26 27-2 25 26m0-13q30-3 30-27-28 1-30 27" fill="#677e5a" stroke="#455e46" stroke-width="3"/>
+</svg>
