@@ -185,10 +185,10 @@
     try {
       if (!document.documentElement.requestFullscreen) return toast('현재 기기에서는 설치한 앱 화면으로 실행돼요.');
       await document.documentElement.requestFullscreen();
-      try { await screen.orientation.lock('landscape'); } catch {}
+      try { await screen.orientation.lock('portrait'); } catch {}
     } catch { toast('전체 화면을 사용할 수 없는 기기입니다.'); }
   });
-  // The supplied clip already contains the exact subtitles: never redraw or retype them.
+  // A new portrait cinematic with baked-in captions; media duration drives progress.
   const video = $('opening-video');
   let videoWasPlaying = false, startingVideo = false;
   function syncVideoButtons() {
@@ -224,10 +224,12 @@
     video.pause(); video.currentTime = 0;
     $('intro-progress').style.width = '0%'; $('video-status').textContent = '';
     $('play-intro').textContent = '터치해서 시작 ▶'; $('play-intro').hidden = true;
-    $('intro').showModal(); playVideo(true);
+    $('intro').showModal();
+    try { screen.orientation?.lock?.('portrait')?.catch(() => {}); } catch {}
+    playVideo(true);
   }
   video.addEventListener('ended', finishIntro);
-  video.addEventListener('timeupdate', () => { $('intro-progress').style.width = `${Math.min(100, video.currentTime / 34 * 100)}%`; });
+  video.addEventListener('timeupdate', () => { $('intro-progress').style.width = `${Math.min(100, video.currentTime / (Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 34) * 100)}%`; });
   video.addEventListener('waiting', () => { if ($('intro').open) $('video-status').textContent = '영상을 불러오는 중…'; });
   video.addEventListener('playing', () => { $('video-status').textContent = ''; syncVideoButtons(); });
   video.addEventListener('pause', syncVideoButtons);

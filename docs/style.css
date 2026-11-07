@@ -192,7 +192,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 .confirm-dialog button { border-color: #a8ac8c77; font-size: 12px; }
 #toast { width: max-content; position: fixed; left: 50%; bottom: calc(var(--safe-bottom) + 205px); transform: translate(-50%, 12px); background: #f2e5c9; color: #3e493c; box-shadow: 0 4px 20px #0005; border: 1px solid #b8b58a66; border-radius: 30px; padding: 11px 22px; font-size: 12px; max-width: 90vw; text-align: center; opacity: 0; pointer-events: none; z-index: 20; transition: opacity .25s, transform .25s; }
 #toast.visible { opacity: 1; transform: translate(-50%, 0); }
-/* The source video supplies the actual frames, audio, and burnt-in subtitles. */
+/* Original photorealistic portrait scenes, animated effects, and baked-in captions. */
 .cinema { padding: 0; margin: 0; border: 0; border-radius: 0; max-width: none; max-height: none; width: 100vw; height: 100vh; height: 100dvh; background: #000; color: #eee5d3; overflow: hidden; }
 .cinema::backdrop { background: #000; }
 .cinema video { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; }
@@ -336,4 +336,8 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
   .kitchen .heat-slider { margin-top: 3px; }
   .kitchen .receipt, .kitchen .summary, .kitchen .kitchen-idle { grid-column: 1 / -1; }
   .kitchen .how-to { grid-column: 1 / -1; }
+}
+
+@media (max-aspect-ratio: 9/16) {
+  .cinema video { object-fit: cover; }
 }

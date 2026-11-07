@@ -1,0 +1,30 @@
+[
+  {
+    "start": 1.0,
+    "duration": 3.4313333333333333,
+    "text": "雨の夜は、少しだけ、ゆっくり支度をします。",
+    "voice": "jf_alpha",
+    "language": "ja"
+  },
+  {
+    "start": 9.25,
+    "duration": 3.7213333333333334,
+    "text": "湯気が上がると、この小さな店も目を覚ます。",
+    "voice": "jf_alpha",
+    "language": "ja"
+  },
+  {
+    "start": 17.5,
+    "duration": 4.256,
+    "text": "話したくない日は、何も言わずに座っていてください。",
+    "voice": "jf_alpha",
+    "language": "ja"
+  },
+  {
+    "start": 25.8,
+    "duration": 3.5852916666666665,
+    "text": "いらっしゃい。あなたの席を、ひとつ空けておきました。",
+    "voice": "jf_alpha",
+    "language": "ja"
+  }
+]
