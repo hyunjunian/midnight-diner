@@ -35,7 +35,9 @@
   mode.addEventListener?.('change', () => { if (standalone()) launch(); });
   const full = matchMedia('(display-mode: fullscreen)');
   full.addEventListener?.('change', () => { if (standalone()) launch(); });
-  if (standalone()) launch();
+  // Explicit browser preview for playtesting; normal visits remain installation-only.
+  const preview = new URLSearchParams(location.search).get('preview') === '1';
+  if (standalone() || preview) launch();
   else $('install-screen').hidden = false;
 
   function updateAvailable() {

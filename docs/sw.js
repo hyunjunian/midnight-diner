@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const VERSION = 'midnight-diner-pwa-20261107-v7-caption-sync';
+const VERSION = 'midnight-diner-pwa-20261107-v8-browser-preview';
 const ROOT = new URL('./', self.location.href);
 const INDEX = new URL('index.html', ROOT).href;
 const FILES = [
