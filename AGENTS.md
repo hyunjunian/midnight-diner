@@ -22,3 +22,9 @@
 - Use the painted food / realistic furnishing atlases instead of ingredient emoji or vector decoration stickers. Guest portraits span diverse ages; nightly faces are unique and satisfied visitors return only after two level gains. Preserve continuous mesh morphing and safe renderer fallback without cut-out seams.
 
 - Keep only the existing central ceiling fixture; a purchased lantern improves its light rather than adding an overlapping lamp. Ingredient controls must explain missing stock/selection and offer in-place refill. Food art needs clear tile margins to prevent neighboring-cell fragments.
+
+- The catalogue contains 100 individually illustrated dishes. Start with 3 at Lv.1; add exactly 3 each level through Lv.33, then the remaining one at Lv.34. Never restore ten dishes per level. Progression caps at Lv.34; the replacement fridge unlocks at Lv.20 and discounts ingredient purchases by 10%.
+- Furnishings use measured surface slots, keyed DOM elements, automatic area/pan focus, visible installation and completion glow. Keep the fridge replacement at the original fridge footprint. Do not recreate decoration nodes during ordinary state renders.
+- No leisurely/manual cooking mode. Both preparation and heat use timing; align the target label with its green zone. Show varied guest dialogue only in detail/story panels. Preserve v4 saves when migrating to the v5 save key.
+
+- Live gameplay now has moderate downward rain in the outdoor view and behind indoor glass panes only; the user explicitly requested this. Preserve the approved intro video. Keep stronger smooth breathing/head/hair motion without changing mouths or breaking mesh continuity.

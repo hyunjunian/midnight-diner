@@ -19,17 +19,17 @@
   // All fields are smooth, overlapping weights in one connected mesh.
   function deform(m,t,state={},out=new Float32Array(m.points.length*4)) {
     const seed=state.seed??m.person*.79,breath=Math.sin(t*1.42+seed),walk=clamp(state.walk||0),cook=clamp(state.cook||0);
-    const stride=Math.sin(t*10.5+seed),sway=Math.sin(t*.92+seed)*.012-walk*stride*.018;
-    const hairLag=Math.sin(t*.92+seed-.65)*.004+walk*Math.sin(t*10.5+seed-.7)*.005;
+    const stride=Math.sin(t*10.5+seed),sway=Math.sin(t*.92+seed)*.022-walk*stride*.024;
+    const hairLag=Math.sin(t*.92+seed-.65)*.007+walk*Math.sin(t*10.5+seed-.7)*.005;
     for(let i=0;i<m.points.length;i++){
       const p=m.points[i];let x=p.x,y=p.y;
-      x+=(x-.5)*breath*.007*p.chest;
-      y-=breath*(.0038*p.chest+.0022*p.head);
+      x+=(x-.5)*breath*.011*p.chest;
+      y-=breath*(.0062*p.chest+.0036*p.head);
       const dx=p.x-.5,dy=p.y-.42,angle=sway*p.head;
       x+=dx*(Math.cos(angle)-1)-dy*Math.sin(angle)*1.3333;
       y+=dx*Math.sin(angle)*.75+dy*(Math.cos(angle)-1);
-      x+=hairLag*p.hairEdge+Math.sin(t*1.65+seed-.5)*.002*p.hair;
-      y+=Math.sin(t*1.1+seed-.9)*.0017*p.hairEdge;
+      x+=hairLag*p.hairEdge+Math.sin(t*1.65+seed-.5)*.0035*p.hair;
+      y+=Math.sin(t*1.1+seed-.9)*.0027*p.hairEdge;
       x+=walk*stride*.005*(1-p.head);y+=walk*Math.cos(t*21+seed)*.003*(1-p.y);
       x+=cook*Math.sin(t*4+seed)*.005*p.hand;y+=cook*Math.cos(t*4+seed)*.004*p.hand;
       out[i*4]=x;out[i*4+1]=y;out[i*4+2]=p.x;out[i*4+3]=p.y;

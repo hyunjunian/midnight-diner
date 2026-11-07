@@ -509,3 +509,80 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 .cook-step {scroll-margin-top:95px;}
 
 .ingredient>.food-art {width:56px;height:56px;}
+
+/* Fixed surface slots: crop only the object, never its atlas padding. */
+.placed-decoration {aspect-ratio:auto;isolation:auto;}
+.prop-crop {position:absolute;inset:0;overflow:hidden;}
+.prop-crop .prop-art {display:block;position:absolute;background-size:400% 200%;background-repeat:no-repeat;}
+.placed-decoration::after {display:none!important;}
+.fridge-patch {position:absolute;inset:0;background:url('./assets/restaurant-fridge.webp') 0% 40.57971%/833.33333% 322.58065% no-repeat;}
+.fixture-light {position:absolute;inset:-25%;background:radial-gradient(ellipse,#f7bc632b,transparent 70%);pointer-events:none;}
+.decor-thumbnail {height:auto;aspect-ratio:3/4;position:relative;background:#d2c2a32a;}
+.decor-thumbnail .prop-crop {inset:7%;}
+.scene-preview {position:relative;margin:0;width:100%;aspect-ratio:3/2;overflow:hidden;border-radius:12px;background:#30271f;}
+.scene-preview.outdoor {aspect-ratio:470/836;}
+.preview-base {position:absolute;inset:0;background:url('./assets/restaurant-counter.webp') center/100% 100%;}
+.outdoor .preview-base {background:url('./assets/intro-world.webp') left top/200% 200%;}
+.preview-prop {position:absolute;filter:drop-shadow(0 2px 2px #0006);}
+.scene-preview figcaption {position:absolute;left:4px;right:4px;bottom:4px;font-size:9px;background:#11282de6;color:#f4dfb7;padding:5px;border-radius:6px;}
+.placement-pending {opacity:0;}
+.placement-installing {animation:install-object 1.35s cubic-bezier(.2,.8,.2,1) both;}
+.placement-halo {position:absolute;inset:-9px;border-radius:12px;pointer-events:none;opacity:0;}
+.placement-installing .placement-halo,.placement-shining .placement-halo {opacity:1;border:2px solid #ffe1a2;box-shadow:0 0 25px #ffcf8188,inset 0 0 14px #ffdda655;}
+.placement-shining .placement-halo {animation:installed-glow 1.2s ease-in-out 3;}
+.placement-banner {position:fixed;left:50%;bottom:calc(var(--safe-bottom) + 215px);transform:translateX(-50%);z-index:12;width:min(90vw,380px);padding:13px 18px;border:1px solid #edc685;background:#172d30ed;color:#f6e1b9;border-radius:15px;text-align:center;box-shadow:0 8px 30px #0005;}
+.placement-banner b,.placement-banner span {display:block;}.placement-banner b {font-size:14px;}.placement-banner span {font-size:11px;margin-top:4px;color:#d6c8a8;}
+@keyframes install-object {from {opacity:0;transform:translateY(-18px) scale(.88);filter:brightness(1.4)}65% {opacity:1;transform:translateY(2px) scale(1.015)}to {opacity:1;transform:none;filter:brightness(1)}}
+@keyframes installed-glow {50% {box-shadow:0 0 38px #ffd38cbb,inset 0 0 22px #ffdf7d77;border-color:#fff1ce}}
+@media(prefers-reduced-motion:reduce){.placement-installing,.placement-shining .placement-halo{animation:none!important}.placement-pending{opacity:0}}
+
+/* Each food keeps its sprite cell's proportions; all 100 dishes have their own art. */
+.food-art {background-image:var(--food-file);background-size:400% var(--food-rows);aspect-ratio:var(--food-ratio,1);height:auto;}
+.ingredient>.food-art,.stock-icon .food-art,.menu-icon .food-art,.guest-order h3 .food-art {height:auto;}
+.menu-picture {position:relative;display:grid;place-items:center;width:100%;min-height:126px;margin-bottom:5px;}
+.menu-picture .food-art {width:92px;}
+.menu-card.locked .menu-picture .food-art {filter:blur(1.8px) saturate(.3);opacity:.6;}
+.menu-card.available .menu-picture .food-art {filter:none;opacity:1;}
+.menu-lock {position:absolute;left:5px;right:5px;bottom:6px;padding:5px;background:#4b5045dd;color:#f6ecd4;font-size:11px;text-align:center;border-radius:16px;}
+.menu-filters {display:flex;gap:7px;overflow-x:auto;padding:6px 0 13px;scrollbar-width:thin;}
+.menu-filters button {flex-shrink:0;min-height:36px;padding:6px 12px;font-size:11px;color:#667653;background:#e0e3cb;border-color:#b5bd9b;}
+.menu-filters button.active {background:#647e61;color:#fff4dc;}
+#menu-search {width:100%;padding:12px 14px;font:13px var(--sans);background:#faf3e3;color:#4c5c43;border:1px solid #b3b999;border-radius:10px;margin:0 0 17px;}
+.menu-card h3 {text-align:center;}
+.upcoming {margin-top:26px;border-top:1px dashed #8e805a66;padding-top:22px;}
+.upcoming h3 {font-size:20px;margin:6px 0 9px;color:#647752;}
+.upcoming>p {font-size:11px;color:#897958;line-height:1.8;}
+.reward-foods {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0 18px;}
+.reward-foods>div {display:flex;flex-direction:column;align-items:center;min-width:0;background:#f7efdc;border:1px solid #d4c7a6;border-radius:9px;padding:6px 2px;}
+.reward-foods .food-art {width:52px;}
+.reward-foods small {display:block;text-align:center;font-size:9px;line-height:1.5;color:#736c55;}
+.unlock-decor-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;}
+.unlock-decor-grid article {background:#f7efdc;border:1px solid #d3c7a9;padding:10px;border-radius:11px;}
+.unlock-decor-grid article>b {display:block;font-size:12px;color:#647553;margin-bottom:9px;}
+.unlock-decor-grid p {font-size:10px;color:#79765f;line-height:1.7;margin-top:8px;}
+.unlock-decor-grid small {font-size:10px;color:#9b7952;}
+.item-preview {margin:10px 0;}.item-preview summary {cursor:pointer;font-size:11px;color:#667c59;}.item-preview .scene-preview {margin-top:9px;max-width:240px;}
+.upgrade-card>div {min-width:0;flex:1;}.upgrade-card details[open] {min-width:190px;}
+.guest-speech {position:relative;padding:17px 19px;background:#fff8e9;border:1px solid #c1aa7c;border-radius:18px 18px 18px 3px;margin:15px 0 23px;box-shadow:0 4px 0 #c5b48e26;}
+.guest-speech::before {content:'';position:absolute;top:-9px;left:24px;width:16px;height:16px;transform:rotate(45deg);border-left:1px solid #c1aa7c;border-top:1px solid #c1aa7c;background:#fff8e9;}
+.guest-speech>span {position:relative;display:block;font-size:10px;letter-spacing:1px;color:#ad895c;margin-bottom:7px;}
+.guest-speech p {position:relative;font:15px/1.9 var(--serif);color:#555b43;}
+.heat-label {position:relative;display:block;height:20px;margin:15px 6px 7px;padding:0;}
+.heat-label>span {position:absolute;left:0;top:0;font-size:10px;white-space:nowrap;}
+.heat-label>span:last-child {left:auto;right:0;}
+.heat-label>.heat-target {transform:translateX(-50%);padding:0!important;color:#567752;}
+.story-scene,.story-result {font:15px/2 var(--serif);color:#ebdfbf;margin:10px 0 18px;}
+.story-result {padding:17px;border:1px solid #a6ad7944;border-radius:12px;background:#c3ba8810;}
+.story-step {display:block;color:#dfba80;font-size:11px;margin:20px 0 6px;letter-spacing:1px;}
+.story-choices small {display:block;margin:8px 0 0;white-space:normal;color:#c6cba5;}
+.story-next {font-size:12px;color:#e3b982;padding:15px 0;}
+.story-journal {margin-top:20px;border-top:1px dashed #9da67a55;padding-top:18px;}
+.story-journal h4 {font-size:12px;color:#d5bf95;margin-bottom:9px;}.story-journal details {font-size:12px;margin:10px 0;}.story-journal summary {cursor:pointer;color:#d0d2b1;}.story-journal p {font-size:12px;line-height:1.9;color:#b9c7ac;margin-top:9px;}
+.story-followups {padding:15px;border-radius:12px;background:#d7bb7d19;border:1px solid #cbb07355;color:#ebd5aa;margin-bottom:19px;font-size:13px;line-height:1.9;}
+@media(max-width:420px){.reward-foods{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.reward-foods .food-art{width:46px}.unlock-decor-grid{gap:8px}.unlock-decor-grid article{padding:8px}.guest-speech p{font-size:14px}.menu-card{padding:12px 8px}}
+
+.other-ingredients {margin-top:15px;color:#7a8068;font-size:11px;}
+.other-ingredients summary {cursor:pointer;padding:9px 0;}
+.other-ingredients[open] .ingredient-picker {margin-top:10px;}
+
+#scene-rain {position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}

@@ -47,28 +47,33 @@ test('money alone cannot bypass levels and purchases charge exactly once',()=>{
   const s=E.fresh();s.money=100000;
   assert.equal(E.unlock(s,'ochazuke'),false);assert.equal(E.upgrade(s,'noren'),false);assert.equal(s.money,100000);
   s.xp=900;s.reputation=40;s.totalServed=9;s.satisfactionTotal=630;E.progress(s);assert.equal(s.level,2);
-  assert.equal(E.unlock(s,'ochazuke'),true);assert.equal(s.money,99100);assert.equal(E.unlock(s,'ochazuke'),false);
-  assert.equal(E.upgrade(s,'lantern'),true);assert.equal(s.money,98100);assert.equal(E.upgrade(s,'lantern'),false);
+  assert.ok(s.unlocked.includes('ochazuke'));assert.equal(s.unlocked.length,6);assert.equal(s.money,100000);assert.equal(E.unlock(s,'ochazuke'),false);
+  assert.equal(E.upgrade(s,'lantern'),true);assert.equal(s.money,99000);assert.equal(E.upgrade(s,'lantern'),false);
   assert.equal(E.upgrade(s,'noren'),true);assert.equal(E.upgrade(s,'bonsai'),false);
   for(const id of ['nope','__proto__','constructor']){assert.equal(E.buy(s,id),false);assert.equal(E.unlock(s,id),false);assert.equal(E.upgrade(s,id),false)}
 });
 test('level gates require reputation AND satisfaction as well as growth points',()=>{
   const s=E.fresh();s.xp=6000;s.totalServed=10;s.satisfactionTotal=1000;E.progress(s);assert.equal(s.level,1);
   s.reputation=100;s.satisfactionTotal=600;E.progress(s);assert.equal(s.level,1);
-  s.satisfactionTotal=700;E.progress(s);assert.equal(s.level,2);
+  s.satisfactionTotal=700;E.progress(s);assert.equal(s.level,3);
   s.satisfactionTotal=900;E.progress(s);assert.equal(s.level,5);
   s.reputation=0;E.progress(s);assert.equal(s.level,5,'earned levels stay unlocked');
 });
-test('learned omakase is ordered by a fresh fourth visitor',()=>{
- const s=E.fresh();s.level=2;E.unlock(s,'ochazuke');s.special='ochazuke';E.open(s);
- E.arrive(s);E.arrive(s);E.arrive(s);s.guests[0].status='left';const g=E.arrive(s);
- assert.equal(g.omakase,true);assert.equal(g.recipe,'ochazuke');E.buy(s,'salmon');assert.equal(E.serve(s,g.id,E.recipes.ochazuke.ingredients,E.cookSpec(s,'ochazuke').ideal).score,100);
+test('orders rotate through all available meals without a recommendation dominating',()=>{
+ const s=E.fresh();s.level=3;E.progress(s);s.special='ochazuke';E.open(s);const orders=[];
+ for(let i=0;i<9;i++){s.guests.forEach(g=>g.status='left');const g=E.arrive(s);orders.push(g.recipe);assert.ok(s.unlocked.includes(g.recipe));}
+ assert.equal(new Set(orders).size,9);assert.equal(orders.filter(id=>id==='onigiri').length,1);
+ const first=E.fresh();E.open(first);const counts={};for(let i=0;i<9;i++){first.guests.forEach(g=>g.status='left');const g=E.arrive(first);counts[g.recipe]=(counts[g.recipe]||0)+1;}assert.deepEqual(Object.values(counts),[3,3,3]);
 });
-test('a pending story blocks closing and choices cannot be repeated',()=>{
-  const s=E.fresh();fullNight(s);s.guests.forEach(g=>g.status='eating');
-  E.conversation(s);assert.equal(E.canClose(s),false);const before=s.reputation;
-  E.resolveEvent(s,'dismiss');assert.equal(s.reputation,before-3);
-  assert.equal(E.resolveEvent(s,'listen'),false);assert.equal(E.canClose(s),true);
+test('a two-step story blocks closing, charges once, then follows up next night',()=>{
+ const s=E.fresh();fullNight(s);s.guests.forEach(g=>g.status='eating');E.conversation(s);
+ assert.equal(E.canClose(s),false);const choice=E.story(s).definition.choices.find(c=>E.canChoose(s,c));const before=s.money;
+ assert.equal(E.resolveEvent(s,choice.id),true);assert.equal(s.money,before+(choice.money||0));assert.equal(E.canClose(s),false);
+ const intermediate=E.restore(JSON.stringify(s));assert.equal(E.story(intermediate).run.step,1);
+ assert.equal(E.resolveEvent(s,choice.id),false);assert.equal(E.resolveEvent(s,'remember'),true);assert.equal(E.canClose(s),true);
+ assert.equal(s.pendingConsequences.length,1);assert.equal(E.resolveEvent(s,'remember'),false);E.close(s);E.next(s);
+ const cash=s.money;E.open(s);assert.equal(s.money,cash+(choice.future.money||0));assert.equal(s.nightNews.length,1);assert.equal(s.pendingConsequences.length,0);assert.equal(s.storyMemory.length,1);
+ const after=s.money;assert.equal(E.open(s),false);assert.equal(s.money,after);
 });
 test('three seats refill across a nine-guest night', () => {
   const s = E.fresh(); s.reputation = 100; E.open(s);
@@ -77,10 +82,10 @@ test('three seats refill across a nine-guest night', () => {
   assert.equal(s.guests.length, 3);
 });
 test('save resumes waiting/eating guests, upgrades, inventory, and narrative choices', () => {
-  const {s} = setup(); E.serve(s, 1, ['rice', 'nori'], .65); E.arrive(s); E.conversation(s); E.resolveEvent(s, 'listen');
+  const {s} = setup(); E.serve(s, 1, ['rice', 'nori'], .65); E.arrive(s); E.conversation(s); E.resolveEvent(s, E.story(s).definition.choices.find(c=>E.canChoose(s,c)).id);
   const restored = E.restore(JSON.stringify(s));
   assert.equal(restored.guests[0].status, 'eating'); assert.equal(restored.guests[1].status, 'waiting');
-  assert.equal(restored.eventChoice, 'listen'); assert.deepEqual(restored.inventory, s.inventory);
+  assert.equal(restored.storyRun.choice,s.storyRun.choice);assert.equal(restored.storyRun.step,1); assert.deepEqual(restored.inventory, s.inventory);
   assert.equal(restored.money, s.money); assert.equal(restored.lastResult, null);
 });
 test('corrupt or unknown-version saves are rejected; legacy progress is migrated', () => {
@@ -98,19 +103,17 @@ test('running out of ingredients and cash has a recovery path without a reset', 
   assert.ok(E.serve(s, 1, ['rice', 'nori'], .65));
 });
 
-test('happy customers wait for two level gains, then become regulars on third visit',()=>{
+test('happy visitors need two level gains and have a chance to return as regulars',()=>{
  const {s,guest}=setup();E.serve(s,guest.id,['rice','nori'],E.cookSpec(s,'onigiri').ideal);
  assert.equal(s.customerBook[0].dueLevel,3);s.phase='prep';s.night=2;E.open(s);assert.notEqual(E.arrive(s).person,0);
- s.phase='prep';s.night=3;s.level=3;E.open(s);let g=E.arrive(s);assert.equal(g.person,0);assert.equal(s.customerBook[0].visits,2);
- E.serve(s,g.id,['rice','nori'],E.cookSpec(s,'onigiri').ideal);assert.equal(s.customerBook[0].dueLevel,5);
- s.phase='prep';s.night=4;s.level=5;E.open(s);g=E.arrive(s);assert.equal(g.person,0);assert.equal(E.regular(s,0),true);
- const eggs=s.inventory.egg;assert.equal(E.gift(s,g.id),true);assert.equal(s.inventory.egg,eggs-1);assert.equal(E.gift(s,g.id),false);
- assert.equal(E.serve(s,g.id,['rice','nori'],E.cookSpec(s,'onigiri').ideal).score,100);assert.equal(E.gift(s,g.id),false);
- const restored=E.restore(JSON.stringify(s));assert.equal(restored.customerBook[0].visits,3);
+ function find(level,night){s.phase='prep';s.level=level;s.night=night;E.open(s);for(let i=0;i<9;i++){s.guests.forEach(g=>g.status='left');const g=E.arrive(s);if(g.person===0)return g;}assert.fail('eligible visitor should return in this seeded night');}
+ let g=find(3,3);assert.equal(s.customerBook[0].visits,2);let r=E.recipes[g.recipe];for(const id of r.ingredients)if(!s.inventory[id])E.buy(s,id);E.serve(s,g.id,r.ingredients,E.cookSpec(s,g.recipe).ideal);assert.equal(s.customerBook[0].dueLevel,s.level+2);
+ g=find(5,4);assert.equal(E.regular(s,0),true);const eggs=s.inventory.egg;assert.equal(E.gift(s,g.id),true);assert.equal(s.inventory.egg,eggs-1);assert.equal(E.gift(s,g.id),false);
+ assert.equal(E.restore(JSON.stringify(s)).customerBook[0].visits,3);
 });
 test('version 2 saves keep money, purchases, waiting guests and expand to nine meals',()=>{
   const {s}=setup();s.version=2;delete s.customerBook;delete s.xp;delete s.level;delete s.satisfactionTotal;delete s.nightStart;s.target=3;
-  const v=E.restore(JSON.stringify(s));assert.equal(v.version,4);assert.equal(v.target,9);assert.equal(v.money,3200);
+  const v=E.restore(JSON.stringify(s));assert.equal(v.version,5);assert.equal(v.target,9);assert.equal(v.money,3200);
   assert.equal(E.serve(v,1,['rice','nori'],.65).score,100);assert.ok(E.restore(JSON.stringify(v)));
   s.phase='end';assert.equal(E.restore(JSON.stringify(s)).phase,'prep');
 });
@@ -143,5 +146,19 @@ test('operating expenses are shown and charged only once on closing',()=>{
 
 test('v3 saves migrate to level-based revisits without losing progress or bought furniture',()=>{
  const {s}=setup();E.serve(s,1,['rice','nori'],E.cookSpec(s,'onigiri').ideal);s.upgrades=['plants'];s.version=3;delete s.nextVisitor;delete s.nightVisitors;for(const c of Object.values(s.customerBook))delete c.dueLevel;
- const v=E.restore(JSON.stringify(s));assert.equal(v.version,4);assert.equal(v.money,s.money);assert.equal(v.customerBook[0].dueLevel,v.level+2);assert.deepEqual(v.upgrades,['plants']);assert.ok(v.nextVisitor>=6);assert.ok(v.nightVisitors.includes(0));
+ const v=E.restore(JSON.stringify(s));assert.equal(v.version,5);assert.equal(v.money,s.money);assert.equal(v.customerBook[0].dueLevel,v.level+2);assert.deepEqual(v.upgrades,['plants']);assert.ok(v.nextVisitor>=6);assert.ok(v.nightVisitors.includes(0));
+});
+
+test('100 illustrated dishes unlock three per level, with level 20 fridge and final level 34',()=>{
+ const entries=Object.entries(E.recipes);assert.equal(entries.length,100);assert.equal(E.levels.length,34);
+ for(let level=1;level<=34;level++)assert.equal(entries.filter(([,r])=>r.level===level).length,level===34?1:3);
+ for(const [,r] of entries){assert.ok(r.ingredients.every(id=>E.ingredients[id]));assert.ok(r.sheet>=1&&r.sheet<=10&&r.art>=0&&r.art<10);}
+ const s=E.fresh();s.money=100000;s.level=19;assert.equal(E.upgrade(s,'fridge'),false);s.level=20;assert.equal(E.upgrade(s,'fridge'),true);assert.equal(s.money,82000);assert.equal(E.buyPrice(s,'pork'),117);const cash=s.money;E.buy(s,'pork');assert.equal(s.money,cash-117);assert.equal(E.upgrade(s,'fridge'),false);
+ s.level=34;E.progress(s);assert.equal(s.unlocked.length,100);assert.equal(E.restore(JSON.stringify(s)).level,34);
+});
+test('guest lines change each arrival but stay stable across save and render',()=>{
+ const s=E.fresh();E.open(s);const lines=[];for(let i=0;i<9;i++){s.guests.forEach(g=>g.status='left');const g=E.arrive(s);lines.push(E.dialogue(g));assert.equal(E.dialogue(g),E.dialogue(g));assert.equal(E.dialogue(E.restore(JSON.stringify(s)).guests.find(x=>x.id===g.id)),E.dialogue(g));}assert.equal(new Set(lines).size,9);
+});
+test('v4 saves preserve money, purchases and active orders while adding new ingredients',()=>{
+ const {s}=setup();s.version=4;s.upgrades=['plants'];delete s.inventory.tofu;const v=E.restore(JSON.stringify(s));assert.equal(v.money,s.money);assert.deepEqual(v.upgrades,['plants']);assert.equal(v.guests[0].recipe,s.guests[0].recipe);assert.equal(v.inventory.tofu,0);assert.equal(v.version,5);
 });

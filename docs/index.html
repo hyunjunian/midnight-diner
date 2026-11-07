@@ -18,8 +18,11 @@
   <link rel="preload" as="image" href="./assets/decor-real.webp">
   <link rel="preload" as="image" href="./assets/food-clean.webp">
   <link rel="stylesheet" href="./style.css">
+  <script src="./catalog.js" defer></script>
+  <script src="./stories.js" defer></script>
   <script src="./engine.js" defer></script>
   <script src="./morph.js" defer></script>
+  <script src="./rain.js" defer></script>
   <script src="./scene.js" defer></script>
   <script src="./game.js" defer></script>
   <script src="./pwa.js" defer></script>
@@ -42,12 +45,13 @@
       <div id="scene" class="scene">
         <div id="scene-world" class="world">
           <img class="interior-art" src="./assets/restaurant-counter.webp" alt="플레이어가 바 안쪽에서 손님을 마주 보는 심야식당">
-          <div class="exterior-art"></div><div id="decorations"></div><img class="counter-front" src="./assets/restaurant-counter.webp" alt="" aria-hidden="true">
+          <div class="exterior-art"></div><canvas id="scene-rain" aria-hidden="true"></canvas><div id="decorations"></div><img class="counter-front" src="./assets/restaurant-counter.webp" alt="" aria-hidden="true">
           <div class="steam steam-one"></div><div class="steam steam-two"></div>
           <div id="customers" class="customers"></div>
         </div>
       </div>
       <div class="scene-controls"><button id="area-toggle">가게 밖 보기 ↗</button><span id="pan-hint">← 좌우로 밀어 가게를 둘러보세요 →</span><div class="pan-controls"><button id="pan-left" aria-label="가게 왼쪽 보기">‹</button><span id="pan-position">카운터</span><button id="pan-right" aria-label="가게 오른쪽 보기">›</button></div></div>
+      <div id="placement-banner" class="placement-banner" role="status" hidden></div>
       <header class="game-hud">
         <div class="night-hud"><span class="hud-moon">☾</span><div><b id="day">1번째 밤</b><span id="open-status">영업 준비</span></div><span id="clock">23:50</span></div>
         <div class="wallet-hud"><div><span>자금</span><strong id="money">¥3,200</strong></div><div><span>평판</span><strong id="reputation">12</strong></div></div>
