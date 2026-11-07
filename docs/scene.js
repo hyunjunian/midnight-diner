@@ -1,7 +1,7 @@
 /* Original portrait atlas and a small articulated scene; game rules live in engine.js. */
 (() => {
   const $ = id => document.getElementById(id);
-  const mouths = [29,27,28,29,29,29,29];
+  const mouths = [30.5,28.5,29.5,31,30.5,27.5,31];
   const art = {
     lantern: '<path d="M40 0v18" stroke="#433021" stroke-width="3"/><rect x="15" y="18" width="50" height="68" rx="19" fill="#e4a752"/><path d="M18 36h44M16 48h48M18 62h44M26 20v64m27-64v64" stroke="#f9d398" opacity=".6"/><rect x="26" y="84" width="28" height="5" fill="#5a3923"/>',
     plants: '<path d="M22 65h48l-7 31H29Z" fill="#8d6043"/><path d="M45 70V15" stroke="#576943" stroke-width="4"/><g fill="#698557"><ellipse cx="29" cy="38" rx="18" ry="8" transform="rotate(25 29 38)"/><ellipse cx="60" cy="26" rx="18" ry="8" transform="rotate(-25 60 26)"/><ellipse cx="59" cy="53" rx="18" ry="8" transform="rotate(-25 59 53)"/></g>',
@@ -18,7 +18,7 @@
   function decoration(id) {return `<svg viewBox="0 0 100 100" role="img" aria-label="${MidnightEngine.upgrades[id].name}">${art[id]}</svg>`;}
   function character(person, cls='') {
     const x = person % 4, y = Math.floor(person / 4);
-    return `<span class="actor ${cls}" style="--sprite-x:${x * 100/3}%;--sprite-y:${y*100}%;--mouth-y:${mouths[person]}%;--skin:${person===2?'#bd8f6f':'#d7a583'}"><span class="actor-body atlas"></span><span class="actor-head atlas"></span><span class="actor-arm atlas"></span><span class="actor-mouth"></span><span class="actor-eyes"></span></span>`;
+    return `<span class="actor ${cls}" style="--sprite-x:${x * 100/3}%;--sprite-y:${y*100}%;--mouth-y:${mouths[person]}%;--skin:${person===2?'#e8b37d':'#f0ba83'}"><span class="actor-art"></span><span class="actor-mouth"></span></span>`;
   }
   function placePan() {
     const limit = Math.max(0, ($('scene-world').offsetWidth - $('scene').offsetWidth) / 2);

@@ -12,6 +12,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./assets/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+  <link rel="preload" as="image" href="./assets/characters-animated.webp">
   <link rel="stylesheet" href="./style.css">
   <script src="./engine.js" defer></script>
   <script src="./scene.js" defer></script>
@@ -19,7 +20,6 @@
   <script src="./pwa.js" defer></script>
 </head>
 <body>
-  <svg width="0" height="0" aria-hidden="true" style="position:absolute"><defs><filter id="portrait-cutout" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -6 -6 -6 0 16"/></filter></defs></svg>
   <section id="install-screen" class="install-screen" hidden aria-labelledby="install-title">
     <img class="install-backdrop" src="./assets/exterior.svg" alt="">
     <div class="install-content">

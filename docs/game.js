@@ -38,13 +38,31 @@
   }
   function renderScene() {
     const visible = state.guests.filter(g => g.status !== 'left');
-    $('customers').innerHTML = visible.map(g => {
-      const p = E.people[g.person], r = E.recipes[g.recipe];
-      const key = `${state.night}-${g.id}`;
-      const arriving = !seenCustomers.has(key); seenCustomers.add(key);
-      return `<div class="customer ${arriving ? 'arriving' : ''} seat-${g.seat}${g.id === selectedGuest ? ' selected talking' : ''}${g.status==='eating'?(g.score>=80?' pleased':' disappointed'):''}" data-customer="${g.id}"><button class="thought ${g.status === 'eating' ? 'happy' : ''}" data-guest="${g.id}" ${cooking ? 'disabled' : ''} aria-label="${p.name}의 ${g.status === 'eating' ? '식사 중' : '주문 확인'}"><span>${g.status === 'eating' ? (g.score >= 80 ? '♥' : '✓') : r.icon}</span><small>${g.status === 'eating' ? `${g.score}점` : '주문 보기'}</small></button><button class="customer-avatar" data-guest="${g.id}" aria-label="${p.name} 프로필 보기" ${cooking?'disabled':''}>${portrait(p, g.person)}</button><span class="ambient-line" hidden></span><span class="customer-name">${p.name}${E.regular(state,g.person)?' · 단골':''}${g.omakase ? ' · 맡김 차림' : ''}</span></div>`;
-    }).join('');
-    $('scene').classList.toggle('is-prep', state.phase === 'prep');
+    const liveIds = new Set(visible.map(g=>String(g.id)));
+    for (const el of [...$('customers').children]) if(!liveIds.has(el.dataset.customer)) el.remove();
+    for (const g of visible) {
+      const p=E.people[g.person], r=E.recipes[g.recipe], key=`${state.night}-${g.id}`;
+      let el=$('customers').querySelector(`[data-customer="${g.id}"]`);
+      // Keep each decoded character and its animation alive across inventory/HUD updates.
+      if(el && el.dataset.person!==String(g.person)){el.remove();el=null;}
+      if(!el){
+        el=document.createElement('div');el.dataset.customer=g.id;el.dataset.person=g.person;
+        el.className=`customer seat-${g.seat}${seenCustomers.has(key)?'':' arriving'}`;seenCustomers.add(key);
+        el.innerHTML=`<button class="thought" data-guest="${g.id}"><span></span><small></small></button><button class="customer-avatar" data-guest="${g.id}" aria-label="${p.name} 프로필 보기">${portrait(p,g.person)}</button><span class="ambient-line" hidden></span><span class="customer-name"></span>`;
+        el.addEventListener('animationend',e=>{if(e.animationName==='guest-enter')el.classList.remove('arriving')});
+        $('customers').append(el);
+      }
+      el.classList.toggle('selected',g.id===selectedGuest);
+      el.classList.toggle('pleased',g.status==='eating' && g.score>=80);
+      el.classList.toggle('disappointed',g.status==='eating' && g.score<60);
+      const thought=el.querySelector('.thought');thought.classList.toggle('happy',g.status==='eating');
+      thought.disabled=Boolean(cooking);thought.setAttribute('aria-label',`${p.name}의 ${g.status==='eating'?'식사 중':'주문 확인'}`);
+      thought.querySelector('span').textContent=g.status==='eating'?(g.score>=80?'♥':'✓'):r.icon;
+      thought.querySelector('small').textContent=g.status==='eating'?`${g.score}점`:'주문 보기';
+      el.querySelector('.customer-avatar').disabled=Boolean(cooking);
+      el.querySelector('.customer-name').textContent=`${p.name}${E.regular(state,g.person)?' · 단골':''}${g.omakase?' · 맡김 차림':''}`;
+    }
+    $('scene').classList.toggle('is-prep',state.phase==='prep');
     Scene.render(state,selectedGuest,cooking);
   }
   function renderOrder() {
