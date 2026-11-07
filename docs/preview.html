@@ -5,10 +5,30 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <title>심야식당 · 플레이 미리보기</title>
-  <style>html,body{margin:0;width:100%;height:100%;background:#000}iframe{display:block;border:0;width:100%;height:100%;height:100dvh}</style>
+  <style>html,body{margin:0;width:100%;height:100%;background:#000;color:#ead7b5;font:14px sans-serif}iframe{display:block;border:0;width:100%;height:100%;height:100dvh}#status{position:absolute;top:45%;width:100%;text-align:center}</style>
 </head>
 <body>
-  <!-- Launch the real app explicitly, including when an older worker serves its shell. -->
-  <iframe title="심야식당 게임" src="./?preview=1" allow="autoplay; fullscreen" allowfullscreen onload="this.contentWindow.MidnightApp?.launch()"></iframe>
+  <p id="status" role="status">식당의 불을 켜는 중…</p>
+  <iframe title="심야식당 게임" allow="autoplay; fullscreen" allowfullscreen hidden></iframe>
+  <script>
+    // Preview uses release-specific script URLs so a previously installed worker cannot serve an old game.
+    (async () => {
+      const release = 'living-diner-v9', root = new URL('./', location.href);
+      const response = await fetch(new URL(`index.html?preview-release=${release}`, root), {cache:'no-store'});
+      if (!response.ok) throw new Error('load');
+      const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+      const base = doc.createElement('base'); base.href = root.href; doc.head.prepend(base);
+      doc.querySelectorAll('script[src],link[rel="stylesheet"]').forEach(el => {
+        const key = el.tagName === 'SCRIPT' ? 'src' : 'href';
+        const url = new URL(el.getAttribute(key), root); url.searchParams.set('preview-release', release); el.setAttribute(key,url.href);
+      });
+      const frame = document.querySelector('iframe');
+      frame.onload = () => {
+        if (!frame.contentWindow.MidnightApp) return;
+        frame.contentWindow.MidnightApp.launch();frame.hidden=false;document.getElementById('status').hidden=true;
+      };
+      frame.srcdoc = '<!doctype html>' + doc.documentElement.outerHTML;
+    })().catch(() => {document.getElementById('status').textContent='가게를 열지 못했어요. 인터넷 연결 후 새로고침해 주세요.';});
+  </script>
 </body>
 </html>

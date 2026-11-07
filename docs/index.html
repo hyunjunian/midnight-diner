@@ -14,10 +14,12 @@
   <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
   <link rel="stylesheet" href="./style.css">
   <script src="./engine.js" defer></script>
+  <script src="./scene.js" defer></script>
   <script src="./game.js" defer></script>
   <script src="./pwa.js" defer></script>
 </head>
 <body>
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute"><defs><filter id="portrait-cutout" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -6 -6 -6 0 16"/></filter></defs></svg>
   <section id="install-screen" class="install-screen" hidden aria-labelledby="install-title">
     <img class="install-backdrop" src="./assets/exterior.svg" alt="">
     <div class="install-content">
@@ -33,19 +35,20 @@
   <main id="app" class="game-app" hidden aria-label="심야식당 게임">
     <section class="restaurant" aria-label="식당과 손님">
       <div id="scene" class="scene">
-        <div class="world">
-          <img class="interior-art" src="./assets/interior.svg" alt="나무 카운터와 작은 부엌이 있는 심야식당">
-          <div id="extra-lantern" class="extra-lantern" hidden>🏮</div>
-          <div id="extra-plants" class="extra-plants" hidden>🪴</div>
+        <div id="scene-world" class="world">
+          <img class="interior-art" src="./assets/restaurant-room.webp" alt="나무 카운터와 작은 부엌이 있는 심야식당">
+          <div class="exterior-art"></div><div id="decorations"></div><div id="owner" class="owner"></div><div class="counter-front"></div>
           <div class="steam steam-one"></div><div class="steam steam-two"></div>
           <div id="customers" class="customers"></div>
         </div>
       </div>
+      <div class="scene-controls"><button id="area-toggle">가게 밖 보기 ↗</button><span id="pan-hint">← 좌우로 밀어 가게를 둘러보세요 →</span><div class="pan-controls"><button id="pan-left" aria-label="가게 왼쪽 보기">‹</button><span id="pan-position">카운터</span><button id="pan-right" aria-label="가게 오른쪽 보기">›</button></div></div>
       <header class="game-hud">
         <div class="night-hud"><span class="hud-moon">☾</span><div><b id="day">1번째 밤</b><span id="open-status">영업 준비</span></div><span id="clock">23:50</span></div>
         <div class="wallet-hud"><div><span>자금</span><strong id="money">¥3,200</strong></div><div><span>평판</span><strong id="reputation">12</strong></div></div>
         <button id="settings-open" class="round-button" aria-label="설정 열기">⚙</button>
       </header>
+      <div id="progress-hud" class="progress-hud"></div>
       <div class="service-bar"><p id="service-hint"></p><button id="night-action" class="primary">식당 불 켜기 <span>↗</span></button></div>
       <nav class="game-dock" aria-label="식당 도구">
         <button data-tab="pantry" aria-label="냉장고 열기"><span>▤</span><b>냉장고</b></button>
@@ -60,6 +63,7 @@
     <header class="sheet-header"><div><span class="eyebrow">COUNTER & KITCHEN</span><h2 id="kitchen-title">주인장의 부엌</h2></div><button data-close="kitchen-dialog" class="round-button" aria-label="부엌 닫기">×</button></header>
     <div id="order-panel" class="sheet-body"></div>
   </dialog>
+  <dialog id="report-dialog" class="sheet report" aria-labelledby="report-title"><header class="sheet-header"><div><span class="eyebrow">NIGHTLY REPORT</span><h2 id="report-title">오늘의 영업보고</h2></div><button data-close="report-dialog" class="round-button" aria-label="영업보고 닫기">×</button></header><div id="report-content" class="sheet-body"></div></dialog>
   <dialog id="management-dialog" class="sheet management" aria-labelledby="management-title">
     <header class="sheet-header"><div><span class="eyebrow">MY LITTLE DINER</span><h2 id="management-title">냉장고</h2></div><button data-close="management-dialog" class="round-button" aria-label="가게 관리 닫기">×</button></header>
     <div id="management-content" class="sheet-body"></div>
