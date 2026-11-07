@@ -1,26 +1,95 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#19272c">
-<meta name="description" content="골목 끝 작은 심야식당. 한 끼를 만들고, 이야기를 듣고, 나만의 식당을 키워 가세요.">
-<title>심야식당 · 골목 끝, 당신의 작은 식당</title>
-<link rel="stylesheet" href="./style.css"><script src="./engine.js" defer></script><script src="./game.js" defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111d20">
+  <meta name="description" content="골목 끝, 당신의 작은 심야식당. 설치해서 즐기는 식당 운영 게임.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="심야식당">
+  <title>심야식당</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./engine.js" defer></script>
+  <script src="./game.js" defer></script>
+  <script src="./pwa.js" defer></script>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="./" aria-label="심야식당 홈"><span class="brand-mark">夜</span><span>심야식당<small>THE LITTLE NIGHT KITCHEN</small></span></a><span class="header-note">골목 끝, 당신의 작은 식당</span><div class="header-actions"><button id="replay" class="text-button">☾ 프롤로그</button><button id="reset" class="text-button">새로 시작</button></div></header>
-<main>
-<section class="page-heading"><div><p class="eyebrow">A LITTLE FOOD, A LITTLE COMPANY</p><h1>어서 오세요. <span>오늘도 따뜻한 한 끼.</span></h1></div><div class="wallet"><div><span>가게 자금</span><strong id="money">¥3,200</strong></div><div><span>골목의 평판</span><strong id="reputation">12 <small>/ 100</small></strong></div></div></section>
-<div class="play-layout">
-<section class="restaurant" aria-label="식당과 손님"><div class="scene-bar"><span><i class="status-dot"></i><b id="day">첫 번째 밤</b><span id="open-status">영업 준비</span></span><span id="clock">23:50</span></div>
-<div id="scene" class="scene"><img class="interior-art" src="./assets/interior.svg" alt="청록빛 노렌, 나무 카운터와 작은 부엌이 있는 따뜻한 일본 골목 식당"><div id="extra-lantern" class="extra-lantern" hidden>🏮</div><div id="extra-plants" class="extra-plants" hidden>🪴</div><div class="steam steam-one"></div><div class="steam steam-two"></div><div id="customers" class="customers"></div><div id="empty-note" class="empty-note"><span>☾</span><p>도마를 꺼내고, 육수를 올리고.<br>오늘 밤은 어떤 이야기가 찾아올까요?</p></div><div class="scene-label">めしや <span>따뜻한 밥 있습니다</span></div></div>
-<div class="service-bar"><div><span class="eyebrow">TONIGHT'S SERVICE</span><p id="service-hint">준비가 되면 식당의 불을 켜 주세요.</p></div><button id="night-action" class="primary">식당 불 켜기 <span>↗</span></button></div></section>
-<aside class="kitchen" aria-labelledby="kitchen-title"><div class="kitchen-heading"><div><span class="eyebrow">YOUR KITCHEN</span><h2 id="kitchen-title">주인장의 부엌</h2></div><span class="kitchen-stamp">一品<br>入魂</span></div><div id="order-panel"></div></aside>
-</div>
-<section id="story" class="story" aria-labelledby="story-title"><div class="story-heading"><span class="story-icon">〰</span><div><span class="eyebrow">STORIES AT THE COUNTER</span><h2 id="story-title">카운터 너머의 이야기</h2></div><span id="story-tag" class="tag">골목의 작은 일들</span></div><div id="story-content"></div></section>
-<section class="management" aria-label="가게 관리"><div class="management-header"><div><span class="eyebrow">MAKE THIS PLACE YOURS</span><h2>조금씩, 나의 식당으로</h2></div><nav aria-label="관리 항목"><button data-tab="pantry" class="tab active" aria-pressed="true">냉장고</button><button data-tab="menu" class="tab" aria-pressed="false">메뉴 수첩</button><button data-tab="shop" class="tab" aria-pressed="false">가게 꾸미기</button></nav></div><div id="management-content"></div></section>
-<footer><span>심야식당 <span class="footer-moon">☾</span> 오늘도 수고했어요.</span><span id="save-status">이 브라우저에 자동 저장됩니다.</span><span>첫 플레이 버전 · 손님과 이야기는 창작입니다.</span></footer>
-</main>
-<div id="toast" role="status" aria-live="polite"></div>
-<dialog id="intro" class="intro-dialog" aria-label="골목 끝 식당 프롤로그"><div id="intro-frame" class="intro-frame" data-shot="0"><div class="intro-clean"><img src="./assets/interior.svg" alt="개점 전 주인장이 나무 카운터를 닦는 식당"><span class="wiping-arm"></span><span class="wiping-cloth"></span></div><div class="intro-menu"><div class="menu-paper"><span>本日のおしながき</span><h3>お品書き</h3><p>돈지루 정식 <b>豚汁定食</b></p><p>맥주 <b>ビール</b></p><p>일본술 · 소주 <b>酒・焼酎</b></p><small>술 종류는 한 분이 세잔까지</small></div></div><div class="intro-clock"><div class="wall-clock"><i class="clock-hand hour"></i><i class="clock-hand minute"></i><b>12</b><b>3</b><b>6</b><b>9</b><span></span></div><div class="old-radio"><span></span><i>FM — NIGHT</i></div></div><img class="intro-exterior" src="./assets/exterior.svg" alt="밤하늘 아래、등불이 켜진 골목의 작은 식당"><div class="hanging-noren"><span>め</span><span>し</span><span>や</span></div><div class="film-grain"></div><div class="intro-top"><span>심야식당 <small>PROLOGUE</small></span><button id="skip-intro" class="text-button">건너뛰기 ↗</button></div><div class="intro-caption"><h2 id="intro-line"></h2><p id="intro-sub"></p></div><div class="intro-bottom"><button id="pause-intro" class="text-button" aria-label="프롤로그 일시정지">Ⅱ 일시정지</button><div class="intro-progress"><span id="intro-progress"></span></div><span id="intro-time">00 / 34</span><button id="next-intro" class="text-button">다음 장면 →</button></div></div></dialog>
-<dialog id="reset-dialog" class="confirm-dialog"><h2>첫날부터 다시 시작할까요?</h2><p>이 브라우저의 자금, 재료, 평판과 진행 상황이 초기화됩니다.</p><form method="dialog"><button value="cancel">돌아가기</button><button value="reset" class="primary">새로 시작</button></form></dialog>
-</body></html>
+  <section id="install-screen" class="install-screen" hidden aria-labelledby="install-title">
+    <img class="install-backdrop" src="./assets/exterior.svg" alt="">
+    <div class="install-content">
+      <span class="app-seal">夜</span><p class="install-overline">골목 끝, 작은 불빛 하나</p>
+      <h1 id="install-title">심야식당</h1><p class="install-description">당신의 밤이 시작되는 곳.</p>
+      <button id="install-app" class="primary install-button">앱 설치하기 <span>↓</span></button>
+      <p id="install-hint">홈 화면에 설치해서 전체 화면으로 즐겨 주세요.</p>
+      <div id="install-guide" hidden></div>
+      <p id="install-status" role="status"></p>
+    </div>
+  </section>
+
+  <main id="app" class="game-app" hidden aria-label="심야식당 게임">
+    <section class="restaurant" aria-label="식당과 손님">
+      <div id="scene" class="scene">
+        <div class="world">
+          <img class="interior-art" src="./assets/interior.svg" alt="나무 카운터와 작은 부엌이 있는 심야식당">
+          <div id="extra-lantern" class="extra-lantern" hidden>🏮</div>
+          <div id="extra-plants" class="extra-plants" hidden>🪴</div>
+          <div class="steam steam-one"></div><div class="steam steam-two"></div>
+          <div id="customers" class="customers"></div>
+        </div>
+      </div>
+      <header class="game-hud">
+        <div class="night-hud"><span class="hud-moon">☾</span><div><b id="day">1번째 밤</b><span id="open-status">영업 준비</span></div><span id="clock">23:50</span></div>
+        <div class="wallet-hud"><div><span>자금</span><strong id="money">¥3,200</strong></div><div><span>평판</span><strong id="reputation">12</strong></div></div>
+        <button id="settings-open" class="round-button" aria-label="설정 열기">⚙</button>
+      </header>
+      <div class="service-bar"><p id="service-hint"></p><button id="night-action" class="primary">식당 불 켜기 <span>↗</span></button></div>
+      <nav class="game-dock" aria-label="식당 도구">
+        <button data-tab="pantry" aria-label="냉장고 열기"><span>▤</span><b>냉장고</b></button>
+        <button data-tab="menu" aria-label="메뉴 수첩 열기"><span>▧</span><b>메뉴 수첩</b></button>
+        <button data-tab="shop" aria-label="가게 꾸미기 열기"><span>✧</span><b>가게 꾸미기</b></button>
+        <button id="story-open" aria-label="손님 이야기 열기"><span>☷</span><b>이야기</b><i id="story-badge" hidden></i></button>
+      </nav>
+    </section>
+  </main>
+
+  <dialog id="kitchen-dialog" class="sheet kitchen" aria-labelledby="kitchen-title">
+    <header class="sheet-header"><div><span class="eyebrow">COUNTER & KITCHEN</span><h2 id="kitchen-title">주인장의 부엌</h2></div><button data-close="kitchen-dialog" class="round-button" aria-label="부엌 닫기">×</button></header>
+    <div id="order-panel" class="sheet-body"></div>
+  </dialog>
+  <dialog id="management-dialog" class="sheet management" aria-labelledby="management-title">
+    <header class="sheet-header"><div><span class="eyebrow">MY LITTLE DINER</span><h2 id="management-title">냉장고</h2></div><button data-close="management-dialog" class="round-button" aria-label="가게 관리 닫기">×</button></header>
+    <div id="management-content" class="sheet-body"></div>
+  </dialog>
+  <dialog id="story-dialog" class="sheet story" aria-labelledby="story-title">
+    <header class="sheet-header"><div><span id="story-tag" class="eyebrow">골목의 작은 일들</span><h2 id="story-title">카운터 너머의 이야기</h2></div><button data-close="story-dialog" class="round-button" aria-label="이야기 닫기">×</button></header>
+    <div id="story-content" class="sheet-body"></div>
+  </dialog>
+  <dialog id="settings-dialog" class="sheet settings" aria-labelledby="settings-title">
+    <header class="sheet-header"><h2 id="settings-title">잠시 쉬어 가기</h2><button data-close="settings-dialog" class="round-button" aria-label="설정 닫기">×</button></header>
+    <div class="sheet-body settings-list">
+      <button id="replay">인트로 다시 보기 <span>▶</span></button>
+      <button id="fullscreen">전체 화면 <span>⛶</span></button>
+      <button id="reset">처음부터 시작 <span>↺</span></button>
+      <button id="update-app" hidden>새 버전으로 다시 열기 <span>↻</span></button>
+      <p id="save-status"></p><p id="offline-status" role="status">오프라인 실행 준비 중…</p>
+    </div>
+  </dialog>
+  <dialog id="reset-dialog" class="sheet confirm-dialog" aria-labelledby="reset-title">
+    <div class="sheet-body"><h2 id="reset-title">첫날부터 다시 시작할까요?</h2><p>저장된 자금, 재료, 평판과 진행 상황이 초기화됩니다.</p><form method="dialog"><button value="cancel">돌아가기</button><button value="reset" class="primary">새로 시작</button></form></div>
+  </dialog>
+
+  <dialog id="intro" class="cinema" aria-label="심야식당 인트로 영상">
+    <video id="opening-video" src="./assets/opening.mp4" poster="./assets/opening-poster.jpg" playsinline preload="auto" disablepictureinpicture aria-label="첨부 영상의 첫 34초. 원본 장면과 한국어 자막, 음성이 포함되어 있습니다."></video>
+    <div class="cinema-actions"><button id="sound-intro" aria-label="인트로 소리 켜기">소리 켜기 ♫</button><button id="skip-intro">건너뛰기 →</button></div>
+    <button id="play-intro" class="cinema-play" hidden>터치해서 시작 <span>▶</span></button>
+    <button id="pause-intro" class="cinema-pause" aria-label="인트로 일시정지">Ⅱ</button>
+    <p id="video-status" role="status"></p><p class="rotate-hint">가로로 돌리면 더 넓게 볼 수 있어요.</p>
+    <div class="cinema-progress" aria-hidden="true"><span id="intro-progress"></span></div>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

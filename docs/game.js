@@ -10,12 +10,12 @@
   let selectedGuest = null, selected = [], cooking = null, result = null, tab = 'pantry';
   let slowCooking = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const seenCustomers = new Set();
-  let toastTimer, raf, elapsed = 0, lastFrame = 0, introPaused = false;
-    const leaves = new Map();
+  let toastTimer, raf, lastFrame = 0;
+  const leaves = new Map();
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); storageAvailable = true; }
     catch { storageAvailable = false; }
-    $('save-status').textContent = storageAvailable ? '이 브라우저에 자동 저장됩니다.' : '저장을 사용할 수 없습니다. 창을 닫으면 진행이 사라져요.';
+    $('save-status').textContent = storageAvailable ? '진행 상황이 이 기기에 자동 저장됩니다.' : '저장을 사용할 수 없습니다. 창을 닫으면 진행이 사라져요.';
   }
   function toast(message) {
     $('toast').textContent = message; $('toast').classList.add('visible');
@@ -32,7 +32,6 @@
       const arriving = !seenCustomers.has(key); seenCustomers.add(key);
       return `<div class="customer ${arriving ? 'arriving' : ''} seat-${g.seat}${g.id === selectedGuest ? ' selected' : ''}" data-customer="${g.id}"><button class="thought ${g.status === 'eating' ? 'happy' : ''}" data-guest="${g.id}" ${cooking || g.status === 'eating' ? 'disabled' : ''} aria-label="${p.name}의 ${g.status === 'eating' ? '식사 중' : '주문 확인'}"><span>${g.status === 'eating' ? (g.score >= 80 ? '♥' : '✓') : r.icon}</span><small>${g.status === 'eating' ? `${g.score}점` : '주문 보기'}</small></button>${portrait(p, g.person)}<span class="customer-name">${p.name}${g.omakase ? ' · 맡김 차림' : ''}</span></div>`;
     }).join('');
-    $('empty-note').hidden = state.phase === 'open';
     $('scene').classList.toggle('is-prep', state.phase === 'prep');
     $('extra-lantern').hidden = !state.upgrades.includes('lantern');
     $('extra-plants').hidden = !state.upgrades.includes('plants');
@@ -41,11 +40,11 @@
     const g = state.guests.find(g => g.id === selectedGuest && g.status === 'waiting');
     if (state.phase === 'end') {
       const average = Math.round(state.nightScores.reduce((a, b) => a + b, 0) / Math.max(1, state.nightScores.length));
-      $('order-panel').innerHTML = `<div class="summary"><span class="big-icon">☀</span><h3>오늘 밤도 수고했어요.</h3><p>따뜻한 ${state.nightScores.length}끼, 그리고 작은 이야기 하나.</p><dl><div><dt>오늘의 수입 <small>팁 포함</small></dt><dd>${yen(state.nightRevenue)}</dd></div><div><dt>받은 팁</dt><dd>${yen(state.nightTips)}</dd></div><div><dt>평균 만족도</dt><dd>${average} / 100</dd></div><div><dt>골목의 평판</dt><dd>${state.reputation - state.nightStartRep >= 0 ? '+' : ''}${state.reputation - state.nightStartRep}</dd></div></dl><p class="fine-print">평판 25마다 다음 밤 손님이 한 명 늘어요.<br>마감 후에도 재료를 미리 채울 수 있어요.</p></div>`;
+      $('order-panel').innerHTML = `<div class="summary"><span class="big-icon">☀</span><h3>오늘 밤도 수고했어요.</h3><p>따뜻한 ${state.nightScores.length}끼, 그리고 작은 이야기 하나.</p><dl><div><dt>오늘의 수입 <small>팁 포함</small></dt><dd>${yen(state.nightRevenue)}</dd></div><div><dt>받은 팁</dt><dd>${yen(state.nightTips)}</dd></div><div><dt>평균 만족도</dt><dd>${average} / 100</dd></div><div><dt>골목의 평판</dt><dd>${state.reputation - state.nightStartRep >= 0 ? '+' : ''}${state.reputation - state.nightStartRep}</dd></div></dl><p class="fine-print">평판 25마다 다음 밤 손님이 한 명 늘어요.<br>마감 후에도 재료를 미리 채울 수 있어요.</p><button id="next-night" class="primary cook-button">다음 밤 준비 <span>→</span></button></div>`;
       return;
     }
     if (!g) {
-      $('order-panel').innerHTML = `${result ? `<div class="receipt"><span>${result.score >= 85 ? '참 따뜻한 한 끼였어요.' : result.score >= 60 ? '잘 먹었습니다.' : '다음에는 조금 더 정성스럽게.'}</span><h3>${result.guest}의 ${result.dish}</h3><div class="receipt-score">${result.score}<small> / 100</small></div><p>음식값 ${yen(result.base)} <b>+ 팁 ${yen(result.tip)}</b></p></div>` : `<div class="kitchen-idle"><span class="big-icon">${state.phase === 'prep' ? '🍵' : '🍽️'}</span><h3>${state.phase === 'prep' ? '분주함도, 잠깐 쉬어 가는 곳.' : '손님의 주문을 들어볼까요?'}</h3><p>${state.phase === 'prep' ? '냉장고를 살피고 오늘의 한 접시를 골라요.<br>준비가 되면 식당의 불을 켜 주세요.' : '손님 머리 위의 음식 말풍선을 눌러 보세요.<br>서두르지 않아도 괜찮아요.'}</p></div>`}<ol class="how-to"><li><b>01</b><span>말풍선을 눌러 주문을 확인해요.</span></li><li><b>02</b><span>냉장고에서 재료를 꺼내요.</span></li><li><b>03</b><span>알맞게 익혀 따뜻하게 내어 주세요.</span></li></ol>`;
+      $('order-panel').innerHTML = `${result ? `<div class="receipt"><span>${result.score >= 85 ? '참 따뜻한 한 끼였어요.' : result.score >= 60 ? '잘 먹었습니다.' : '다음에는 조금 더 정성스럽게.'}</span><h3>${result.guest}의 ${result.dish}</h3><div class="receipt-score">${result.score}<small> / 100</small></div><p>음식값 ${yen(result.base)} <b>+ 팁 ${yen(result.tip)}</b></p><button data-close="kitchen-dialog" class="primary cook-button">식당으로 돌아가기 <span>→</span></button></div>` : `<div class="kitchen-idle"><span class="big-icon">${state.phase === 'prep' ? '🍵' : '🍽️'}</span><h3>${state.phase === 'prep' ? '분주함도, 잠깐 쉬어 가는 곳.' : '손님의 주문을 들어볼까요?'}</h3><p>${state.phase === 'prep' ? '냉장고를 살피고 오늘의 한 접시를 골라요.<br>준비가 되면 식당의 불을 켜 주세요.' : '손님 머리 위의 음식 말풍선을 눌러 보세요.<br>서두르지 않아도 괜찮아요.'}</p></div>`}<ol class="how-to"><li><b>01</b><span>말풍선을 눌러 주문을 확인해요.</span></li><li><b>02</b><span>냉장고에서 재료를 꺼내요.</span></li><li><b>03</b><span>알맞게 익혀 따뜻하게 내어 주세요.</span></li></ol>`;
       return;
     }
     const p = E.people[g.person], r = E.recipes[g.recipe];
@@ -69,6 +68,7 @@
   function renderManagement() {
     const rescue = E.rescueNeeds(state) ? '<div class="rescue-box"><span>재료 살 돈이 부족한가요? 이웃 상인이 이번 주문에 필요한 재료를 나눠 줘요.</span><button data-rescue="true">도움받기 · 평판 −3</button></div>' : '';
     document.querySelectorAll('[data-tab]').forEach(b => { b.classList.toggle('active', b.dataset.tab === tab); b.setAttribute('aria-pressed', String(b.dataset.tab === tab)); });
+    $('management-title').textContent = { pantry: '냉장고', menu: '메뉴 수첩', shop: '가게 꾸미기' }[tab];
     if (tab === 'pantry') {
       $('management-content').innerHTML = `${rescue}<p class="management-note">한 봉지씩, 필요한 만큼. 영업 중에도 재료를 주문할 수 있어요. <span>현재 재료 ${Object.values(state.inventory).reduce((a, b) => a + b, 0)}개</span></p><div class="stock-grid">${Object.entries(E.ingredients).map(([id, item]) => `<article class="stock-card"><span class="stock-icon">${item.icon}</span><div><h3>${item.name}</h3><span>냉장고에 <b>${state.inventory[id]}개</b></span></div><button data-buy="${id}" ${state.money < item.price || state.inventory[id] >= 999 ? 'disabled' : ''} aria-label="${item.name} 1개 ${item.price}엔에 구매">+1 <small>${yen(item.price)}</small></button></article>`).join('')}</div>`;
     } else if (tab === 'menu') {
@@ -88,9 +88,12 @@
     $('night-action').innerHTML = state.phase === 'prep' ? '식당 불 켜기 <span>↗</span>' : state.phase === 'end' ? '다음 밤 준비 <span>→</span>' : canClose ? '오늘 영업 마치기 <span>☾</span>' : `${state.nightScores.length} / ${state.target}끼 대접`;
     $('service-hint').textContent = state.phase === 'prep' ? '냉장고를 채우고, 오늘의 메뉴를 골라 보세요.' : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '마지막 그릇까지 비워졌어요. 이제 쉬어 가요.' : state.event === 'pending' ? '카운터에서 이야기가 시작됐어요. 아래에서 답해 주세요.' : '머리 위 음식 말풍선을 누르면 주문을 확인할 수 있어요.';
     renderScene(); renderOrder(); if (cooking && slowCooking) updateHeat(cooking.manual ?? 0.3); renderStory(); renderManagement(); save();
+    $('story-badge').hidden = state.event !== 'pending';
+    if (state.phase === 'end' && !$('app').hidden && !anySheetOpen()) openSheet('kitchen-dialog');
+    maybeStory();
   }
   function tryArrival() {
-    if ($('intro').open || document.hidden) return;
+    if ($('app').hidden || $('intro').open || document.hidden || $('settings-dialog').open || $('reset-dialog').open) return;
     const g = E.arrive(state);
     if (g) { toast(`${E.people[g.person].name} 님이 들어와 자리에 앉았어요.`); E.conversation(state); render(); }
   }
@@ -104,7 +107,7 @@
     const button = event.target.closest('[data-guest]');
     if (!button || cooking) return;
     selectedGuest = Number(button.dataset.guest); selected = []; result = null; renderScene(); renderOrder();
-    if (matchMedia('(max-width: 800px)').matches) $('order-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    openSheet('kitchen-dialog');
     $('order-panel').querySelector('[data-ingredient]:not(:disabled)')?.focus({ preventScroll: true });
   });
   function finishCooking(timing) {
@@ -116,6 +119,7 @@
     render();
   }
   $('order-panel').addEventListener('click', event => {
+    if (event.target.closest('#next-night')) { E.next(state); resetTransient(); $('kitchen-dialog').close(); render(); return; }
     const ingredient = event.target.closest('[data-ingredient]');
     if (ingredient && !cooking) {
       const id = ingredient.dataset.ingredient;
@@ -141,7 +145,7 @@
     $('heat-marker').style.left = `${Math.min(100, position * 100)}%`;
     $('heat-marker').parentElement.setAttribute('aria-valuenow', String(Math.round(position * 100)));
   }
-  document.querySelectorAll('[data-tab]').forEach(button => button.addEventListener('click', () => { tab = button.dataset.tab; renderManagement(); }));
+  document.querySelectorAll('[data-tab]').forEach(button => button.addEventListener('click', () => { tab = button.dataset.tab; renderManagement(); openSheet('management-dialog'); }));
   $('management-content').addEventListener('click', event => {
     const button = event.target.closest('button');
     if (!button || button.disabled) return;
@@ -157,51 +161,93 @@
     const button = event.target.closest('[data-choice]');
     if (button && E.resolveEvent(state, button.dataset.choice)) { render(); toast('오늘의 이야기가 식당의 평판에 남았어요.'); }
   });
-  // Subtitles transcribed from the user-uploaded opening, without added narration.
-  const menuSubtitle = '돈지루(돼지고기 된장국) 정식\n맥주, 일본술, 소주\n술 종류는 한 분이 세잔까지';
-  const shots = [
-    { start: 0, scene: '0', line: '', sub: '' },
-    { start: 1100, scene: '0', line: '하루가 끝나고', sub: '' },
-    { start: 3000, scene: '0', line: '사람들이 귀가를\n서두를 무렵', sub: '' },
-    { start: 7000, scene: '0', line: '나의 하루가 시작된다', sub: '' },
-    { start: 9000, scene: '1', line: '메뉴는 이것뿐', sub: menuSubtitle },
-    { start: 11400, scene: '2', line: '나머지는 맘대로 주문하면', sub: menuSubtitle },
-    { start: 15500, scene: '2', line: '가능하면 만든다는 게', sub: '' },
-    { start: 17800, scene: '2', line: '나의 영업 방침이야', sub: '' },
-    { start: 20200, scene: '2', line: '영업시간은 밤 12시부터\n아침 7시경까지', sub: '' },
-    { start: 26000, scene: '2', line: '사람들은...', sub: '' },
-    { start: 27300, scene: '2', line: '심야식당이라 부르지', sub: '' },
-    { start: 30600, scene: '2', line: '손님이 오냐고?', sub: '' },
-    { start: 33000, scene: '3', line: '그게 꽤 많이 와', sub: '' },
-  ];
-  let shotIndex = -1;
-  function updateIntro() {
-    const index = shots.findLastIndex(shot => elapsed >= shot.start);
-    if (index !== shotIndex) {
-      shotIndex = index; $('intro-frame').dataset.shot = shots[index].scene;
-      $('intro-line').textContent = shots[index].line; $('intro-sub').textContent = shots[index].sub;
-    }
-    $('intro-progress').style.width = `${elapsed / 34000 * 100}%`;
-    $('intro-time').textContent = `${String(Math.min(34, Math.floor(elapsed / 1000))).padStart(2, '0')} / 34`;
+  const sheetIds = ['kitchen-dialog', 'management-dialog', 'story-dialog', 'settings-dialog'];
+  function anySheetOpen() { return sheetIds.some(id => $(id).open); }
+  function openSheet(id) {
+    for (const other of sheetIds) if (other !== id && $(other).open) $(other).close();
+    if (!$(id).open) $(id).showModal();
+  }
+  function maybeStory() {
+    if (!$('app').hidden && state.event === 'pending' && !cooking && !anySheetOpen() && !$('reset-dialog').open) openSheet('story-dialog');
+  }
+  document.addEventListener('click', event => {
+    const close = event.target.closest('[data-close]');
+    if (!close) return;
+    if (close.dataset.close === 'kitchen-dialog' && cooking) return toast('조리 중인 한 끼를 먼저 내어 주세요.');
+    $(close.dataset.close).close();
+    if (close.dataset.close !== 'story-dialog') maybeStory();
+  });
+  $('kitchen-dialog').addEventListener('cancel', event => { if (cooking) { event.preventDefault(); toast('조리 중인 한 끼를 먼저 내어 주세요.'); } });
+  $('story-open').addEventListener('click', () => { renderStory(); openSheet('story-dialog'); });
+  $('settings-open').addEventListener('click', () => openSheet('settings-dialog'));
+  $('fullscreen').addEventListener('click', async () => {
+    if (document.fullscreenElement) return;
+    try {
+      if (!document.documentElement.requestFullscreen) return toast('현재 기기에서는 설치한 앱 화면으로 실행돼요.');
+      await document.documentElement.requestFullscreen();
+      try { await screen.orientation.lock('landscape'); } catch {}
+    } catch { toast('전체 화면을 사용할 수 없는 기기입니다.'); }
+  });
+  // The supplied clip already contains the exact subtitles: never redraw or retype them.
+  const video = $('opening-video');
+  let videoWasPlaying = false, startingVideo = false;
+  function syncVideoButtons() {
+    $('sound-intro').textContent = video.muted ? '소리 켜기 ♫' : '소리 끄기 ♫';
+    $('sound-intro').setAttribute('aria-label', video.muted ? '인트로 소리 켜기' : '인트로 소리 끄기');
+    $('pause-intro').textContent = video.paused ? '▶' : 'Ⅱ';
+    $('pause-intro').setAttribute('aria-label', video.paused ? '인트로 계속 보기' : '인트로 일시정지');
+  }
+  async function playVideo(withSound = false) {
+    if (startingVideo || !$('intro').open) return;
+    startingVideo = true;
+    if (withSound) video.muted = false;
+    try {
+      await video.play(); $('play-intro').hidden = true;
+    } catch {
+      if (!$('intro').open) return;
+      if (withSound) {
+        video.muted = true;
+        try { await video.play(); $('play-intro').hidden = true; }
+        catch { $('play-intro').hidden = false; }
+      } else $('play-intro').hidden = false;
+    } finally { startingVideo = false; syncVideoButtons(); }
   }
   function finishIntro() {
     if (!$('intro').open) return;
-    state.introSeen = true; $('intro').close(); render();
+    video.pause(); $('intro').close(); state.introSeen = true;
+    $('app').hidden = false; lastFrame = 0; render();
   }
   function startIntro() {
     if ($('intro').open) return;
-    elapsed = 0; shotIndex = -1; introPaused = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    $('pause-intro').textContent = introPaused ? '▶ 계속 보기' : 'Ⅱ 일시정지';
-    $('pause-intro').setAttribute('aria-label', introPaused ? '프롤로그 계속 보기' : '프롤로그 일시정지');
-    updateIntro(); $('intro-frame').dataset.paused = String(introPaused); $('intro').showModal();
+    for (const id of sheetIds) if ($(id).open) $(id).close();
+    $('app').hidden = true; $('install-screen').hidden = true;
+    video.pause(); video.currentTime = 0;
+    $('intro-progress').style.width = '0%'; $('video-status').textContent = '';
+    $('play-intro').textContent = '터치해서 시작 ▶'; $('play-intro').hidden = true;
+    $('intro').showModal(); playVideo(true);
   }
+  video.addEventListener('ended', finishIntro);
+  video.addEventListener('timeupdate', () => { $('intro-progress').style.width = `${Math.min(100, video.currentTime / 34 * 100)}%`; });
+  video.addEventListener('waiting', () => { if ($('intro').open) $('video-status').textContent = '영상을 불러오는 중…'; });
+  video.addEventListener('playing', () => { $('video-status').textContent = ''; syncVideoButtons(); });
+  video.addEventListener('pause', syncVideoButtons);
+  video.addEventListener('error', () => {
+    $('video-status').textContent = '영상을 불러오지 못했어요. 연결을 확인한 뒤 다시 재생해 주세요.';
+    $('play-intro').textContent = '다시 재생 ▶'; $('play-intro').hidden = false;
+  });
+  $('play-intro').addEventListener('click', () => { if (video.error) video.load(); playVideo(true); });
+  $('sound-intro').addEventListener('click', () => {
+    if (video.muted) { video.muted = false; if (video.paused) playVideo(true); }
+    else video.muted = true;
+    syncVideoButtons();
+  });
+  $('pause-intro').addEventListener('click', () => { if (video.paused) playVideo(!video.muted); else video.pause(); });
   $('skip-intro').addEventListener('click', finishIntro);
   $('intro').addEventListener('cancel', event => { event.preventDefault(); finishIntro(); });
-  $('pause-intro').addEventListener('click', () => {
-    introPaused = !introPaused; $('intro-frame').dataset.paused = String(introPaused); $('pause-intro').textContent = introPaused ? '▶ 계속 보기' : 'Ⅱ 일시정지';
-    $('pause-intro').setAttribute('aria-label', introPaused ? '프롤로그 계속 보기' : '프롤로그 일시정지');
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { videoWasPlaying = $('intro').open && !video.paused; if (videoWasPlaying) video.pause(); }
+    else if (videoWasPlaying && $('intro').open) { videoWasPlaying = false; playVideo(!video.muted); }
   });
-  $('next-intro').addEventListener('click', () => { const next = shots.find(shot => shot.start > elapsed); if (!next) finishIntro(); else { elapsed = next.start; updateIntro(); } });
   $('replay').addEventListener('click', () => { if (cooking) return toast('조리 중인 한 끼를 먼저 내어 주세요.'); startIntro(); });
   $('reset').addEventListener('click', () => { if (cooking) return toast('조리 중인 한 끼를 먼저 내어 주세요.'); $('reset-dialog').showModal(); });
   $('reset-dialog').addEventListener('close', () => {
@@ -210,20 +256,16 @@
   });
   function frame(now) {
     const dt = lastFrame ? Math.min(now - lastFrame, 100) : 0; lastFrame = now;
-    if (!document.hidden && !$('reset-dialog').open) {
-      if ($('intro').open) {
-        if (!introPaused) { elapsed += dt; updateIntro(); if (elapsed >= 34000) finishIntro(); }
-      } else {
-        if (cooking && !slowCooking) {
-          cooking.elapsed += dt; updateHeat(cooking.elapsed / 5000);
-          if (cooking.elapsed >= 5000) finishCooking(1);
-        }
-        // Customers stay long enough for their conversation; unsettled stories pause departure.
-        for (const g of state.guests) {
-          if (g.status !== 'eating') continue;
-          const time = (leaves.get(g.id) || 0) + dt; leaves.set(g.id, time);
-          if (time > 12000 && state.event !== 'pending') { g.status = 'left'; leaves.delete(g.id); renderScene(); save(); }
-        }
+    if (!document.hidden && !$('app').hidden && !$('reset-dialog').open && !$('settings-dialog').open && !$('intro').open) {
+      if (cooking && !slowCooking) {
+        cooking.elapsed += dt; updateHeat(cooking.elapsed / 5000);
+        if (cooking.elapsed >= 5000) finishCooking(1);
+      }
+      // Customers stay long enough for their conversation; unsettled stories pause departure.
+      for (const g of state.guests) {
+        if (g.status !== 'eating') continue;
+        const time = (leaves.get(g.id) || 0) + dt; leaves.set(g.id, time);
+        if (time > 12000 && state.event !== 'pending') { g.status = 'left'; leaves.delete(g.id); renderScene(); save(); }
       }
     }
     raf = requestAnimationFrame(frame);
@@ -235,7 +277,7 @@
     if (event.persisted) { lastFrame = 0; arrivalTimer = setInterval(() => { if (!$('reset-dialog').open) tryArrival(); }, 6500); raf = requestAnimationFrame(frame); }
   });
   render();
-  if (!state.introSeen) startIntro();
+  window.MidnightApp = { launch: startIntro, save, isCooking: () => Boolean(cooking) };
   if (saveMessage) toast(saveMessage);
   raf = requestAnimationFrame(frame);
 })();
