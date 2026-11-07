@@ -12,13 +12,11 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./assets/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
-  <link rel="preload" as="image" href="./assets/characters-animated.webp">
   <link rel="preload" as="image" href="./assets/visitors-a.webp">
   <link rel="preload" as="image" href="./assets/visitors-b.webp">
   <link rel="preload" as="image" href="./assets/intro-world.webp">
   <link rel="preload" as="image" href="./assets/decor-real.webp">
-  <link rel="preload" as="image" href="./assets/food-painted.webp">
-  <link rel="preload" as="image" href="./assets/seated-legs.webp">
+  <link rel="preload" as="image" href="./assets/food-clean.webp">
   <link rel="stylesheet" href="./style.css">
   <script src="./engine.js" defer></script>
   <script src="./morph.js" defer></script>
@@ -43,8 +41,8 @@
     <section class="restaurant" aria-label="식당과 손님">
       <div id="scene" class="scene">
         <div id="scene-world" class="world">
-          <img class="interior-art" src="./assets/restaurant-room.webp" alt="나무 카운터와 작은 부엌이 있는 심야식당">
-          <div class="exterior-art"></div><div id="decorations"></div><div id="owner" class="owner"></div><div class="counter-front"></div>
+          <img class="interior-art" src="./assets/restaurant-counter.webp" alt="플레이어가 바 안쪽에서 손님을 마주 보는 심야식당">
+          <div class="exterior-art"></div><div id="decorations"></div><img class="counter-front" src="./assets/restaurant-counter.webp" alt="" aria-hidden="true">
           <div class="steam steam-one"></div><div class="steam steam-two"></div>
           <div id="customers" class="customers"></div>
         </div>

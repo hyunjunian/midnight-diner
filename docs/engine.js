@@ -53,7 +53,7 @@
     return {...base,name:`${familyNames[Math.floor(id/people.length)%familyNames.length]} ${base.name}`,bio:base.bio};
   }
   const upgrades = {
-    lantern: { name: '호박빛 종이등', icon: '🏮', price: 1000, level: 1, area: 'inside', description: '카운터 위에 종이등을 달아요. 요리 만족도 +5.' },
+    lantern: { name: '호박빛 종이등', icon: '🏮', price: 1000, level: 1, area: 'inside', description: '기존 중앙등을 손질해 빛을 더 포근하게 해요. 요리 만족도 +3.' },
     plants: { name: '문 앞 화분', icon: '🪴', price: 900, level: 1, area: 'outside', description: '입구에 초록 화분을 놓아요. 첫 손님 입소문 +2.' },
     ceramics: { name: '손으로 빚은 그릇', icon: '🏺', price: 1600, level: 2, area: 'inside', description: '선반에 도자기 컬렉션이 놓여요.' },
     noren: { name: '쪽빛 노렌', icon: '🎐', price: 1800, level: 2, area: 'outside', description: '가게 입구를 쪽빛 천으로 꾸며요.' },

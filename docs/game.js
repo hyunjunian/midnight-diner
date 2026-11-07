@@ -26,6 +26,15 @@
   function portrait(p, i) { return Scene.character(i); }
   const foods=['rice','nori','egg','dashi','pork','miso','salmon','onigiri','tamago','tonjiru','ochazuke','butadon','salmonbowl','midnight'];
   function food(id) {const i=foods.indexOf(id);return `<span class="food-art" role="img" aria-label="${(E.ingredients[id]||E.recipes[id]).name}" data-food="${id}" style="--food-x:${i%4*100/3}%;--food-y:${Math.floor(i/4)*100/3}%"></span>`;}
+  function ingredientPicker(g,r) {
+    const missing=r.ingredients.filter(id=>!selected.includes(id));
+    const message=cooking?'손질·불 조절 중에는 재료를 바꿀 수 없어요. 아래 조리 버튼을 사용하세요.':missing.length?`${missing.map(id=>E.ingredients[id].name).join(' · ')}을(를) 선택해 주세요. 재고가 없으면 바로 채울 수 있어요.`:'필수 재료가 준비됐어요. 아래에서 손질을 시작하세요.';
+    return `<div class="prep-step"><div class="step-title"><b>01</b><h4>재료 준비</h4><small>재료당 1개</small></div><p class="prep-guidance" role="status">${message}</p><div class="ingredient-picker">${Object.entries(E.ingredients).sort((a,b)=>Number(r.ingredients.includes(b[0]))-Number(r.ingredients.includes(a[0]))).map(([id,item])=>{
+      const required=r.ingredients.includes(id),empty=state.inventory[id]===0;
+      const status=cooking?'조리 중 · 변경 불가':empty?(required?'재고 없음':'다른 요리용 · 재고 없음'):selected.includes(id)?'✓ 선택됨':required?'필수 재료 · 눌러 선택':'다른 요리용';
+      return `<article class="ingredient-slot ${required?'required':''}"><button data-ingredient="${id}" aria-pressed="${selected.includes(id)}" aria-label="${item.name}: ${status}" class="ingredient ${selected.includes(id)?'picked':''}" ${cooking||empty?'disabled':''}>${food(id)}<strong>${item.name}</strong><small>재고 ${state.inventory[id]}개</small><span class="ingredient-state">${status}</span></button>${empty&&!cooking?`<button data-kitchen-buy="${id}" class="refill-button" ${state.money<item.price?'disabled':''}>${state.money<item.price?`${yen(item.price)} 필요`:`1개 채우기 · ${yen(item.price)}`}</button>`:''}</article>`;
+    }).join('')}</div>${!cooking&&E.rescueNeeds(state)?'<div class="rescue-box">구매 자금이 부족하면 이웃에게 이번 주문의 재료를 도움받을 수 있어요.<button data-kitchen-rescue>재료 도움받기 · 평판 −3</button></div>':''}${!cooking&&!missing.length?'<button data-jump-cook class="jump-cook">손질 시작 버튼으로 이동 ↓</button>':''}</div>`;
+  }
   function levelNote(level) {
     const l = E.levels[level - 1];
     return `Lv.${level} · 누적 ${l.xp}점 / 평판 ${l.reputation} / 만족도 ${l.satisfaction}`;
@@ -43,15 +52,15 @@
     const liveIds = new Set(visible.map(g=>String(g.id)));
     for (const el of [...$('customers').children]) if(!liveIds.has(el.dataset.customer)) el.remove();
     for (const g of visible) {
-      const p=E.person(g.person), r=E.recipes[g.recipe], garment=[6,8,18].includes(g.person%24)?3:[9,21].includes(g.person%24)?2:g.person%2, key=`${state.night}-${g.id}`;
+      const p=E.person(g.person), r=E.recipes[g.recipe], key=`${state.night}-${g.id}`;
       let el=$('customers').querySelector(`[data-customer="${g.id}"]`);
       // Keep each decoded character and its animation alive across inventory/HUD updates.
       if(el && el.dataset.person!==String(g.person)){el.remove();el=null;}
       if(!el){
         el=document.createElement('div');el.dataset.customer=g.id;el.dataset.person=g.person;
         el.className=`customer seat-${g.seat}${seenCustomers.has(key)?'':' arriving'}`;seenCustomers.add(key);
-        el.innerHTML=`<span class="seated-legs" aria-hidden="true" style="--legs-x:${garment%2*100}%;--legs-y:${Math.floor(garment/2)*100}%"></span><button class="customer-avatar" data-guest="${g.id}" aria-label="${p.name} 프로필 보기">${portrait(p,g.person)}</button><button class="customer-name" data-guest="${g.id}"></button><span class="wait-meter" aria-hidden="true"><i></i></span>`;
-        el.addEventListener('animationend',e=>{if(e.animationName==='guest-enter')el.classList.remove('arriving')});
+        el.innerHTML=`<button class="customer-avatar" data-guest="${g.id}" aria-label="${p.name} 프로필 보기">${portrait(p,g.person)}</button><button class="customer-name" data-guest="${g.id}"></button><span class="wait-meter" aria-hidden="true"><i></i></span>`;
+        el.addEventListener('animationend',e=>{if(e.animationName==='counter-arrival')el.classList.remove('arriving')});
         $('customers').append(el);
       }
       el.classList.toggle('selected',g.id===selectedGuest);
@@ -71,13 +80,13 @@
     }
     if(g?.status==='eating') { $('order-panel').innerHTML = `${profile(g)}<p class="guest-line">“${g.score>=85?'참 맛있었어요. 다음에 또 올게요.':g.score>=60?'따뜻한 한 끼, 잘 먹었습니다.':'다음에는 조금 더 잘 부탁해요.'}”</p><div class="recipe-slip"><strong>식사 만족도 ${g.score}점</strong><p>${g.score>=90?state.customerBook[g.person].dueLevel<=E.levels.length?`Lv.${state.customerBook[g.person].dueLevel} 이후 재방문 예정이에요.`:'최고 레벨의 식당을 좋은 추억으로 기억해요.':'다음 방문에는 더 맛있는 한 끼를 준비해요.'}</p></div>`;return; }
     if (!g) {
-      $('order-panel').innerHTML = `${result ? `<div class="receipt"><span>${result.score >= 85 ? '참 따뜻한 한 끼였어요.' : result.score >= 60 ? '잘 먹었습니다.' : '다음에는 조금 더 정성스럽게.'}</span><h3>${result.guest}의 ${result.dish}</h3><div class="receipt-score">${result.score}<small> / 100</small></div><p class="fine-print">손질 ${result.preparation} · 불 조절 ${result.heat} · 대기 감점 ${result.waitPenalty}</p><p>음식값 ${yen(result.base)} <b>+ 팁 ${yen(result.tip)}</b></p><button data-close="kitchen-dialog" class="primary cook-button">식당으로 돌아가기 <span>→</span></button></div>` : `<div class="kitchen-idle"><span class="big-icon">${food(state.special)}</span><h3>${state.phase === 'prep' ? '분주함도, 잠깐 쉬어 가는 곳.' : '손님의 주문을 들어볼까요?'}</h3><p>${state.phase === 'prep' ? '냉장고를 살피고 오늘의 한 접시를 골라요.<br>준비가 되면 식당의 불을 켜 주세요.' : '의자에 앉은 손님을 눌러 보세요.<br>서두르지 않아도 괜찮아요.'}</p></div>`}<ol class="how-to"><li><b>01</b><span>손님을 눌러 주문을 확인해요.</span></li><li><b>02</b><span>냉장고에서 재료를 꺼내요.</span></li><li><b>03</b><span>알맞게 익혀 따뜻하게 내어 주세요.</span></li></ol>`;
+      $('order-panel').innerHTML = `${result ? `<div class="receipt"><span>${result.score >= 85 ? '참 따뜻한 한 끼였어요.' : result.score >= 60 ? '잘 먹었습니다.' : '다음에는 조금 더 정성스럽게.'}</span><h3>${result.guest}의 ${result.dish}</h3><div class="receipt-score">${result.score}<small> / 100</small></div><p class="fine-print">손질 ${result.preparation} · 불 조절 ${result.heat} · 대기 감점 ${result.waitPenalty}</p><p>음식값 ${yen(result.base)} <b>+ 팁 ${yen(result.tip)}</b></p><button data-close="kitchen-dialog" class="primary cook-button">식당으로 돌아가기 <span>→</span></button></div>` : `<div class="kitchen-idle"><span class="big-icon">${food(state.special)}</span><h3>${state.phase === 'prep' ? '분주함도, 잠깐 쉬어 가는 곳.' : '손님의 주문을 들어볼까요?'}</h3><p>${state.phase === 'prep' ? '냉장고를 살피고 오늘의 한 접시를 골라요.<br>준비가 되면 식당의 불을 켜 주세요.' : '바 건너편의 손님을 눌러 보세요.<br>서두르지 않아도 괜찮아요.'}</p></div>`}<ol class="how-to"><li><b>01</b><span>손님을 눌러 주문을 확인해요.</span></li><li><b>02</b><span>냉장고에서 재료를 꺼내요.</span></li><li><b>03</b><span>알맞게 익혀 따뜻하게 내어 주세요.</span></li></ol>`;
       return;
     }
-    const p = E.person(g.person), r = E.recipes[g.recipe], spec=E.cookSpec(state,g.recipe);
+    const p=E.person(g.person),r=E.recipes[g.recipe],spec=E.cookSpec(state,g.recipe),remaining=r.ingredients.filter(id=>!selected.includes(id));
     $('order-panel').innerHTML = `<div class="guest-order">${profile(g)}<span class="eyebrow">COUNTER 0${g.seat + 1} · ${p.role}</span><h3>${p.name}의 주문 <span>${food(g.recipe)}</span></h3><p class="guest-line">“${g.omakase ? '오늘은 주인장에게 맡길게요. 추천하는 한 접시로 주세요.' : p.line}”</p><div class="recipe-slip"><span>${r.jp}</span><strong>${r.name}</strong><small>${yen(r.price)}부터 · ${g.omakase ? '오늘의 맡김 차림' : '주문 메뉴'}</small><p>재료: ${r.ingredients.map(id => E.ingredients[id].name).join(' · ')}</p></div></div>
-<div class="prep-step"><div class="step-title"><b>01</b><h4>냉장고에서 꺼내기</h4><small>재료당 1개</small></div><div class="ingredient-picker">${Object.entries(E.ingredients).map(([id, item]) => `<button data-ingredient="${id}" aria-pressed="${selected.includes(id)}" class="ingredient ${selected.includes(id) ? 'picked' : ''}" ${cooking || state.inventory[id] === 0 ? 'disabled' : ''}><span>${food(id)}</span>${item.name}<small>×${state.inventory[id]}</small></button>`).join('')}</div><p class="fine-print">필요한 재료만 선택하세요. 부족하면 아래 냉장고에서 구매해요.</p></div>
-<div class="cook-step"><div class="step-title"><b>02</b><h4>${cooking?.stage==='prep'?'손질하기 · 알맞은 순간에 완료':'불 조절 · 요리마다 다른 익힘'}</h4></div><p class="cook-method">${r.method}</p><div class="heat-label"><span>덜 익음</span><span>알맞음</span><span>너무 익음</span></div><div class="heat-meter" role="meter" aria-label="조리 진행도" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="perfect-zone" style="left:${((cooking?.stage==='prep'?spec.prepIdeal:spec.ideal)-spec.band/2)*100}%;width:${spec.band*100}%"></div><i id="heat-marker"></i></div><label class="slow-option"><input id="slow-cook" type="checkbox" ${slowCooking ? 'checked' : ''} ${cooking ? 'disabled' : ''}>느긋한 조리 · 타이머 없이</label>${slowCooking && cooking ? `<label class="heat-slider">익힘 정도 <input id="manual-heat" type="range" min="0" max="100" step="0.1" value="${Math.round((cooking?.manual ?? 0.3) * 100)}" aria-label="익힘 정도 직접 조절"></label>` : ''}<button id="cook-action" class="primary cook-button" ${!cooking && !selected.length ? 'disabled' : ''}>${cooking ? cooking.stage==='prep'?'손질 완료 · 불에 올리기':'불 끄고 내어주기' : '손질 시작'} <span>${cooking ? '✓' : '↗'}</span></button><p class="fine-print">${cooking ? (slowCooking ? cooking.stage==='prep'?'슬라이더를 움직여 초록 구간에서 손질을 마쳐요.':'초록 구간에 맞춰 익힘 정도를 정해 내어 주세요.' : cooking.stage==='prep'?'초록 구간에서 손질을 마치면 불 조절 단계로 이어져요.':'좁은 초록 구간에서 불을 꺼 주세요. 너무 익히면 점수가 크게 줄어요.') : '재료 25점 · 손질 25점 · 불 조절 50점. 기다림이 길면 만족도가 내려가요.'}</p></div>`;
+${ingredientPicker(g,r)}
+<div class="cook-step"><div class="step-title"><b>${cooking?.stage==='heat'?'03':'02'}</b><h4>${!cooking?'손질과 불 조절':cooking.stage==='prep'?'손질하기 · 초록 구간에서 완료':'불 조절 · 초록 구간에서 내어주기'}</h4></div><p class="cook-method">${r.method}</p><div class="heat-label"><span>덜 익음</span><span>알맞음</span><span>너무 익음</span></div><div class="heat-meter" role="meter" aria-label="조리 진행도" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="perfect-zone" style="left:${((cooking?.stage==='prep'?spec.prepIdeal:spec.ideal)-spec.band/2)*100}%;width:${spec.band*100}%"></div><i id="heat-marker"></i></div><label class="slow-option"><input id="slow-cook" type="checkbox" ${slowCooking ? 'checked' : ''} ${cooking ? 'disabled' : ''}>느긋한 조리 · 타이머 없이</label>${slowCooking && cooking ? `<label class="heat-slider">익힘 정도 <input id="manual-heat" type="range" min="0" max="100" step="0.1" value="${Math.round((cooking?.manual ?? 0.3) * 100)}" aria-label="익힘 정도 직접 조절"></label>` : ''}<button id="cook-action" class="primary cook-button" ${!cooking && remaining.length ? 'disabled' : ''}>${cooking ? cooking.stage==='prep'?'손질 완료 · 불에 올리기':'불 끄고 내어주기' : remaining.length?`${remaining.map(id=>E.ingredients[id].name).join(' · ')} 선택 필요`:'손질 시작'} <span>${cooking ? '✓' : '↗'}</span></button><p class="fine-print">${cooking ? (slowCooking ? cooking.stage==='prep'?'슬라이더를 움직여 초록 구간에서 손질을 마쳐요.':'초록 구간에 맞춰 익힘 정도를 정해 내어 주세요.' : cooking.stage==='prep'?'초록 구간에서 손질을 마치면 불 조절 단계로 이어져요.':'좁은 초록 구간에서 불을 꺼 주세요. 너무 익히면 점수가 크게 줄어요.') : '재료 25점 · 손질 25점 · 불 조절 50점. 기다림이 길면 만족도가 내려가요.'}</p></div>`;
   }
   function renderStory() {
     $('story-tag').textContent = state.event === 'pending' ? '주인장의 선택' : state.event === 'resolved' ? '오늘의 기억' : '골목의 작은 일들';
@@ -114,7 +123,7 @@
     const canClose = E.canClose(state);
     $('night-action').disabled = state.phase === 'open' && !canClose;
     $('night-action').innerHTML = state.phase === 'prep' ? '식당 불 켜기 <span>↗</span>' : state.phase === 'end' ? '오늘의 영업보고 <span>→</span>' : canClose ? '밤 마무리하기 · 영업보고 <span>☾</span>' : `${Math.min(3,Math.floor(state.nightScores.length/3)+1)} / 3사이클 · ${state.nightScores.length} / ${state.target}끼`;
-    $('service-hint').textContent = state.phase === 'prep' ? '냉장고와 메뉴를 준비해요. 영업비와 대기 시간을 고려하세요.' : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요. 반짝이는 이야기 버튼을 눌러 답해 주세요.' : '의자에 앉은 손님을 누르면 프로필과 주문을 볼 수 있어요.';
+    $('service-hint').textContent = state.phase === 'prep' ? '냉장고와 메뉴를 준비해요. 영업비와 대기 시간을 고려하세요.' : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요. 반짝이는 이야기 버튼을 눌러 답해 주세요.' : '바 건너편의 손님을 누르면 프로필과 주문을 볼 수 있어요.';
     $('night-action').classList.toggle('close-ready',canClose);
     const nextLevel=E.levels.find(l=>l.level>state.level);
     $('progress-hud').innerHTML=`<b>Lv.${state.level}</b><span>만족도 ${E.satisfaction(state)} · 성장 ${state.xp}${nextLevel?` / ${nextLevel.xp}`:' · MAX'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}"></progress>`;
@@ -138,7 +147,7 @@
     const button = event.target.closest('[data-guest]');
     if (!button || cooking) return;
     selectedGuest = Number(button.dataset.guest); selected = []; result = null; renderScene(); renderOrder();
-    Scene.speak('어서 와요. 오늘은 무엇을 드릴까요?'); openSheet('kitchen-dialog');
+    openSheet('kitchen-dialog');
     $('order-panel').querySelector('[data-ingredient]:not(:disabled)')?.focus({ preventScroll: true });
   });
   function finishCooking(timing) {
@@ -146,12 +155,16 @@
     const cookedGuest = cooking.guest;
     result = E.serve(state, cookedGuest, cooking.selected, timing,cooking.preparation);
     cooking = null; selectedGuest = null; selected = [];
-    if (result) { Scene.speak(result.score>=85?'입에 맞으셨다니 기뻐요. 천천히 드세요.':result.score>=60?'따뜻할 때 드세요.':'다음에는 더 정성껏 준비할게요.'); leaves.set(cookedGuest, 0); toast(`${result.guest} 님의 만족도 ${result.score}점 · ${yen(result.total)} (팁 ${yen(result.tip)})`); }
+    if (result) { leaves.set(cookedGuest, 0); toast(`${result.guest} 님의 만족도 ${result.score}점 · ${yen(result.total)} (팁 ${yen(result.tip)})`); }
     render();
   }
   $('order-panel').addEventListener('click', event => {
+    const refill=event.target.closest('[data-kitchen-buy]');
+    if(refill){const id=refill.dataset.kitchenBuy;if(!cooking&&E.buy(state,id)){const g=state.guests.find(g=>g.id===selectedGuest);if(g&&E.recipes[g.recipe].ingredients.includes(id)&&!selected.includes(id))selected.push(id);render();}return;}
+    if(event.target.closest('[data-kitchen-rescue]')){if(!cooking&&E.rescue(state))render();return;}
+    if(event.target.closest('[data-jump-cook]')){$('order-panel').querySelector('.cook-step').scrollIntoView({behavior:'smooth',block:'start'});return;}
     if(event.target.closest('#show-report')) {renderReport();openSheet('report-dialog');return;}
-    const gift=event.target.closest('[data-gift]'); if(gift){if(E.gift(state,Number(gift.dataset.gift))){Scene.speak('늘 찾아주셔서 고마워요. 이건 서비스예요.');render();}return;}
+    const gift=event.target.closest('[data-gift]'); if(gift){if(E.gift(state,Number(gift.dataset.gift))){render();}return;}
     if (event.target.closest('#next-night')) { E.next(state); resetTransient(); $('kitchen-dialog').close(); render(); return; }
     const ingredient = event.target.closest('[data-ingredient]');
     if (ingredient && !cooking) {
@@ -162,9 +175,10 @@
     }
     if (event.target.closest('#cook-action')) {
       if (cooking) return advanceCooking();
-      if (!selected.length) return;
+      const order=state.guests.find(g=>g.id===selectedGuest);
+      if(!order||!E.recipes[order.recipe].ingredients.every(id=>selected.includes(id)))return;
       cooking = { guest: selectedGuest, selected: [...selected], elapsed: 0, stage:'prep', preparation:0, spec:E.cookSpec(state,state.guests.find(g=>g.id===selectedGuest).recipe) };
-      Scene.speak('잠시만 기다려 주세요. 맛있게 준비할게요.');renderScene(); renderOrder(); if (slowCooking) updateHeat(0.3); $('cook-action').focus({ preventScroll: true });
+      renderScene(); renderOrder(); if (slowCooking) updateHeat(0.3); $('cook-action').focus({ preventScroll: true });
     }
   });
   $('order-panel').addEventListener('change', event => {
@@ -201,7 +215,7 @@
   });
   $('story-content').addEventListener('click', event => {
     const button = event.target.closest('[data-choice]');
-    if (button && E.resolveEvent(state, button.dataset.choice)) { Scene.speak(button.dataset.choice==='listen'?'괜찮아요. 오늘은 천천히 이야기해요.':'따뜻할 때 먼저 드세요.'); render(); toast('오늘의 이야기가 식당의 평판에 남았어요.'); }
+    if (button && E.resolveEvent(state, button.dataset.choice)) { render(); toast('오늘의 이야기가 식당의 평판에 남았어요.'); }
   });
   const sheetIds = ['report-dialog', 'kitchen-dialog', 'management-dialog', 'story-dialog', 'settings-dialog'];
   function anySheetOpen() { return sheetIds.some(id => $(id).open); }
@@ -302,7 +316,6 @@
   function frame(now) {
     const dt = lastFrame ? Math.min(now - lastFrame, 100) : 0; lastFrame = now;
     if (!document.hidden && !$('app').hidden && !$('reset-dialog').open && !$('settings-dialog').open && !$('intro').open) {
-      Scene.tick(now);
       if(state.phase==='open'){for(const g of state.guests)if(g.status==='waiting'){g.waitMs=(g.waitMs||0)+dt;const meter=document.querySelector(`[data-customer="${g.id}"] .wait-meter i`);if(meter)meter.style.width=`${E.patience(g)*100}%`;}}
       if (cooking && !slowCooking) {
         cooking.elapsed+=dt;const duration=cooking.stage==='prep'?cooking.spec.prepTime:cooking.spec.heatTime;updateHeat(cooking.elapsed/duration);

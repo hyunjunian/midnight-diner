@@ -343,7 +343,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 }
 /* Living diner: one scrollable room, articulated portraits and visible upgrades. */
 .scene { touch-action:pan-y; background:#141b19; }
-.scene::before { background-image:url('./assets/restaurant-room.webp'); filter:blur(22px) brightness(.48); }
+.scene::before { background-image:url('./assets/restaurant-counter.webp'); filter:blur(22px) brightness(.48); }
 .scene::after { background:linear-gradient(#0c1b1ecc,transparent 30%,transparent 70%,#0d2024f5 96%); }
 .world { width:max(880px,115vw); max-width:1500px; aspect-ratio:3/2; top:49%; transform:translate(calc(-50% + var(--pan,0px)),-50%); transition:transform .12s ease-out; }
 .interior-art { object-fit:cover; }
@@ -364,13 +364,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 .owner { position:absolute; z-index:1; bottom:40%; width:15%; aspect-ratio:3/4; transform:translateX(-50%); transition:left 1.7s ease-in-out; }
 .actor { position:relative; display:block; width:100%; height:100%; transform-origin:50% 85%; animation:actor-breathe 4.5s ease-in-out infinite; will-change:transform; backface-visibility:hidden; }
 .actor-art { position:absolute; inset:0; background-image:url('./assets/characters-animated.webp'); background-size:400% 200%; background-position:var(--sprite-x) var(--sprite-y); background-repeat:no-repeat; }
-.actor-mouth { position:absolute; top:var(--mouth-y); left:46.5%; width:7%; height:1.1%; border-radius:20% 20% 70% 70%; background:#81513a; transform-origin:50% 0; opacity:0; }
 .pleased .actor { animation:actor-content 4s ease-in-out infinite; }
 .disappointed .actor { animation:actor-thoughtful 5s ease-in-out infinite; }
 .talking .actor { animation:actor-converse 2.4s ease-in-out infinite; }
-.talking .actor-mouth { opacity:1; animation:mouth-speak .32s steps(2,end) infinite; }
-.owner[data-mood="happy"] .actor-mouth { opacity:.8; border-radius:0 0 100% 100%; }
-.owner[data-mood="concerned"] .actor-mouth,.disappointed .actor-mouth { opacity:1; height:1.6%; background:var(--skin); border-top:2px solid #81513a; border-radius:70% 70% 0 0; }
 .cooking .actor { animation:actor-work 2s ease-in-out infinite; }
 .owner-caption { position:absolute; bottom:0; left:50%; transform:translateX(-50%); font-size:9px; white-space:nowrap; color:#e8d1ac; padding:2px 9px; background:#27302ae0; border-radius:15px; }
 .customer { bottom:10%; width:15%; height:auto; aspect-ratio:3/4; filter:none; }
@@ -406,7 +402,6 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 .story-waiting { box-shadow:inset 0 0 0 1px #e7bc7d; border-radius:12px!important; animation:story-pulse 2s infinite; }
 .conversation-cast { display:flex; gap:20px; justify-content:center; margin-bottom:15px; }
 .conversation-cast > div { width:110px; aspect-ratio:3/4; background:#172b29; border-radius:50px 50px 10px 10px; overflow:hidden; }
-.conversation-cast .delayed .actor-mouth { animation-delay:.14s; }
 .report { width:min(94vw,620px); background:#eee3cb; }
 .report-heading { text-align:center; }
 .report-heading > span { letter-spacing:5px;font:12px var(--serif);color:#99784c; }
@@ -429,7 +424,6 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 @keyframes actor-thoughtful {50%{transform:translate3d(0,1px,0) rotate(-.5deg)}}
 @keyframes actor-converse {25%{transform:translate3d(0,-1px,0) rotate(-.5deg)}75%{transform:translate3d(0,0,0) rotate(.5deg)}}
 @keyframes actor-work {50%{transform:translate3d(-2px,1px,0) rotate(1deg)}}
-@keyframes mouth-speak {0%,100%{transform:scaleY(.5)}50%{transform:scaleY(2.7)}}
 @keyframes close-pulse {50%{box-shadow:0 0 28px #efbd7299,0 4px 0 #6e4930;filter:brightness(1.08)}}
 @keyframes story-pulse {50%{background:#e7bc7d22}}
 @keyframes cloth {50%{transform:skewX(.8deg)}}
@@ -453,7 +447,6 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 /* One connected mesh carries the original painted image and all local morphs. */
 .actor-morph { position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none; }
 .actor.morph-ready { animation:none!important;will-change:auto; }
-.morph-ready > .actor-art,.morph-ready > .actor-mouth { visibility:hidden; }
 .morph-ready > .actor-morph { display:block; }
 .actor-art {background-image:var(--sprite-image);background-size:var(--sprite-size,400% 300%);}
 
@@ -463,7 +456,6 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 .customer {bottom:23%;width:15%;transform:translateX(-50%);}
 .seat-0 {left:26.7%;}.seat-1 {left:52%;}.seat-2 {left:76.8%;}
 .customer.arriving {animation:seated-arrival 1.2s ease-out both;}
-@keyframes seated-arrival {from{opacity:0;transform:translateX(calc(-50% + 35px))}to{opacity:1;transform:translateX(-50%)}}
 .customer-name {bottom:-76%;min-height:28px;padding:3px 8px;font-size:9px;white-space:nowrap;}
 .wait-meter {position:absolute;bottom:-83%;height:3px;width:55%;left:23%;background:#173130;border-radius:5px;overflow:hidden;}
 .wait-meter i {display:block;height:100%;background:#d7b574;transition:width .4s linear;}
@@ -479,7 +471,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 @media(orientation:landscape){.world{width:max(680px,105vw)}.exterior-world{width:min(55vw,65dvh)}}
 @media(orientation:portrait){.exterior-world{width:min(100vw,70dvh)}}
 
-.food-art {display:inline-block;width:48px;height:48px;background:url('./assets/food-painted.webp') var(--food-x) var(--food-y)/400% 400% no-repeat;vertical-align:middle;}
+.food-art {display:inline-block;width:48px;height:48px;background:url('./assets/food-clean.webp') var(--food-x) var(--food-y)/400% 400% no-repeat;vertical-align:middle;}
 .ingredient>.food-art {width:43px;height:43px;flex-shrink:0;}
 .ingredient {min-height:96px;}
 .stock-icon .food-art {width:49px;height:49px;}
@@ -487,6 +479,33 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 .guest-order h3 .food-art {width:57px;height:57px;flex-shrink:0;}
 .cook-method {min-height:20px;}
 .perfect-zone {transition:left .2s,width .2s;}
-.seated-legs {position:absolute;top:87%;left:0;width:100%;height:78%;background:url('./assets/seated-legs.webp') var(--legs-x) var(--legs-y)/200% 200% no-repeat;pointer-events:none;}
 
 .world {transition:none;}
+
+/* First-person counter: visitors are behind the bar; no owner avatar or chairs. */
+.customer {bottom:40%;width:15%;transform:none;z-index:auto;}
+.seat-0 {left:24.5%;}.seat-1 {left:42.5%;}.seat-2 {left:60.5%;}
+.customer-avatar {z-index:2;}
+.counter-front {display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(58.7% 0 0 0);z-index:4;pointer-events:none;}
+.customer-name {bottom:-30%;z-index:6;}
+.wait-meter {bottom:-36%;z-index:6;}
+.customer.arriving {animation:none;}
+.customer.arriving .customer-avatar {animation:counter-arrival .9s ease-out both;}
+@keyframes counter-arrival {from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.has-lantern:not(.outside) .counter-front {filter:brightness(1.04) saturate(1.04);}
+
+.morph-ready > .actor-art {visibility:hidden;}
+.food-art {clip-path:inset(3%);}
+.ingredient-slot {display:flex;flex-direction:column;gap:6px;min-width:0;}
+.ingredient-slot .ingredient {width:100%;height:auto;flex:1;padding:9px 3px;min-height:133px;}
+.ingredient strong {font-size:11px;font-weight:500;}
+.ingredient .ingredient-state {font-size:9px;line-height:1.5;margin-top:5px;color:#7d765d;}
+.ingredient-slot.required .ingredient {border-color:#9caa80;}
+.ingredient:disabled {opacity:1;background:#e0ddcf;color:#9a9988;}
+.ingredient:disabled .food-art {opacity:.6;}
+.refill-button {padding:6px 3px;min-height:35px;font-size:10px;color:#53694e;background:#dce3c9;border-color:#a9b38b;}
+.prep-guidance {font-size:12px;line-height:1.8;margin:12px 0;padding:10px 12px;border-left:3px solid #8d9b70;background:#e1e3ce;color:#667255;}
+.jump-cook {width:100%;margin-top:12px;background:#d8dfc6;color:#586c4e;font-size:12px;}
+.cook-step {scroll-margin-top:95px;}
+
+.ingredient>.food-art {width:56px;height:56px;}

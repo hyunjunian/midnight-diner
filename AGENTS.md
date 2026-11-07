@@ -16,7 +16,9 @@
 - Keep the current intro camera locked: no zoom/pan or brightness oscillation. The user later authorized moderate, physically downward rain in the FIRST exterior scene only. Keep all indoor scenes free of rain overlays; use positive screen-Y trajectories, not looping stripe patterns.
 - Keep the approved woman, camera composition and warm lighting. The restaurant architecture itself uses Japanese timber sliding doors, lattice windows and aged timber/plaster; do not reduce this direction to small decorative props or restore the arched cafe entrance.
 
-- In-game owner and guests use softly painted Japanese animation character art, preserving their established hair, clothing and identities. Keep the approved restaurant backgrounds and cinematic intro unchanged when editing game character art.
+- In-game guests use softly painted Japanese animation character art, preserving their established hair, clothing and identities. Keep the approved cinematic intro unchanged when editing game character art; the in-game room uses the stool-free first-person counter background.
 
-- Keep the owner centered on mobile while panning. Match seated guests to stool positions; never show customer speech or order thought bubbles in the room. Dialogue belongs in explicit guest detail/story panels.
+- The player is the unseen owner. Show guest upper bodies behind the foreground bar, with no owner avatar, guest legs, or stools. Never animate mouths in any scene or detail panel; never show customer speech or order thought bubbles in the room. Dialogue belongs in explicit guest detail/story panels.
 - Use the painted food / realistic furnishing atlases instead of ingredient emoji or vector decoration stickers. Guest portraits span diverse ages; nightly faces are unique and satisfied visitors return only after two level gains. Preserve continuous mesh morphing and safe renderer fallback without cut-out seams.
+
+- Keep only the existing central ceiling fixture; a purchased lantern improves its light rather than adding an overlapping lamp. Ingredient controls must explain missing stock/selection and offer in-place refill. Food art needs clear tile margins to prevent neighboring-cell fragments.

@@ -1,10 +1,10 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const VERSION = 'midnight-diner-pwa-20261107-v11-living-morphs';
+const VERSION = 'midnight-diner-pwa-20261108-v12-counter-view';
 const ROOT = new URL('./', self.location.href);
 const INDEX = new URL('index.html', ROOT).href;
 const FILES = [
   'index.html', 'style.css', 'engine.js', 'game.js', 'scene.js', 'morph.js', 'pwa.js', 'manifest.webmanifest',
-  'assets/characters-animated.webp', 'assets/visitors-a.webp', 'assets/visitors-b.webp', 'assets/decor-real.webp', 'assets/food-painted.webp', 'assets/seated-legs.webp', 'assets/restaurant-room.webp', 'assets/intro-world.webp', 'assets/interior.svg', 'assets/exterior.svg', 'assets/opening-visible-rain.mp4', 'assets/opening-portrait-poster.jpg',
+  'assets/visitors-a.webp', 'assets/visitors-b.webp', 'assets/decor-real.webp', 'assets/food-clean.webp', 'assets/restaurant-counter.webp', 'assets/intro-world.webp', 'assets/interior.svg', 'assets/exterior.svg', 'assets/opening-visible-rain.mp4', 'assets/opening-portrait-poster.jpg',
   'assets/icon-192.png', 'assets/icon-512.png', 'assets/icon-maskable-512.png', 'assets/apple-touch-icon.png',
 ].map(path => new URL(path, ROOT).href);
 self.addEventListener('install', event => {
