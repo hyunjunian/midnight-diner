@@ -1,10 +1,10 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const VERSION = 'midnight-diner-pwa-20261107-v5-exterior-rain';
+const VERSION = 'midnight-diner-pwa-20261107-v6-visible-rain';
 const ROOT = new URL('./', self.location.href);
 const INDEX = new URL('index.html', ROOT).href;
 const FILES = [
   'index.html', 'style.css', 'engine.js', 'game.js', 'pwa.js', 'manifest.webmanifest',
-  'assets/interior.svg', 'assets/exterior.svg', 'assets/opening-portrait.mp4', 'assets/opening-portrait-poster.jpg',
+  'assets/interior.svg', 'assets/exterior.svg', 'assets/opening-visible-rain.mp4', 'assets/opening-portrait-poster.jpg',
   'assets/icon-192.png', 'assets/icon-512.png', 'assets/icon-maskable-512.png', 'assets/apple-touch-icon.png',
 ].map(path => new URL(path, ROOT).href);
 self.addEventListener('install', event => {

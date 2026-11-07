@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--work', type=Path, required=True)
 parser.add_argument('--audio-from', type=Path, required=True)
 parser.add_argument('--rain-layer', type=Path)
-parser.add_argument('--output', type=Path, default=REPO / 'docs/assets/opening-portrait.mp4')
+parser.add_argument('--output', type=Path, default=REPO / 'docs/assets/opening-visible-rain.mp4')
 args = parser.parse_args()
 args.work.mkdir(parents=True, exist_ok=True)
 art = REPO / 'planning/assets/intro-storyboard.png'
@@ -36,7 +36,7 @@ for scene in range(4):
     extra_inputs = []
     if scene == 0:
         extra_inputs = ['-i', rain]
-        graph = base + ';[base][1:v]overlay=shortest=1:format=auto,format=yuv420p[out]'
+        graph = base + ";[1:v]format=rgba,lut=a='min(200,val*5)',dilation=coordinates=24,fade=t=out:st=7.8:d=0.45:alpha=1[visible-rain];[base][visible-rain]overlay=shortest=1:format=auto,format=yuv420p[out]"
     elif scene in (1, 3):
         # Only local food steam moves. The camera and all scene geometry stay fixed.
         cx, cy = (120, 160) if scene == 1 else (149, 260)
