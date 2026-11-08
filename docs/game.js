@@ -1,17 +1,17 @@
 (() => {
   'use strict';
   const E = window.MidnightEngine;
-  const KEY = 'midnight-diner-save-v8';
+  const KEY = 'midnight-diner-save-v9';
   const $ = id => document.getElementById(id);
   const yen = n => `¥${n.toLocaleString('ja-JP')}`;
   let state, storageAvailable = true, saveMessage = '';
-  try { state = E.restore(localStorage.getItem(KEY) || localStorage.getItem('midnight-diner-save-v7') || localStorage.getItem('midnight-diner-save-v6') || localStorage.getItem('midnight-diner-save-v5') || localStorage.getItem('midnight-diner-save-v4') || localStorage.getItem('midnight-diner-save-v2'), localStorage.getItem('midnight-diner-save-v1')); }
+  try { state = E.restore(localStorage.getItem(KEY) || localStorage.getItem('midnight-diner-save-v8') || localStorage.getItem('midnight-diner-save-v7') || localStorage.getItem('midnight-diner-save-v6') || localStorage.getItem('midnight-diner-save-v5') || localStorage.getItem('midnight-diner-save-v4') || localStorage.getItem('midnight-diner-save-v2'), localStorage.getItem('midnight-diner-save-v1')); }
   catch { state = E.fresh(); saveMessage = '저장 정보를 읽지 못해 새 식당을 준비했습니다.'; }
   let selectedGuest=null,tab='pantry',talkIndex=0,cashAnimation=null;
   const Kitchen=window.MidnightKitchen;
   let menuFilter='all',menuQuery='';
   const seenCustomers = new Set();
-  let toastTimer, raf, lastFrame = 0;
+  let toastTimer, raf, lastFrame = 0, openingUntil=0;
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); storageAvailable = true; }
     catch { storageAvailable = false; }
@@ -172,6 +172,11 @@
       $('management-content').innerHTML = `<p class="management-note">익숙한 자리에, 나다운 온기를 더해요. 구매한 장식은 식당에 바로 나타나요.</p><div class="upgrade-grid">${Object.entries(E.upgrades).map(([id, u]) => `<article class="upgrade-card ${state.level<u.level?'locked':''}"><span class="decor-thumbnail">${Scene.decoration(id)}</span><div><h3>${u.name}</h3><p>${u.description}</p><details class="item-preview"><summary>어디에 놓이는지 보기</summary>${Scene.preview(id)}</details><small>${u.area==='inside'?'매장 안':'매장 밖'} · ${levelNote(u.level)}</small></div><button data-upgrade="${id}" ${state.upgrades.includes(id) || state.money < u.price || state.level < u.level ? 'disabled' : ''}>${state.upgrades.includes(id) ? '✓ 배치 완료' : state.level<u.level ? `🔒 Lv.${u.level}에 해제` : `${yen(u.price)} · 들여놓기`}</button></article>`).join('')}</div>`;
     }
   }
+  function renderStockPrep(){
+    const panel=$('stock-prep');panel.hidden=state.phase!=='prep';if(panel.hidden)return;
+    const full=E.stockPlan(state,9),small=E.stockPlan(state,3);
+    panel.innerHTML=`<div class="stock-prep-heading"><span>오늘의 영업 준비</span><h3>${full.units?'단골이 오기 전에, 냉장고부터':'냉장고 준비가 끝났어요'}</h3><p>현재 메뉴와 예상 주문을 바탕으로 ${full.meals}끼를 준비해요. 부족한 만큼만 한 번에 채울 수 있어요.</p></div><div class="stock-prep-list">${full.lines.map(x=>`<span class="${x.quantity?'stock-short':'stock-ready'}">${food(x.id)}<b>${E.ingredients[x.id].name}</b><small>${x.owned} / ${x.target}개 ${x.quantity?`· +${x.quantity} 필요`:'· 준비됨'}</small></span>`).join('')}</div><button class="primary stock-bulk-main" data-restock="9" ${!full.units||state.money<full.cost?'disabled':''}>${full.units?`${full.meals}끼 재료 한 번에 채우기 · ${yen(full.cost)}`:'✓ 오늘 밤의 기본 재료 준비 완료'}</button>${small.units?`<button class="stock-bulk-small" data-restock="3" ${state.money<small.cost?'disabled':''}>먼저 ${small.meals}끼만 준비 · ${yen(small.cost)}</button>`:''}${state.money<full.cost&&full.units?'<small class="stock-budget-note">자금이 부족하면 먼저 3끼를 준비하고 영업 수익으로 더 채워 주세요.</small>':''}`;
+  }
   function render() {
     $('money').textContent=yen(cashAnimation?Math.round(cashAnimation.from):state.money);
     $('reputation').innerHTML = `${state.reputation} <small>/ 100</small>`;
@@ -181,23 +186,24 @@
     const canClose = E.canClose(state);
     $('night-action').disabled = state.phase === 'open' && !canClose;
     $('night-action').innerHTML = state.phase === 'prep' ? '식당 불 켜기 <span>↗</span>' : state.phase === 'end' ? '오늘의 영업보고 <span>→</span>' : canClose ? '밤 마무리하기 · 영업보고 <span>☾</span>' : `${Math.min(3,Math.floor(state.nightScores.length/3)+1)} / 3사이클 · ${state.nightScores.length} / ${state.target}끼`;
-    $('service-hint').textContent = state.phase === 'prep' ? '냉장고와 메뉴를 준비해요. 영업비와 대기 시간을 고려하세요.' : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요. 반짝이는 이야기 버튼을 눌러 답해 주세요.' : state.guests.some(g=>g.status==='paying')?'식사를 마친 손님의 별점 위 금액을 눌러 결제해 주세요.':'손님을 눌러 대화하고 주문을 받아 주세요.';
+    $('service-hint').textContent = state.phase === 'prep' ? (E.stockPlan(state,3).units?'아래 재료 준비를 먼저 확인해 주세요.':'재료가 준비됐어요. 식당 불을 켜고 손님을 맞이해요.') : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요. 반짝이는 이야기 버튼을 눌러 답해 주세요.' : state.guests.some(g=>g.status==='paying')?'식사를 마친 손님의 별점 위 금액을 눌러 결제해 주세요.':'손님을 눌러 대화하고 주문을 받아 주세요.';
     $('night-action').classList.toggle('close-ready',canClose);
     const nextLevel=E.levels.find(l=>l.level>state.level);
     $('progress-hud').innerHTML=`<b>Lv.${state.level}</b><span>만족도 ${E.satisfaction(state)} · 성장 ${state.xp}${nextLevel?` / ${nextLevel.xp}`:' · MAX'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}"></progress>`;
-    renderScene();renderTalk();renderStory();renderManagement();save();
+    renderStockPrep();renderScene();renderTalk();renderStory();renderManagement();save();
     $('story-badge').hidden=state.event!=='pending'&&!state.nightNews.length;
     if (state.phase==='end') renderReport();
     maybeStory();
   }
   function tryArrival() {
-    if ($('app').hidden || $('intro').open || document.hidden || $('settings-dialog').open || $('reset-dialog').open) return;
+    if (performance.now()<openingUntil || $('app').hidden || $('intro').open || document.hidden || $('settings-dialog').open || $('reset-dialog').open) return;
     const g = E.arrive(state);
     if (g) { E.conversation(state); render(); }
   }
   function resetTransient(){selectedGuest=null;talkIndex=0;Kitchen.hide();}
+  $('stock-prep').addEventListener('click',event=>{const button=event.target.closest('[data-restock]');if(!button||button.disabled)return;const result=E.restock(state,Number(button.dataset.restock));if(result){render();toast(`${result.units}개 재료를 냉장고에 채웠어요. 오늘 밤 준비가 든든해졌네요.`);}});
   $('night-action').addEventListener('click', () => {
-    if (state.phase === 'prep') { E.open(state); resetTransient(); Scene.showArea('inside'); render(); tryArrival(); }
+    if (state.phase === 'prep') { E.open(state); openingUntil=performance.now()+1400;resetTransient(); Scene.showArea('inside'); render(); setTimeout(tryArrival,1450); }
     else if (E.canClose(state)) { E.close(state); resetTransient(); render(); openSheet('report-dialog'); }
     else if (state.phase === 'end') { renderReport(); openSheet('report-dialog'); }
   });

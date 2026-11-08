@@ -49,7 +49,7 @@
       <div id="scene" class="scene">
         <div id="scene-world" class="world">
           <img class="interior-art" src="./assets/restaurant-counter.webp" alt="플레이어가 바 안쪽에서 손님을 마주 보는 심야식당">
-          <div class="exterior-art"></div><canvas id="scene-rain" aria-hidden="true"></canvas><div id="decorations"></div><img class="counter-front" src="./assets/restaurant-counter.webp" alt="" aria-hidden="true">
+          <img class="interior-closed" src="./assets/restaurant-closed.webp" alt="불을 켜기 전의 조용한 식당" aria-hidden="true"><div class="exterior-art"></div><canvas id="scene-rain" aria-hidden="true"></canvas><div id="decorations"></div><img class="counter-front" src="./assets/restaurant-counter.webp" alt="" aria-hidden="true">
           <div class="steam steam-one"></div><div class="steam steam-two"></div>
           <div id="customers" class="customers"></div>
         </div>
@@ -62,6 +62,7 @@
         <button id="settings-open" class="round-button" aria-label="설정 열기">⚙</button>
       </header>
       <div id="progress-hud" class="progress-hud"></div><button id="resume-kitchen" class="resume-kitchen" hidden>진행 중인 요리로 돌아가기 ↗</button>
+      <section id="stock-prep" class="stock-prep" aria-label="영업 전 재료 준비" hidden></section>
       <div class="service-bar"><p id="service-hint"></p><button id="night-action" class="primary">식당 불 켜기 <span>↗</span></button></div>
       <nav class="game-dock" aria-label="식당 도구">
         <button data-tab="pantry" aria-label="냉장고 열기"><span>▤</span><b>냉장고</b></button>

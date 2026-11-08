@@ -154,3 +154,13 @@
 .dial-wrap{position:relative;padding:10px;flex-shrink:0;}.dial-guide{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
 
 .held-knife{transform:translate(-7%,-8%) rotate(var(--knife-angle,14deg));transform-origin:7% 8%;}.process-heading p{word-break:keep-all;}
+
+/* All active cooking images are full-size states, never tiny menu-process tiles. */
+.prep-scene.heat{width:min(72%,280px);max-width:280px;}.heat-lesson{position:static;inset:auto;transform:none;width:100%;max-width:none;padding:12px 14px;margin:10px 0 13px;border-radius:14px;pointer-events:auto;box-shadow:0 3px 12px #0004;}.heat-lesson h4{font:17px/1.55 var(--serif);margin:5px 0;}.heat-lesson p{font-size:11px;line-height:1.8;margin:0;}.heat-lesson small{font-size:9px;}.heat-lesson #practice-live{font-size:10px;color:#627854;display:block;margin-top:6px;}.practice-actions{display:flex;gap:8px;margin-top:10px;}.heat-lesson .practice-actions button{width:auto;flex:1;font-size:11px;margin:0;padding:10px 8px;}
+.stove-controls{padding:0 20px;}.dial-wrap{isolation:isolate;}.dial-demo{position:absolute;inset:10px;width:calc(100% - 20px);height:calc(100% - 20px);z-index:3;pointer-events:none;opacity:.58;}.dial-engaged .dial-demo{display:none;}.heat-actions button{font-size:11px;line-height:1.6;}.stove-controls>.guide-replay{display:block;margin:9px auto;}.stored-ingredient:disabled{opacity:1;}.stored-ingredient.in-stock:not(.stock-required) .food-art{opacity:.95;filter:none;}.stored-ingredient.in-stock:not(.stock-required) small{background:#667454b8;color:#faf1d7;}
+@media(prefers-reduced-motion:reduce){.dial-demo{display:none}}
+/* Keep the dial and stop control visible together on a portrait phone. */
+.process-view:has(.heat) .process-heading p{display:none;}.prep-scene.heat{width:min(52%,200px);max-width:200px;}.process-view:has(#heat-lesson) .prep-scene.heat{width:min(46%,180px);max-width:180px;}
+@media(max-height:730px){.prep-scene.heat{width:150px;max-width:150px}.process-view:has(#heat-lesson) .prep-scene.heat{width:130px;max-width:130px}.heat-lesson{padding:9px 12px;margin:6px 0 9px}.heat-lesson h4{font-size:15px}.heat-lesson p{font-size:10px}.gas-panel{margin:6px 0}.stove-controls>.guide-replay{margin:5px auto}}
+
+.process-view:has(#heat-lesson) .prep-scene.heat{width:min(40%,150px);max-width:150px;}.process-view:has(#heat-lesson) .heat-lesson{padding:10px 12px;margin:7px 0 10px;}

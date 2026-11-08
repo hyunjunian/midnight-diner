@@ -108,7 +108,8 @@
     return `${begin} ${g.omakase?'주인장의 추천을 믿어 볼게요. ':''}${end}`;
   }
   function chooseRecipe(s,omakase) {
-    const ids=s.unlocked.filter(id=>recipes[id].level<=s.level),cycle=s.nightOrders.slice(Math.floor(s.arrived/3)*3);
+    const menuLevel=s.phase==='open'?Math.min(s.level,s.nightStart.level):s.level;
+    const ids=s.unlocked.filter(id=>recipes[id].level<=menuLevel),cycle=s.nightOrders.slice(Math.floor(s.arrived/3)*3);
     // A wave is booked as a group of three: no shared dish within that wave.
     const unique=ids.filter(id=>!cycle.includes(id));
     const counts=id=>s.nightOrders.filter(x=>x===id).length;
@@ -137,9 +138,9 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version:8,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    version:9,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
-    totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:2,miso:2,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
+    totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:3,miso:3,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
     unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [], special: 'onigiri',
     guests: [], arrived: 0, target: 9, nightRevenue: 0, nightTips: 0, nightCosts: 0, nightScores: [],
     event: 'none', eventChoice: null, nightStartRep: 12, lastResult: null,
@@ -157,9 +158,9 @@
     }
     if (!raw) return s;
     const v=JSON.parse(raw);
-    if(v&&[2,3,4,5,6,7].includes(v.version)&&v.inventory&&typeof v.inventory==='object'&&!Array.isArray(v.inventory))for(const id of Object.keys(C.ingredients))if(v.inventory[id]===undefined)v.inventory[id]=0;
+    if(v&&[2,3,4,5,6,7,8].includes(v.version)&&v.inventory&&typeof v.inventory==='object'&&!Array.isArray(v.inventory))for(const id of Object.keys(C.ingredients))if(v.inventory[id]===undefined)v.inventory[id]=0;
     const integer = (n, min = 0, max = 1e9) => Number.isSafeInteger(n) && n >= min && n <= max;
-    if (!v || ![2,3,4,5,6,7,8].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
+    if (!v || ![2,3,4,5,6,7,8,9].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
       !['prep', 'open', 'end'].includes(v.phase) || !integer(v.money) || !integer(v.reputation, 0, 100) ||
       !integer(v.totalServed) || !v.inventory || !Object.keys(ingredients).every(id => integer(v.inventory[id], 0, 999)) ||
       !Array.isArray(v.unlocked) || !['onigiri', 'tamago', 'tonjiru'].every(id => v.unlocked.includes(id)) ||
@@ -175,7 +176,7 @@
         ['seated','waiting','eating','paying','farewell','left'].includes(g.status) && integer(g.score, 0, 100) && (g.waitMs===undefined || (Number.isFinite(g.waitMs)&&g.waitMs>=0&&g.waitMs<=1e9))) ||
       new Set(v.guests.map(g => g.seat)).size !== v.guests.length ||
       new Set(v.guests.map(g => g.id)).size !== v.guests.length) throw new Error('Invalid save');
-    const restored = { ...s, ...v,version:8,stoveTutorialDone:typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
+    const restored = { ...s, ...v,version:9,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
     if (v.version === 2) {
       restored.xp = v.totalServed * 70;
       restored.satisfactionTotal = v.totalServed * 70;
@@ -216,14 +217,14 @@
     }else{
       const validBill=b=>b&&['score','base','tip','total','preparation','heat','waitPenalty'].every(k=>integer(b[k]))&&b.score<=100&&b.base+b.tip===b.total;
       if(!restored.guests.every(g=>(g.eatMs===undefined||integer(g.eatMs,0,1e9))&&(!['eating','paying'].includes(g.status)||validBill(g.bill))&&(!g.bill||validBill(g.bill))))throw new Error('Invalid meal bill');
-      if(v.version<8&&v.kitchen){v.kitchen={...v.kitchen,step:0,marks:[],stage:'room'};}
+      if(v.version<9&&v.kitchen){v.kitchen={...v.kitchen,step:0,marks:[],stage:'room'};}
       const k=v.kitchen;
       if(k!==null){
         const g=restored.guests.find(g=>g.id===k?.guest&&g.status==='waiting');
         if(!g||!['room','fridge','process','complete'].includes(k.stage)||!Array.isArray(k.selected)||new Set(k.selected).size!==k.selected.length||!k.selected.every(id=>Object.hasOwn(ingredients,id))||!Array.isArray(k.marks)||!k.marks.every(q=>Number.isFinite(q)&&q>=0&&q<=1)||!integer(k.step,0,Cooking.plan(g.recipe,recipes[g.recipe]).length)||k.marks.length!==k.step)throw new Error('Invalid kitchen progress');
         // An interrupted action restarts this step, not the whole recipe or order.
         const selected=k.selected.filter(id=>recipes[g.recipe].ingredients.includes(id));
-        if(v.version===8&&selected.length!==k.selected.length)throw new Error('Unrelated kitchen ingredients');
+        if(v.version===9&&selected.length!==k.selected.length)throw new Error('Unrelated kitchen ingredients');
         restored.kitchen={guest:k.guest,stage:k.stage,selected,step:k.step,marks:[...k.marks]};
       }
     }
@@ -263,6 +264,24 @@
     return g;
   }
   function buyPrice(s,id){return Math.round(ingredients[id].price*(s.upgrades.includes('fridge')?.9:1));}
+  // Forecast from a copy: looking at the shopping list never books real guests or spends cash.
+  function stockPlan(s,meals=9){
+    if(![3,9].includes(meals))return null;
+    const sim=JSON.parse(JSON.stringify(s));
+    if(sim.phase==='end')next(sim);
+    if(sim.phase==='prep')open(sim);
+    const orders=sim.guests.filter(g=>['seated','waiting'].includes(g.status)).map(g=>g.recipe).slice(0,meals);
+    while(orders.length<meals&&sim.arrived<sim.target){sim.guests=[];const g=arrive(sim);if(!g)break;orders.push(g.recipe);}
+    const needed={};for(const id of orders)for(const part of recipes[id].ingredients)needed[part]=(needed[part]||0)+1;
+    const lines=Object.entries(needed).filter(([id])=>ingredientAvailable(s,id)).map(([id,target])=>({id,target,owned:s.inventory[id],quantity:Math.min(999-s.inventory[id],Math.max(0,target-s.inventory[id])),price:buyPrice(s,id)})).sort((a,b)=>b.target-a.target);
+    return {meals:orders.length,orders,lines,units:lines.reduce((n,x)=>n+x.quantity,0),cost:lines.reduce((n,x)=>n+x.quantity*x.price,0)};
+  }
+  function restock(s,meals=9){
+    const plan=stockPlan(s,meals);if(!plan||!plan.units||s.money<plan.cost)return false;
+    s.money-=plan.cost;for(const line of plan.lines)s.inventory[line.id]+=line.quantity;
+    return plan;
+  }
+  function heatQuality(s,id,value){const spec=cookSpec(s,id);return Math.max(0,1-Math.abs(clamp(value,0,1)-spec.ideal)/spec.tolerance);}
   function buy(s, id) {
     if (!Object.hasOwn(ingredients, id)) return false;
     const item = ingredients[id];
@@ -383,7 +402,7 @@
     if (s.phase !== 'end') return false;
     s.night++; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();
