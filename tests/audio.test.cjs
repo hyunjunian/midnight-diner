@@ -15,3 +15,8 @@ test('thin liquid is brighter and more active than batter; paste has no watery p
 test('loop samples are longer than short repetitive foley and use varying random events',()=>{
  const a=A.render('boil',6.7,22050,101,true),b=A.render('boil',6.7,22050,102,true);assert.notDeepEqual(a,b);const quarters=[0,1,2,3].map(n=>metrics(a.slice(n*22050,(n+1)*22050)).rms);assert.ok(Math.max(...quarters)-Math.min(...quarters)>.0001);
 });
+test('shared sound balancing lifts cash to the cooking reference while retaining peaks and silence',()=>{
+ const rate=22050,active=a=>{const windows=[];for(let i=0;i<a.length;i+=Math.round(rate*.05)){const b=a.slice(i,i+Math.round(rate*.05)),r=metrics(b).rms;if(r>1e-5)windows.push(r);}windows.sort((a,b)=>a-b);return windows[Math.floor((windows.length-1)*.85)]||0;};
+ for(const kind of ['cash','complete','cut','rice-scoop','egg-crack','sizzle','boil','paste','pour','buy','place','report']){const a=A.render(kind,A.defaults[kind]||2,rate,481),before=Float32Array.from(a),gain=A.volumeGain([a],rate),out=A.balancedSamples([a],rate)[0];assert.ok(Math.abs(active(out)-.085)<.005,kind);assert.ok(metrics(out).peak<=.651,kind);assert.deepEqual(a,before,'measurement never mutates the source');assert.ok(out[0]===0);assert.ok(out.at(-1)===0);if(kind==='cash')assert.ok(gain>1.5,'cash is raised, not merely other sounds lowered');}
+ assert.equal(A.volumeGain([new Float32Array(rate)],rate),1);
+});

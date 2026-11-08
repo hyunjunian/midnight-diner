@@ -194,7 +194,7 @@
     const known=(memory.known||[]).filter(x=>guestFacts.includes(x));
     const reveal=choice.to==='intro'?['name','style']:choice.to==='day'?['role','bio']:choice.to==='about'?['role','bio','age']:[];
     const discovered=reveal.filter(x=>!known.includes(x));memory.known=[...new Set([...known,...reveal])];
-    g.chat={node:choice.to,reply,discovered};return true;
+    g.chat={node:choice.to,reply,discovered};if(['warm','quiet','order'].includes(choice.to))g.menuReadyAt=s.nightElapsedMs||0;return true;
   }
   function chooseRecipe(s,omakase) {
     const menuLevel=s.phase==='open'?Math.min(s.level,s.nightStart.level):s.level;
@@ -315,14 +315,19 @@
       const validBill=b=>b&&['score','base','tip','total','preparation','heat','waitPenalty'].every(k=>integer(b[k]))&&b.score<=100&&b.base+b.tip===b.total;
       if(!restored.guests.every(g=>(g.eatMs===undefined||integer(g.eatMs,0,1e9))&&(!['eating','paying'].includes(g.status)||validBill(g.bill))&&(!g.bill||validBill(g.bill))))throw new Error('Invalid meal bill');
       if(v.version<9&&v.kitchen){v.kitchen={...v.kitchen,step:0,marks:[],stage:'room'};}
-      const k=v.kitchen;
+      let k=v.kitchen;
       if(k!==null){
         const g=restored.guests.find(g=>g.id===k?.guest&&g.status==='waiting');
+        if(g&&k.sequenceVersion!==2&&Number.isSafeInteger(k.step)&&Array.isArray(k.marks)&&k.marks.length===k.step){
+          const old=Cooking.plan(g.recipe,recipes[g.recipe],true),lidIndex=old.findIndex(st=>st.id==='lid');
+          if(lidIndex>=0&&k.step>lidIndex){const marks=[...k.marks];marks.splice(lidIndex,1);k={...k,step:k.step-1,marks};}
+          k={...k,sequenceVersion:2};
+        }
         if(!g||!['room','fridge','process','complete'].includes(k.stage)||!Array.isArray(k.selected)||new Set(k.selected).size!==k.selected.length||!k.selected.every(id=>Object.hasOwn(ingredients,id))||!Array.isArray(k.marks)||!k.marks.every(q=>Number.isFinite(q)&&q>=0&&q<=1)||!integer(k.step,0,Cooking.plan(g.recipe,recipes[g.recipe]).length)||k.marks.length!==k.step)throw new Error('Invalid kitchen progress');
         // An interrupted action restarts this step, not the whole recipe or order.
         const selected=k.selected.filter(id=>recipes[g.recipe].ingredients.includes(id));
         if(v.version>=9&&selected.length!==k.selected.length)throw new Error('Unrelated kitchen ingredients');
-        if(k.heatValue!==undefined&&(!Number.isFinite(k.heatValue)||k.heatValue<0||k.heatValue>1))throw new Error('Invalid heat appearance');restored.kitchen={guest:k.guest,stage:k.stage,selected,step:k.step,marks:[...k.marks],...(k.heatValue!==undefined?{heatValue:k.heatValue}:{})};
+        if(k.heatValue!==undefined&&(!Number.isFinite(k.heatValue)||k.heatValue<0||k.heatValue>1))throw new Error('Invalid heat appearance');restored.kitchen={sequenceVersion:2,guest:k.guest,stage:k.stage,selected,step:k.step,marks:[...k.marks],...(k.heatValue!==undefined?{heatValue:k.heatValue}:{})};
       }
     }
     if(v.prepChoice!==undefined&&![null,3,9].includes(v.prepChoice))throw new Error('Invalid preparation choice');
@@ -332,6 +337,7 @@
     restored.nightReviews=v.nightReviews??v.nightScores.slice(-4).map((score,i)=>({guest:'오늘의 손님',person:null,dish:'오늘의 한 끼',score,text:reviewText({score,heat:100,waitPenalty:0},i)}));
     if(v.nightPurchases!==undefined&&!integer(v.nightPurchases))throw new Error('Invalid purchase ledger');
     restored.nightPurchases=v.nightPurchases??Math.max(0,restored.nightStart.money+restored.nightRevenue+restored.storyIncome-restored.storyCosts-(restored.nightCosts||0)-restored.money);
+    for(const g of restored.guests)g.menuReadyAt=Number.isFinite(g.menuReadyAt)&&g.menuReadyAt>=0&&g.menuReadyAt<=1e9+15000?g.menuReadyAt:0;
     // A corrupt optional conversation must not erase a valid older game or its money.
     for(const memory of Object.values(restored.customerBook))memory.known=Array.isArray(memory.known)?[...new Set(memory.known.filter(x=>guestFacts.includes(x)))]:[];
     for(const g of restored.guests){
@@ -365,7 +371,7 @@
     const p=person(visitor);
     const omakase=(visitor+s.night+s.arrived)%3===0,recipe=chooseRecipe(s,omakase);
     const lineKey=s.dialogueSerial++;s.nightOrders.push(recipe);s.recentOrders=[...s.recentOrders,recipe].slice(-36);
-    const g = { id: ++s.arrived, person: visitor, seat, recipe, omakase,lineKey,status:'seated',score:0,waitMs:0,eatMs:0,bill:null,paid:false };
+    const g = { id: ++s.arrived, person: visitor, seat, recipe, omakase,lineKey,status:'seated',menuReadyAt:(s.nightElapsedMs||0)+[0,8000,15000][seat],score:0,waitMs:0,eatMs:0,bill:null,paid:false };
     const memory = s.customerBook[visitor] || {visits:0,lastScore:0,lastVisitNight:0,dueNight:0,dueLevel:0,known:[]};
     if (memory.lastVisitNight !== s.night) memory.visits++;
     memory.lastVisitNight = s.night; s.customerBook[visitor] = memory; s.nightVisitors.push(visitor);
@@ -431,8 +437,9 @@
     if(s.kitchen?.guest===g.id)s.kitchen=null;
     s.lastResult=result;return result;
   }
+  function menuReady(s,g){return !!g&&(g.status!=='seated'||!Number.isFinite(g.menuReadyAt)||(s.nightElapsedMs||0)>=g.menuReadyAt);}
   function acceptOrder(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='seated');if(s.phase!=='open'||!g)return false;g.status='waiting';return true;}
-  function beginCooking(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='waiting');if(s.phase!=='open'||!g)return false;if(s.kitchen)return s.kitchen.guest===id;s.kitchen={guest:id,stage:'room',selected:[],step:0,marks:[]};return true;}
+  function beginCooking(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='waiting');if(s.phase!=='open'||!g)return false;if(s.kitchen)return s.kitchen.guest===id;s.kitchen={sequenceVersion:2,guest:id,stage:'room',selected:[],step:0,marks:[]};return true;}
   function selectIngredient(s,id){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest);if(!k||!g||!recipes[g.recipe].ingredients.includes(id)||k.step||!ingredientAvailable(s,id)||s.inventory[id]<1)return false;k.selected=k.selected.includes(id)?k.selected.filter(x=>x!==id):[...k.selected,id];return true;}
   function readyIngredients(s){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest&&g.status==='waiting');return !!g&&k.selected.length===recipes[g.recipe].ingredients.length&&recipes[g.recipe].ingredients.every(id=>k.selected.includes(id)&&s.inventory[id]>0)&&k.selected.every(id=>ingredientAvailable(s,id)&&s.inventory[id]>0);}
   function prepareIngredients(s){if(!s.kitchen||s.kitchen.step||!readyIngredients(s))return false;s.kitchen.stage='process';return true;}
@@ -514,7 +521,7 @@
     if (s.phase !== 'end') return false;
     s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();

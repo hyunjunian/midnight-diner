@@ -35,12 +35,12 @@ test('the pilot onigiri wrap preserves raw/scorched rice in every action frame w
  }
  for(const id of R.imagePilot){const p=R.plan(id,E.recipes[id]),at=p.findIndex(x=>x.id==='heat');assert.deepEqual(p.slice(at+1).map(x=>x.id),id==='onigiri'?['wrap','assemble']:['assemble']);}
 });
-test('night lighting routes exactly the five approved dishes, preserving all other recipe assets',()=>{
- assert.equal(Object.keys(R.nightSceneFiles).length,15);
+test('updated cooking artwork routes exactly the five approved dishes, preserving all other recipe assets',()=>{
+ assert.equal(Object.keys(R.nightSceneFiles).length,16);
  for(const id of Object.keys(E.recipes))for(const [source,target]of Object.entries(R.nightSceneFiles)){
   assert.ok(fs.existsSync(path.join(__dirname,'../docs/assets',target+'.webp')),target);
   assert.equal(R.nightImage(id,source),R.imagePilot.includes(id)?target:source,id+' '+source);
  }
  assert.equal(R.nightImage('hiyayakko',R.prepImage('hiyayakko','scallion')),'prep-night-v22-scallion');
- assert.equal(R.nightImage('onigiri','core-portion-v19'),'core-portion-v19');
+ assert.equal(R.nightImage('onigiri','core-portion-v19'),'core-portion-v27');
 });

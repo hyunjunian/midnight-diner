@@ -70,9 +70,10 @@
       el.classList.toggle('disappointed',g.status==='eating' && g.score<60);
       el.querySelector('.customer-avatar').disabled=false;el.querySelector('.customer-avatar').setAttribute('aria-label',`${profile.name} 님과 대화하기`);el.classList.toggle('dining',g.status==='eating');
       const status={seated:'주문 준비 완료',waiting:'요리 기다려요',eating:'식사 중',paying:'계산할게요',farewell:'잘 먹었어요'},name=el.querySelector('.customer-name');
-      const serviceLabel=g.status==='waiting'&&state.kitchen?.guest===g.id&&state.kitchen.stage==='complete'?'음식 나왔어요':status[g.status];
-      name.innerHTML=`${g.status==='seated'?'<span class="guest-arriving-label" aria-hidden="true">메뉴 고르는 중</span>':''}<span class="customer-name-text">${serviceLabel}</span>`;name.hidden=false;
-      name.classList.toggle('order-ready',g.status==='seated');name.setAttribute('aria-label',`${profile.name} · ${serviceLabel}`);
+      const ready=E.menuReady(state,g);
+      const serviceLabel=g.status==='seated'&&!ready?'메뉴 고르는 중':g.status==='waiting'&&state.kitchen?.guest===g.id&&state.kitchen.stage==='complete'?'음식 나왔어요':status[g.status];
+      name.innerHTML=`<span class="customer-name-text">${serviceLabel}</span>`;name.hidden=false;
+      name.dataset.menuReady=String(ready);name.classList.toggle('order-ready',g.status==='seated'&&ready);name.setAttribute('aria-label',`${profile.name} · ${serviceLabel}`);
       el.querySelector('.customer-avatar').setAttribute('aria-label',`${profile.name}과 이야기 나누기`);
       const served=el.querySelector('.served-dish');served.classList.toggle('uncooked-dish',g.bill?.appearance==='raw'||E.Cooking.family(g.recipe,E.recipes[g.recipe])==='cold');served.classList.toggle('overdone-dish',['dry','burnt'].includes(g.bill?.appearance));const hasDish=['eating','paying','farewell'].includes(g.status);served.hidden=!hasDish;
       if(hasDish&&served.dataset.recipe!==g.recipe){served.innerHTML=food(g.recipe,false,g.bill?.appearance||'good')+'<span class="dish-steam"></span><span class="eaten-dish">'+food(g.recipe,true)+'</span>';served.dataset.recipe=g.recipe;served.classList.add('dish-arriving');}
@@ -376,7 +377,7 @@
       if(state.phase==='open'&&!Scene.isPlacing()){
         state.nightElapsedMs=Math.min(1e9,Math.round((state.nightElapsedMs||0)+dt));
         if(now-lastClock>250){renderClock();lastClock=now;}
-        for(const g of state.guests){if(g.status==='waiting'&&!anySheetOpen()){g.waitMs=(g.waitMs||0)+dt;const meter=document.querySelector(`[data-customer="${g.id}"] .wait-meter i`);if(meter)meter.style.width=`${E.patience(g,state)*100}%`;}
+        for(const g of state.guests){if(g.status==='seated'&&document.querySelector(`[data-customer="${g.id}"] .customer-name`)?.dataset.menuReady!==String(E.menuReady(state,g))){renderScene();renderTalk();save();}if(g.status==='waiting'&&!anySheetOpen()){g.waitMs=(g.waitMs||0)+dt;const meter=document.querySelector(`[data-customer="${g.id}"] .wait-meter i`);if(meter)meter.style.width=`${E.patience(g,state)*100}%`;}
           if(g.status==='eating'){g.eatMs=Math.round((g.eatMs||0)+dt);if(g.eatMs>=9000){E.finishEating(state,g.id);render();}}
         }
       }
