@@ -59,13 +59,13 @@
     return {...base,name:`${familyNames[Math.floor(id/people.length)%familyNames.length]} ${base.name}`,bio:base.bio};
   }
   const upgrades = {
-    lantern: { name: '호박빛 종이등', icon: '🏮', price: 1000, level: 1, area: 'inside', description: '기존 중앙등을 손질해 빛을 더 포근하게 해요. 요리 만족도 +3.' },
+    lantern: { name: '호박빛 종이등', icon: '🏮', price: 1000, level: 1, area: 'inside', description: '텅 빈 중앙 천장에 호박빛 종이등을 달아요. 요리 만족도 +3.' },
     plants: { name: '문 앞 화분', icon: '🪴', price: 900, level: 1, area: 'outside', description: '입구에 초록 화분을 놓아요. 첫 손님 입소문 +2.' },
     ceramics: { name: '손으로 빚은 그릇', icon: '🏺', price: 1600, level: 2, area: 'inside', description: '선반에 도자기 컬렉션이 놓여요.' },
     noren: { name: '쪽빛 노렌', icon: '🎐', price: 1800, level: 2, area: 'outside', description: '가게 입구를 쪽빛 천으로 꾸며요.' },
     bonsai: { name: '작은 분재', icon: '🌳', price: 2400, level: 3, area: 'inside', description: '카운터 끝에 작은 정원을 놓아요.' },
     bench: { name: '골목의 나무 벤치', icon: '🪑', price: 2500, level: 3, area: 'outside', description: '가게 앞에 기다리는 이들을 위한 자리를 만들어요.' },
-    shelves: { name: '오래된 찻장', icon: '🪵', price: 3200, level: 4, area: 'inside', description: '벽 한쪽에 나무 찻장을 들여놓아요.' },
+    shelves: { name: '오래된 찻장', icon: '🪵', price: 3200, level: 4, area: 'inside', description: '오른쪽 낡은 찻장을 복원하고 찻잔과 차통을 정돈해요.' },
     sign: { name: '골목의 간판', icon: '✨', price: 4000, level: 5, area: 'outside', description: '따뜻하게 빛나는 전용 간판을 달아요.' },
   };
   Object.assign(upgrades,{
@@ -89,9 +89,18 @@
   ];
   upgrades.fridge={name:'새 단풍빛 냉장고',price:18000,level:20,area:'inside',description:'주방 왼쪽의 낡은 냉장고를 같은 자리에 깨끗한 아이보리 냉장고로 교체해요. 재료 구매가 10% 할인돼요.'};
   for(let level=11;level<=34;level++)levels.push({level,xp:26000+(level-10)*4200+(level-10)**2*180,reputation:Math.min(100,95+Math.floor((level-10)/2)),satisfaction:Math.min(94,88+Math.floor((level-10)/4)),name:level===34?'백 가지 밤의 주인장':level===20?'골목을 지키는 오래된 부엌':`깊어지는 밤의 부엌 ${level-10}`});
+  const decorPoints={lantern:6,plants:4,ceramics:6,noren:5,bonsai:8,bench:6,shelves:10,sign:8,clock:6,ikebana:8,andon:8,sudare:8,plaque:10,fridge:15};
+  for(const[id,u]of Object.entries(upgrades))u.atmosphere=decorPoints[id];
+  const atmosphereTargets=[0,0,4,10,18,24,32,40,48,56];
+  for(const l of levels)l.atmosphere=atmosphereTargets[l.level-1]??Math.min(100,56+(l.level-10)*3);
+  function atmosphere(s){return [...new Set(s.upgrades)].reduce((n,id)=>n+(upgrades[id]?.atmosphere||0),0);}
+  function reviewText(bill,seed=0){
+    const lines=bill.waitPenalty>0?['조금 기다렸지만 따뜻하게 먹고 가요.','다음에는 조금 더 빨리 만나면 좋겠어요.','기다림이 짧아지면 더 자주 오고 싶어요.','다음 한 끼는 더 여유 있게 먹고 싶네요.']:bill.heat<70?['음식이 조금 더 알맞게 익으면 좋겠어요.','익힘을 조금 더 신경 써 주시면 좋겠어요.','다음에는 더 촉촉한 한 끼를 기대할게요.','따뜻함과 익힘이 조금 아쉬웠어요.']:bill.score>=90?['마지막 한 입까지 맛있었어요. 또 들를게요!','정성이 느껴지는 한 끼였어요. 잘 먹었습니다.','이 골목에 아껴 둘 식당이 생겼네요.','오늘 하루가 이 한 끼로 따뜻해졌어요.']:bill.score>=70?['든든하게 잘 먹었어요. 다음 한 끼도 기대해요.','음식이 조금 더 맛있어지면 더 좋겠어요.','따뜻한 한 끼였어요. 조금만 더 섬세하면 좋겠네요.','편안히 먹고 쉬어 가요. 다음에도 들를게요.']:['오늘은 제 입맛과 조금 달랐어요.','다음에는 더 맛있는 한 끼를 기대할게요.','음식에 조금만 더 신경 써 주시면 좋겠어요.','맛과 익힘이 조금 아쉬웠어요.'];
+    return lines[Math.abs(seed)%lines.length];
+  }
   function satisfaction(s) { return s.totalServed ? Math.round(s.satisfactionTotal / s.totalServed) : 0; }
   function progress(s) {
-    for (const l of levels) if (s.xp >= l.xp && s.reputation >= l.reputation && satisfaction(s) >= l.satisfaction) s.level = Math.max(s.level, l.level);
+    for (const l of levels) if (s.xp >= l.xp && s.reputation >= l.reputation && satisfaction(s) >= l.satisfaction && atmosphere(s)>=l.atmosphere) s.level = Math.max(s.level, l.level);
     s.unlocked=[...new Set([...s.unlocked,...Object.keys(recipes).filter(id=>recipes[id].level<=s.level)])];
     return s.level;
   }
@@ -127,7 +136,7 @@
   function report(s) {
     const start = s.nightStart;
     const next = levels.find(l => l.level > s.level);
-    return { revenue: s.nightRevenue, tips: s.nightTips, expenses:s.nightCosts||0,storyIncome:s.storyIncome||0,storyCosts:s.storyCosts||0, money: s.money, net: s.money - start.money,
+    return { atmosphere:atmosphere(s),atmosphereDelta:atmosphere(s)-(start.atmosphere||0),reviews:(s.nightReviews||[]).slice(-4),purchases:s.nightPurchases||0,revenue: s.nightRevenue, tips: s.nightTips, expenses:s.nightCosts||0,storyIncome:s.storyIncome||0,storyCosts:s.storyCosts||0, money: s.money, net: s.money - start.money,
       reputation: s.reputation, reputationDelta: s.reputation - start.reputation,
       satisfaction: satisfaction(s), satisfactionDelta: satisfaction(s) - start.satisfaction,
       average: Math.round(s.nightScores.reduce((a,b)=>a+b,0) / Math.max(1,s.nightScores.length)),
@@ -138,8 +147,8 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version:9,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
-    nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
+    version:10,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1,atmosphere:0 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
     totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:3,miso:3,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
     unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [], special: 'onigiri',
     guests: [], arrived: 0, target: 9, nightRevenue: 0, nightTips: 0, nightCosts: 0, nightScores: [],
@@ -158,9 +167,9 @@
     }
     if (!raw) return s;
     const v=JSON.parse(raw);
-    if(v&&[2,3,4,5,6,7,8].includes(v.version)&&v.inventory&&typeof v.inventory==='object'&&!Array.isArray(v.inventory))for(const id of Object.keys(C.ingredients))if(v.inventory[id]===undefined)v.inventory[id]=0;
+    if(v&&[2,3,4,5,6,7,8,9].includes(v.version)&&v.inventory&&typeof v.inventory==='object'&&!Array.isArray(v.inventory))for(const id of Object.keys(C.ingredients))if(v.inventory[id]===undefined)v.inventory[id]=0;
     const integer = (n, min = 0, max = 1e9) => Number.isSafeInteger(n) && n >= min && n <= max;
-    if (!v || ![2,3,4,5,6,7,8,9].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
+    if (!v || ![2,3,4,5,6,7,8,9,10].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
       !['prep', 'open', 'end'].includes(v.phase) || !integer(v.money) || !integer(v.reputation, 0, 100) ||
       !integer(v.totalServed) || !v.inventory || !Object.keys(ingredients).every(id => integer(v.inventory[id], 0, 999)) ||
       !Array.isArray(v.unlocked) || !['onigiri', 'tamago', 'tonjiru'].every(id => v.unlocked.includes(id)) ||
@@ -176,7 +185,7 @@
         ['seated','waiting','eating','paying','farewell','left'].includes(g.status) && integer(g.score, 0, 100) && (g.waitMs===undefined || (Number.isFinite(g.waitMs)&&g.waitMs>=0&&g.waitMs<=1e9))) ||
       new Set(v.guests.map(g => g.seat)).size !== v.guests.length ||
       new Set(v.guests.map(g => g.id)).size !== v.guests.length) throw new Error('Invalid save');
-    const restored = { ...s, ...v,version:9,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
+    const restored = { ...s, ...v,version:10,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
     if (v.version === 2) {
       restored.xp = v.totalServed * 70;
       restored.satisfactionTotal = v.totalServed * 70;
@@ -224,10 +233,17 @@
         if(!g||!['room','fridge','process','complete'].includes(k.stage)||!Array.isArray(k.selected)||new Set(k.selected).size!==k.selected.length||!k.selected.every(id=>Object.hasOwn(ingredients,id))||!Array.isArray(k.marks)||!k.marks.every(q=>Number.isFinite(q)&&q>=0&&q<=1)||!integer(k.step,0,Cooking.plan(g.recipe,recipes[g.recipe]).length)||k.marks.length!==k.step)throw new Error('Invalid kitchen progress');
         // An interrupted action restarts this step, not the whole recipe or order.
         const selected=k.selected.filter(id=>recipes[g.recipe].ingredients.includes(id));
-        if(v.version===9&&selected.length!==k.selected.length)throw new Error('Unrelated kitchen ingredients');
+        if(v.version>=9&&selected.length!==k.selected.length)throw new Error('Unrelated kitchen ingredients');
         restored.kitchen={guest:k.guest,stage:k.stage,selected,step:k.step,marks:[...k.marks]};
       }
     }
+    if(v.prepChoice!==undefined&&![null,3,9].includes(v.prepChoice))throw new Error('Invalid preparation choice');
+    restored.prepChoice=v.prepChoice??null;
+    restored.nightStart={...restored.nightStart,atmosphere:integer(v.nightStart?.atmosphere)?v.nightStart.atmosphere:atmosphere(restored)};
+    if(v.nightReviews!==undefined&&(!Array.isArray(v.nightReviews)||v.nightReviews.length>v.nightScores.length||v.nightReviews.length>9||!v.nightReviews.every(x=>x&&typeof x.guest==='string'&&x.guest.length<=50&&typeof x.dish==='string'&&x.dish.length<=100&&typeof x.text==='string'&&x.text.length<=180&&integer(x.score,0,100)&&(x.person===null||integer(x.person,0,1000000)))))throw new Error('Invalid nightly reviews');
+    restored.nightReviews=v.nightReviews??v.nightScores.slice(-4).map((score,i)=>({guest:'오늘의 손님',person:null,dish:'오늘의 한 끼',score,text:reviewText({score,heat:100,waitPenalty:0},i)}));
+    if(v.nightPurchases!==undefined&&!integer(v.nightPurchases))throw new Error('Invalid purchase ledger');
+    restored.nightPurchases=v.nightPurchases??Math.max(0,restored.nightStart.money+restored.nightRevenue+restored.storyIncome-restored.storyCosts-(restored.nightCosts||0)-restored.money);
     progress(restored);return restored;
 
 
@@ -235,8 +251,8 @@
   function open(s) {
     if (s.phase !== 'prep') return false;
     progress(s);
-    Object.assign(s, {kitchen:null,storyRun:null,nightOrders:[],nightNews:[],storyIncome:0,storyCosts:0,phase: 'open', guests: [], arrived: 0, target: 9, nightVisitors: [],
-      nightStart: {money:s.money, reputation:s.reputation, satisfaction:satisfaction(s), xp:s.xp, level:s.level},
+    Object.assign(s, {prepChoice:null,nightReviews:[],nightPurchases:0,kitchen:null,storyRun:null,nightOrders:[],nightNews:[],storyIncome:0,storyCosts:0,phase: 'open', guests: [], arrived: 0, target: 9, nightVisitors: [],
+      nightStart: {money:s.money, reputation:s.reputation, satisfaction:satisfaction(s), xp:s.xp, level:s.level,atmosphere:atmosphere(s)},
       nightRevenue: 0, nightTips: 0, nightCosts: 0, nightScores: [], event: 'none', eventChoice: null, nightStartRep: s.reputation, lastResult: null });
     applyFollowups(s);return true;
   }
@@ -278,15 +294,14 @@
   }
   function restock(s,meals=9){
     const plan=stockPlan(s,meals);if(!plan||!plan.units||s.money<plan.cost)return false;
-    s.money-=plan.cost;for(const line of plan.lines)s.inventory[line.id]+=line.quantity;
+    s.money-=plan.cost;if(s.phase!=='prep')s.nightPurchases=(s.nightPurchases||0)+plan.cost;s.prepChoice=meals;for(const line of plan.lines)s.inventory[line.id]+=line.quantity;
     return plan;
   }
   function heatQuality(s,id,value){const spec=cookSpec(s,id);return Math.max(0,1-Math.abs(clamp(value,0,1)-spec.ideal)/spec.tolerance);}
-  function buy(s, id) {
-    if (!Object.hasOwn(ingredients, id)) return false;
-    const item = ingredients[id];
-    if (!item || !ingredientAvailable(s,id) || s.money < buyPrice(s,id) || s.inventory[id] >= 999) return false;
-    s.money -= buyPrice(s,id); s.inventory[id]++; return true;
+  function buy(s,id,quantity=1){
+    if(!Object.hasOwn(ingredients,id)||!Number.isSafeInteger(quantity)||quantity<1||quantity>999||!ingredientAvailable(s,id)||s.inventory[id]+quantity>999)return false;
+    const total=buyPrice(s,id)*quantity;if(s.money<total)return false;
+    s.money-=total;s.inventory[id]+=quantity;if(s.phase!=='prep')s.nightPurchases=(s.nightPurchases||0)+total;return true;
   }
   function unlock(s, id) {
     if (!Object.hasOwn(recipes, id)) return false;
@@ -298,7 +313,7 @@
     if (!Object.hasOwn(upgrades, id)) return false;
     const u = upgrades[id];
     if (!u || s.upgrades.includes(id) || s.money < u.price || s.level < u.level) return false;
-    s.money -= u.price; s.upgrades.push(id); return true;
+    s.money -= u.price;if(s.phase!=='prep')s.nightPurchases=(s.nightPurchases||0)+u.price;s.upgrades.push(id);progress(s);return true;
   }
   function serve(s, guestId, selected, timing, preparation=1) {
     const g = s.guests.find(g => g.id === guestId && g.status === 'waiting');
@@ -333,7 +348,7 @@
   }
   function finishEating(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='eating');if(!g)return false;g.status='paying';return true;}
   function collect(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='paying'&&!g.paid);if(s.phase!=='open'||!g||!g.bill)return null;const r=g.bill;
-    s.money+=r.total;s.nightRevenue+=r.total;s.nightTips+=r.tip;s.totalServed++;s.satisfactionTotal+=r.score;s.xp+=r.score;s.nightScores.push(r.score);
+    s.money+=r.total;s.nightRevenue+=r.total;s.nightTips+=r.tip;s.totalServed++;s.satisfactionTotal+=r.score;s.xp+=r.score;s.nightScores.push(r.score);s.nightReviews.push({guest:person(g.person).name,person:g.person,dish:recipes[g.recipe].name,score:r.score,text:reviewText(r,g.person+s.night)});
     s.customerBook[g.person].lastScore=r.score;s.reputation=clamp(s.reputation+(r.score>=85?4:r.score>=65?2:r.score>=40?-1:-4),0,100);progress(s);s.customerBook[g.person].dueLevel=s.level+2;g.paid=true;g.status='farewell';return r;
   }
   function depart(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='farewell');if(!g)return false;g.status='left';return true;}
@@ -400,9 +415,9 @@
   function close(s) { if (!canClose(s)) return false; s.nightCosts=Math.min(s.money,650+s.nightStart.level*250);s.money-=s.nightCosts;s.phase = 'end'; return true; }
   function next(s) {
     if (s.phase !== 'end') return false;
-    s.night++; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
+    s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();

@@ -27,6 +27,7 @@
   <script src="./rain.js" defer></script>
   <script src="./scene.js" defer></script>
   <script src="./gestures.js" defer></script>
+  <script src="./audio.js" defer></script>
   <script src="./kitchen.js" defer></script>
   <script src="./game.js" defer></script>
   <script src="./pwa.js" defer></script>
@@ -48,8 +49,8 @@
     <section class="restaurant" aria-label="식당과 손님">
       <div id="scene" class="scene">
         <div id="scene-world" class="world">
-          <img class="interior-art" src="./assets/restaurant-counter.webp" alt="플레이어가 바 안쪽에서 손님을 마주 보는 심야식당">
-          <img class="interior-closed" src="./assets/restaurant-closed.webp" alt="불을 켜기 전의 조용한 식당" aria-hidden="true"><div class="exterior-art"></div><canvas id="scene-rain" aria-hidden="true"></canvas><div id="decorations"></div><img class="counter-front" src="./assets/restaurant-counter.webp" alt="" aria-hidden="true">
+          <img class="interior-art" src="./assets/room-bare-v19.webp" alt="플레이어가 바 안쪽에서 손님을 마주 보는 심야식당">
+          <img class="interior-closed" src="./assets/room-closed-v19.webp" alt="불을 켜기 전의 조용한 식당" aria-hidden="true"><div class="exterior-art"></div><canvas id="scene-rain" aria-hidden="true"></canvas><div id="decorations"></div><img class="counter-front" src="./assets/room-bare-v19.webp" alt="" aria-hidden="true">
           <div class="steam steam-one"></div><div class="steam steam-two"></div>
           <div id="customers" class="customers"></div>
         </div>
@@ -91,6 +92,7 @@
     <header class="sheet-header"><h2 id="settings-title">잠시 쉬어 가기</h2><button data-close="settings-dialog" class="round-button" aria-label="설정 닫기">×</button></header>
     <div class="sheet-body settings-list">
       <button id="replay">인트로 다시 보기 <span>▶</span></button>
+      <button id="sound-effects" aria-pressed="true">효과음 · 켜짐 ♫</button>
       <button id="fullscreen">전체 화면 <span>⛶</span></button>
       <button id="reset">처음부터 시작 <span>↺</span></button>
       <button id="update-app" hidden>새 버전으로 다시 열기 <span>↻</span></button>
