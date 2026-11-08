@@ -17,9 +17,10 @@
     if(/tamago|omelette/.test(id)&&!r.ingredients.includes('rice'))return'egg';
     return r.ingredients.includes('rice')?'ricebowl':'pan';
   }
+  function heatMode(id,r){const f=family(id,r);if(f==='cold'||id==='shio_onigiri')return 'none';return ['soup','noodle'].includes(f)||/chazuke|curry|kamameshi|salmonbowl|kinoko_rice|oyster_rice|gyudon|oyakodon|kakuni|chawan|stew|simmer|nikujaga/.test(id)?'boil':'sizzle';}
   function cookPlan(id,r){
     const f=family(id,r),rice=r.ingredients.includes('rice')?[lid(),portion()]:[],assemble=()=>step('assemble','서빙 접시에 옮겨 담기','조리된 음식을 점선을 따라 서빙 그릇에 담아 주세요.','board','plate');
-    if(f==='riceball')return [...rice,step('shape','세모로 빚기','흩어진 밥을 모아 동그랗게, 다시 세모로 빚어 주세요.','board','shape',3),...(id==='shio_onigiri'?[]:[{...heat('pan','앞뒤로 굽기'),flip:true}]),...(r.ingredients.includes('nori')?[step('wrap','김 두르기','왼쪽 김을 잡아 주먹밥 둘레에 감싸 주세요.','board','nori')]:[]),assemble()];
+    if(f==='riceball')return [...rice,step('shape','세모로 빚기','흩어진 밥을 모아 동그랗게, 다시 세모로 빚어 주세요.','board','shape',3),...(id==='shio_onigiri'?[]:[{...heat('pan','앞뒤로 굽기'),flip:true}]),...(r.ingredients.includes('nori')?[step('wrap','김 두르기','좁은 김을 앞면 가운데로 가져와 아래에서 위로 세로로 붙여 주세요.','board','nori')]:[]),assemble()];
     if(f==='egg')return [step('beat','달걀 풀기','그릇 안에서 원을 그리며 달걀을 저으세요.','board','egg-bowl',3),step('pour','달걀물 붓기','그릇을 기울여 팬에 달걀물을 부어 주세요.','stove','egg-pan'),{...heat('egg-pan','익히고 말기'),flip:true},assemble()];
     if(f==='cold')return [...rice,assemble()];
     const broth=f==='soup'? [step('broth',r.ingredients.includes('dashi')?'국물 붓기':'냄비에 물 붓기',r.ingredients.includes('dashi')?'계량한 다시를 냄비에 부어 주세요.':'냄비에 물을 부어 조리할 바탕을 만들어요.','stove','soup',2)]:[];
@@ -32,5 +33,6 @@
   function plan(id,r){return [...preparations(r),...cookPlan(id,r).filter(st=>st.id!=='cut'&&st.id!=='season'&&st.id!=='oil')];}
   const catalog=typeof module!=='undefined'?require('./catalog.js'):window.MidnightCatalog;
   const heated=Object.keys(catalog.recipes).filter(id=>family(id,catalog.recipes[id])!=='cold'&&id!=='shio_onigiri');
-  const api={heated,family,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
+  const imagePilot=Object.freeze(['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);
+  const api={imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
 })();

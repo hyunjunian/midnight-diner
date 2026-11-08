@@ -58,23 +58,7 @@
     if(id<people.length)return base;
     return {...base,name:`${familyNames[Math.floor(id/people.length)%familyNames.length]} ${base.name}`,bio:base.bio};
   }
-  const upgrades = {
-    lantern: { name: '호박빛 종이등', icon: '🏮', price: 1000, level: 1, area: 'inside', description: '텅 빈 중앙 천장에 호박빛 종이등을 달아요. 요리 만족도 +3.' },
-    plants: { name: '문 앞 화분', icon: '🪴', price: 900, level: 1, area: 'outside', description: '입구에 초록 화분을 놓아요. 첫 손님 입소문 +2.' },
-    ceramics: { name: '손으로 빚은 그릇', icon: '🏺', price: 1600, level: 2, area: 'inside', description: '선반에 도자기 컬렉션이 놓여요.' },
-    noren: { name: '쪽빛 노렌', icon: '🎐', price: 1800, level: 2, area: 'outside', description: '가게 입구를 쪽빛 천으로 꾸며요.' },
-    bonsai: { name: '작은 분재', icon: '🌳', price: 2400, level: 3, area: 'inside', description: '카운터 끝에 작은 정원을 놓아요.' },
-    bench: { name: '골목의 나무 벤치', icon: '🪑', price: 2500, level: 3, area: 'outside', description: '가게 앞에 기다리는 이들을 위한 자리를 만들어요.' },
-    shelves: { name: '오래된 찻장', icon: '🪵', price: 3200, level: 4, area: 'inside', description: '오른쪽 낡은 찻장을 복원하고 찻잔과 차통을 정돈해요.' },
-    sign: { name: '골목의 간판', icon: '✨', price: 4000, level: 5, area: 'outside', description: '따뜻하게 빛나는 전용 간판을 달아요.' },
-  };
-  Object.assign(upgrades,{
-    clock:{name:'오래된 벽시계',price:4200,level:6,area:'inside',description:'왼쪽 벽에 나무와 황동으로 만든 시계를 걸어요.'},
-    ikebana:{name:'계절의 꽃가지',price:4800,level:7,area:'inside',description:'카운터 끝 도자기 화병에 계절의 가지를 꽂아요.'},
-    andon:{name:'문 앞 안돈',price:5500,level:8,area:'outside',description:'입구 바닥에 따뜻한 나무 등불을 놓아요.'},
-    sudare:{name:'대나무 발',price:6200,level:9,area:'inside',description:'창 한쪽에 대나무 발을 내려 여름밤의 온기를 더해요.'},
-    plaque:{name:'달빛 문패',price:7200,level:10,area:'outside',description:'입구 옆에 황동 달 장식이 박힌 나무 문패를 달아요.'}
-  });
+  const F=typeof module!=='undefined'?require('./furnishings.js'):window.MidnightFurnishings,upgrades=F.upgrades;
   const levels=[
     {level:1,xp:0,reputation:0,satisfaction:0,name:'골목의 작은 불빛'},
     {level:2,xp:450,reputation:25,satisfaction:65,name:'다시 찾는 한 끼'},
@@ -87,13 +71,13 @@
     {level:9,xp:20500,reputation:90,satisfaction:86,name:'밤을 잇는 식탁'},
     {level:10,xp:26000,reputation:95,satisfaction:88,name:'손맛이 깊어지는 식당'}
   ];
-  upgrades.fridge={name:'새 단풍빛 냉장고',price:18000,level:20,area:'inside',description:'주방 왼쪽의 낡은 냉장고를 같은 자리에 깨끗한 아이보리 냉장고로 교체해요. 재료 구매가 10% 할인돼요.'};
   for(let level=11;level<=34;level++)levels.push({level,xp:26000+(level-10)*4200+(level-10)**2*180,reputation:Math.min(100,95+Math.floor((level-10)/2)),satisfaction:Math.min(94,88+Math.floor((level-10)/4)),name:level===34?'백 가지 밤의 주인장':level===20?'골목을 지키는 오래된 부엌':`깊어지는 밤의 부엌 ${level-10}`});
-  const decorPoints={lantern:6,plants:4,ceramics:6,noren:5,bonsai:8,bench:6,shelves:10,sign:8,clock:6,ikebana:8,andon:8,sudare:8,plaque:10,fridge:15};
-  for(const[id,u]of Object.entries(upgrades))u.atmosphere=decorPoints[id];
   const atmosphereTargets=[0,0,4,10,18,24,32,40,48,56];
   for(const l of levels)l.atmosphere=atmosphereTargets[l.level-1]??Math.min(100,56+(l.level-10)*3);
-  function atmosphere(s){return [...new Set(s.upgrades)].reduce((n,id)=>n+(upgrades[id]?.atmosphere||0),0);}
+  function atmosphere(s){return F.activeItems(s).reduce((n,id)=>n+upgrades[id].atmosphere*F.count(s,id),0);}
+  const hasUpgrade=(s,slot)=>!!F.activeId(s,slot);
+  function heatLook(s,id,value){if(!Cooking.heated.includes(id))return 'good';const spec=cookSpec(s,id);return value<spec.ideal-spec.band/2?'raw':value>Math.min(.94,spec.ideal+spec.band*2)?'burnt':value>spec.ideal+spec.band/2?'dry':'good';}
+  function kitchenLook(s){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest);if(!g||!k)return 'good';const hi=Cooking.plan(g.recipe,recipes[g.recipe]).findIndex(st=>st.id==='heat');return hi>=0&&k.step>hi?heatLook(s,g.recipe,k.heatValue??cookSpec(s,g.recipe).ideal+(1-k.marks[hi])*cookSpec(s,g.recipe).tolerance):'good';}
   function reviewText(bill,seed=0){
     const lines=bill.waitPenalty>0?['조금 기다렸지만 따뜻하게 먹고 가요.','다음에는 조금 더 빨리 만나면 좋겠어요.','기다림이 짧아지면 더 자주 오고 싶어요.','다음 한 끼는 더 여유 있게 먹고 싶네요.']:bill.heat<70?['음식이 조금 더 알맞게 익으면 좋겠어요.','익힘을 조금 더 신경 써 주시면 좋겠어요.','다음에는 더 촉촉한 한 끼를 기대할게요.','따뜻함과 익힘이 조금 아쉬웠어요.']:bill.score>=90?['마지막 한 입까지 맛있었어요. 또 들를게요!','정성이 느껴지는 한 끼였어요. 잘 먹었습니다.','이 골목에 아껴 둘 식당이 생겼네요.','오늘 하루가 이 한 끼로 따뜻해졌어요.']:bill.score>=70?['든든하게 잘 먹었어요. 다음 한 끼도 기대해요.','음식이 조금 더 맛있어지면 더 좋겠어요.','따뜻한 한 끼였어요. 조금만 더 섬세하면 좋겠네요.','편안히 먹고 쉬어 가요. 다음에도 들를게요.']:['오늘은 제 입맛과 조금 달랐어요.','다음에는 더 맛있는 한 끼를 기대할게요.','음식에 조금만 더 신경 써 주시면 좋겠어요.','맛과 익힘이 조금 아쉬웠어요.'];
     return lines[Math.abs(seed)%lines.length];
@@ -104,11 +88,11 @@
     s.unlocked=[...new Set([...s.unlocked,...Object.keys(recipes).filter(id=>recipes[id].level<=s.level)])];
     return s.level;
   }
-  function patience(g) {return Math.max(0,1-(g.waitMs||0)/(105000+(g.person%4)*15000));}
+  function patience(g,s) {return Math.max(0,1-(g.waitMs||0)/(105000+(g.person%4)*15000+(s?F.benefits(s).patience*1000:0)));}
   function cookSpec(s,id) {
     const i=Object.keys(recipes).indexOf(id),shift=((s.night+i)%3-1)*.025;
     return {ideal:[.65,.56,.74,.48,.68,.77,.61][i%7]+shift,prepIdeal:.48+((s.night+i)%4)*.055,
-      prepTime:Math.max(2100,2900-s.level*55),heatTime:Math.max(3600,5400-s.level*130),tolerance:Math.max(.095,.18-s.level*.009),band:Math.max(.065,.11-s.level*.004)};
+      prepTime:Math.max(2100,2900-s.level*55),heatTime:Math.max(3600,5400-s.level*130),tolerance:Math.max(.095,.18-s.level*.009)+F.benefits(s).tolerance,band:Math.max(.065,.11-s.level*.004)+F.benefits(s).tolerance};
   }
   const openings=['긴 하루 끝에 이 불빛이 보여서 들어왔어요.','오늘은 든든하게 한 끼 먹고 싶네요.','문을 여니 좋은 냄새가 먼저 반겨 주네요.','이 시간에 따뜻한 밥을 먹을 수 있어 다행이에요.','조금 멀리 돌아왔는데, 여기까지 오길 잘했어요.','바깥은 바쁜데 여기는 시간이 천천히 흐르네요.','오늘은 평소와 다른 맛을 먹어 보고 싶어요.','잠깐 쉬었다 가려고요. 편한 자리가 있네요.','친구가 이 골목의 작은 가게를 알려 줬어요.','이런 나무 카운터 앞에 앉으면 마음이 놓여요.','배가 고픈 줄도 모르고 하루를 보냈네요.','들어오자마자 한결 편안해졌어요.'];
   const requests=['{dish}, 부탁드릴게요.','오늘은 {dish}, 이게 가장 당기네요.','{dish}, 천천히 즐기고 싶어요.','저는 오늘 {dish}, 먹어 보고 싶어요.','하루 끝에 {dish}, 괜찮겠죠?','{dish}, 이 가게만의 맛이 궁금해요.','{dish}, 준비해 주실래요?','{dish}, 정성껏 부탁해요.','{dish}, 오늘은 이걸로 정했어요.','{dish}, 기다리는 동안 잠깐 쉬어 갈게요.'];
@@ -147,10 +131,10 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version:10,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    version:11,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1,atmosphere:0 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
     totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:3,miso:3,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
-    unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [], special: 'onigiri',
+    unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [],upgradeQty:{},equipped:{}, special: 'onigiri',
     guests: [], arrived: 0, target: 9, nightRevenue: 0, nightTips: 0, nightCosts: 0, nightScores: [],
     event: 'none', eventChoice: null, nightStartRep: 12, lastResult: null,
   });
@@ -169,7 +153,7 @@
     const v=JSON.parse(raw);
     if(v&&[2,3,4,5,6,7,8,9].includes(v.version)&&v.inventory&&typeof v.inventory==='object'&&!Array.isArray(v.inventory))for(const id of Object.keys(C.ingredients))if(v.inventory[id]===undefined)v.inventory[id]=0;
     const integer = (n, min = 0, max = 1e9) => Number.isSafeInteger(n) && n >= min && n <= max;
-    if (!v || ![2,3,4,5,6,7,8,9,10].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
+    if (!v || ![2,3,4,5,6,7,8,9,10,11].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
       !['prep', 'open', 'end'].includes(v.phase) || !integer(v.money) || !integer(v.reputation, 0, 100) ||
       !integer(v.totalServed) || !v.inventory || !Object.keys(ingredients).every(id => integer(v.inventory[id], 0, 999)) ||
       !Array.isArray(v.unlocked) || !['onigiri', 'tamago', 'tonjiru'].every(id => v.unlocked.includes(id)) ||
@@ -185,7 +169,12 @@
         ['seated','waiting','eating','paying','farewell','left'].includes(g.status) && integer(g.score, 0, 100) && (g.waitMs===undefined || (Number.isFinite(g.waitMs)&&g.waitMs>=0&&g.waitMs<=1e9))) ||
       new Set(v.guests.map(g => g.seat)).size !== v.guests.length ||
       new Set(v.guests.map(g => g.id)).size !== v.guests.length) throw new Error('Invalid save');
-    const restored = { ...s, ...v,version:10,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
+    const restored = { ...s, ...v,version:11,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
+    restored.upgrades=[...new Set(restored.upgrades)];
+    if(v.upgradeQty!==undefined&&(!v.upgradeQty||Array.isArray(v.upgradeQty)||Object.entries(v.upgradeQty).some(([id,n])=>!restored.upgrades.includes(id)||!integer(n,1,upgrades[id].max))))throw new Error('Invalid furnishing quantities');
+    restored.upgradeQty=Object.fromEntries(restored.upgrades.map(id=>[id,v.upgradeQty?.[id]||1]));
+    if(v.equipped!==undefined&&(!v.equipped||Array.isArray(v.equipped)||Object.entries(v.equipped).some(([slot,id])=>!Object.hasOwn(F.slots,slot)||!restored.upgrades.includes(id)||upgrades[id].slot!==slot)))throw new Error('Invalid equipped furnishings');
+    restored.equipped={...(v.equipped||{})};for(const id of restored.upgrades)if(!restored.equipped[upgrades[id].slot])restored.equipped[upgrades[id].slot]=id;
     if (v.version === 2) {
       restored.xp = v.totalServed * 70;
       restored.satisfactionTotal = v.totalServed * 70;
@@ -234,7 +223,7 @@
         // An interrupted action restarts this step, not the whole recipe or order.
         const selected=k.selected.filter(id=>recipes[g.recipe].ingredients.includes(id));
         if(v.version>=9&&selected.length!==k.selected.length)throw new Error('Unrelated kitchen ingredients');
-        restored.kitchen={guest:k.guest,stage:k.stage,selected,step:k.step,marks:[...k.marks]};
+        if(k.heatValue!==undefined&&(!Number.isFinite(k.heatValue)||k.heatValue<0||k.heatValue>1))throw new Error('Invalid heat appearance');restored.kitchen={guest:k.guest,stage:k.stage,selected,step:k.step,marks:[...k.marks],...(k.heatValue!==undefined?{heatValue:k.heatValue}:{})};
       }
     }
     if(v.prepChoice!==undefined&&![null,3,9].includes(v.prepChoice))throw new Error('Invalid preparation choice');
@@ -276,10 +265,10 @@
     if (memory.lastVisitNight !== s.night) memory.visits++;
     memory.lastVisitNight = s.night; s.customerBook[visitor] = memory; s.nightVisitors.push(visitor);
     s.guests.push(g);
-    if (s.arrived === 1 && s.upgrades.includes('plants')) s.reputation = clamp(s.reputation + 2, 0, 100);
+    if(s.arrived===1)s.reputation=clamp(s.reputation+F.benefits(s).reputation,0,100);
     return g;
   }
-  function buyPrice(s,id){return Math.round(ingredients[id].price*(s.upgrades.includes('fridge')?.9:1));}
+  function buyPrice(s,id){return Math.round(ingredients[id].price*(1-F.benefits(s).discount/100));}
   // Forecast from a copy: looking at the shopping list never books real guests or spends cash.
   function stockPlan(s,meals=9){
     if(![3,9].includes(meals))return null;
@@ -309,29 +298,30 @@
     if (!r || s.unlocked.includes(id) || s.money < r.unlock || s.level < r.level) return false;
     s.money -= r.unlock; s.unlocked.push(id); return true;
   }
-  function upgrade(s, id) {
-    if (!Object.hasOwn(upgrades, id)) return false;
-    const u = upgrades[id];
-    if (!u || s.upgrades.includes(id) || s.money < u.price || s.level < u.level) return false;
-    s.money -= u.price;if(s.phase!=='prep')s.nightPurchases=(s.nightPurchases||0)+u.price;s.upgrades.push(id);progress(s);return true;
+  function equip(s,id){if(!s.upgrades.includes(id)||!upgrades[id])return false;s.equipped??={};s.equipped[upgrades[id].slot]=id;progress(s);return true;}
+  function upgrade(s,id,quantity=1){
+    const u=Object.hasOwn(upgrades,id)?upgrades[id]:null,owned=u?F.count(s,id):0;
+    if(!u||!Number.isSafeInteger(quantity)||quantity<1||owned+quantity>u.max||s.money<u.price*quantity||s.level<u.level)return false;
+    const cost=u.price*quantity;s.money-=cost;if(s.phase!=='prep')s.nightPurchases=(s.nightPurchases||0)+cost;
+    if(!owned)s.upgrades.push(id);s.upgradeQty??={};s.upgradeQty[id]=owned+quantity;equip(s,id);return true;
   }
-  function serve(s, guestId, selected, timing, preparation=1) {
+  function serve(s, guestId, selected, timing, preparation=1,heatOverride) {
     const g = s.guests.find(g => g.id === guestId && g.status === 'waiting');
     if (s.phase !== 'open' || !g || !Array.isArray(selected) || !Number.isFinite(timing) || !Number.isFinite(preparation) ||
-      selected.length === 0 || new Set(selected).size !== selected.length ||
+      (heatOverride!==undefined&&(!Number.isFinite(heatOverride)||heatOverride<0||heatOverride>1)) || selected.length === 0 || new Set(selected).size !== selected.length ||
       !selected.every(id => ingredientAvailable(s,id) && s.inventory[id] > 0)) return null;
     const r = recipes[g.recipe];
     const matches = selected.filter(id => r.ingredients.includes(id)).length;
     const wrong = selected.filter(id => !r.ingredients.includes(id)).length;
     const recipeScore = Math.max(0, (matches - wrong * 0.5) / r.ingredients.length);
-    const spec=cookSpec(s,g.recipe),heat=Math.max(0,1-Math.abs(clamp(timing,0,1)-spec.ideal)/spec.tolerance);
-    const waited=Math.min(20,Math.floor(Math.max(0,(g.waitMs||0)-45000)/12000)*2);
-    let score=Math.round(clamp(recipeScore*25+clamp(preparation,0,1)*25+heat*50+(s.upgrades.includes('lantern')?3:0)+(g.gifted?5:0)-waited,0,100));
+    const spec=cookSpec(s,g.recipe),heat=heatOverride===undefined?Math.max(0,1-Math.abs(clamp(timing,0,1)-spec.ideal)/spec.tolerance):clamp(heatOverride,0,1);
+    const benefits=F.benefits(s),waited=Math.min(20,Math.floor(Math.max(0,(g.waitMs||0)-45000-benefits.patience*1000)/12000)*2);
+    let score=Math.round(clamp(recipeScore*25+clamp(preparation,0,1)*25+heat*50+benefits.quality+(g.gifted?5:0)-waited,0,100));
     if(recipeScore<1)score=Math.min(Math.round(50*recipeScore),score);
     const base=Math.round(r.price*(.35+score*.006));
-    const tip=Math.round(r.price*Math.max(0,score-80)/100*.8);
+    const tip=Math.round(r.price*Math.max(0,score-80)/100*.8*(1+benefits.tips/100));
     selected.forEach(id => s.inventory[id]--);
-    const result={score,base,tip,total:base+tip,preparation:Math.round(clamp(preparation,0,1)*100),heat:Math.round(heat*100),waitPenalty:waited,dish:r.name,guest:person(g.person).name};
+    const result={appearance:heatLook(s,g.recipe,timing),heatValue:clamp(timing,0,1),score,base,tip,total:base+tip,preparation:Math.round(clamp(preparation,0,1)*100),heat:Math.round(heat*100),waitPenalty:waited,dish:r.name,guest:person(g.person).name};
     g.status='eating';g.score=score;g.eatMs=0;g.bill=result;g.paid=false;
     if(s.kitchen?.guest===g.id)s.kitchen=null;
     s.lastResult=result;return result;
@@ -341,10 +331,10 @@
   function selectIngredient(s,id){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest);if(!k||!g||!recipes[g.recipe].ingredients.includes(id)||k.step||!ingredientAvailable(s,id)||s.inventory[id]<1)return false;k.selected=k.selected.includes(id)?k.selected.filter(x=>x!==id):[...k.selected,id];return true;}
   function readyIngredients(s){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest&&g.status==='waiting');return !!g&&k.selected.length===recipes[g.recipe].ingredients.length&&recipes[g.recipe].ingredients.every(id=>k.selected.includes(id)&&s.inventory[id]>0)&&k.selected.every(id=>ingredientAvailable(s,id)&&s.inventory[id]>0);}
   function prepareIngredients(s){if(!s.kitchen||s.kitchen.step||!readyIngredients(s))return false;s.kitchen.stage='process';return true;}
-  function completeCookingStep(s,quality){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest&&g.status==='waiting');if(!g||k.stage!=='process'||!readyIngredients(s)||!Number.isFinite(quality)||quality<0||quality>1)return false;const steps=Cooking.plan(g.recipe,recipes[g.recipe]);if(k.step>=steps.length)return false;k.marks.push(quality);k.step++;if(k.step===steps.length)k.stage='complete';return true;}
+  function completeCookingStep(s,quality,detail){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest&&g.status==='waiting');if(!g||k.stage!=='process'||!readyIngredients(s)||!Number.isFinite(quality)||quality<0||quality>1)return false;const steps=Cooking.plan(g.recipe,recipes[g.recipe]);if(k.step>=steps.length)return false;if(detail?.heat!==undefined&&(!Number.isFinite(detail.heat)||detail.heat<0||detail.heat>1))return false;if(steps[k.step].id==='heat'&&detail?.heat!==undefined)k.heatValue=detail.heat;k.marks.push(quality);k.step++;if(k.step===steps.length)k.stage='complete';return true;}
   function deliver(s){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest&&g.status==='waiting');if(!g||k.stage!=='complete'||!readyIngredients(s))return null;const steps=Cooking.plan(g.recipe,recipes[g.recipe]);if(k.step!==steps.length)return null;
     const hi=steps.findIndex(st=>st.id==='heat'),quality=hi<0?1:k.marks[hi],others=k.marks.filter((_,i)=>i!==hi),prep=others.reduce((a,b)=>a+b,0)/others.length,spec=cookSpec(s,g.recipe);
-    return serve(s,g.id,[...k.selected],spec.ideal+(1-quality)*spec.tolerance,prep);
+    return serve(s,g.id,[...k.selected],k.heatValue??spec.ideal+(1-quality)*spec.tolerance,prep,quality);
   }
   function finishEating(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='eating');if(!g)return false;g.status='paying';return true;}
   function collect(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='paying'&&!g.paid);if(s.phase!=='open'||!g||!g.bill)return null;const r=g.bill;
@@ -417,7 +407,7 @@
     if (s.phase !== 'end') return false;
     s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { F,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();

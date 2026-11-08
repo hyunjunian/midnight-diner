@@ -1,17 +1,17 @@
 (() => {
   'use strict';
   const E = window.MidnightEngine;
-  const KEY = 'midnight-diner-save-v10';
+  const KEY = 'midnight-diner-save-v11';
   const $ = id => document.getElementById(id);
   const yen = n => `¥${n.toLocaleString('ja-JP')}`;
   let state, storageAvailable = true, saveMessage = '';
-  // v19 is an explicitly requested fresh playthrough. Prior prototype saves are retired once.
-  try { if(!localStorage.getItem(KEY)){for(let version=1;version<=9;version++)localStorage.removeItem(`midnight-diner-save-v${version}`);}state=E.restore(localStorage.getItem(KEY)); }
+  // Keep the current playthrough; import v10 once without resetting purchases or cooking.
+  try { state=E.restore(localStorage.getItem(KEY)||localStorage.getItem('midnight-diner-save-v10')); }
   catch { state = E.fresh(); saveMessage = '저장 정보를 읽지 못해 새 식당을 준비했습니다.'; }
   let selectedGuest=null,tab='pantry',talkIndex=0,cashAnimation=null;
   const Kitchen=window.MidnightKitchen,FX=window.MidnightAudio;
-  const purchaseQuantities={};let prepExpanded=false;
-  let menuFilter='all',menuQuery='';
+  const purchaseQuantities={},upgradeQuantities={};let prepExpanded=false,shopTheme='all';
+  let menuFilter='all',menuQuery='',storyRenderKey='';
   const seenCustomers = new Set();
   let toastTimer, raf, lastFrame = 0, openingUntil=0;
   function save() {
@@ -20,6 +20,7 @@
     $('save-status').textContent = storageAvailable ? '진행 상황이 이 기기에 자동 저장됩니다.' : '저장을 사용할 수 없습니다. 창을 닫으면 진행이 사라져요.';
   }
   function toast(message) {
+    if(Kitchen?.isVisible()){let feedback=$('kitchen-inline-feedback');if(!feedback){feedback=document.createElement('p');feedback.id='kitchen-inline-feedback';feedback.setAttribute('role','status');$('kitchen-footer').prepend(feedback);}feedback.textContent=message;return;}
     $('toast').textContent = message; $('toast').classList.add('visible');
     clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('visible'), 4200);
   }
@@ -27,8 +28,8 @@
   const signed = n => `${n >= 0 ? '+' : ''}${n}`;
   function portrait(p, i) { return Scene.character(i); }
   const basicFood=['rice','nori','egg','dashi','pork','miso','salmon'];
-  function food(id,eaten=false){const item=E.ingredients[id]||E.recipes[id];let file,index,rows;
-    if(E.recipes[id]){file=`${eaten?'used-menu':'menu'}-${item.sheet}`;index=item.art;rows=3;}
+  function food(id,eaten=false,appearance='good'){if(!E.Cooking.imagePilot.includes(id))appearance='good';const item=E.ingredients[id]||E.recipes[id];let file,index,rows;
+    if(E.recipes[id]){file=`${eaten?'used-menu':['burnt','dry'].includes(appearance)?'burnt-menu':appearance==='raw'?'raw-menu':'menu'}-${item.sheet}`;index=item.art;rows=3;}
     else{const n=Object.keys(E.ingredients).indexOf(id);file=`stock-anime-${Math.floor(n/12)+1}`;index=n%12;rows=3;}
     return `<span class="food-art" role="img" aria-label="${item.name}" data-food="${id}" style="--food-file:url('./assets/${file}.webp');--food-rows:${rows*100}%;--food-x:${index%4*100/3}%;--food-y:${Math.floor(index/4)*100/(rows-1)}%;--food-ratio:${E.recipes[id]?'3/4':'1'}"></span>`;
   }
@@ -36,7 +37,7 @@
     const l = E.levels[level - 1];
     return `Lv.${level} · 누적 ${l.xp}점 / 평판 ${l.reputation} / 만족도 ${l.satisfaction}`;
   }
-  function decorArt(id){const n=Object.keys(E.upgrades).indexOf(id),i=n%8;return `<span class="furnishing-art" role="img" aria-label="${E.upgrades[id].name}" style="background-image:url('./assets/furnishings-${Math.floor(n/8)+1}.webp');background-position:${i%4*100/3}% ${Math.floor(i/4)*100}%"></span>`;}
+  function decorArt(id){return Scene.itemArt(id);}
   function delta(n,unit=''){return `<span class="score-delta ${n>0?'gain':n<0?'loss':'no-change'}" aria-label="이번 영업 ${n>0?'상승':n<0?'하락':'변화 없음'} ${Math.abs(n)}${unit}">${n===0?'±0':signed(n)}<small>${unit}</small></span>`;}
   function requirements(level){const l=E.levels[level-1];return `성장 ${l.xp} · 평판 ${l.reputation} · 만족도 ${l.satisfaction} · 분위기 ${l.atmosphere}`;}
   function renderReport() {
@@ -62,19 +63,19 @@
         el.addEventListener('animationend',e=>{if(e.animationName==='counter-arrival')el.classList.remove('arriving')});
         $('customers').append(el);
       }
-      el.classList.toggle('selected',g.id===selectedGuest);
+      el.classList.toggle('selected',g.id===selectedGuest);el.classList.toggle('needs-payment',g.status==='paying');
       el.classList.toggle('pleased',g.status==='eating' && g.score>=80);
       el.classList.toggle('disappointed',g.status==='eating' && g.score<60);
       el.querySelector('.customer-avatar').disabled=false;el.classList.toggle('dining',g.status==='eating');
       const status={seated:'대화하기',waiting:'주문 접수',eating:'식사 중',paying:'계산할게요',farewell:'배웅하기'};
       el.querySelector('.customer-name').textContent=`${p.name}${E.regular(state,g.person)?' · 단골':''} · ${status[g.status]}`;
-      const served=el.querySelector('.served-dish'),hasDish=['eating','paying','farewell'].includes(g.status);served.hidden=!hasDish;
-      if(hasDish&&served.dataset.recipe!==g.recipe){served.innerHTML=food(g.recipe)+'<span class="dish-steam"></span><span class="eaten-dish">'+food(g.recipe,true)+'</span>';served.dataset.recipe=g.recipe;served.classList.add('dish-arriving');}
+      const served=el.querySelector('.served-dish');served.classList.toggle('uncooked-dish',g.bill?.appearance==='raw'||E.Cooking.family(g.recipe,E.recipes[g.recipe])==='cold');served.classList.toggle('overdone-dish',['dry','burnt'].includes(g.bill?.appearance));const hasDish=['eating','paying','farewell'].includes(g.status);served.hidden=!hasDish;
+      if(hasDish&&served.dataset.recipe!==g.recipe){served.innerHTML=food(g.recipe,false,g.bill?.appearance||'good')+'<span class="dish-steam"></span><span class="eaten-dish">'+food(g.recipe,true)+'</span>';served.dataset.recipe=g.recipe;served.classList.add('dish-arriving');}
       served.classList.toggle('finished-meal',g.status!=='eating');
       el.querySelector('.dining-chopsticks').hidden=g.status!=='eating';const payment=el.querySelector('.customer-payment');payment.hidden=g.status!=='paying';payment.dataset.pay=g.id;
       if(g.status==='paying')payment.innerHTML=`<b>${yen(g.bill.total)}</b><span class="five-stars" aria-label="만족도 ${g.score}점, 5점 만점에 ${(g.score/20).toFixed(1)}점"><i style="width:${g.score}%">★★★★★</i><em>★★★★★</em></span><small>${(g.score/20).toFixed(1)} / 5 · 눌러 수금</small>`;
       el.querySelector('.wait-meter').hidden=g.status!=='waiting';
-      const patience=E.patience(g);el.querySelector('.wait-meter i').style.width=`${patience*100}%`;el.classList.toggle('waiting-long',patience<.3);
+      const patience=E.patience(g,state);el.querySelector('.wait-meter i').style.width=`${patience*100}%`;el.classList.toggle('waiting-long',patience<.3);
     }
     $('scene').classList.toggle('is-prep',state.phase==='prep');
     Scene.render(state,selectedGuest,!!state.kitchen);$('resume-kitchen').hidden=!state.kitchen;
@@ -144,7 +145,8 @@
     return `<section class="upcoming"><div class="reward-heading"><span class="level-tile">Lv.<b>${next}</b></span><div><small>NEXT CHAPTER</small><h3>다음 레벨의 새로운 한 끼</h3></div></div><p class="reward-conditions">${requirements(next)}</p>${rewardGallery(next)}</section><section class="upcoming-items"><h3>다음 레벨의 아이템</h3>${itemLevel!==next?`<p class="next-item-note">다음 레벨에는 새 장식이 없어요.${itemLevel?` 아래 아이템은 Lv.${itemLevel}에서 만나요.`:' 열린 장식으로 나만의 가게를 꾸며 보세요.'}</p>`:''}<div class="unlock-item-grid">${items.map(([id,u])=>`<article><span class="item-level-tag">Lv.${u.level}</span>${decorArt(id)}<h4>${u.name}</h4><span class="ambience-reward">분위기 +${u.atmosphere}점</span><small>${yen(u.price)} · ${u.area==='inside'?'매장 안':'매장 밖'}</small></article>`).join('')}</div></section>`;
   }
   function renderStory(){
-    const view=E.story(state),news=E.news(state),history=state.storyMemory.slice(-5).reverse();
+    const view=E.story(state),news=E.news(state),history=state.storyMemory.slice(-5).reverse(),key=JSON.stringify([view?.run,news,state.storyMemory.length]);
+    if(key===storyRenderKey&&$('story-content').childElementCount){if(view?.run.step===0)for(const choice of view.definition.choices){const button=$('story-content').querySelector(`[data-choice="${choice.id}"]`);if(button)button.disabled=!E.canChoose(state,choice);}return;}storyRenderKey=key;window.MidnightVoice?.stop();
     $('story-tag').textContent=state.event==='pending'?'주인장의 선택 · 이어지는 이야기':'골목에 남은 기억';
     $('story-title').textContent=view?view.definition.title:'다음 밤에 도착한 소식';
     const memories=`<section class="story-journal"><h4>가게의 작은 수첩</h4>${history.length?history.map(t=>{const st=E.storyContent.stories.find(x=>x.id===t.id),c=st.choices.find(x=>x.id===t.choice);return `<details><summary>${t.night}번째 밤 · ${st.title}</summary><p>${c.result}</p></details>`}).join(''):'<p>손님 둘이 모이면 오늘 밤의 이야기가 시작돼요.</p>'}</section>`;
@@ -153,9 +155,9 @@
     const {run,definition,choice,reflection}=view,cast=run.cast.map(id=>E.person(id));
     const text=t=>t.replaceAll('{a}',cast[0].name).replaceAll('{b}',cast[1].name);
     const faces=`<div class="story-cast-strip">${run.cast.map(id=>`<div class="story-cast-chip"><span class="story-mini-face">${portrait(E.person(id),id)}</span><span><b>${E.person(id).name}</b><small>${E.person(id).role}</small></span></div>`).join('')}</div>`;
-    const dialogue=`<div class="story-chat" aria-label="손님들의 대화">${definition.lines.map((line,i)=>{
+    const dialogue=`<div class="story-voice-controls"><button data-story-voice>듣기 · 잠시 멈추기 ♫</button><button data-story-replay>처음부터 듣기 ↻</button><p id="story-voice-status" role="status">손님들의 목소리로 이야기를 들어요.</p></div><div class="story-chat" aria-label="손님들의 대화">${definition.lines.map((line,i)=>{
       const actor=line.startsWith('{b}')?1:line.startsWith('{a}')?0:i%2,id=run.cast[actor],p=cast[actor],words=text(line).replace(new RegExp('^'+p.name+'[：:]\\s*'),'');
-      return `<article class="story-message ${actor?'from-right':''}"><div class="story-chat-face" aria-label="${p.name}">${portrait(p,id)}</div><div class="story-message-body"><b>${p.name}</b><p>${words}</p></div></article>`;
+      return `<article class="story-message ${actor?'from-right':''}" data-speaker="${id}"><div class="story-chat-face" aria-label="${p.name}">${portrait(p,id)}</div><div class="story-message-body"><b>${p.name}</b><p>${words}</p></div></article>`;
     }).join('')}</div>`;
     const prompt=(n,title)=>`<div class="story-choice-heading"><span>${n} / 2 · 당신의 선택</span><h3>${title}</h3><p>마음이 가는 행동 하나를 골라 주세요.</p></div>`;
     if(run.step===0){
@@ -168,6 +170,11 @@
     $('story-content').innerHTML=followups+faces+`<div class="story-result"><span>오늘 밤의 이야기</span><p>${choice?.result||'오늘 손님들과 나눈 이야기가 가게의 기억으로 남았어요.'}</p></div><p class="story-memory">${reflection?.text||''}</p><p class="story-next">다음 영업일에 이 선택의 소식이 도착해요.</p><button class="story-finish primary" data-close="story-dialog">이 온기를 안고 가게로 돌아가기 →</button>`+memories;
   }
 
+  function renderShop(){
+    const F=E.F,benefits=F.benefits(state),themes=F.themes,active=F.activeItems(state),filter=shopTheme==='all'?null:Number(shopTheme),entries=Object.entries(E.upgrades).filter(([,u])=>filter===null||u.theme===filter);
+    const collection=filter===null?'':(()=>{const n=active.filter(id=>E.upgrades[id].theme===filter).length;return `<section class="collection-goal"><div><b>${themes[filter].name}</b><span>${n} / 15 꾸미기</span></div><p>같은 모음 5종이면 팁 +3%, 10종이면 +6%. 서로 다른 자리를 함께 꾸며 보세요.</p><progress value="${n}" max="15"></progress><img src="./assets/room-collection-${filter}.webp" alt="${themes[filter].name} 모음을 모두 꾸민 매장" loading="lazy"></section>`})();
+    $('management-content').innerHTML=`<section class="shop-benefits"><b>내 가게의 온기 <strong>${E.atmosphere(state)}점</strong></b><p>팁 +${benefits.tips}% · 기다림 +${benefits.patience}초${benefits.discount?` · 재료 −${benefits.discount}%`:''}</p><small>새 모양을 들이면 같은 자리에 교체돼요. 보유한 물건은 언제든 다시 놓을 수 있어요.</small></section><div class="collection-filters" aria-label="꾸미기 모음"><button data-shop-theme="all" class="${shopTheme==='all'?'active':''}">전체 60종</button>${themes.map(t=>`<button data-shop-theme="${t.id}" class="${shopTheme===String(t.id)?'active':''}">${t.name}</button>`).join('')}</div>${collection}<div class="upgrade-grid item-shop-grid">${entries.map(([id,u])=>{const owned=F.count(state,id),equipped=F.activeId(state,u.slot)===id,max=u.max-owned,q=Math.max(1,Math.min(upgradeQuantities[id]||1,max||1));upgradeQuantities[id]=q;return `<article class="upgrade-card furnish-card ${state.level<u.level?'locked':''}" data-furnishing="${id}"><span class="item-level-tag">Lv.${u.level}</span><div class="furnishing-picture">${decorArt(id)}</div><h3>${u.name}</h3><span class="ambience-reward">분위기 +${u.atmosphere}${u.max>1?' / 개':'점'}</span><p class="item-benefit">${F.benefitText(id)}</p><p class="item-location">${E.F.slots[u.slot].place}${owned?` · ${owned}개 보유`:''}</p>${(()=>{const current=F.activeId(state,u.slot);if(!current||current===id)return '';const d=u.atmosphere*(owned||q)-E.upgrades[current].atmosphere*F.count(state,current);return `<small class="replace-delta ${d<0?'negative':''}">교체하면 분위기 ${d>=0?'+':''}${d}점</small>`;})()}${u.max>1&&max&&state.level>=u.level?`<div class="quantity-stepper lamp-quantity"><button data-furnish-qty="-1" aria-label="조명 구매 수량 줄이기" ${q<=1?'disabled':''}>−</button><input data-lamp-qty="${id}" value="${q}" type="number" inputmode="numeric" min="1" max="${max}" aria-label="${u.name} 구매 수량"><button data-furnish-qty="1" aria-label="조명 구매 수량 늘리기" ${q>=max?'disabled':''}>+</button></div>`:''}${owned&&!equipped?`<button data-equip="${id}">보유한 물건 놓기</button>`:owned?`<small class="item-installed">✓ ${owned}개 배치 중</small>`:''}<button data-upgrade="${id}" ${!max||state.money<u.price*q||state.level<u.level?'disabled':''}>${state.level<u.level?`Lv.${u.level}에 해제`:!max?'모두 보유 중':`${yen(u.price*q)} · ${u.max>1?q+'개 ':''}들여놓기`}</button></article>`}).join('')}</div>`;
+  }
   function renderManagement() {
     const rescue = E.rescueNeeds(state) ? '<div class="rescue-box"><span>재료 살 돈이 부족한가요? 이웃 상인이 이번 주문에 필요한 재료를 나눠 줘요.</span><button data-rescue="true">도움받기 · 평판 −3</button></div>' : '';
     document.querySelectorAll('[data-tab]').forEach(b => { b.classList.toggle('active', b.dataset.tab === tab); b.setAttribute('aria-pressed', String(b.dataset.tab === tab)); });
@@ -180,8 +187,7 @@
     } else if(tab==='menu'){
       const entries=Object.entries(E.recipes),matches=entries.filter(([,r])=>(menuFilter==='all'||menuFilter==='available'&&r.level<=state.level||Number(menuFilter)===r.level)&&(!menuQuery||r.name.includes(menuQuery)));
       $('management-content').innerHTML=`<p class="management-note">레벨마다 새 메뉴 3개 · 전체 100종 · 지금 ${entries.filter(([,r])=>r.level<=state.level).length}개를 만들 수 있어요.<span>오늘의 추천: ${E.recipes[state.special].name}</span></p><div class="menu-filters"><button data-menu-filter="all" class="${menuFilter==='all'?'active':''}">전체 100</button><button data-menu-filter="available" class="${menuFilter==='available'?'active':''}">지금 가능</button>${Array.from({length:34},(_,i)=>`<button data-menu-filter="${i+1}" class="${menuFilter===String(i+1)?'active':''}">Lv.${i+1}</button>`).join('')}</div><input id="menu-search" type="search" aria-label="음식 이름 찾기" placeholder="먹고 싶은 음식 찾기" value="${menuQuery.replaceAll('&','&amp;').replaceAll('"','&quot;')}"><div class="menu-grid">${matches.map(([id,r])=>{const open=r.level<=state.level;return `<article class="menu-card ${open?'available':'locked'}"><div class="menu-picture">${food(id)}${open?'':`<span class="menu-lock">Lv.${r.level}에 해제</span>`}</div><small>LEVEL ${r.level}</small><h3>${r.name}</h3><p>${r.ingredients.map(id=>E.ingredients[id].name).join(' · ')}</p><span class="menu-price">${yen(r.price)}부터</span>${open?`<button data-special="${id}" ${state.special===id||state.phase==='open'?'disabled':''}>${state.special===id?'✓ 오늘의 추천':state.phase==='open'?'다음 영업 전에 추천 변경':'오늘의 추천으로 정하기'}</button>`:`<button disabled aria-label="${r.name} 레벨 ${r.level}에 해제">Lv.${r.level} 도달 시 바로 조리 가능</button>`}</article>`}).join('')}</div>${upcoming()}`;
-    } else {
-      $('management-content').innerHTML=`<p class="management-note">작은 장식 하나에도 가게의 온기가 달라져요.<span>지금 분위기 ${E.atmosphere(state)}점 · 분위기도 레벨업 조건에 들어가요.</span></p><div class="upgrade-grid item-shop-grid">${Object.entries(E.upgrades).map(([id,u])=>`<article class="upgrade-card ${state.level<u.level?'locked':''}"><span class="item-level-tag">Lv.${u.level}</span>${decorArt(id)}<h3>${u.name}</h3><span class="ambience-reward">분위기 +${u.atmosphere}점</span><p>${u.description}</p><button data-upgrade="${id}" ${state.upgrades.includes(id)||state.money<u.price||state.level<u.level?'disabled':''}>${state.upgrades.includes(id)?'✓ 가게에 배치됨':state.level<u.level?`Lv.${u.level}에 해제`:`${yen(u.price)} · 들여놓기`}</button></article>`).join('')}</div>`;
+    } else { renderShop();
     }
   }
   function renderStockPrep(){
@@ -238,6 +244,9 @@
   $('management-content').addEventListener('click', event => {
     const button=event.target.closest('button');
     if(!button||button.disabled)return;
+    if(button.dataset.shopTheme!==undefined){shopTheme=button.dataset.shopTheme;renderShop();return;}
+    if(button.dataset.furnishQty){const id=button.closest('[data-furnishing]').dataset.furnishing;upgradeQuantities[id]=Math.max(1,Math.min(E.upgrades[id].max-E.F.count(state,id),(upgradeQuantities[id]||1)+Number(button.dataset.furnishQty)));renderShop();return;}
+    if(button.dataset.equip){const id=button.dataset.equip,origin=button.getBoundingClientRect(),before=E.atmosphere(state);if(E.equip(state,id)){Scene.preparePlacement(id,0,E.atmosphere(state)-before);render();$('management-dialog').close();Scene.showItem(id,origin);}return;}
     if(button.dataset.qtyStep){const id=button.closest('[data-stock-id]').dataset.stockId,max=Math.max(1,Math.min(99,999-state.inventory[id],Math.floor(state.money/E.buyPrice(state,id))));purchaseQuantities[id]=Math.max(1,Math.min(max,(purchaseQuantities[id]||1)+Number(button.dataset.qtyStep)));renderManagement();$('management-content').querySelector(`[data-stock-id="${id}"] [data-qty-step="${button.dataset.qtyStep}"]`)?.focus({preventScroll:true});return;}
     if(button.dataset.quickBuy){const id=button.dataset.quickBuy;if(E.buy(state,id,1)){FX?.play('buy');render();toast(`${E.ingredients[id].name} +1 · 재고 ${state.inventory[id]}개`);}return;}
     if(button.dataset.menuFilter){menuFilter=button.dataset.menuFilter;renderManagement();return;}
@@ -245,10 +254,13 @@
     else if (button.dataset.buy) { const id=button.dataset.buy,q=purchaseQuantities[id]||1;if(E.buy(state,id,q)){FX?.play('buy');toast(`${E.ingredients[id].name} ${q}개를 냉장고에 채웠어요.`);} }
     else if (button.dataset.unlock) { if (E.unlock(state, button.dataset.unlock)) toast(`${E.recipes[button.dataset.unlock].name}을 배웠어요. 맡김 차림으로 정해 보세요.`); }
     else if (button.dataset.special && state.phase !== 'open' && state.unlocked.includes(button.dataset.special)) { state.special = button.dataset.special; toast('오늘의 맡김 차림을 정했어요.'); }
-    else if (button.dataset.upgrade) { if (E.upgrade(state, button.dataset.upgrade)) { const origin=button.getBoundingClientRect();FX?.play('buy');clearTimeout(toastTimer);$('toast').classList.remove('visible');Scene.preparePlacement(button.dataset.upgrade);render();$('management-dialog').close();Scene.showItem(button.dataset.upgrade,origin);$('progress-hud').classList.add('atmosphere-earned');setTimeout(()=>$('progress-hud').classList.remove('atmosphere-earned'),2200);return; } }
+    else if(button.dataset.upgrade){const id=button.dataset.upgrade,origin=button.getBoundingClientRect(),before=E.atmosphere(state),from=E.F.activeId(state,E.upgrades[id].slot)===id?E.F.count(state,id):0;if(E.upgrade(state,id,upgradeQuantities[id]||1)){FX?.play('buy');clearTimeout(toastTimer);$('toast').classList.remove('visible');Scene.preparePlacement(id,from,E.atmosphere(state)-before);render();$('management-dialog').close();Scene.showItem(id,origin);return;}}
+
     const selector = button.dataset.rescue ? '[data-tab="pantry"]' : button.dataset.buy ? `[data-buy="${button.dataset.buy}"]` : button.dataset.special ? `[data-special="${button.dataset.special}"]` : button.dataset.unlock ? `[data-unlock="${button.dataset.unlock}"]` : `[data-upgrade="${button.dataset.upgrade}"]`;
     render(); document.querySelector(selector)?.focus({ preventScroll: true });
   });
+  $('management-content').addEventListener('input',event=>{const id=event.target.dataset.lampQty;if(!id)return;const q=Math.max(1,Math.min(E.upgrades[id].max-E.F.count(state,id),Math.floor(Number(event.target.value)||1)));upgradeQuantities[id]=q;const b=$('management-content').querySelector(`[data-upgrade="${id}"]`);b.textContent=`${yen(E.upgrades[id].price*q)} · ${q}개 들여놓기`;b.disabled=state.money<E.upgrades[id].price*q;});
+  $('management-content').addEventListener('change',event=>{const id=event.target.dataset.lampQty;if(id)event.target.value=String(upgradeQuantities[id]||1);});
   $('management-content').addEventListener('change',event=>{const id=event.target.dataset.purchaseQty;if(id)event.target.value=String(purchaseQuantities[id]||1);});
   $('management-content').addEventListener('input',event=>{if(event.target.matches('[data-purchase-qty]')){const id=event.target.dataset.purchaseQty,max=Math.max(1,Math.min(99,999-state.inventory[id],Math.floor(state.money/E.buyPrice(state,id))));purchaseQuantities[id]=Math.max(1,Math.min(max,Math.floor(Number(event.target.value)||1)));event.target.closest('article').querySelector('[data-buy]').textContent=`${purchaseQuantities[id]}개 채우기 · ${yen(purchaseQuantities[id]*E.buyPrice(state,id))}`;return;}if(event.target.id!=='menu-search')return;const pos=event.target.selectionStart;menuQuery=event.target.value;renderManagement();const input=$('menu-search');input.focus({preventScroll:true});input.setSelectionRange(pos,pos);});
   $('story-content').addEventListener('click', event => {
@@ -268,11 +280,14 @@
   document.addEventListener('click', event => {
     const close = event.target.closest('[data-close]');
     if (!close) return;
+    if(close.dataset.close==='story-dialog')window.MidnightVoice?.stop();
     $(close.dataset.close).close();
     if (close.dataset.close !== 'story-dialog') maybeStory();
   });
   $('report-content').addEventListener('click',e=>{if(e.target.closest('[data-go-shop]')){tab='shop';$('report-dialog').close();renderManagement();openSheet('management-dialog');return;}if(e.target.closest('#report-next') && E.next(state)){resetTransient();$('report-dialog').close();Scene.showArea('inside');render();}});
-  $('story-open').addEventListener('click', () => { renderStory(); openSheet('story-dialog'); });
+  $('story-open').addEventListener('click',()=>{storyRenderKey='';renderStory();openSheet('story-dialog');window.MidnightVoice?.play();});
+  $('story-dialog').addEventListener('close',()=>window.MidnightVoice?.stop());
+  $('story-dialog').addEventListener('click',event=>{if(event.target.closest('[data-story-voice]'))window.MidnightVoice?.toggle();if(event.target.closest('[data-story-replay]'))window.MidnightVoice?.play();});
   function soundLabel(){if(FX){$('sound-effects').textContent=FX.enabled?'효과음 · 켜짐 ♫':'효과음 · 꺼짐';$('sound-effects').setAttribute('aria-pressed',String(FX.enabled));}}
   $('sound-effects').addEventListener('click',()=>{FX?.setEnabled(!FX.enabled);soundLabel();});soundLabel();
   $('settings-open').addEventListener('click', () => openSheet('settings-dialog'));
@@ -357,8 +372,8 @@
     if(!document.hidden&&!$('app').hidden&&!$('reset-dialog').open&&!$('settings-dialog').open&&!$('intro').open){
       Kitchen.tick(dt);
       if(state.phase==='open'&&!Scene.isPlacing()){
-        for(const g of state.guests){if(g.status==='waiting'&&!anySheetOpen()){g.waitMs=(g.waitMs||0)+dt;const meter=document.querySelector(`[data-customer="${g.id}"] .wait-meter i`);if(meter)meter.style.width=`${E.patience(g)*100}%`;}
-          if(g.status==='eating'){g.eatMs=Math.round((g.eatMs||0)+dt);if(g.eatMs>=9000){E.finishEating(state,g.id);render();toast(`${E.person(g.person).name} 님이 식사를 마쳤어요. 별점 위 금액을 눌러 결제해 주세요.`);}}
+        for(const g of state.guests){if(g.status==='waiting'&&!anySheetOpen()){g.waitMs=(g.waitMs||0)+dt;const meter=document.querySelector(`[data-customer="${g.id}"] .wait-meter i`);if(meter)meter.style.width=`${E.patience(g,state)*100}%`;}
+          if(g.status==='eating'){g.eatMs=Math.round((g.eatMs||0)+dt);if(g.eatMs>=9000){E.finishEating(state,g.id);render();}}
         }
       }
     }
@@ -370,7 +385,7 @@
   window.addEventListener('pageshow', event => {
     if (event.persisted) { lastFrame = 0; arrivalTimer = setInterval(() => { if (!$('reset-dialog').open) tryArrival(); }, 6500); raf = requestAnimationFrame(frame); }
   });
-  Kitchen.init({getState:()=>state,food,toast,clearToast:()=>{clearTimeout(toastTimer);$('toast').classList.remove('visible');},changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
+  Kitchen.init({getState:()=>state,food,toast,clearToast:()=>{$('kitchen-inline-feedback')?.remove();clearTimeout(toastTimer);$('toast').classList.remove('visible');},changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
   render();
   window.MidnightApp = { launch: startIntro, save, isCooking:()=>Boolean(state.kitchen) };
   if (saveMessage) toast(saveMessage);
