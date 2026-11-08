@@ -419,22 +419,12 @@
 #kitchen-content .legacy-workspace .process-heading{margin-top:32px;background:none;border:0}
 @media(orientation:landscape) and (max-height:550px){#progress-hud.progress-hud{left:40%}}
 
-/* Conversation replies: dark stained wood against the light paper folio. */
+/* Compact paper conversation folio; replies retain the original washi slips. */
 #guest-dialog{max-height:88dvh}
 #guest-dialog .talk-card{padding-top:12px}
 #guest-dialog .talk-guest-message{margin-top:4px;margin-bottom:8px}
 #guest-dialog .talk-player-line{margin-top:4px;margin-bottom:12px}
 #guest-dialog .talk-choices{gap:8px;margin-top:12px;padding:0 0 4px}
-#guest-dialog #talk-choices>button,#guest-dialog #talk-choices.optional>button{
-  min-height:46px;padding:12px 15px;font:400 14px/1.6 var(--reading-serif);
-  color:#fff4db;text-shadow:none;border:1px solid #788674;border-radius:3px;
-  background:linear-gradient(#304437eb,#263b31ed),var(--plaque-wood) center/440px;
-  box-shadow:inset 0 1px #d8dfbd38,0 2px 0 #1b2b23,0 3px 5px #30241130;
-  filter:none;transform:none;
-}
-#guest-dialog #talk-choices>button::before,#guest-dialog #talk-choices>button::after{content:none;display:none}
-#guest-dialog #talk-choices>button:not(:disabled):hover{background-color:#3a5142;filter:brightness(1.1);transform:none;border-color:#aabb96}
-#guest-dialog #talk-choices>button:not(:disabled):active{filter:brightness(.92);transform:translateY(1px);box-shadow:inset 0 1px 3px #14271a66}
 /* Focus keeps keyboard navigation without drawing an extra ring. */
 :focus{outline:none!important;outline-offset:0!important}
 .kitchen-screen .room-hotspot:focus-visible span{outline:none!important}

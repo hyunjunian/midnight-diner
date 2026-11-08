@@ -18,6 +18,7 @@
     try { localStorage.setItem(KEY, JSON.stringify(state)); storageAvailable = true; }
     catch { storageAvailable = false; }
     $('save-status').textContent = storageAvailable ? '진행 상황이 이 기기에 자동 저장됩니다.' : '저장을 사용할 수 없습니다. 창을 닫으면 진행이 사라져요.';
+    return storageAvailable;
   }
   function toast(message) {
     if(Kitchen?.isVisible()){let feedback=$('kitchen-inline-feedback');if(!feedback){feedback=document.createElement('p');feedback.id='kitchen-inline-feedback';feedback.setAttribute('role','status');$('kitchen-footer').prepend(feedback);}feedback.textContent=message;return;}

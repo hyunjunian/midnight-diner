@@ -1,5 +1,7 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const VERSION = 'midnight-diner-pwa-20261108-v31-clean-start';
+const RELEASE = '20261108-v32-auto-update';
+const CACHE_PREFIX = 'midnight-diner-pwa-';
+const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
 const INDEX = new URL('index.html', ROOT).href;
 const FILES = [
@@ -339,17 +341,30 @@ const FILES = [
   'assets/final-v28-udon.webp',
 ].map(path => new URL(path, ROOT).href);
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(VERSION).then(cache => cache.addAll(FILES)));
+  event.waitUntil((async () => {
+    const cache = await caches.open(VERSION);
+    try {
+      await cache.addAll(FILES.map(url => new Request(url, {cache: 'no-store'})));
+    } catch (error) {
+      await caches.delete(VERSION);
+      throw error;
+    }
+    await self.skipWaiting();
+  })());
 });
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
-    for (const key of await caches.keys()) {
-      if (key.startsWith('midnight-diner-pwa-') && key !== VERSION) await caches.delete(key);
-    }
+    // Keep the previous shell for pages that are still finishing a cooking session.
+    const previous = (await caches.keys()).filter(key => key.startsWith(CACHE_PREFIX) && key !== VERSION);
+    for (const key of previous.slice(0, -1)) await caches.delete(key);
     await self.clients.claim();
+    for (const client of await self.clients.matchAll({type: 'window'})) {
+      client.postMessage({type: 'APP_UPDATED', release: RELEASE});
+    }
   })());
 });
 self.addEventListener('message', event => {
+  if (event.data?.type === 'GET_RELEASE') event.ports?.[0]?.postMessage({type: 'APP_UPDATED', release: RELEASE});
   if (event.data?.type === 'SKIP_WAITING') event.waitUntil(self.skipWaiting());
 });
 async function rangeResponse(request, cached) {
@@ -376,13 +391,31 @@ self.addEventListener('fetch', event => {
   if (url.origin !== ROOT.origin || !url.pathname.startsWith(ROOT.pathname)) return;
   event.respondWith((async () => {
     const cache = await caches.open(VERSION);
-    // A cached navigation and its scripts always belong to the same release.
+    // Every normal navigation checks the server; offline still uses an atomic cached shell.
     if (request.mode === 'navigate') {
       if (url.pathname === ROOT.pathname || url.pathname === new URL(INDEX).pathname) {
+        try {
+          const signal = typeof AbortSignal !== 'undefined' ? AbortSignal.timeout?.(4000) : undefined;
+          const fresh = await fetch(request.url, {cache: 'no-store', ...(signal ? {signal} : {})});
+          if (fresh.ok) return fresh;
+        } catch {}
         return (await cache.match(INDEX)) || fetch(request);
       }
-      return fetch(request);
+      return fetch(request, {cache: 'no-store'});
     }
+    // Release-tagged code never falls back to a different release's code.
+    const release = url.searchParams.get('release');
+    if (release && /\.(?:js|css|webmanifest)$/.test(url.pathname)) {
+      const name = CACHE_PREFIX + release;
+      const available = name === VERSION || (await caches.keys()).includes(name);
+      if (available) {
+        const shell = name === VERSION ? cache : await caches.open(name);
+        const cached = await shell.match(url.origin + url.pathname);
+        if (cached) return cached;
+      }
+      return fetch(request, {cache: 'no-store'});
+    }
+
     const cached = await cache.match(request.url);
     if (cached && request.headers.has('range')) return rangeResponse(request, cached);
     return cached || fetch(request);

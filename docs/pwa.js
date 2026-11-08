@@ -3,7 +3,7 @@
   const $ = id => document.getElementById(id);
   const standalone = () => navigator.standalone === true ||
     ['standalone', 'fullscreen', 'minimal-ui'].some(mode => matchMedia(`(display-mode: ${mode})`).matches);
-  let installPrompt = null, registration = null, applyingUpdate = false, launched = false;
+  let installPrompt = null, registration = null, applyingUpdate = false, launched = false, pendingRelease = null, lastUpdateCheck = 0;
   function launch() {
     if (launched) return;
     launched = true; window.MidnightApp.launch();
@@ -40,19 +40,56 @@
   const embeddedPreview = document.documentElement.dataset.preview === 'embedded';
   if (!embeddedPreview) launch();
 
-  function updateAvailable() {
-    $('update-app').hidden = false;
-    $('offline-status').textContent = '새 버전이 준비됐어요. 진행을 저장하고 다시 열 수 있어요.';
+  const currentRelease = document.querySelector('meta[name="app-release"]')?.content || '';
+  function applyPreparedUpdate() {
+    if (!pendingRelease || applyingUpdate || document.hidden || $('app').hidden || window.MidnightApp.isCooking() || document.querySelector('dialog[open]')) return;
+    // A failed save must never turn an automatic refresh into lost progress.
+    if (window.MidnightApp.save() === false) {
+      $('offline-status').textContent = '새 버전이 준비됐지만 진행을 저장하지 못해 자동 전환을 기다리고 있어요.';
+      return;
+    }
+    applyingUpdate = true;
+    location.reload();
   }
-  $('update-app').addEventListener('click', () => {
-    if (!registration?.waiting) return;
-    if (window.MidnightApp.isCooking()) return;
-    window.MidnightApp.save(); applyingUpdate = true; registration.waiting.postMessage({type: 'SKIP_WAITING'});
+  function scheduleUpdate() { setTimeout(applyPreparedUpdate, 0); }
+  function updateAvailable() {
+    // Switching the worker is safe: it retains the previous shell for the running page.
+    registration?.waiting?.postMessage({type: 'SKIP_WAITING'});
+  }
+  function preparedRelease(data) {
+    const release = data?.release;
+    if (data?.type !== 'APP_UPDATED' || typeof release !== 'string' || release.localeCompare(currentRelease, 'en', {numeric: true}) <= 0) return;
+    pendingRelease = release;
+    $('offline-status').textContent = '새 버전이 준비됐어요. 진행을 저장한 뒤 자동으로 적용합니다.';
+    scheduleUpdate();
+  }
+  function readControllerRelease() {
+    if (!navigator.serviceWorker?.controller || typeof MessageChannel === 'undefined') return;
+    const channel = new MessageChannel();
+    const timeout = setTimeout(() => channel.port1.close(), 4000);
+    channel.port1.onmessage = event => { clearTimeout(timeout); preparedRelease(event.data); channel.port1.close(); };
+    navigator.serviceWorker.controller.postMessage({type: 'GET_RELEASE'}, [channel.port2]);
+  }
+  navigator.serviceWorker?.addEventListener('message', event => preparedRelease(event.data));
+  navigator.serviceWorker?.addEventListener('controllerchange', readControllerRelease);
+  $('update-app').addEventListener('click', scheduleUpdate);
+  document.addEventListener('close', scheduleUpdate, true);
+  document.addEventListener('midnight:kitchen', scheduleUpdate);
+  async function checkForUpdates() {
+    if (!registration || document.hidden || Date.now() - lastUpdateCheck < 15000) return;
+    lastUpdateCheck = Date.now();
+    try { await registration.update(); } catch {} // Offline play must remain available.
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) { readControllerRelease(); checkForUpdates(); scheduleUpdate(); }
   });
-  navigator.serviceWorker?.addEventListener('controllerchange', () => { if (applyingUpdate) location.reload(); });
+  window.addEventListener('online', () => { lastUpdateCheck = 0; checkForUpdates(); });
+  window.addEventListener('focus', () => { readControllerRelease(); checkForUpdates(); });
+  setInterval(checkForUpdates, 60000);
   if ('serviceWorker' in navigator && window.isSecureContext) {
     navigator.serviceWorker.register('./sw.js', {scope: './', updateViaCache: 'none'}).then(async reg => {
       registration = reg;
+      readControllerRelease();
       if (reg.waiting) updateAvailable();
       reg.addEventListener('updatefound', () => {
         const worker = reg.installing;
