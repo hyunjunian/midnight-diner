@@ -13,7 +13,7 @@
   <script>
     // Preview uses release-specific script URLs so a previously installed worker cannot serve an old game.
     (async () => {
-      const release = 'living-diner-v20', root = new URL('./', location.href);
+      const release = 'paper-diner-v21', root = new URL('./', location.href);
       const response = await fetch(new URL(`index.html?preview-release=${release}`, root), {cache:'no-store'});
       if (!response.ok) throw new Error('load');
       const doc = new DOMParser().parseFromString(await response.text(), 'text/html');

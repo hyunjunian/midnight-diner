@@ -1,0 +1,40 @@
+/* Table-side conversation: one clear guest voice, with the unseen owner's replies. */
+#guest-dialog {inset:auto 0 0;width:min(100%,540px);max-height:96dvh;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;border-radius:24px 24px 0 0;}
+#guest-dialog .talk-portrait {width:116px;height:136px;margin:0 0 -3px 26px;overflow:hidden;}
+#guest-dialog .talk-portrait .actor {object-fit:contain;}
+#guest-dialog .talk-card {padding:17px 20px max(20px,env(safe-area-inset-bottom));border:1px solid #b39766;border-bottom:0;background:linear-gradient(120deg,#f7ecd1,#eadebd);color:#3e4736;box-shadow:0 -8px 40px #090b0866;}
+#guest-dialog .talk-header {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;}
+#guest-dialog .talk-header .eyebrow {font:11px/1.5 var(--sans);letter-spacing:.08em;color:#796746;}
+#guest-dialog .talk-close {position:static;flex:0 0 auto;width:auto;height:auto;min-height:44px;max-width:48%;margin:0;padding:8px 11px;border:1px solid #a08b62;border-radius:8px;background:#e6d6af;color:#514c39;font:12px/1.45 var(--sans);box-shadow:0 2px 0 #c0ac83;white-space:normal;}
+#guest-dialog #talk-name {font-size:clamp(24px,6vw,31px);color:#384b38;margin:5px 0;}
+#guest-dialog #talk-profile {font:13px/1.6 var(--sans);color:#5b644a;overflow-wrap:anywhere;}
+#guest-dialog #talk-regular {font:11px/1.6 var(--sans);color:#776e55;margin:4px 0 10px;}
+#guest-dialog .talk-notes {margin:8px 0 14px;padding:0;color:#756747;}
+#guest-dialog .talk-notes summary {cursor:pointer;font:12px/1.8 var(--sans);min-height:28px;}
+#guest-dialog #talk-known-fields {display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:7px 0 12px;padding:10px 12px;background:#ddcda653;border:1px dashed #b29b6e;border-radius:7px;}
+#guest-dialog #talk-known-fields>div:last-child {grid-column:1/-1;}
+#guest-dialog #talk-known-fields dt {font:10px/1.6 var(--sans);color:#8a7959;}
+#guest-dialog #talk-known-fields dd {margin:0;font:12px/1.5 var(--sans);color:#46553c;overflow-wrap:anywhere;}
+#guest-dialog #talk-known-fields .unknown dd {color:#8a8069;}
+#guest-dialog .talk-player-line {margin:12px 0 15px 32px;padding:9px 13px;border-radius:13px 3px 13px 13px;background:#d3ddc1;border:1px solid #a3b18c;color:#44533a;font:12px/1.6 var(--sans);}
+#guest-dialog .talk-player-line::before {content:'나  ';font-size:10px;font-weight:700;color:#788764;}
+#guest-dialog .talk-speech {min-height:0;padding:17px 16px 33px;background:#fffae8;border:1px solid #c5af80;box-shadow:0 3px 0 #d0bd964d;color:#3b4835;}
+#guest-dialog .talk-speech::before {background:#fffae8;border-top:1px solid #c5af80;border-left:1px solid #c5af80;}
+#guest-dialog #talk-line {font:clamp(15px,3.9vw,17px)/1.85 var(--serif);overflow-wrap:anywhere;}
+#guest-dialog #talk-progress {font:10px/1.4 var(--sans);color:#8a7653;bottom:9px;}
+#guest-dialog #talk-discovery {margin:11px 0 3px;font:11px/1.6 var(--sans);color:#52703c;}
+#guest-dialog .talk-choices {display:grid;gap:8px;margin-top:15px;}
+#guest-dialog .talk-choices>button {position:relative;width:100%;min-height:47px;padding:12px 32px 12px 15px;margin:0;text-align:left;white-space:normal;overflow-wrap:anywhere;font:13px/1.55 var(--sans);color:#415238;background:#f5edcf;border:1px solid #ad9b70;border-radius:9px;box-shadow:0 3px 0 #c6b489;}
+#guest-dialog .talk-choices>button::after {content:'›';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#90764e;}
+#guest-dialog .talk-choices>button:hover {background:#fff9e5;border-color:#6f845a;}
+#guest-dialog .talk-choices>button:active {transform:translateY(2px);box-shadow:0 1px 0 #c6b489;}
+#guest-dialog .talk-choices.optional {margin-top:10px;}
+#guest-dialog .talk-choices.optional>button {min-height:44px;padding-top:9px;padding-bottom:9px;box-shadow:none;background:transparent;font-size:11px;}
+#guest-dialog .talk-order {margin:13px 0 0;background:#d7c9a5;border:1px dashed #a68b5c;}
+#guest-dialog .talk-order>span:last-child {color:#3c4a32;font-size:15px;}
+#guest-dialog .talk-order small {color:#73664b;font-size:11px;}
+#guest-dialog #talk-next {margin-top:13px;min-height:50px;font:14px/1.5 var(--sans);white-space:normal;overflow-wrap:anywhere;}
+#guest-dialog #talk-gift {min-height:44px;font:12px/1.5 var(--sans);}
+#guest-dialog button:focus-visible,#guest-dialog summary:focus-visible {outline:3px solid #7c8c4d;outline-offset:3px;}
+@media(max-height:740px){#guest-dialog .talk-portrait {width:90px;height:95px;}#guest-dialog .talk-card {padding-top:12px;}#guest-dialog #talk-line {font-size:15px;line-height:1.75;}#guest-dialog .talk-choices {gap:7px;margin-top:12px;}}
+@media(max-height:550px) and (min-width:600px){#guest-dialog .talk-portrait {display:none;}#guest-dialog {max-height:96dvh;}}

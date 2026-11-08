@@ -116,3 +116,42 @@ test('under, correct and excessive heat stay visually distinct through delivery,
 test('every heat method selects food-appropriate boiling or frying foley, with no heat for cold food',()=>{for(const[id,r]of Object.entries(E.recipes)){const heat=E.Cooking.plan(id,r).some(st=>st.id==='heat'),mode=E.Cooking.heatMode(id,r);assert.equal(mode==='none',!heat,id);if(/chazuke|curry|kamameshi/.test(id)||['soup','noodle'].includes(E.Cooking.family(id,r)))assert.equal(mode,'boil',id);}for(const id of ['onigiri','tamago','friedrice','shrimp_chahan'])assert.equal(E.Cooking.heatMode(id,E.recipes[id]),'sizzle');});
 
 test('new cooking images are explicitly limited to the five early pilot dishes until user approval',()=>{assert.deepEqual(E.Cooking.imagePilot,['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);assert.equal(E.Cooking.imagePilot.includes('butadon'),false);assert.ok(Object.isFrozen(E.Cooking.imagePilot));});
+
+test('guest identity is discovered through chosen dialogue and never by arrival or viewing',()=>{
+ const {s,g}=setup(),before=structuredClone(s);
+ assert.deepEqual(E.guestProfile(s,g.person),{known:[],name:'처음 만난 손님',role:null,age:null,style:null,bio:null});
+ const hello=E.guestConversation(s,g.id);assert.equal(hello.node,'hello');assert.equal(hello.orderReady,false);assert.deepEqual(s,before);
+ assert.equal(E.answerGuest(s,g.id,'about'),false);assert.deepEqual(s,before);
+ assert.equal(E.answerGuest(s,g.id,'welcome'),true);assert.equal(E.guestProfile(s,g.person).name,E.person(g.person).name);assert.equal(E.guestProfile(s,g.person).role,null);assert.equal(E.guestProfile(s,g.person).age,null);assert.ok(E.guestProfile(s,g.person).style);
+ assert.equal(E.answerGuest(s,g.id,'day'),true);assert.equal(E.guestProfile(s,g.person).role,E.person(g.person).role);assert.equal(E.guestProfile(s,g.person).age,null);assert.ok(E.guestConversation(s,g.id).line.includes('주인장님은'));
+ assert.deepEqual(E.guestConversation(s,g.id).choices.map(x=>x.id),['warm','quiet','about']);
+ assert.equal(E.answerGuest(s,g.id,'warm'),true);const warm=E.guestConversation(s,g.id).line;assert.match(E.guestConversation(s,g.id).playerLine,/따뜻한 밥/);
+ assert.equal(E.answerGuest(s,g.id,'about'),true);assert.equal(E.guestProfile(s,g.person).age,E.person(g.person).age);assert.match(E.guestConversation(s,g.id).line,/세예요/);
+ assert.equal(E.answerGuest(s,g.id,'order'),true);assert.equal(E.guestConversation(s,g.id).orderReady,true);assert.match(E.guestConversation(s,g.id).line,new RegExp(E.recipes[g.recipe].name));
+ assert.equal(s.money,before.money);assert.equal(s.xp,before.xp);assert.equal(s.totalServed,0);assert.equal(g.status,'seated');
+ const alt=setup();for(const reply of ['welcome','day','quiet'])assert.ok(E.answerGuest(alt.s,alt.g.id,reply));assert.notEqual(E.guestConversation(alt.s,alt.g.id).line,warm);
+});
+test('short guest dialogue accepts the same unique order without forcing personal questions',()=>{
+ const {s,g}=setup();const recipe=g.recipe;for(const reply of ['welcome','menu'])assert.ok(E.answerGuest(s,g.id,reply));
+ assert.equal(E.guestConversation(s,g.id).orderReady,true);assert.equal(E.guestProfile(s,g.person).role,null);assert.equal(g.recipe,recipe);assert.ok(E.acceptOrder(s,g.id));assert.ok(E.beginCooking(s,g.id));
+ assert.equal(E.answerGuest(s,g.id,'more'),false);assert.equal(g.recipe,recipe); // accepted orders cannot be re-opened into optional chat
+ assert.equal(s.kitchen.guest,g.id);assert.equal(s.kitchen.stage,'room');
+ const gs=[g,E.arrive(s),E.arrive(s)];assert.equal(new Set(gs.map(x=>x.recipe)).size,3);
+});
+test('conversation choices and learned facts survive reload and another visit without leaking other guests',()=>{
+ const {s,g}=setup();for(const reply of ['welcome','day','quiet'])assert.ok(E.answerGuest(s,g.id,reply));const funds=s.money,inventory=structuredClone(s.inventory);
+ const loaded=E.restore(JSON.stringify(s));assert.equal(E.guestConversation(loaded,g.id).node,'quiet');assert.deepEqual(E.guestProfile(loaded,g.person),E.guestProfile(s,g.person));assert.equal(loaded.money,funds);assert.deepEqual(loaded.inventory,inventory);
+ assert.ok(E.answerGuest(loaded,g.id,'order'));cook(loaded,loaded.guests[0]);pay(loaded,loaded.guests[0]);
+ const known=E.guestProfile(loaded,g.person);loaded.night++;loaded.guests=[];loaded.arrived=0;loaded.nextVisitor=g.person;loaded.nightVisitors=[];loaded.nightOrders=[];loaded.customerBook[g.person].lastScore=0;
+ const revisit=E.arrive(loaded);assert.equal(revisit.person,g.person);assert.equal(E.guestConversation(loaded,revisit.id).node,'hello');assert.deepEqual(E.guestProfile(loaded,g.person),known);assert.match(E.guestConversation(loaded,revisit.id).line,/또 들렀어요/);
+ const stranger=E.arrive(loaded);assert.deepEqual(E.guestProfile(loaded,stranger.person).known,[]);
+});
+test('optional dialogue migration preserves old v11 finances, inventory and active cooking without inventing facts',()=>{
+ const {s,g}=setup();s.money=12345;E.acceptOrder(s,g.id);E.beginCooking(s,g.id);delete s.customerBook[g.person].known;
+ const loaded=E.restore(JSON.stringify(s));assert.equal(loaded.version,11);assert.equal(loaded.money,12345);assert.deepEqual(loaded.kitchen,s.kitchen);assert.deepEqual(loaded.inventory,s.inventory);assert.equal(loaded.guests[0].status,'waiting');assert.deepEqual(E.guestProfile(loaded,g.person).known,[]);
+ loaded.customerBook[g.person].known=['name','name','bankAccount'];loaded.guests[0].chat={node:'invalid',reply:'<script>'};const sanitized=E.restore(JSON.stringify(loaded));assert.equal(sanitized.money,12345);assert.deepEqual(sanitized.customerBook[g.person].known,['name']);assert.equal(sanitized.guests[0].chat,undefined);
+});
+test('night clock progress survives v11 reload, safely defaults for older saves, and resets at opening',()=>{
+ const s=E.fresh();assert.equal(s.nightElapsedMs,0);s.nightElapsedMs=123456;let loaded=E.restore(JSON.stringify(s));assert.equal(loaded.nightElapsedMs,123456);assert.ok(E.open(loaded));assert.equal(loaded.nightElapsedMs,0);
+ const raw=JSON.parse(JSON.stringify(loaded));delete raw.nightElapsedMs;assert.equal(E.restore(JSON.stringify(raw)).nightElapsedMs,0);raw.nightElapsedMs=-100;assert.equal(E.restore(JSON.stringify(raw)).nightElapsedMs,0);
+});

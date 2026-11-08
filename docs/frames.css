@@ -1,0 +1,57 @@
+/* Real mitered walnut, sliced into four rails and four corners. Transparent
+   openings preserve the independent washi paper and printed interface beneath. */
+:root{--walnut-frame:url('./assets/ui-frame-walnut-v21.webp')}
+.sheet,#report-dialog,#story-dialog{
+  border:10px solid #63412b;
+  border-image-source:var(--walnut-frame);
+  border-image-slice:10.2%;
+  border-image-width:1;
+  border-image-outset:0;
+  border-image-repeat:stretch;
+  border-radius:2px;
+  background-clip:padding-box;
+  box-shadow:0 2px 2px #130b07aa,0 20px 65px #0009,inset 0 1px 2px #fff8df,inset 0 -2px 3px #79522c38;
+}
+/* The guest's silhouette remains above and outside the framed paper folio. */
+#guest-dialog .talk-card{
+  border:8px solid #63412b;
+  border-bottom-width:0;
+  border-image-source:var(--walnut-frame);
+  border-image-slice:10.2%;
+  border-image-width:1;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background-clip:padding-box;
+  box-shadow:0 -6px 24px #0006,inset 0 1px 2px #fff8df,inset 1px 0 2px #8b60272a;
+}
+/* Small solid-wood plaques use a thinner version of the same real bevel.
+   Inner item cards, speech balloons and buttons keep their own paper edges. */
+.night-hud,.wallet-hud,.progress-hud,.pan-controls,.game-dock{
+  border:5px solid #63412b;
+  border-image-source:var(--walnut-frame);
+  border-image-slice:10.2%;
+  border-image-width:1;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background-clip:padding-box;
+  box-shadow:0 2px 2px #120a08b3,0 5px 13px #0005,inset 0 1px 2px #170c0780;
+}
+.progress-hud{border-width:4px}
+.game-dock{border-width:7px;box-shadow:0 4px 2px #150d0aaa,0 9px 22px #0007,inset 0 1px 3px #170c0780}
+.kitchen-header,#kitchen-footer{
+  border:7px solid #63412b;
+  border-image-source:var(--walnut-frame);
+  border-image-slice:10.2%;
+  border-image-width:1;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background-clip:padding-box;
+  box-shadow:0 3px 7px #0006,inset 0 1px 2px #170c0780;
+}
+@media(max-width:359px){
+  .sheet,#report-dialog,#story-dialog{border-width:8px}
+  #guest-dialog .talk-card{border-width:7px;border-bottom-width:0}
+  .night-hud,.wallet-hud,.pan-controls{border-width:4px}
+  .game-dock{border-width:6px}
+  .kitchen-header,#kitchen-footer{border-width:6px}
+}

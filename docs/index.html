@@ -19,6 +19,12 @@
   <link rel="preload" as="image" href="./assets/food-clean.webp">
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./kitchen.css">
+  <link rel="stylesheet" href="./customer.css">
+  <link rel="stylesheet" href="./motion.css">
+  <link rel="stylesheet" href="./analog.css">
+  <link rel="stylesheet" href="./frames.css">
+  <link rel="stylesheet" href="./tactile-controls.css">
+  <link rel="stylesheet" href="./physical-icons.css">
   <script src="./catalog.js" defer></script>
   <script src="./stories.js" defer></script>
   <script src="./cooking-rules.js" defer></script>
@@ -27,11 +33,14 @@
   <script src="./morph.js" defer></script>
   <script src="./rain.js" defer></script>
   <script src="./scene.js" defer></script>
+  <script src="./atmosphere.js" defer></script>
+  <script src="./daylight.js" defer></script>
   <script src="./gestures.js" defer></script>
   <script src="./audio.js" defer></script>
   <script src="./voice.js" defer></script>
   <script src="./kitchen.js" defer></script>
   <script src="./game.js" defer></script>
+  <script src="./soundscape.js" defer></script>
   <script src="./pwa.js" defer></script>
 </head>
 <body>
@@ -78,8 +87,18 @@
   </main>
 
   <dialog id="guest-dialog" class="guest-dialog" aria-labelledby="talk-name">
-    <button data-close="guest-dialog" class="talk-close" aria-label="대화 잠시 닫기">×</button>
-    <div id="talk-portrait" class="talk-portrait"></div><div class="talk-card"><span class="eyebrow">COUNTER CONVERSATION</span><h2 id="talk-name"></h2><p id="talk-profile"></p><p id="talk-regular"></p><div class="talk-speech"><p id="talk-line" aria-live="polite"></p><span id="talk-progress"></span></div><div id="talk-order" class="talk-order" hidden></div><button id="talk-gift" hidden></button><button id="talk-next" class="primary">다음 이야기 →</button></div>
+    <div id="talk-portrait" class="talk-portrait" aria-hidden="true"></div>
+    <div class="talk-card">
+      <header class="talk-header"><span class="eyebrow">카운터에서 나누는 이야기</span><button type="button" data-close="guest-dialog" class="talk-close" aria-label="대화를 잠시 접고 자리로 돌아가기">잠시 자리로</button></header>
+      <h2 id="talk-name"></h2><p id="talk-profile"></p><p id="talk-regular"></p>
+      <details class="talk-notes"><summary>손님에 대해 알게 된 것</summary><dl id="talk-known-fields"></dl></details>
+      <p id="talk-player-line" class="talk-player-line" hidden></p>
+      <div class="talk-speech"><p id="talk-line" aria-live="polite"></p><span id="talk-progress"></span></div>
+      <p id="talk-discovery" role="status" hidden></p>
+      <div id="talk-order" class="talk-order" hidden></div>
+      <div id="talk-choices" class="talk-choices" aria-label="내가 할 말 고르기"></div>
+      <button id="talk-gift" hidden></button><button id="talk-next" class="primary" hidden>주문 받고 부엌으로 →</button>
+    </div>
   </dialog>
   <dialog id="report-dialog" class="sheet report" aria-labelledby="report-title"><header class="sheet-header"><div><span class="eyebrow">NIGHTLY REPORT</span><h2 id="report-title">오늘의 영업보고</h2></div><button data-close="report-dialog" class="round-button" aria-label="영업보고 닫기">×</button></header><div id="report-content" class="sheet-body"></div></dialog>
   <dialog id="management-dialog" class="sheet management" aria-labelledby="management-title">
@@ -94,7 +113,8 @@
     <header class="sheet-header"><h2 id="settings-title">잠시 쉬어 가기</h2><button data-close="settings-dialog" class="round-button" aria-label="설정 닫기">×</button></header>
     <div class="sheet-body settings-list">
       <button id="replay">인트로 다시 보기 <span>▶</span></button>
-      <button id="sound-effects" aria-pressed="true">효과음 · 켜짐 ♫</button>
+      <button id="sound-effects" aria-pressed="true">게임 소리 · 켜짐</button>
+      <button id="ambient-sound" aria-pressed="true">식당 환경음 · 켜짐</button>
       <button id="fullscreen">전체 화면 <span>⛶</span></button>
       <button id="reset">처음부터 시작 <span>↺</span></button>
       <button id="update-app" hidden>새 버전으로 다시 열기 <span>↻</span></button>

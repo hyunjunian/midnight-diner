@@ -1,0 +1,21 @@
+/* Effects stay behind guests and the foreground counter, within the live scene. */
+#scene-atmosphere{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;contain:strict}
+.atmosphere-ready>.steam{display:none}
+.scene.is-prep #scene-atmosphere{visibility:hidden}
+/* A whole-portrait fallback keeps identity intact when a GPU is unavailable. */
+.actor.motion-fallback{animation:none!important;transform-origin:50% 87%;will-change:transform}
+@media(prefers-reduced-motion:reduce){.actor.motion-fallback{transform:none!important;will-change:auto}}
+/* This clock belongs only to the playable room/alley, never the cinematic intro. */
+#scene-daylight{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;contain:strict}
+.scene.daylight-active:not(.is-prep) .exterior-world .exterior-art,
+.scene.daylight-active:not(.is-prep) .exterior-world #decorations{filter:brightness(var(--alley-brightness,1)) saturate(.92);transition:filter 1.8s linear}
+.daylight-street-off,.daylight-street-glow{position:absolute;inset:0;pointer-events:none;z-index:0;display:none}
+.exterior-world .daylight-street-off,.exterior-world .daylight-street-glow{display:block}
+.daylight-street-off{background-size:100% 100%;background-repeat:no-repeat;filter:brightness(var(--alley-brightness,1)) saturate(.92);mask-image:radial-gradient(ellipse 10% 8% at 72.2% 21.8%,#000 50%,transparent 100%),radial-gradient(ellipse 3% 3% at 12.6% 39.7%,#000 45%,transparent 100%);transition:opacity 1.8s linear,filter 1.8s linear}
+.daylight-street-glow{background:radial-gradient(ellipse 7% 5% at 72.2% 21.8%,#ffd38842,transparent 100%),radial-gradient(ellipse 3% 3% at 12.6% 39.7%,#ffcf7838,transparent 100%);transition:opacity 1.8s linear}
+.scene.is-prep #scene-daylight,.scene.is-prep .daylight-street-off,.scene.is-prep .daylight-street-glow{visibility:hidden}
+@media(prefers-reduced-motion:reduce){.daylight-street-off,.daylight-street-glow,.scene.daylight-active:not(.is-prep) .exterior-world .exterior-art,.scene.daylight-active:not(.is-prep) .exterior-world #decorations{transition:none}}
+/* Outside, sky light washes authored upgrades evenly as well as the bare facade. */
+.exterior-world #scene-daylight{z-index:102}
+.exterior-world .daylight-street-off{z-index:100}
+.exterior-world .daylight-street-glow{z-index:101}

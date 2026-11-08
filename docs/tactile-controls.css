@@ -1,0 +1,163 @@
+/* v21 tactile controls. Load LAST, after analog.css and frames.css.
+   Only interface controls: never intro/install, portraits, food or gesture targets. */
+:root {
+  --slip-ink:#443925;
+  --slip-paper:url('./assets/ui-washi-v21.webp');
+  --plaque-wood:url('./assets/ui-walnut-v21.webp');
+  --control-cut:polygon(.6% 2%,18% 0,42% 1.1%,66% .2%,84% 1.3%,99.6% 0,100% 26%,99.6% 58%,100% 98%,77% 99.6%,56% 98.7%,33% 100%,13% 99%,0 100%,.4% 70%,0 35%);
+}
+/* Replies are loose slips laid on the folio, rather than outlined form fields.
+   The uneven paper is a separate paint layer; the full rectangle remains tappable. */
+:is(#guest-dialog .talk-choices>button,#guest-dialog .talk-choices.optional>button,#story-content .story-choice-card) {
+  position:relative;isolation:isolate;overflow:visible;
+  min-height:52px;border:0;border-radius:0;
+  background:transparent;color:var(--slip-ink);
+  box-shadow:none;filter:drop-shadow(1px 4px 2px #51341832);
+  transform:rotate(-.25deg);text-shadow:.2px .2px #6e51292b;
+  transition:transform .13s ease,filter .13s ease;
+}
+:is(#guest-dialog .talk-choices>button,#guest-dialog .talk-choices.optional>button,#story-content .story-choice-card)::before {
+  content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-color:#f4e4bd;
+  background-image:linear-gradient(102deg,#89652d21 0,transparent 3%,transparent 94%,#84623420 100%),var(--slip-paper);
+  background-size:auto,440px auto;background-position:center,34% 48%;
+  clip-path:var(--control-cut);
+  box-shadow:inset 0 2px 1px #fffae6b0,inset 0 -2px 2px #9877494d;
+}
+:is(#guest-dialog .talk-choices>button,#guest-dialog .talk-choices.optional>button,#story-content .story-choice-card)::after {
+  content:'';position:absolute;top:0;right:0;width:15px;height:15px;
+  background:linear-gradient(225deg,#bea77c00 44%,#a78b5d70 46%,#fff2d0 52%,#ead4a8 100%);
+  clip-path:polygon(0 0,100% 100%,0 100%);transform:none;pointer-events:none;
+  filter:drop-shadow(-1px 1px 1px #72542c32);
+}
+#guest-dialog .talk-choices {gap:12px;margin-top:17px;padding:0 2px 4px;}
+#guest-dialog .talk-choices>button {padding:16px 25px 15px 19px;font:14px/1.6 var(--sans);text-align:left;}
+#guest-dialog .talk-choices>button:nth-child(2n),#story-content .story-choice-card:nth-child(2n) {transform:rotate(.35deg);}
+#guest-dialog .talk-choices>button:nth-child(2n)::before,#story-content .story-choice-card:nth-child(2n)::before {background-position:center,70% 75%;}
+#guest-dialog .talk-choices.optional>button {min-height:46px;padding:12px 22px 12px 17px;font-size:12px;filter:drop-shadow(1px 3px 2px #51341825);}
+#story-content .story-choices {gap:15px;padding:3px 2px 6px;}
+#story-content .story-choice-card {padding:19px 17px;gap:12px;}
+#story-content .story-choice-card .choice-number {
+  align-self:center;background:none;color:#9d462b;border:2px solid #a55335;
+  border-radius:2px;box-shadow:inset 0 0 0 2px #f3e3bd;
+  font:700 12px/1.2 var(--sans);transform:rotate(-5deg);padding:6px;min-width:31px;
+}
+#story-content .story-choice-card .choice-copy b {font:700 15px/1.6 var(--sans);color:#4b3d27;}
+#story-content .story-choice-card .choice-copy small {font:12px/1.7 var(--sans);color:#7f6744;margin-top:6px;}
+#story-content .story-choice-card .choice-arrow {color:#93643a;font-size:20px;}
+/* Major actions are thick, grain-filled plaques. Light catches the upper bevel;
+   a darker physical lower edge compresses under a finger. */
+:is(#night-action,#talk-next,#report-next,#kitchen-footer .primary,.stock-prep .primary) {
+  position:relative;isolation:isolate;
+  min-height:56px;border:1px solid #52311c;border-radius:3px 5px 4px 3px;
+  background-color:#754a2e;
+  background-image:linear-gradient(180deg,#f5ce8b3d 0,#57301600 16%,#28130726 81%,#180c0a88 100%),var(--plaque-wood);
+  background-size:auto,460px auto;background-position:center,center 38%;
+  color:#fff0c9;text-shadow:0 1px 1px #281607,0 -1px #4a2c19;
+  box-shadow:inset 0 2px 1px #e7bb7d99,inset 2px 0 1px #dfae6d4d,inset -2px -3px 2px #24130dbb,0 4px 0 #26170f,0 7px 7px #150e0b66;
+  font:700 16px/1.5 var(--sans);letter-spacing:.025em;
+  padding:15px 22px;white-space:normal;overflow-wrap:anywhere;
+  transition:transform .12s ease,box-shadow .12s ease;
+}
+#night-action {font-family:var(--brush);font-size:28px;font-weight:400;line-height:1.25;}
+#night-action>span,#report-next>span {font-family:var(--sans);font-size:22px;}
+#report-content #report-next {background-color:#754a2e;background-image:linear-gradient(180deg,#f5ce8b3d,#28130726),var(--plaque-wood);background-size:auto,460px;color:#fff0c9;border-radius:4px;box-shadow:inset 0 2px #e7bb7d99,inset -2px -3px 2px #24130dbb,0 4px 0 #26170f,0 7px 7px #150e0b66;}
+/* Smaller actions are a stack of cut paper labels, with ink instead of green UI fills. */
+:is(.story-answer-jump,.story-voice-controls button,#guest-dialog .talk-close,#talk-gift,.stock-card button:not(.quick-stock),.menu-card button,.upgrade-card button,.item-shop-grid .furnish-card>button,.stock-bulk-small,.change-prep-plan,.next-goal>button,.fridge-tabs button,.fridge-pages button,.stock-inspector [data-refill],.heat-actions button,.practice-actions button,.guide-replay,.motion-replay,.heat-replay,.subtle-action,.neighbor-help,.kitchen-header>button,.resume-kitchen,.scene-controls>button,.settings-list button,.collection-filters button) {
+  min-height:44px;border:0;border-radius:1px 3px 2px 1px;
+  background-color:#e6d3ab;
+  background-image:linear-gradient(100deg,#d5ba8240,transparent 18%,#fff7dd2b 76%,#a98d5c21),var(--slip-paper);
+  background-size:auto,420px auto;background-position:center,center 60%;
+  color:#594429;box-shadow:inset 0 1px #fff6d7,inset 0 -1px #ac90624d,1px 3px 0 #ad8b562e,1px 5px 5px #28190d26;
+  font-family:var(--sans);font-size:12px;line-height:1.5;font-weight:700;
+  text-shadow:.2px .2px #6e51292b;
+  white-space:normal;overflow-wrap:anywhere;
+  transition:transform .12s ease,box-shadow .12s ease;
+}
+#story-content .story-answer-jump {background-image:linear-gradient(#e9d4a74d,#d8be8d33),var(--slip-paper);color:#774429;border:2px solid #9b583a;border-radius:1px;box-shadow:inset 0 0 0 3px #f1e2c2,1px 4px 4px #5a3b1a25;font-size:14px;letter-spacing:.025em;}
+#story-content .story-answer-jump::after {display:none;}
+.story-voice-controls button {font-size:12px;padding:11px 13px;}
+#guest-dialog .talk-close {font-size:11px;padding:10px 13px;box-shadow:1px 2px 0 #ad8b5638;}
+.item-shop-grid .furnish-card>button {font-size:12px;min-height:46px;padding:11px 6px;}
+.collection-filters {padding:5px 2px 15px;}
+.collection-filters button {padding:10px 13px;}
+.collection-filters button.active {background-image:linear-gradient(#c69e6321,#c69e6321),var(--slip-paper);color:#9c452e;border:2px solid #9c5038;box-shadow:inset 0 0 0 2px #f3e4c5,1px 3px 3px #55371829;}
+/* Steppers resemble tally blocks with a paper count field. Keep numeric input16px
+   to avoid mobile zoom, and reserve enough width for the +/- finger targets. */
+.quantity-stepper,.lamp-quantity {gap:4px;grid-template-columns:44px minmax(32px,1fr) 44px;}
+:is(.quantity-stepper button,.lamp-quantity button) {
+  min-width:44px;min-height:44px;height:44px;padding:8px;border:1px solid #805b35;border-radius:2px;
+  color:#f8e6be;background-color:#69452a;background-image:var(--plaque-wood);background-size:240px auto;
+  box-shadow:inset 0 1px #d6b17d88,inset 0 -2px #2b180d99,0 2px 0 #352316;
+  font:700 20px/1 var(--sans);text-shadow:0 1px #2b1b0f;
+}
+:is(.quantity-stepper input,.lamp-quantity input) {min-width:0;height:44px;border:0;border-radius:0;background:#f8ebce var(--slip-paper) center/360px auto;color:#493b28;box-shadow:inset 0 1px 3px #7c5b2d44;font:700 16px var(--sans);}
+/* Dock entries are individual paper tabs seated on the existing wood frame. */
+.game-dock button {
+  position:relative;border:0;border-radius:1px 2px 1px 2px;min-height:61px;
+  background-color:#e7d4ae;background-image:linear-gradient(180deg,#faf0d851,#b99a642b),var(--slip-paper);
+  background-size:auto,260px auto;background-position:center,center 40%;
+  box-shadow:inset 0 1px #fff4d2,inset 0 -2px #ab885252,1px 3px 0 #1c100cbb;
+}
+.game-dock button:nth-child(2n) {background-position:center,70% 70%;}
+.game-dock button>span {color:#8c5c32;text-shadow:0 1px #fff2d2;}
+.game-dock button b {color:#594328;font:700 11px/1.3 var(--sans);}
+.game-dock button.active {background-image:linear-gradient(#bf9a5d1c,#bf9a5d1c),var(--slip-paper);border:0;border-radius:1px;box-shadow:inset 0 -3px #a54b31,inset 0 1px #fff4d2,1px 3px 0 #1c100cbb;}
+/* All painted controls retain a high contrast focus ring, physical pressed state,
+   and faded ink when unavailable. No logic or pointer target is replaced. */
+:is(#guest-dialog .talk-choices>button,#story-content .story-choice-card):not(:disabled):hover {filter:drop-shadow(1px 6px 3px #51341845);transform:translateY(-1px) rotate(0deg);}
+:is(#guest-dialog .talk-choices>button,#story-content .story-choice-card):not(:disabled):active {filter:drop-shadow(0 1px 1px #51341832);transform:translateY(2px) rotate(0deg);}
+:is(#night-action,#talk-next,#report-next,#kitchen-footer .primary,.stock-prep .primary):not(:disabled):active {transform:translateY(3px);box-shadow:inset 0 1px #e7bb7d66,inset 0 -2px #24130d99,0 1px 0 #26170f,0 2px 3px #150e0b55;}
+:is(.story-answer-jump,.story-voice-controls button,#guest-dialog .talk-close,#talk-gift,.stock-card button:not(.quick-stock),.menu-card button,.upgrade-card button,.item-shop-grid .furnish-card>button,.stock-bulk-small,.change-prep-plan,.next-goal>button,.fridge-tabs button,.fridge-pages button,.stock-inspector [data-refill],.heat-actions button,.practice-actions button,.guide-replay,.motion-replay,.heat-replay,.subtle-action,.neighbor-help,.kitchen-header>button,.resume-kitchen,.scene-controls>button,.collection-filters button,.quantity-stepper button,.lamp-quantity button,.game-dock button):not(:disabled):active {transform:translateY(2px);box-shadow:inset 0 1px 2px #8b652a32,0 1px 0 #b89b6d44;}
+:is(#night-action,#talk-next,#report-next,#kitchen-footer .primary,.stock-prep .primary,#guest-dialog .talk-choices>button,#story-content .story-choice-card,.story-answer-jump,.story-voice-controls button,.stock-card button:not(.quick-stock),.menu-card button,.item-shop-grid .furnish-card>button,.quantity-stepper button,.lamp-quantity button,.game-dock button):focus-visible {outline:3px solid #ad462d;outline-offset:4px;}
+:is(#night-action,#talk-next,#report-next,#kitchen-footer .primary,.stock-prep .primary,.stock-card button:not(.quick-stock),.menu-card button,.upgrade-card button,.item-shop-grid .furnish-card>button,#talk-gift,.quantity-stepper button,.lamp-quantity button,.heat-actions button):disabled {
+  color:#8d7f66;background-color:#dcccae;background-image:linear-gradient(#e1d4b66e,#e1d4b66e),var(--slip-paper);background-size:auto,420px;
+  border-color:#b7a789;box-shadow:inset 0 1px #efe5ce,0 1px 0 #8b775533;opacity:.82;text-shadow:none;transform:none;
+}
+#story-content .story-choice-card:disabled {background:transparent;color:#9a8c70;filter:drop-shadow(0 2px 1px #5134181c);transform:none;opacity:.76;}
+#story-content .story-choice-card:disabled::before {background-image:linear-gradient(#c9bda680,#c9bda680),var(--slip-paper);}
+#story-content .story-choice-card:disabled .choice-number {color:#9b8970;border-color:#ac9674;font-size:11px;}
+#story-content .story-choice-card:disabled .choice-copy b,#story-content .story-choice-card:disabled .choice-copy small {color:#8a7a60;}
+@media(max-width:359px){
+  #guest-dialog .talk-choices>button {padding:14px 22px 14px 15px;font-size:13px;}
+  #story-content .story-choice-card {padding:16px 12px;gap:9px;}
+  #story-content .story-choice-card .choice-copy b {font-size:14px;}
+  #story-content .story-choice-card .choice-copy small {font-size:11px;}
+  .item-shop-grid .furnish-card>button {font-size:11px;}
+  .quantity-stepper,.lamp-quantity {gap:3px;grid-template-columns:44px minmax(25px,1fr) 44px;}
+  #night-action {font-size:26px;}
+}
+@media(prefers-reduced-motion:reduce){
+  :is(#guest-dialog .talk-choices>button,#story-content .story-choice-card,#night-action,#talk-next,#report-next,#kitchen-footer .primary,.stock-prep .primary) {transition:none;}
+}
+/* Existing pantry steppers used important shorthand fills. Replace those exact
+   declarations as well, so no old flat green remains underneath the wood. */
+.quantity-stepper {border:0;border-radius:0;overflow:visible;background:none;box-shadow:none;}
+.quantity-stepper button {background:#69452a var(--plaque-wood) center/240px auto!important;color:#f8e6be!important;border:1px solid #805b35!important;border-radius:2px!important;}
+.lamp-quantity {grid-template-columns:44px minmax(0,1fr) 44px;}
+/* Relative paint layers must not reactivate the legacy floating-X offsets. */
+#guest-dialog .talk-close {inset:auto;margin:0;align-self:center;transform:none;}
+
+.resume-kitchen:not(:disabled):active {transform:translate(-50%,2px);}
+
+/* Choice prompts are part of the printed ticket: dark ink remains legible
+   beside the lifted slips, including the formerly dark-theme subheading. */
+#story-content .story-choice-heading {color:#6c5332;}
+#story-content .story-choice-heading>span {color:#95633f;}
+#story-content .story-choice-heading h3 {font-family:var(--brush);font-size:27px;color:#59432b;line-height:1.25;}
+#story-content .story-choice-heading p {color:#786445;}
+/* Folio close tabs carry a simple ink cross, not a circular browser-style chip. */
+:is(#management-dialog,#story-dialog,#report-dialog,#settings-dialog) .sheet-header .round-button {
+  border:0;border-radius:1px 3px 1px 2px;
+  background:#ead8b2 var(--slip-paper) 70% 40%/280px auto;color:#795333;
+  min-width:44px;width:44px;min-height:44px;height:44px;
+  box-shadow:inset 0 1px #fff6da,1px 3px 0 #c1a3714d,1px 5px 4px #61421d29;
+  font:26px/1 var(--sans);transform:rotate(1.5deg);
+}
+:is(#management-dialog,#story-dialog,#report-dialog,#settings-dialog) .sheet-header .round-button:active {transform:translateY(2px);box-shadow:0 1px 0 #c1a3714d;}
+.quantity-stepper button:disabled {background:#d5c9b1 var(--slip-paper) center/300px auto!important;color:#99896e!important;border-color:#baa688!important;box-shadow:inset 0 1px #eee2ca,0 1px #aa947244;}
+#report-content #report-next:not(:disabled):active {transform:translateY(3px);box-shadow:inset 0 1px #e7bb7d66,inset 0 -2px #24130d99,0 1px 0 #26170f,0 2px 3px #150e0b55;}
+/* Physical +/- blocks replace the browser's tiny modern number-spinner chrome. */
+:is(.quantity-stepper,.lamp-quantity) input[type=number] {appearance:textfield;-moz-appearance:textfield;}
+:is(.quantity-stepper,.lamp-quantity) input[type=number]::-webkit-inner-spin-button,
+:is(.quantity-stepper,.lamp-quantity) input[type=number]::-webkit-outer-spin-button {-webkit-appearance:none;margin:0;}

@@ -1,0 +1,71 @@
+/* Original tactile object atlas. 1774×887 = four columns / two rows of square
+   cells: no object aspect distortion. Control materials remain in prior layers. */
+:root {--ui-objects:url('./assets/ui-objects-v21.webp');}
+.game-dock button>span {
+  display:block;
+  width:34px;height:34px;
+  margin:0 auto 3px;
+  padding:0;
+  font-size:0;line-height:0;
+  color:transparent;text-shadow:none;
+  background-image:var(--ui-objects);
+  background-size:400% 200%;
+  background-repeat:no-repeat;
+  background-position:0 0;
+  pointer-events:none;
+}
+.game-dock [data-tab="pantry"]>span {background-position:0 0;}
+.game-dock [data-tab="menu"]>span {background-position:33.333333% 0;}
+.game-dock [data-tab="shop"]>span {background-position:66.666667% 0;}
+.game-dock #story-open>span {background-position:100% 0;}
+#settings-open {font-size:0;}
+#settings-open::before {
+  content:'';
+  display:block;
+  width:30px;height:30px;
+  background-image:var(--ui-objects);
+  background-repeat:no-repeat;
+  background-size:400% 200%;
+  background-position:0 100%;
+  pointer-events:none;
+}
+.hud-moon {
+  display:block;flex:0 0 25px;
+  width:25px;height:25px;
+  font-size:0;line-height:0;
+  color:transparent;
+  background-image:var(--ui-objects);
+  background-repeat:no-repeat;
+  background-size:400% 200%;
+  background-position:100% 100%;
+}
+/* A lit brass/glass pilot lamp replaces the flat notification dot. */
+.game-dock #story-badge {
+  width:21px;height:21px;
+  right:0;top:-4px;
+  border:0;border-radius:0;
+  background-color:transparent;
+  background-image:var(--ui-objects);
+  background-size:400% 200%;
+  background-position:33.333333% 100%;
+  background-repeat:no-repeat;
+  box-shadow:none;
+  filter:drop-shadow(0 0 3px #ffc45e);
+  animation:pilot-lamp-warmth 3.1s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes pilot-lamp-warmth {
+  0%,100% {filter:drop-shadow(0 0 2px #ffc45e99);}
+  50% {filter:drop-shadow(0 0 5px #ffc45ecc);}
+}
+@media(max-width:359px) {
+  .game-dock button>span {width:32px;height:32px;margin-bottom:3px;}
+  .game-dock #story-badge {width:20px;height:20px;right:-1px;top:-4px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .game-dock #story-badge {animation:none;filter:drop-shadow(0 0 3px #ffc45eaa);}
+}
+
+/* Sound preferences use the same small wooden radio as a physical control cue. */
+.settings-list :is(#sound-effects,#ambient-sound){display:flex;align-items:center;justify-content:flex-start;gap:12px;}
+.settings-list :is(#sound-effects,#ambient-sound)::before{content:'';display:block;flex:0 0 28px;width:28px;height:28px;background:var(--ui-objects) 66.666667% 100%/400% 200% no-repeat;pointer-events:none;}

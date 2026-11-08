@@ -16,29 +16,55 @@
     for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const k=j*(cols+1)+i;indices.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1)}
     return {points,indices:new Uint16Array(indices),person};
   }
-  // All fields are smooth, overlapping weights in one connected mesh.
+  // Seeded random knots blend continuously; guests never share a repeating pose loop.
+  const hash=(n,seed=0)=>{const v=Math.sin(n*127.1+seed*311.7)*43758.5453;return v-Math.floor(v);};
+  function noise(t,seed){const n=Math.floor(t),f=smooth(t-n);return (hash(n,seed)*(1-f)+hash(n+1,seed)*f)*2-1;}
+  function gesture(t,seed,period,chance){
+    const epoch=Math.floor(t/period);let result=0;
+    // Include the preceding epoch so envelopes remain seamless across its boundary.
+    for(let k=epoch-1;k<=epoch;k++){
+      if(hash(k,seed+1)>chance)continue;
+      const start=k*period+hash(k,seed+2)*period*.64;
+      const duration=2.4+hash(k,seed+3)*3.2,u=(t-start)/duration;
+      if(u>0&&u<1)result+=Math.sin(Math.PI*u)**2*(hash(k,seed+4)>.5?1:-1);
+    }return result;
+  }
+  function motion(t,seed=0){
+    const rhythm=t*(1.24+hash(1,seed)*.28)+seed+noise(t*.12,seed+4)*.34;
+    const breath=Math.sin(rhythm),glance=gesture(t,seed+11,9,.82),settle=gesture(t,seed+23,12,.76),nod=gesture(t,seed+37,8,.68);
+    return {breath,glance,settle,nod,
+      sway:noise(t*.28,seed+5)*.035+glance*.042,
+      lean:noise(t*.19,seed+9)*.008+settle*.009,
+      hair:noise(t*.57,seed+13)*.009+glance*.011,
+      hairY:noise(t*.4,seed+17)*.004+nod*.003,
+      lift:breath*.008+nod*.008};
+  }
+  // All fields overlap smoothly in one connected mesh; no separate facial parts.
   function deform(m,t,state={},out=new Float32Array(m.points.length*4)) {
-    const seed=state.seed??m.person*.79,breath=Math.sin(t*1.42+seed),walk=clamp(state.walk||0),cook=clamp(state.cook||0),eat=clamp(state.eat||0);
-    const stride=Math.sin(t*10.5+seed),sway=Math.sin(t*.92+seed)*.022-walk*stride*.024;
-    const hairLag=Math.sin(t*.92+seed-.65)*.007+walk*Math.sin(t*10.5+seed-.7)*.005;
+    const seed=state.seed??m.person*.79,q=motion(t,seed),walk=clamp(state.walk||0),cook=clamp(state.cook||0),eat=clamp(state.eat||0);
+    const stride=Math.sin(t*10.5+seed),sway=q.sway-walk*stride*.03;
+    const hairLag=q.hair+walk*Math.sin(t*10.5+seed-.7)*.006;
     for(let i=0;i<m.points.length;i++){
       const p=m.points[i];let x=p.x,y=p.y;
-      x+=(x-.5)*breath*.011*p.chest;
-      y-=breath*(.0062*p.chest+.0036*p.head);
+      x+=(x-.5)*q.breath*.021*p.chest+q.lean*p.chest;
+      y-=q.breath*.0085*p.chest+q.lift*p.head;
       const dx=p.x-.5,dy=p.y-.42,angle=sway*p.head;
       x+=dx*(Math.cos(angle)-1)-dy*Math.sin(angle)*1.3333;
       y+=dx*Math.sin(angle)*.75+dy*(Math.cos(angle)-1);
-      x+=hairLag*p.hairEdge+Math.sin(t*1.65+seed-.5)*.0035*p.hair;
-      y+=Math.sin(t*1.1+seed-.9)*.0027*p.hairEdge;
-      x+=walk*stride*.005*(1-p.head);y+=walk*Math.cos(t*21+seed)*.003*(1-p.y);
-      x+=cook*Math.sin(t*4+seed)*.005*p.hand;y+=cook*Math.cos(t*4+seed)*.004*p.hand;
-      x+=eat*Math.sin(t*2.1+seed)*.007*p.hand;y-=eat*(.012+.013*Math.sin(t*2.1+seed))*p.hand;
-      y+=eat*Math.sin(t*2.1+seed)*.002*p.head;
+      x+=hairLag*p.hairEdge+Math.sin(t*1.65+seed-.5)*.004*p.hair;
+      y+=q.hairY*p.hairEdge;
+      // A quiet shoulder/hand adjustment, rather than an identical full-body bob.
+      y+=q.settle*(p.x-.5)*.024*p.chest;
+      x+=q.settle*.007*p.hand;
+      x+=walk*stride*.006*(1-p.head);y+=walk*Math.cos(t*21+seed)*.003*(1-p.y);
+      x+=cook*Math.sin(t*4+seed)*.006*p.hand;y+=cook*Math.cos(t*4+seed)*.005*p.hand;
+      x+=eat*Math.sin(t*2.1+seed)*.009*p.hand;y-=eat*(.014+.016*Math.sin(t*2.1+seed))*p.hand;
+      y+=eat*Math.sin(t*2.1+seed)*.003*p.head;
       out[i*4]=x;out[i*4+1]=y;out[i*4+2]=p.x;out[i*4+3]=p.y;
     }
     return out;
   }
-  const api={mesh,deform,portrait};
+  const api={mesh,deform,portrait,motion};
   if(typeof module!=='undefined'){module.exports=api;return;}
   window.MidnightMorph=api;
   const images={};for(const [key,file] of Object.entries({a:'visitors-a.webp',b:'visitors-b.webp'})){const image=new Image();image.src=new URL(`./assets/${file}`,document.currentScript.src).href;images[key]=image;}
@@ -66,13 +92,20 @@
   function attach(){for(const el of document.querySelectorAll('.actor[data-person]'))if(!records.has(el)){
     const canvas=el.querySelector('.actor-morph');if(!canvas)continue;canvas.width=240;canvas.height=320;
     const ctx=canvas.getContext('2d');if(!ctx)continue;const m=mesh(Number(el.dataset.person));
-    records.set(el,{el,canvas,ctx,m,vertices:new Float32Array(m.points.length*4),walk:0,cook:0,eat:0,seed:m.person*.79+records.size*.37});
+    records.set(el,{el,canvas,ctx,m,vertices:new Float32Array(m.points.length*4),walk:0,cook:0,eat:0,seed:m.person*.79+Math.random()*1000});
   }}
   let dirty=true;new MutationObserver(()=>dirty=true).observe(document.documentElement,{childList:true,subtree:true});
-  function frame(now){requestAnimationFrame(frame);if(!ready||document.hidden||now-last<1000/30)return;const dt=Math.min(.08,(now-last)/1000||.033);last=now;
+  function frame(now){requestAnimationFrame(frame);if(document.hidden||now-last<1000/30)return;const dt=Math.min(.08,(now-last)/1000||.033);last=now;
     if(dirty){attach();dirty=false;}
     const ease=1-Math.exp(-dt*9);
     try{for(const [el,r]of records){if(!el.isConnected){records.delete(el);continue;}if(!el.getClientRects().length)continue;
+      if(!ready){
+        el.classList.add('motion-fallback');
+        const q=motion(now/1000,r.seed);
+        el.style.transform=reduced.matches?'none':`translate(${q.lean*35}px,${-q.lift*55}px) rotate(${q.sway*24}deg)`;
+        continue;
+      }
+      if(el.classList.contains('motion-fallback')){el.classList.remove('motion-fallback');el.style.removeProperty('transform');}
       if(reduced.matches&&el.classList.contains('morph-ready'))continue;
       const customer=el.closest('.customer');
       const walking=customer?.classList.contains('arriving')?1:0;
@@ -83,11 +116,11 @@
       const art=portrait(r.m.person);gl.bindTexture(gl.TEXTURE_2D,textures[art.sheet]);gl.uniform2f(uniform('tile'),art.tile%4,Math.floor(art.tile/4));gl.uniform1f(uniform('rows'),art.rows);
       gl.clear(gl.COLOR_BUFFER_BIT);gl.drawElements(gl.TRIANGLES,r.m.indices.length,gl.UNSIGNED_SHORT,0);
       if(gl.isContextLost())throw new Error('context lost');
-      r.ctx.clearRect(0,0,240,320);r.ctx.drawImage(surface,0,0);el.classList.add('morph-ready');r.canvas.dataset.motion=r.walk>.1?'walk':r.cook>.1?'cook':'idle';
+      r.ctx.clearRect(0,0,240,320);r.ctx.drawImage(surface,0,0);el.classList.add('morph-ready');r.canvas.dataset.motion=r.walk>.1?'walk':r.cook>.1?'cook':r.eat>.1?'eat':'idle';
     }frameCount++;}catch{failures++;ready=false;for(const el of records.keys())el.classList.remove('morph-ready');}
   }
   api.status=()=>({ready,frames:frameCount,failures,actors:records.size});
-  Promise.all(Object.values(images).map(image=>image.decode())).then(()=>{try{init()}catch{failures++}requestAnimationFrame(frame)}).catch(()=>{failures++});
+  Promise.all(Object.values(images).map(image=>image.decode())).then(()=>{try{init()}catch{failures++}requestAnimationFrame(frame)}).catch(()=>{failures++;requestAnimationFrame(frame)});
   surface.addEventListener('webglcontextlost',e=>{e.preventDefault();ready=false;for(const el of records.keys())el.classList.remove('morph-ready');});
   surface.addEventListener('webglcontextrestored',()=>{try{init()}catch{failures++}});
 })();

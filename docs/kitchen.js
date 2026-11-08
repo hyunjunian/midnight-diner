@@ -120,7 +120,7 @@
     if(view!=='process')return;const st=step();
     if(action==='next-step'&&local.done){bridge.clearToast?.();if(E.completeCookingStep(state(),local.quality,step().id==='heat'?{heat:local.heat}:undefined)){view=k.stage==='complete'?'complete':'process';resetStep();render();bridge.changed();}return;}
     if(action==='less-rice'){local.count=Math.max(0,local.count-1);local.done=local.count>=3;local.quality=Math.max(.25,1-Math.abs(3-local.count)*.25);process();return;}
-    if(st.id==='oil'&&(action==='oil'||action==='dry-pan')){local.oil=action==='oil';local.done=true;local.quality=st.required&&!local.oil?.45:1;process();if(local.oil)FX?.play('pour');if(local.oil)document.querySelector('.oil-cruet')?.animate([{transform:'rotate(0)'},{transform:'translate(-40px,-10px) rotate(-45deg)'},{transform:'rotate(0)'}],{duration:650});return;}
+    if(st.id==='oil'&&(action==='oil'||action==='dry-pan')){local.oil=action==='oil';local.done=true;local.quality=st.required&&!local.oil?.45:1;process();if(local.oil)FX?.play('oil-pour');if(local.oil)document.querySelector('.oil-cruet')?.animate([{transform:'rotate(0)'},{transform:'translate(-40px,-10px) rotate(-45deg)'},{transform:'rotate(0)'}],{duration:650});return;}
     if(st.id==='heat'){
       if(action==='heat-start'&&!local.started){local.started=true;process();}
       if(action==='heat-stop'&&local.started&&!local.done){local.power=0;stopHeat();}

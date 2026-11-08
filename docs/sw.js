@@ -1,9 +1,9 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const VERSION = 'midnight-diner-pwa-20261108-v20-living-diner';
+const VERSION = 'midnight-diner-pwa-20261108-v21-paper-diner';
 const ROOT = new URL('./', self.location.href);
 const INDEX = new URL('index.html', ROOT).href;
 const FILES = [
-  'index.html', 'style.css', 'cooking-rules.js', 'kitchen.js', 'audio.js', 'furnishings.js', 'voice.js', 'gestures.js', 'kitchen.css', 'catalog.js', 'stories.js', 'engine.js', 'game.js', 'scene.js', 'rain.js', 'morph.js', 'pwa.js', 'manifest.webmanifest',
+  'index.html', 'style.css', 'customer.css', 'motion.css', 'analog.css', 'frames.css', 'tactile-controls.css', 'physical-icons.css', 'assets/ui-objects-v21.webp', 'assets/ui-frame-walnut-v21.webp', 'atmosphere.js', 'daylight.js', 'soundscape.js', 'assets/ui-washi-v21.webp', 'assets/ui-walnut-v21.webp', 'assets/fonts/nanum-brush-script.woff2', 'assets/fonts/OFL-NanumBrushScript.txt', 'cooking-rules.js', 'kitchen.js', 'audio.js', 'furnishings.js', 'voice.js', 'gestures.js', 'kitchen.css', 'catalog.js', 'stories.js', 'engine.js', 'game.js', 'scene.js', 'rain.js', 'morph.js', 'pwa.js', 'manifest.webmanifest',
   'assets/visitors-a.webp', 'assets/visitors-b.webp', 'assets/decor-real.webp', 'assets/food-clean.webp', 'assets/restaurant-counter.webp', 'assets/intro-world.webp', 'assets/interior.svg', 'assets/exterior.svg', 'assets/opening-visible-rain.mp4', 'assets/opening-portrait-poster.jpg',
   'assets/menu-1.webp', 'assets/menu-2.webp', 'assets/menu-3.webp', 'assets/menu-4.webp', 'assets/menu-5.webp', 'assets/menu-6.webp', 'assets/menu-7.webp', 'assets/menu-8.webp', 'assets/menu-9.webp', 'assets/menu-10.webp', 'assets/pantry-a.webp', 'assets/pantry-b.webp', 'assets/decor-growth.webp', 'assets/restaurant-fridge.webp',
   'assets/kitchen-room.webp', 'assets/kitchen-upgraded.webp', 'assets/fridge-upgraded.webp', 'assets/fridge-open.webp', 'assets/fridge-closed.webp', 'assets/cooking-tools.webp', 'assets/cooking-vessels.webp', 'assets/cooking-rice.webp', 'assets/restaurant-ceramics.webp',

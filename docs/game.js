@@ -13,7 +13,7 @@
   const purchaseQuantities={},upgradeQuantities={};let prepExpanded=false,shopTheme='all';
   let menuFilter='all',menuQuery='',storyRenderKey='';
   const seenCustomers = new Set();
-  let toastTimer, raf, lastFrame = 0, openingUntil=0;
+  let toastTimer, raf, lastFrame = 0, openingUntil=0, lastClock=0;
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); storageAvailable = true; }
     catch { storageAvailable = false; }
@@ -52,23 +52,23 @@
     const liveIds = new Set(visible.map(g=>String(g.id)));
     for (const el of [...$('customers').children]) if(!liveIds.has(el.dataset.customer)) el.remove();
     for (const g of visible) {
-      const p=E.person(g.person), r=E.recipes[g.recipe], key=`${state.night}-${g.id}`;
+      const p=E.person(g.person), profile=E.guestProfile(state,g.person), r=E.recipes[g.recipe], key=`${state.night}-${g.id}`;
       let el=$('customers').querySelector(`[data-customer="${g.id}"]`);
       // Keep each decoded character and its animation alive across inventory/HUD updates.
       if(el && el.dataset.person!==String(g.person)){el.remove();el=null;}
       if(!el){
         el=document.createElement('div');el.dataset.customer=g.id;el.dataset.person=g.person;
         el.className=`customer seat-${g.seat}${seenCustomers.has(key)?'':' arriving'}`;seenCustomers.add(key);
-        el.innerHTML=`<button class="customer-avatar" data-guest="${g.id}" aria-label="${p.name} 님과 대화하기">${portrait(p,g.person)}</button><button class="customer-name" data-guest="${g.id}"></button><span class="wait-meter" aria-hidden="true"><i></i></span><div class="served-dish" hidden></div><button class="customer-payment" hidden></button><span class="dining-chopsticks" hidden></span>`;
+        el.innerHTML=`<button class="customer-avatar" data-guest="${g.id}" aria-label="${profile.name} 님과 대화하기">${portrait(p,g.person)}</button><button class="customer-name" data-guest="${g.id}"></button><span class="wait-meter" aria-hidden="true"><i></i></span><div class="served-dish" hidden></div><button class="customer-payment" hidden></button><span class="dining-chopsticks" hidden></span>`;
         el.addEventListener('animationend',e=>{if(e.animationName==='counter-arrival')el.classList.remove('arriving')});
         $('customers').append(el);
       }
       el.classList.toggle('selected',g.id===selectedGuest);el.classList.toggle('needs-payment',g.status==='paying');
       el.classList.toggle('pleased',g.status==='eating' && g.score>=80);
       el.classList.toggle('disappointed',g.status==='eating' && g.score<60);
-      el.querySelector('.customer-avatar').disabled=false;el.classList.toggle('dining',g.status==='eating');
+      el.querySelector('.customer-avatar').disabled=false;el.querySelector('.customer-avatar').setAttribute('aria-label',`${profile.name} 님과 대화하기`);el.classList.toggle('dining',g.status==='eating');
       const status={seated:'대화하기',waiting:'주문 접수',eating:'식사 중',paying:'계산할게요',farewell:'배웅하기'};
-      el.querySelector('.customer-name').textContent=`${p.name}${E.regular(state,g.person)?' · 단골':''} · ${status[g.status]}`;
+      el.querySelector('.customer-name').textContent=`${profile.name}${E.regular(state,g.person)?' · 단골':''} · ${status[g.status]}`;
       const served=el.querySelector('.served-dish');served.classList.toggle('uncooked-dish',g.bill?.appearance==='raw'||E.Cooking.family(g.recipe,E.recipes[g.recipe])==='cold');served.classList.toggle('overdone-dish',['dry','burnt'].includes(g.bill?.appearance));const hasDish=['eating','paying','farewell'].includes(g.status);served.hidden=!hasDish;
       if(hasDish&&served.dataset.recipe!==g.recipe){served.innerHTML=food(g.recipe,false,g.bill?.appearance||'good')+'<span class="dish-steam"></span><span class="eaten-dish">'+food(g.recipe,true)+'</span>';served.dataset.recipe=g.recipe;served.classList.add('dish-arriving');}
       served.classList.toggle('finished-meal',g.status!=='eating');
@@ -80,56 +80,40 @@
     $('scene').classList.toggle('is-prep',state.phase==='prep');
     Scene.render(state,selectedGuest,!!state.kitchen);$('resume-kitchen').hidden=!state.kitchen;
   }
-  const smallTalk=[
-    '마감 원고를 드디어 보냈어요. 화면만 보다가 나오니 밤공기가 참 좋네요.',
-    '오늘은 꽃이 다 팔렸어요. 빈 가게를 보니 뿌듯하기도 하고 조금 허전하기도 하네요.',
-    '마지막 버스에 탄 손님이 꾸벅 인사하고 내리더라고요. 그 인사가 자꾸 생각나요.',
-    '비 오는 골목 사진을 찍다가 불빛이 참 예뻐서 들어왔어요.',
-    '내일 아침 빵 반죽은 다 해 뒀어요. 지금은 남이 차려 주는 밥이 먹고 싶네요.',
-    '지도에는 없는 골목인데 좋은 가게를 찾은 것 같아요.',
-    '예전에 가르치던 학생한테 편지가 왔어요. 덕분에 오래전 생각이 났네요.',
-    '오늘 연습이 좀 힘들었어요. 그래도 끝까지 해냈으니 든든하게 먹으려고요.',
-    '오래 입은 코트를 고쳐 드렸더니 새 옷처럼 좋아하시더라고요.',
-    '공사가 생각보다 늦게 끝났네요. 불이 켜져 있어서 얼마나 반갑던지요.',
-    '다른 분들 식사만 챙기다 보니 제 밥은 이제야 먹네요.',
-    '마지막 곡을 연주하는데 관객 한 분이 끝까지 남아 계셨어요.',
-    '공연 의상을 다 정리했어요. 오늘 배우들 표정이 참 좋았답니다.',
-    '하루 종일 작은 글씨만 봤더니 눈이 피곤하네요. 여기서는 좀 쉬고 갈게요.',
-    '그림이 마음대로 안 풀렸는데, 이 가게 색을 보니까 또 그리고 싶어져요.',
-    '이 나무 카운터, 오래 잘 돌보셨네요. 손이 많이 갔겠어요.',
-    '오늘은 사람을 너무 많이 만났어요. 밥 먹을 땐 조용히 쉬어도 괜찮죠?',
-    '제 가게 불을 끄고 왔어요. 오늘은 다른 분이 만든 밥이 궁금하네요.',
-    '차를 한 잔씩 나누다 보면 처음 만난 사람도 가까워지더라고요.',
-    '고장 난 자전거가 다시 달리는 걸 보면 괜히 제가 신이 나요.',
-    '마지막 정비를 끝내고 손을 몇 번이나 씻었는지 몰라요. 이제 밥 먹을 준비 됐어요.',
-    '오늘 배달을 다 끝냈어요. 이제 제 밥 한 그릇만 잘 도착하면 되겠네요.',
-    '반납된 책에 예쁜 책갈피가 남아 있었어요. 주인이 찾으러 오셨으면 좋겠네요.',
-    '오늘 들어온 책들을 다 정리했어요. 책 냄새 대신 밥 냄새가 필요한 시간이에요.'
-  ];
   const thanksHigh=['정말 맛있었어요. 이 한 끼 덕분에 오늘 하루가 좋아졌네요.','마지막 한 입까지 아껴 먹었어요. 정성이 느껴지는 밥이네요.','배도 마음도 든든해졌어요. 늦은 시간에 이런 밥을 만나서 참 다행이에요.','이 맛을 기억해 둘래요. 오늘은 좋은 밤으로 남겠네요.','오길 잘했어요. 누군가 차려 준 밥이 이렇게 힘이 되네요.','젓가락을 내려놓기가 아쉬웠어요. 맛있게 잘 먹었습니다.'];
   const thanksMid=['따뜻한 한 끼, 잘 먹었습니다. 한숨 돌리고 가요.','든든하게 먹었네요. 늦게까지 열어 주셔서 고마워요.','오늘 밥도 잘 먹었습니다. 잠깐 쉬었다 가니 좋네요.','배가 부르니 이제 좀 살 것 같네요. 고맙습니다.'];
   const thanksLow=['잘 먹었습니다. 다음에는 익힘을 조금 더 신경 써 주시면 좋겠어요.','오늘은 제 입맛과 조금 달랐네요. 다음 한 끼는 더 기대해 볼게요.','수고하셨어요. 조금 더 촉촉했으면 좋았을 것 같아요.'];
   const goodbyes=['이 골목을 지날 때 또 들를게요. 다음에도 잘 부탁드려요.','편안한 밤 보내세요. 가게 불빛을 기억해 둘게요.','잘 쉬었다 갑니다. 다음에 또 인사드릴게요.','밖에 비가 좀 잦아들었네요. 이제 천천히 걸어가 볼게요.','오늘은 푹 잘 수 있겠어요. 주인장도 잘 쉬세요.','다음에는 누군가와 함께 오고 싶네요. 고맙습니다.'];
   function talkLines(g){
-    const p=E.person(g.person);
     if(g.status==='farewell'){const comments=g.score>=90?thanksHigh:g.score>=65?thanksMid:thanksLow;return[comments[g.lineKey%comments.length],goodbyes[(g.lineKey+state.night)%goodbyes.length]];}
     if(g.status==='paying')return['잘 먹었습니다. 계산 부탁드릴게요.',`음식값과 팁을 합쳐 ${yen(g.bill.total)}이네요. 감사합니다.`];
-    if(g.status==='eating')return['따뜻할 때 천천히 먹고 갈게요. 잠깐만 기다려 주세요.'];
-    if(g.status==='waiting')return[`${E.recipes[g.recipe].name}, 잘 부탁드릴게요. 따뜻하게 기다리고 있을게요.`];
-    const line=E.dialogue(g),cut=line.indexOf('.');return[line.slice(0,cut+1),smallTalk[g.person%smallTalk.length],line.slice(cut+1).trim()];
+    return ['따뜻할 때 천천히 먹고 갈게요. 잠깐만 기다려 주세요.'];
   }
+  const factLabels={name:'이름',role:'하는 일',age:'나이',style:'차림새',bio:'기억해 둘 이야기'};
   function renderTalk(){
     if(!$('guest-dialog').open)return;const g=state.guests.find(g=>g.id===selectedGuest&&g.status!=='left');if(!g){$('guest-dialog').close();return;}
-    const p=E.person(g.person),lines=talkLines(g),last=talkIndex>=lines.length-1,other=state.kitchen&&state.kitchen.guest!==g.id;
-    let action='다음 이야기 →';if(last)action=g.status==='paying'?'계산 받기 →':g.status==='farewell'?'인사하고 배웅하기 →':g.status==='eating'?'천천히 드세요 →':other?'진행 중인 요리를 먼저 마무리해 주세요':'부엌에 가서 조리 시작 →';
-    // Keep the portrait's mesh alive as the conversation advances.
+    const p=E.person(g.person),profile=E.guestProfile(state,g.person),view=E.guestConversation(state,g.id),lines=view?null:talkLines(g),last=view?view.orderReady:talkIndex>=lines.length-1,other=state.kitchen&&state.kitchen.guest!==g.id;
+    let action=g.status==='paying'?(last?'계산 받기 →':'계산해 드릴게요 →'):g.status==='farewell'?(last?'조심히 돌아가세요 →':g.score<65?'말씀 새겨들을게요 →':g.score>=90?'맛있게 드셨다니 기뻐요 →':'들러 주셔서 고마워요 →'):'편히 드세요 · 자리로 돌아가기';
+    if(view)action=other?'진행 중인 요리를 먼저 마무리해 주세요':g.status==='waiting'?'접수한 주문 조리하러 가기 →':'주문 받고 부엌으로 →';
+    // Keep the live mesh and controls intact through HUD/inventory/timer updates.
     if($('guest-dialog').dataset.person!==String(g.person)){$('talk-portrait').innerHTML=portrait(p,g.person);$('guest-dialog').dataset.person=g.person;}
-    $('talk-name').innerHTML=`${p.name} ${E.regular(state,g.person)?'<small>단골</small>':''}`;
-    $('talk-profile').textContent=`${p.role} · ${p.age} · ${p.style}`;$('talk-regular').textContent='만족도 90 이상이면 단골로 재방문할 확률이 올라가요!';
-    $('talk-line').textContent=lines[Math.min(talkIndex,lines.length-1)];$('talk-progress').textContent=`${Math.min(talkIndex+1,lines.length)} / ${lines.length}`;
-    $('talk-next').textContent=action;$('talk-next').disabled=last&&other&&!['eating','farewell','paying'].includes(g.status);
-    $('talk-order').hidden=!last||['eating','farewell','paying'].includes(g.status);$('talk-order').innerHTML=`${food(g.recipe)}<span>${E.recipes[g.recipe].name}<small>${E.recipes[g.recipe].ingredients.map(id=>E.ingredients[id].name).join(' · ')}</small></span>`;
-    $('talk-gift').hidden=!E.regular(state,g.person)||!['seated','waiting'].includes(g.status);$('talk-gift').disabled=g.gifted||!state.inventory.egg;$('talk-gift').textContent=g.gifted?'✓ 달걀 곁들임을 서비스했어요':'단골 서비스 · 달걀 곁들임 1개';
+    $('talk-name').textContent=profile.name;
+    $('talk-profile').textContent=profile.known.length?(profile.role||'인사를 나눈 손님'):'아직 이름과 이야기를 나누지 않았어요.';
+    $('talk-regular').textContent=E.regular(state,g.person)?'익숙한 단골 · 지난 대화의 기억이 이어져요.':'인사를 나누고 궁금한 것을 물어보세요. 알게 된 이야기는 기억해 둬요.';
+    const fields=['role','age','style'],factsKey=JSON.stringify(fields.map(id=>profile[id]));
+    if($('talk-known-fields').dataset.key!==factsKey){$('talk-known-fields').dataset.key=factsKey;$('talk-known-fields').replaceChildren(...fields.map(id=>{const item=document.createElement('div'),label=document.createElement('dt'),value=document.createElement('dd');label.textContent=factLabels[id];value.textContent=profile[id]||'아직 몰라요';item.className=profile[id]?'known':'unknown';label.append(document.createTextNode(profile[id]?' ✓':''));item.append(label,value);return item;}));}
+    $('talk-line').textContent=view?view.line:lines[Math.min(talkIndex,lines.length-1)];
+    $('talk-progress').textContent=view?view.caption:g.status==='farewell'?'식사 끝, 잠깐의 인사':g.status==='paying'?'오늘의 식사 계산':'느긋하게 식사 중';
+    $('talk-player-line').hidden=!view?.playerLine;$('talk-player-line').textContent=view?.playerLine||'';
+    const discovered=view?.discovered||[];const discoveryKey=`${g.id}:${view?.node}:${discovered.join(',')}`;
+    if($('talk-discovery').dataset.key!==discoveryKey){$('talk-discovery').dataset.key=discoveryKey;$('talk-discovery').textContent=discovered.length?`손님을 조금 더 알게 됐어요 · ${discovered.map(id=>factLabels[id]).join(' · ')}`:'';}
+    $('talk-discovery').hidden=!discovered.length;
+    const choicesKey=JSON.stringify([g.id,view?.node,view?.choices.map(x=>[x.id,x.label])]);
+    if($('talk-choices').dataset.key!==choicesKey){$('talk-choices').dataset.key=choicesKey;$('talk-choices').replaceChildren(...(view?.choices||[]).map(choice=>{const button=document.createElement('button');button.type='button';button.dataset.guestReply=choice.id;button.textContent=choice.label;return button;}));}
+    $('talk-choices').classList.toggle('optional',!!view?.orderReady);
+    $('talk-next').hidden=!!view&&!view.orderReady;$('talk-next').textContent=action;$('talk-next').disabled=!!view&&last&&!!other;
+    $('talk-order').hidden=!view?.orderReady;$('talk-order').innerHTML=`${food(g.recipe)}<span>${E.recipes[g.recipe].name}<small>${E.recipes[g.recipe].ingredients.map(id=>E.ingredients[id].name).join(' · ')}</small></span>`;
+    $('talk-gift').hidden=!E.regular(state,g.person)||!view?.orderReady;$('talk-gift').disabled=g.gifted||!state.inventory.egg;$('talk-gift').textContent=g.gifted?'✓ 달걀 곁들임을 서비스했어요':'단골 서비스 · 달걀 곁들임 1개';
   }
   function openTalk(id){selectedGuest=id;talkIndex=0;openSheet('guest-dialog');renderTalk();renderScene();}
   function animateCash(rect,bill,before){FX?.play('cash');
@@ -145,7 +129,7 @@
     return `<section class="upcoming"><div class="reward-heading"><span class="level-tile">Lv.<b>${next}</b></span><div><small>NEXT CHAPTER</small><h3>다음 레벨의 새로운 한 끼</h3></div></div><p class="reward-conditions">${requirements(next)}</p>${rewardGallery(next)}</section><section class="upcoming-items"><h3>다음 레벨의 아이템</h3>${itemLevel!==next?`<p class="next-item-note">다음 레벨에는 새 장식이 없어요.${itemLevel?` 아래 아이템은 Lv.${itemLevel}에서 만나요.`:' 열린 장식으로 나만의 가게를 꾸며 보세요.'}</p>`:''}<div class="unlock-item-grid">${items.map(([id,u])=>`<article><span class="item-level-tag">Lv.${u.level}</span>${decorArt(id)}<h4>${u.name}</h4><span class="ambience-reward">분위기 +${u.atmosphere}점</span><small>${yen(u.price)} · ${u.area==='inside'?'매장 안':'매장 밖'}</small></article>`).join('')}</div></section>`;
   }
   function renderStory(){
-    const view=E.story(state),news=E.news(state),history=state.storyMemory.slice(-5).reverse(),key=JSON.stringify([view?.run,news,state.storyMemory.length]);
+    const view=E.story(state),news=E.news(state),history=state.storyMemory.slice(-5).reverse(),key=JSON.stringify([view?.run,news,state.storyMemory.length,view?.run.cast.map(id=>E.guestProfile(state,id).known)]);
     if(key===storyRenderKey&&$('story-content').childElementCount){if(view?.run.step===0)for(const choice of view.definition.choices){const button=$('story-content').querySelector(`[data-choice="${choice.id}"]`);if(button)button.disabled=!E.canChoose(state,choice);}return;}storyRenderKey=key;window.MidnightVoice?.stop();
     $('story-tag').textContent=state.event==='pending'?'주인장의 선택 · 이어지는 이야기':'골목에 남은 기억';
     $('story-title').textContent=view?view.definition.title:'다음 밤에 도착한 소식';
@@ -154,10 +138,10 @@
     if(!view){$('story-content').innerHTML=followups+memories;return;}
     const {run,definition,choice,reflection}=view,cast=run.cast.map(id=>E.person(id));
     const text=t=>t.replaceAll('{a}',cast[0].name).replaceAll('{b}',cast[1].name);
-    const faces=`<div class="story-cast-strip">${run.cast.map(id=>`<div class="story-cast-chip"><span class="story-mini-face">${portrait(E.person(id),id)}</span><span><b>${E.person(id).name}</b><small>${E.person(id).role}</small></span></div>`).join('')}</div>`;
+    const faces=`<div class="story-cast-strip">${run.cast.map(id=>`<div class="story-cast-chip"><span class="story-mini-face">${portrait(E.person(id),id)}</span><span><b>${E.guestProfile(state,id).name}</b><small>${E.guestProfile(state,id).role||'아직 이야기를 나누지 않은 손님'}</small></span></div>`).join('')}</div>`;
     const dialogue=`<div class="story-voice-controls"><button data-story-voice>듣기 · 잠시 멈추기 ♫</button><button data-story-replay>처음부터 듣기 ↻</button><p id="story-voice-status" role="status">손님들의 목소리로 이야기를 들어요.</p></div><div class="story-chat" aria-label="손님들의 대화">${definition.lines.map((line,i)=>{
       const actor=line.startsWith('{b}')?1:line.startsWith('{a}')?0:i%2,id=run.cast[actor],p=cast[actor],words=text(line).replace(new RegExp('^'+p.name+'[：:]\\s*'),'');
-      return `<article class="story-message ${actor?'from-right':''}" data-speaker="${id}"><div class="story-chat-face" aria-label="${p.name}">${portrait(p,id)}</div><div class="story-message-body"><b>${p.name}</b><p>${words}</p></div></article>`;
+      return `<article class="story-message ${actor?'from-right':''}" data-speaker="${id}"><div class="story-chat-face" aria-label="${E.guestProfile(state,id).name}">${portrait(p,id)}</div><div class="story-message-body"><b>${E.guestProfile(state,id).name}</b><p>${words}</p></div></article>`;
     }).join('')}</div>`;
     const prompt=(n,title)=>`<div class="story-choice-heading"><span>${n} / 2 · 당신의 선택</span><h3>${title}</h3><p>마음이 가는 행동 하나를 골라 주세요.</p></div>`;
     if(run.step===0){
@@ -195,12 +179,17 @@
     const full=E.stockPlan(state,9),small=E.stockPlan(state,3),chosen=!prepExpanded?(state.prepChoice||(small.units===0&&full.units>0?3:null)):null,plan=chosen===3?small:full;
     panel.innerHTML=`<div class="stock-prep-heading"><span>오늘의 영업 준비</span><h3>${!plan.units?`${plan.meals}끼분 준비가 끝났어요`:'단골이 오기 전에, 냉장고부터'}</h3><p>${chosen===3?'먼저 3끼로 가볍게 시작해요. 영업 중에도 재료를 채울 수 있어요.':`이번 밤 메뉴를 바탕으로 ${plan.meals}끼를 준비해요. 부족한 만큼만 한 번에 채워요.`}</p></div><div class="stock-prep-list">${plan.lines.map(x=>`<span class="${x.quantity?'stock-short':'stock-ready'}">${food(x.id)}<b>${E.ingredients[x.id].name}</b><small>${x.owned} / ${x.target}개 ${x.quantity?`· +${x.quantity} 필요`:'· 준비됨'}</small></span>`).join('')}</div>${plan.units?`<button class="primary stock-bulk-main" data-restock="${chosen===3?3:9}" ${state.money<plan.cost?'disabled':''}>${plan.meals}끼 재료 한 번에 채우기 · ${yen(plan.cost)}</button>`:'<p class="stock-prepared-check">✓ 이제 식당 불을 켜고 손님을 맞이해요.</p>'}${!chosen&&small.units?`<button class="stock-bulk-small" data-restock="3" ${state.money<small.cost?'disabled':''}>먼저 3끼만 준비 · ${yen(small.cost)}</button>`:''}${chosen?'<button class="change-prep-plan" data-prep-reset>준비량 다시 고르기</button>':''}${state.money<plan.cost&&plan.units?'<small class="stock-budget-note">자금에 맞춰 3끼씩 준비하고 영업 수익으로 더 채워 주세요.</small>':''}`;
   }
+  function renderClock(){
+    const minutes=Math.floor(window.MidnightDaylight?.minutes(state)??(state.phase==='prep'?1430:state.phase==='end'?420:30));
+    $('clock').textContent=`${String(Math.floor(minutes/60)).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`;
+    window.MidnightDaylight?.update(state);
+  }
   function render() {
     $('money').textContent=yen(cashAnimation?Math.round(cashAnimation.from):state.money);
     $('reputation').innerHTML = `${state.reputation} <small>/ 100</small>`;
     $('day').textContent = `${state.night}번째 밤`;
     $('open-status').textContent = state.phase === 'prep' ? '영업 준비' : state.phase === 'end' ? '오늘 영업 끝' : '영업 중';
-    $('clock').textContent = state.phase === 'prep' ? '23:50' : state.phase === 'end' ? '07:00' : `${String(Math.min(6, Math.floor(state.nightScores.length / state.target * 7))).padStart(2, '0')}:30`;
+    renderClock();
     const canClose = E.canClose(state);
     $('night-action').disabled = state.phase === 'open' && !canClose;
     $('night-action').innerHTML = state.phase === 'prep' ? '식당 불 켜기 <span>↗</span>' : state.phase === 'end' ? '오늘의 영업보고 <span>→</span>' : canClose ? '밤 마무리하기 · 영업보고 <span>☾</span>' : `${Math.min(3,Math.floor(state.nightScores.length/3)+1)} / 3사이클 · ${state.nightScores.length} / ${state.target}끼`;
@@ -230,13 +219,22 @@
     const button=event.target.closest('[data-guest]');if(!button)return;const g=state.guests.find(g=>g.id===Number(button.dataset.guest));if(!g)return;
     if(g.status==='paying'){const payment=document.querySelector(`[data-pay="${g.id}"]`);payment?.click();return;}openTalk(g.id);
   });
+  $('talk-choices').addEventListener('click',event=>{
+    const button=event.target.closest('[data-guest-reply]');if(!button)return;
+    if(E.answerGuest(state,selectedGuest,button.dataset.guestReply)){render();const focus=$('talk-choices').querySelector('button')||$('talk-next');focus.focus({preventScroll:true});}
+  });
   $('talk-next').addEventListener('click',()=>{
-    const g=state.guests.find(g=>g.id===selectedGuest);if(!g)return;const lines=talkLines(g);if(talkIndex<lines.length-1){talkIndex++;renderTalk();return;}
+    const g=state.guests.find(g=>g.id===selectedGuest);if(!g)return;
+    const view=E.guestConversation(state,g.id);
+    if(view){
+      if(!view.orderReady)return;
+      if(g.status==='seated')E.acceptOrder(state,g.id);
+      if(E.beginCooking(state,g.id)){$('guest-dialog').close();Kitchen.show();render();}return;
+    }
+    const lines=talkLines(g);if(talkIndex<lines.length-1){talkIndex++;renderTalk();return;}
     if(g.status==='paying'){const before=state.money,rect=$('talk-next').getBoundingClientRect(),bill=E.collect(state,g.id);if(bill){animateCash(rect,bill,before);talkIndex=0;render();}return;}
     if(g.status==='farewell'){E.depart(state,g.id);$('guest-dialog').close();selectedGuest=null;render();if(state.arrived%3===0&&state.guests.every(g=>g.status==='left'))tryArrival();return;}
-    if(g.status==='eating'){$('guest-dialog').close();return;}
-    if(g.status==='seated')E.acceptOrder(state,g.id);
-    if(E.beginCooking(state,g.id)){$('guest-dialog').close();Kitchen.show();render();}
+    if(g.status==='eating')$('guest-dialog').close();
   });
   $('talk-gift').addEventListener('click',()=>{if(E.gift(state,selectedGuest)){render();toast('작은 달걀 곁들임을 준비했어요.');}});
   $('resume-kitchen').addEventListener('click',()=>Kitchen.show());
@@ -271,6 +269,7 @@
   const sheetIds = ['report-dialog', 'guest-dialog', 'management-dialog', 'story-dialog', 'settings-dialog'];
   function anySheetOpen() { return sheetIds.some(id => $(id).open); }
   function openSheet(id) {
+    if(['settings-dialog','reset-dialog'].includes(id))FX?.stopCooking();
     for (const other of sheetIds) if (other !== id && $(other).open) $(other).close();
     if (!$(id).open) $(id).showModal();
   }
@@ -288,8 +287,9 @@
   $('story-open').addEventListener('click',()=>{storyRenderKey='';renderStory();openSheet('story-dialog');window.MidnightVoice?.play();});
   $('story-dialog').addEventListener('close',()=>window.MidnightVoice?.stop());
   $('story-dialog').addEventListener('click',event=>{if(event.target.closest('[data-story-voice]'))window.MidnightVoice?.toggle();if(event.target.closest('[data-story-replay]'))window.MidnightVoice?.play();});
-  function soundLabel(){if(FX){$('sound-effects').textContent=FX.enabled?'효과음 · 켜짐 ♫':'효과음 · 꺼짐';$('sound-effects').setAttribute('aria-pressed',String(FX.enabled));}}
-  $('sound-effects').addEventListener('click',()=>{FX?.setEnabled(!FX.enabled);soundLabel();});soundLabel();
+  function soundLabel(){if(FX){$('sound-effects').textContent=FX.enabled?'게임 소리 · 켜짐':'게임 소리 · 꺼짐';$('sound-effects').setAttribute('aria-pressed',String(FX.enabled));$('ambient-sound').textContent=FX.ambientEnabled?'식당 환경음 · 켜짐':'식당 환경음 · 꺼짐';$('ambient-sound').setAttribute('aria-pressed',String(!!FX.ambientEnabled));$('ambient-sound').disabled=!FX.enabled;}}
+  $('sound-effects').addEventListener('click',()=>{FX?.setEnabled(!FX.enabled);soundLabel();});
+  $('ambient-sound').addEventListener('click',()=>{FX?.setAmbientEnabled(!FX.ambientEnabled);soundLabel();});soundLabel();
   $('settings-open').addEventListener('click', () => openSheet('settings-dialog'));
   $('fullscreen').addEventListener('click', async () => {
     if (document.fullscreenElement) return;
@@ -372,6 +372,8 @@
     if(!document.hidden&&!$('app').hidden&&!$('reset-dialog').open&&!$('settings-dialog').open&&!$('intro').open){
       Kitchen.tick(dt);
       if(state.phase==='open'&&!Scene.isPlacing()){
+        state.nightElapsedMs=Math.min(1e9,Math.round((state.nightElapsedMs||0)+dt));
+        if(now-lastClock>250){renderClock();lastClock=now;}
         for(const g of state.guests){if(g.status==='waiting'&&!anySheetOpen()){g.waitMs=(g.waitMs||0)+dt;const meter=document.querySelector(`[data-customer="${g.id}"] .wait-meter i`);if(meter)meter.style.width=`${E.patience(g,state)*100}%`;}
           if(g.status==='eating'){g.eatMs=Math.round((g.eatMs||0)+dt);if(g.eatMs>=9000){E.finishEating(state,g.id);render();}}
         }

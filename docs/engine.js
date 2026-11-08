@@ -100,6 +100,104 @@
     const k=g.lineKey||0,begin=openings[k%openings.length],end=requests[Math.floor(k/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
     return `${begin} ${g.omakase?'주인장의 추천을 믿어 볼게요. ':''}${end}`;
   }
+  const guestDays=[
+    '마감 원고를 드디어 보냈어요. 화면만 보다가 나오니 밤공기가 참 좋네요.',
+    '오늘은 꽃이 다 팔렸어요. 빈 가게를 보니 뿌듯하기도 하고 조금 허전하기도 하네요.',
+    '마지막 버스에 탄 손님이 꾸벅 인사하고 내리더라고요. 그 인사가 자꾸 생각나요.',
+    '비 오는 골목 사진을 찍다가 불빛이 참 예뻐서 들어왔어요.',
+    '내일 아침 빵 반죽은 다 해 뒀어요. 지금은 남이 차려 주는 밥이 먹고 싶네요.',
+    '지도에는 없는 골목인데 좋은 가게를 찾은 것 같아요.',
+    '예전에 가르치던 학생한테 편지가 왔어요. 덕분에 오래전 생각이 났네요.',
+    '오늘 연습이 좀 힘들었어요. 그래도 끝까지 해냈으니 든든하게 먹으려고요.',
+    '오래 입은 코트를 고쳐 드렸더니 새 옷처럼 좋아하시더라고요.',
+    '공사가 생각보다 늦게 끝났네요. 불이 켜져 있어서 얼마나 반갑던지요.',
+    '다른 분들 식사만 챙기다 보니 제 밥은 이제야 먹네요.',
+    '마지막 곡을 연주하는데 관객 한 분이 끝까지 남아 계셨어요.',
+    '공연 의상을 다 정리했어요. 오늘 배우들 표정이 참 좋았답니다.',
+    '하루 종일 작은 글씨만 봤더니 눈이 피곤하네요. 여기서는 좀 쉬고 갈게요.',
+    '그림이 마음대로 안 풀렸는데, 이 가게 색을 보니까 또 그리고 싶어져요.',
+    '이 나무 카운터, 오래 잘 돌보셨네요. 손이 많이 갔겠어요.',
+    '오늘은 사람을 너무 많이 만났어요. 밥 먹을 땐 조용히 쉬어도 괜찮죠?',
+    '제 가게 불을 끄고 왔어요. 오늘은 다른 분이 만든 밥이 궁금하네요.',
+    '차를 한 잔씩 나누다 보면 처음 만난 사람도 가까워지더라고요.',
+    '고장 난 자전거가 다시 달리는 걸 보면 괜히 제가 신이 나요.',
+    '마지막 정비를 끝내고 손을 몇 번이나 씻었는지 몰라요. 이제 밥 먹을 준비 됐어요.',
+    '오늘 배달을 다 끝냈어요. 이제 제 밥 한 그릇만 잘 도착하면 되겠네요.',
+    '반납된 책에 예쁜 책갈피가 남아 있었어요. 주인이 찾으러 오셨으면 좋겠네요.',
+    '오늘 들어온 책들을 다 정리했어요. 책 냄새 대신 밥 냄새가 필요한 시간이에요.'
+  ];
+  // Knowledge belongs to a person, while the conversation position belongs to this visit.
+  // Both are optional v11 additions: older saves retain their entire service/financial state.
+  const guestFacts=['name','role','age','style','bio'];
+  const guestNodes=['hello','intro','day','warm','quiet','about','order'];
+  const guestReplies={
+    welcome:'어서 오세요. 편히 앉으세요.',
+    day:'오늘은 어떤 하루를 보내셨어요?',
+    menu:'우선 드시고 싶은 음식을 여쭤볼게요.',
+    warm:'저는 따뜻한 밥과 국이 생각나요.',
+    quiet:'말없이 편히 쉴 수 있는 한 끼가 좋아요.',
+    about:'괜찮다면, 자기소개를 조금 더 해 주실래요?',
+    order:'오늘 드실 음식을 준비해 드릴까요?',
+    more:'식사 전에 잠깐 더 이야기 나눌까요?',
+  };
+  const guestJobs=[
+    '출판사에서 책을 만드는 편집 일을 해요.', '이 근처에서 꽃집을 하고 있어요.',
+    '밤에는 버스를 운전해요.', '골목 사진을 찍는 일을 해요.',
+    '빵집에서 새벽 빵을 굽고 있어요.', '지금은 여행 중이에요.',
+    '국어를 가르치다 은퇴했어요.', '대학에서 체육을 공부하고 있어요.',
+    '오래된 옷을 고치는 재봉 일을 해요.', '공사 현장에서 사람들과 일해요.',
+    '병원에서 간호사로 일하고 있어요.', '작은 무대에서 재즈를 연주해요.',
+    '극장에서 공연 의상을 만들고 돌봐요.', '책의 오자와 문장을 살피는 일을 해요.',
+    '대학에서 그림을 공부해요.', '목수로 오래 일하다 지금은 쉬고 있어요.',
+    '출판사 책을 서점에 소개하는 일을 해요.', '근처 가게에서 요리를 해요.',
+    '사람들에게 차 우리는 법을 가르쳐요.', '고장 난 자전거를 고쳐요.',
+    '자동차 정비를 해요.', '밤에 물건을 배송하는 일을 해요.',
+    '도서관에서 책과 사람을 만나고 있어요.', '작은 중고서점을 하고 있어요.',
+  ];
+  function guestProfile(s,id){
+    const p=person(id),known=(s.customerBook[id]?.known||[]).filter(x=>guestFacts.includes(x));
+    return {known,name:known.includes('name')?p.name:(s.customerBook[id]?.visits>1?'낯익은 손님':'처음 만난 손님'),
+      role:known.includes('role')?p.role:null,age:known.includes('age')?p.age:null,
+      style:known.includes('style')?p.style:null,bio:known.includes('bio')?p.bio:null};
+  }
+  function guestConversation(s,id){
+    const g=s.guests.find(x=>x.id===id&&['seated','waiting'].includes(x.status));if(!g)return null;
+    const p=person(g.person),profile=guestProfile(s,g.person),node=guestNodes.includes(g.chat?.node)?g.chat.node:'hello';
+    const choices=[],offer=(id,to)=>choices.push({id,label:guestReplies[id],to});
+    let line='',caption='서로 알아가는 중';
+    if(node==='hello'){
+      caption=profile.known.includes('name')?'다시 만난 반가운 얼굴':'첫 인사';
+      line=profile.known.includes('name')?`또 들렀어요. 오늘도 잠깐 쉬어 가도 괜찮죠?`:openings[(g.lineKey||0)%openings.length];
+      offer('welcome','intro');
+    }else if(node==='intro'){
+      line=profile.known.includes('role')?`${p.name}입니다. 저를 기억해 주시니 반갑네요.`:`저는 ${p.name}입니다. 이렇게 인사하니 한결 편안하네요.`;
+      offer('day','day');offer('menu','order');
+    }else if(node==='day'){
+      line=`${guestJobs[g.person%guestJobs.length]} ${guestDays[g.person%guestDays.length]}\n주인장님은 지친 날에 어떤 한 끼가 생각나세요?`;
+      offer('warm','warm');offer('quiet','quiet');
+      if(!profile.known.includes('age'))offer('about','about');
+    }else if(node==='warm'||node==='quiet'){
+      line=node==='warm'?'맞아요. 따뜻한 밥 냄새만 맡아도 긴장이 풀릴 때가 있죠. 오늘도 그런 한 끼를 먹고 싶네요.':'그런 자리도 꼭 필요하죠. 이곳에서는 서두르지 않아도 될 것 같아 마음이 놓여요.';
+      offer('order','order');if(!profile.known.includes('age'))offer('about','about');
+    }else if(node==='about'){
+      line=`저는 ${p.age}예요. ${guestJobs[g.person%guestJobs.length]}\n${guestDays[g.person%guestDays.length]} 제 이야기를 들어 주셔서 고마워요.`;
+      offer('order','order');
+    }else{
+      caption=g.status==='waiting'?'접수한 주문':'오늘의 주문';
+      line=g.status==='waiting'?`${recipes[g.recipe].name}, 따뜻하게 기다리고 있을게요.`:requests[Math.floor((g.lineKey||0)/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
+      if(g.status==='seated')offer('more','day');
+    }
+    return {node,line,caption,choices,orderReady:node==='order',
+      playerLine:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
+  }
+  function answerGuest(s,id,reply){
+    const view=guestConversation(s,id),choice=view?.choices.find(x=>x.id===reply);if(!choice)return false;
+    const g=s.guests.find(x=>x.id===id),memory=s.customerBook[g.person];if(!memory)return false;
+    const known=(memory.known||[]).filter(x=>guestFacts.includes(x));
+    const reveal=choice.to==='intro'?['name','style']:choice.to==='day'?['role','bio']:choice.to==='about'?['role','bio','age']:[];
+    const discovered=reveal.filter(x=>!known.includes(x));memory.known=[...new Set([...known,...reveal])];
+    g.chat={node:choice.to,reply,discovered};return true;
+  }
   function chooseRecipe(s,omakase) {
     const menuLevel=s.phase==='open'?Math.min(s.level,s.nightStart.level):s.level;
     const ids=s.unlocked.filter(id=>recipes[id].level<=menuLevel),cycle=s.nightOrders.slice(Math.floor(s.arrived/3)*3);
@@ -131,7 +229,7 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version:11,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    version:11,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1,atmosphere:0 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
     totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:3,miso:3,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
     unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [],upgradeQty:{},equipped:{}, special: 'onigiri',
@@ -170,6 +268,7 @@
       new Set(v.guests.map(g => g.seat)).size !== v.guests.length ||
       new Set(v.guests.map(g => g.id)).size !== v.guests.length) throw new Error('Invalid save');
     const restored = { ...s, ...v,version:11,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
+    restored.nightElapsedMs=Number.isFinite(v.nightElapsedMs)&&v.nightElapsedMs>=0?Math.min(1e9,Math.round(v.nightElapsedMs)):0;
     restored.upgrades=[...new Set(restored.upgrades)];
     if(v.upgradeQty!==undefined&&(!v.upgradeQty||Array.isArray(v.upgradeQty)||Object.entries(v.upgradeQty).some(([id,n])=>!restored.upgrades.includes(id)||!integer(n,1,upgrades[id].max))))throw new Error('Invalid furnishing quantities');
     restored.upgradeQty=Object.fromEntries(restored.upgrades.map(id=>[id,v.upgradeQty?.[id]||1]));
@@ -233,6 +332,12 @@
     restored.nightReviews=v.nightReviews??v.nightScores.slice(-4).map((score,i)=>({guest:'오늘의 손님',person:null,dish:'오늘의 한 끼',score,text:reviewText({score,heat:100,waitPenalty:0},i)}));
     if(v.nightPurchases!==undefined&&!integer(v.nightPurchases))throw new Error('Invalid purchase ledger');
     restored.nightPurchases=v.nightPurchases??Math.max(0,restored.nightStart.money+restored.nightRevenue+restored.storyIncome-restored.storyCosts-(restored.nightCosts||0)-restored.money);
+    // A corrupt optional conversation must not erase a valid older game or its money.
+    for(const memory of Object.values(restored.customerBook))memory.known=Array.isArray(memory.known)?[...new Set(memory.known.filter(x=>guestFacts.includes(x)))]:[];
+    for(const g of restored.guests){
+      if(g.chat&&guestNodes.includes(g.chat.node))g.chat={node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
+      else delete g.chat;
+    }
     progress(restored);return restored;
 
 
@@ -240,7 +345,7 @@
   function open(s) {
     if (s.phase !== 'prep') return false;
     progress(s);
-    Object.assign(s, {prepChoice:null,nightReviews:[],nightPurchases:0,kitchen:null,storyRun:null,nightOrders:[],nightNews:[],storyIncome:0,storyCosts:0,phase: 'open', guests: [], arrived: 0, target: 9, nightVisitors: [],
+    Object.assign(s, {nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,kitchen:null,storyRun:null,nightOrders:[],nightNews:[],storyIncome:0,storyCosts:0,phase: 'open', guests: [], arrived: 0, target: 9, nightVisitors: [],
       nightStart: {money:s.money, reputation:s.reputation, satisfaction:satisfaction(s), xp:s.xp, level:s.level,atmosphere:atmosphere(s)},
       nightRevenue: 0, nightTips: 0, nightCosts: 0, nightScores: [], event: 'none', eventChoice: null, nightStartRep: s.reputation, lastResult: null });
     applyFollowups(s);return true;
@@ -261,7 +366,7 @@
     const omakase=(visitor+s.night+s.arrived)%3===0,recipe=chooseRecipe(s,omakase);
     const lineKey=s.dialogueSerial++;s.nightOrders.push(recipe);s.recentOrders=[...s.recentOrders,recipe].slice(-36);
     const g = { id: ++s.arrived, person: visitor, seat, recipe, omakase,lineKey,status:'seated',score:0,waitMs:0,eatMs:0,bill:null,paid:false };
-    const memory = s.customerBook[visitor] || {visits:0,lastScore:0,lastVisitNight:0,dueNight:0,dueLevel:0};
+    const memory = s.customerBook[visitor] || {visits:0,lastScore:0,lastVisitNight:0,dueNight:0,dueLevel:0,known:[]};
     if (memory.lastVisitNight !== s.night) memory.visits++;
     memory.lastVisitNight = s.night; s.customerBook[visitor] = memory; s.nightVisitors.push(visitor);
     s.guests.push(g);
@@ -407,7 +512,7 @@
     if (s.phase !== 'end') return false;
     s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { F,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { guestProfile,guestConversation,answerGuest,F,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();

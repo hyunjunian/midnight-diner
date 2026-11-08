@@ -1,0 +1,386 @@
+/* v21 — quiet washi, walnut and printed ink. Load after component styles.
+   Material layers are limited to interface surfaces; food/people/scene art are untouched. */
+@font-face {
+  font-family: DinerBrush;
+  src: url('./assets/fonts/nanum-brush-script.woff2') format('woff2');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+:root {
+  --paper: #f2e5c9;
+  --ink: #3c392e;
+  --ui-ink: #3c392e;
+  --ui-muted: #74644d;
+  --ui-red: #984b36;
+  --ui-paper: linear-gradient(#fff9e719,#fff9e719),url('./assets/ui-washi-v21.webp');
+  --ui-wood: linear-gradient(#26160f59,#26160f59),url('./assets/ui-walnut-v21.webp');
+  --brush: DinerBrush,'Nanum Myeongjo','Noto Serif CJK KR',serif;
+}
+/* Brush lettering is for short headings. Small data stays crisp printed type. */
+.sheet-header h2,
+#story-dialog .sheet-header h2,
+#report-dialog .sheet-header h2,
+.stock-prep-heading h3,
+#report-content .report-heading h3,
+.growth-banner h3,
+#report-content .earned-gallery h4,
+#talk-name,
+.process-heading h3,
+.room-task b,
+.kitchen-header h2 {
+  font-family: var(--brush);
+  font-weight: 400;
+  letter-spacing: .01em;
+  text-shadow: .2px .2px 0 currentColor;
+}
+.game-app button:focus-visible,
+.sheet button:focus-visible,
+.guest-dialog button:focus-visible,
+.sheet input:focus-visible {
+  outline-color: #a54b32;
+  outline-offset: 3px;
+}
+.game-app .primary,
+.sheet .primary,
+.guest-dialog .primary,
+#report-content #report-next {
+  color: #3b3325;
+  background-color: #e4c88e;
+  background-image: linear-gradient(#ebc8889c,#d7ac689c),url('./assets/ui-washi-v21.webp');
+  background-size: auto,500px;
+  border: 1px solid #8d683e;
+  border-radius: 6px 8px 6px 5px;
+  box-shadow: inset 0 1px #fff5cb,0 4px 0 #61472e,0 7px 15px #0003;
+  text-shadow: 0 1px #fff6db66;
+}
+.game-app .primary:disabled,
+.sheet .primary:disabled,
+.guest-dialog .primary:disabled {
+  color: #756b55;
+  background-image: var(--ui-paper);
+  border-color: #a89878;
+  box-shadow: none;
+  opacity: .68;
+}
+/* Small wooden plaques keep the stage visible; paper tags carry the actions. */
+.night-hud,.wallet-hud,.game-hud .round-button,.progress-hud,
+.scene-controls button,.pan-controls,.game-dock,
+.customer-name,.placement-banner,.resume-kitchen,
+.kitchen-header,#kitchen-footer,.room-task {
+  background-color: #422a1d;
+  background-image: var(--ui-wood);
+  background-size: auto,600px auto;
+  color: #f8e8c7;
+  border-color: #b28b566e;
+  border-radius: 6px;
+  box-shadow: inset 0 1px #e3be7c29,inset 0 -1px #170c0780,0 4px 14px #0005;
+  backdrop-filter: none;
+}
+.night-hud,.wallet-hud {border-bottom:2px solid #24170e;}
+.night-hud b {font-weight:700;}
+.night-hud #open-status,.wallet-hud span,.wallet-hud small {color:#dfc9a4;}
+.wallet-hud strong {font-weight:700;}
+#clock {color:#f4ddb0;font-variant-numeric:tabular-nums;}
+.game-hud .round-button {border-radius:50%;color:#ecd5aa;}
+.progress-hud {color:#e6d2ac;}
+.progress-hud .hud-atmosphere {color:#d5e3a9;}
+.game-dock {gap:5px;padding:8px;border:3px solid #4e3120;box-shadow:0 5px 0 #1d130e,0 9px 22px #0007;}
+.game-dock button {
+  border:1px solid #b69b6e;
+  border-radius:3px 4px 5px 3px;
+  background-color:#ead7b3;
+  background-image:var(--ui-paper);
+  background-size:auto,360px;
+  box-shadow:0 2px 0 #180d0980;
+}
+.game-dock button>span {color:#82552e;text-shadow:0 1px #fff4d8;}
+.game-dock button b {color:#493b2a;font-weight:700;}
+.game-dock button.active {background-image:linear-gradient(#b99a6522,#b99a6522),var(--ui-paper);border-color:#a84e33;border-radius:4px;box-shadow:inset 0 -3px #a84e33,0 2px 0 #180d0980;}
+.game-dock #story-badge {right:5px;top:4px;background:#ac4930;box-shadow:0 0 0 2px #f4dfb6,0 0 10px #dfa35b;}
+.scene-controls button {font-weight:700;color:#f4e0b8;min-height:44px;}
+.pan-controls {border:1px solid #b28b566e;}
+.pan-controls button {box-shadow:none;border:0;background:transparent;}
+.customer-name {border-radius:5px;font-weight:700;}
+.placement-banner {border-radius:6px;border:1px solid #c4a574;}
+.placement-banner strong {color:#f3dfb2;}
+.resume-kitchen {color:#4b3d2a;background-image:var(--ui-paper);border-color:#c6a56c;border-radius:5px;}
+.service-bar button {border-radius:7px;}
+.service-bar button:disabled {background:#322519d9;border-color:#bd9d694f;color:#e1cfac;}
+/* Bound paper folios; gentle texture remains below all text and photography. */
+.sheet,
+#report-dialog,
+#story-dialog {
+  color-scheme:light;
+  color:var(--ui-ink);
+  background-color:var(--paper);
+  background-image:var(--ui-paper);
+  background-size:auto,680px;
+  border:5px solid #553925;
+  border-radius:9px 11px 8px 10px;
+  box-shadow:0 0 0 1px #af8657,0 20px 70px #0009,inset 0 0 0 1px #b99b6f;
+}
+.sheet::backdrop {background:#100e0bb8;backdrop-filter:blur(3px);}
+.sheet-header,
+#report-dialog .sheet-header,
+#story-dialog .sheet-header {
+  background-color:#f1e2c4;
+  background-image:var(--ui-paper);
+  background-size:auto,680px;
+  color:var(--ui-ink);
+  border-bottom:3px double #9b7c4f99;
+  padding:17px 20px;
+  gap:12px;
+  box-shadow:0 2px 8px #6f502614;
+}
+.sheet-header>div {min-width:0;}
+.sheet-header h2,
+#story-dialog .sheet-header h2,
+#report-dialog .sheet-header h2 {font-size:31px;line-height:1.15;margin:7px 0 0;word-break:keep-all;overflow-wrap:anywhere;}
+.sheet .eyebrow,
+#story-dialog .eyebrow,
+#report-dialog .sheet-header .eyebrow {color:#8d5339;font:700 9px/1.5 var(--sans);letter-spacing:1.5px;}
+.sheet .round-button,
+#story-dialog .round-button,
+#report-dialog .round-button {width:44px;min-width:44px;height:44px;min-height:44px;color:#725338;border:1px solid #a68c62;background:#f8edd14d;border-radius:50%;box-shadow:inset 0 1px #fff7db;}
+.sheet-body {padding:20px;}
+.management-note {color:#70634b;}
+.management-note>span {color:#876746;}
+.stock-card,.menu-card,.upgrade-card,
+.item-shop-grid .furnish-card,
+.shop-benefits,.report-metric,.report-unlocks,
+.heat-lesson,.measure-panel,.stock-prep {
+  background-color:#f3e6c8;
+  background-image:var(--ui-paper);
+  background-size:auto,500px;
+  border-color:#b49a6d;
+  border-radius:4px 6px 5px 4px;
+  color:var(--ui-ink);
+  box-shadow:0 2px 5px #51391b14,inset 0 0 0 2px #fff7df40;
+}
+.stock-card h3,.menu-card h3,.upgrade-card h3 {color:#4e4534;}
+.stock-card button,.menu-card button,.upgrade-card button,
+.settings-list button,.quantity-stepper button,
+.collection-filters button,.stock-bulk-small {
+  color:#f8e9c9;
+  background-color:#4c513c;
+  background-image:linear-gradient(#43503bdd,#43503bdd),url('./assets/ui-walnut-v21.webp');
+  background-size:auto,400px;
+  border:1px solid #7c805c;
+  border-radius:4px;
+  min-height:44px;
+  box-shadow:inset 0 1px #e7d8a52c,0 2px 0 #313326;
+}
+.item-shop-grid .furnish-card {border-color:#b99e71;padding:13px 10px;overflow:hidden;}
+.item-shop-grid .furnish-card h3 {font-family:var(--sans);font-size:14px;font-weight:700;line-height:1.5;color:#473e2d;}
+.furnish-card .item-level-tag {font:700 11px/1.4 var(--sans)!important;background:#e7dac0;color:#8e5036;border:1px solid #a98155;border-radius:3px;}
+.furnish-card .ambience-reward {font:700 12px/1.5 var(--sans)!important;background:#e0e5c9;color:#41653d;border:1px solid #9cac7a;border-radius:4px;}
+.item-shop-grid .furnish-card>button {background:#4c5f43;color:#fff1d2;border-color:#7c895c;border-radius:4px;box-shadow:0 2px 0 #354530;min-height:46px;}
+.item-shop-grid .furnish-card>button:disabled {background:#ddd5bf;color:#716e59;box-shadow:none;opacity:1;}
+.item-shop-grid .furnish-card .item-benefit {color:#4b663f;}
+.item-shop-grid .furnish-card .item-location {color:#7d7056;}
+.shop-benefits>b {color:#4e583d;font-size:15px;}
+.shop-benefits strong {color:#42603b;font-size:21px;}
+.shop-benefits small {color:#70684f;}
+.collection-filters .active {background:#924d34;border-color:#a76a47;color:#fff0cc;box-shadow:inset 0 1px #f1d3aa30,0 2px 0 #65361f;}
+.collection-goal {background-image:var(--ui-wood);background-size:auto,650px;border-color:#ad8d5d;border-radius:5px;color:#f3dfb6;}
+.collection-goal p {color:#dfc7a0;}
+.collection-goal img {border-radius:3px;border:3px solid #22150c;}
+.quantity-stepper input {border-radius:2px;background:#fff5dd;color:#443c2c;border-color:#b8a078;}
+.stock-prep {border:3px solid #785736;border-radius:7px;box-shadow:0 2px 0 #291b11,0 12px 35px #0007;}
+.stock-prep-heading>span {color:#915236;font-weight:700;}
+.stock-prep-heading h3 {font-size:29px;line-height:1.2;color:#4f4e37;}
+.stock-prep-heading p {color:#74664d;}
+.stock-prep-list>span {border-radius:3px;background:#fff4d742;border-color:#b89d71;}
+.stock-prep-list small {color:#55724a;}
+.stock-prepared-check {background:#dfe7cd;border:1px solid #aab88d;border-radius:3px;color:#46633e;}
+.change-prep-plan {color:#765c3b;min-height:44px;}
+/* Ledger: strong green gains and vermilion expenses read like stamped accounts. */
+#report-content .report-heading h3 {color:#504631;font-size:32px;line-height:1.25;}
+#report-content .report-heading p {color:#786b51;line-height:1.7;}
+.night-stamp {border:1px solid #a75b41;border-radius:3px;color:#9b4b34;font-family:var(--serif);transform:rotate(-2deg);}
+.growth-banner {border:2px solid #a68551;border-radius:5px;background:#e8dcb93b;box-shadow:inset 0 0 0 3px #f9edcd;}
+.growth-banner h3 {font-size:28px;line-height:1.15;color:#49573a;}
+.growth-banner>div>small {color:#8f5739;}
+.growth-banner p {color:#75654a;}
+.growth-banner>.level-tile {background:#5d6c47;color:#fff0ce;border-color:#8c9b6a;box-shadow:0 3px 0 #37462b;border-radius:3px;}
+.report-metric {border-top:3px solid #8d7953;}
+.report-metric h4 {color:#685c45;font-weight:700;}
+.report-metric strong {color:#403e2e;font-variant-numeric:tabular-nums;}
+.report-metric strong>small {color:#82735b;}
+.night-reviews {border-color:#ae9a724d;}
+.night-review>div {background:#fff7e3;border-color:#bca67e;border-radius:2px 8px 7px 6px;}
+.night-review:nth-child(even)>div {background:#e6ebd4;}
+.night-review header {color:#6b644b;}
+.till-summary {border-radius:4px;background:var(--ui-wood);background-size:auto,650px;color:#f5e3bd;border-color:#a28456;}
+.next-goal {border-radius:4px;background:#e5dfc4;color:#45583b;border:1px solid #a3ad82;}
+#report-content .reward-heading h3,#report-content .upcoming-items>h3 {font-family:var(--brush);font-size:27px;line-height:1.25;color:#536040;}
+#report-content .reward-heading small,#report-content .reward-conditions,#report-content .next-item-note {color:#77694e;}
+#report-content .earned-gallery h4 {font-size:27px;color:#65623d;}
+#report-content .reward-foods>div {background:#fff4da55;border-color:#bda67a;border-radius:4px;color:#564e38;}
+#report-content .max-level-message {color:#6d674b;}
+/* Story is a paper folio too, with clear dialogue cards and natural portrait cutouts. */
+#story-content .story-scene {background:#c2b18417;color:#685c45;border-color:#a35138;border-radius:0;padding:13px 15px;}
+#story-content .story-scene>span {color:#8e5a3c;}
+.story-person b,.story-message-body>b {color:#65502f;}
+.story-person small {color:#78684e;}
+.story-voice-controls {background:#e9dcbd66;color:#5e523e;border-color:#bfa377;border-radius:4px;}
+.story-voice-controls button {background:#546346;border-color:#869364;color:#fff0ce;border-radius:4px;min-height:44px;}
+.story-voice-controls p {color:#756b50;}
+.story-message-body p {background-color:#fff4d8;background-image:var(--ui-paper);background-size:auto,500px;color:#494735;border-color:#b7a172;border-radius:3px 12px 10px 8px;}
+.story-message:nth-child(even) .story-message-body p {background-image:linear-gradient(#dbe4c36b,#dbe4c36b),var(--ui-paper);}
+#story-content .story-choice-card {background-color:#efdfbb;background-image:var(--ui-paper);background-size:auto,600px;color:#4a4935;border-color:#a58753;border-radius:4px;box-shadow:0 3px 0 #8d744e,0 5px 10px #50391b14;}
+#story-content .story-choice-card:disabled {background:#ded8c5;color:#8a826c;border-color:#b4a88a;}
+.story-choices .choice-copy small {color:#77724f;}
+.story-choice-card:disabled .choice-copy small {color:#8e826b;}
+#story-content .story-result {background-image:var(--ui-paper);background-size:auto,600px;color:#4d4b36;border-color:#b69b69;border-radius:4px;}
+.story-journal {color:#6d6b4e;}
+/* Conversation component owns layout. These are material and ink changes only. */
+.talk-card {background-color:#e9dcc0;background-image:var(--ui-paper);background-size:auto,600px;color:#433f30;border:4px solid #62442b;border-bottom:0;border-radius:8px 8px 0 0;box-shadow:0 -8px 30px #0005;}
+#talk-name {color:#51482f;font-size:30px;line-height:1.1;}
+.talk-card .eyebrow {color:#935c3c;}
+#talk-profile,#talk-regular {color:#76664b;}
+.talk-speech {background:#fff8e7b0;border:1px solid #bda67a;color:#474535;border-radius:3px 11px 9px 8px;}
+.talk-speech::before {background:#f7ecd5;border-top:1px solid #bda67a;border-left:1px solid #bda67a;}
+#talk-line {color:#443f30;}
+#talk-progress {color:#8b7958;}
+.talk-order {background:#d5d9b945;border-color:#a1ab7b;border-radius:4px;}
+.talk-order>span:last-child {color:#555c3c;}
+.talk-order small {color:#7b7152;}
+#talk-gift {background:#526345;color:#fff0d0;border-color:#809064;border-radius:4px;}
+.talk-header .talk-close {color:#6c5135;background:#f7ebd266;border-color:#aa8d5e;border-radius:4px;}
+#talk-known-fields span {background:#e3dbbf;color:#6d6046;border-color:#b49b6c;border-radius:3px;}
+#talk-discovery {color:#56733f;}
+#talk-choices button {background:#fff3d3;color:#4e5138;border-color:#af9867;border-radius:4px;box-shadow:0 2px 0 #bcaa83;}
+#talk-player-line {background:#dce3c9;color:#536244;border-color:#a7b287;border-radius:4px;}
+/* Kitchen uses a wooden workbench rail; instructions remain clear paper tickets. */
+.kitchen-header {border-bottom:3px solid #26190f;}
+.kitchen-header h2 {font-size:25px;line-height:1.1;color:#f5dfaf;}
+.kitchen-header span {color:#e2c69a;}
+.kitchen-header>button {background:#e8d8b6;color:#57452c;border-color:#b39970;border-radius:4px;min-height:44px;}
+#kitchen-footer {border-top:3px solid #765536;border-radius:0;}
+#kitchen-footer>p {color:#ead9b6;}
+#kitchen-footer>.primary {border-radius:4px;}
+.process-heading h3 {font-size:34px;line-height:1.15;color:#f6dfb1;text-shadow:0 2px 3px #20170e;}
+.process-heading p {line-height:1.8;}
+.room-task {border-radius:5px;}
+.room-task b {font-size:28px;line-height:1.15;}
+.room-task small,.room-task span {color:#e6ceaa;}
+.room-hotspot span {background:#f0dfba;color:#614c2e;border-color:#a88a58;border-radius:4px;}
+.motion-replay,.heat-replay {border-radius:4px;background-image:var(--ui-wood);background-size:auto,500px;border-color:#b4945d;color:#f6e4bc;}
+.heat-lesson h4 {font-family:var(--brush);font-size:28px;}
+.heat-lesson p {color:#594d38;}
+/* Never shrink interactive controls below a finger target or enlarge data badges. */
+@media (max-width:430px) {
+  .game-dock {width:min(92vw,368px);gap:5px;padding:7px;}
+  .game-dock button {flex:1;min-width:0;width:auto;min-height:61px;}
+  .game-dock b {font-size:11px;white-space:nowrap;}
+  .sheet-header,#report-dialog .sheet-header,#story-dialog .sheet-header {padding:15px 15px;}
+  .sheet-body,#report-content,#story-content {padding-left:14px;padding-right:14px;}
+  .sheet-header h2,#story-dialog .sheet-header h2,#report-dialog .sheet-header h2 {font-size:29px;}
+  .stock-prep-heading h3 {font-size:27px;}
+  .growth-banner {gap:11px;padding:14px 12px;}
+  .growth-banner h3 {font-size:25px;}
+  .kitchen-header {gap:9px;}
+  .kitchen-header h2 {font-size:23px;}
+}
+@media (max-width:359px) {
+  .sheet-header h2,#story-dialog .sheet-header h2,#report-dialog .sheet-header h2 {font-size:27px;}
+  .sheet-body,#report-content,#story-content {padding-left:12px;padding-right:12px;}
+  .stock-prep {padding:14px 12px;}
+  .stock-prep-heading h3 {font-size:25px;}
+  .report-metric-pair {gap:8px;}
+  .report-metric {padding:14px 11px;}
+  .growth-banner h3 {font-size:23px;}
+  .kitchen-header {padding-left:10px;padding-right:10px;gap:7px;}
+  .kitchen-header>button {padding:8px 9px;}
+  .kitchen-header h2 {font-size:22px;}
+}
+/* Furnishing steppers use a separate component class from pantry quantities. */
+.lamp-quantity button {min-height:44px;height:44px;border-radius:3px;background:#566245;color:#fff0cf;border-color:#859167;}
+.lamp-quantity input {height:44px;background:#fff3d7;color:#4b422f;border-radius:2px;border-color:#b49a6d;}
+/* Ink corrections for components originally designed for a dark sheet. */
+.growth-banner .score-delta.gain {color:#2c8249;}
+.growth-banner .score-delta.loss {color:#ac493a;}
+.next-goal h4 {color:#52603f;font-family:var(--brush);font-size:26px;}
+.next-goal p {color:#6c684b;}
+.goal-chips>span {background:#f6edcf;border-color:#b6a77c;border-radius:3px;}
+.goal-chips small {color:#7b6b4c;}
+.goal-chips b {color:#625b3f;}
+.goal-chips .met {border-color:#91a471;}
+.goal-chips .met b {color:#47713c;}
+.next-goal>button {background:#596b47;color:#fff0cf;border-color:#879367;border-radius:4px;min-height:44px;}
+.story-cast-chip b {color:#654d30;}
+.story-cast-chip small {color:#74684d;}
+.story-cast-strip {border-bottom-color:#ab936359;}
+.story-narration,.story-memory,.story-memory b,.story-journal {color:#716047;}
+#story-content .story-result>span {color:#875335;}
+.story-memory {border-color:#b09b715e;}
+.story-message.is-speaking .story-message-body>b::after {color:#9d5132;}
+/* Match customer component specificity while leaving all responsive geometry intact. */
+#guest-dialog {border-radius:8px 8px 0 0;}
+#guest-dialog .talk-card {background-color:#ecdfc2;background-image:var(--ui-paper);background-size:auto,600px;color:#433f30;border:4px solid #62442b;border-bottom:0;border-radius:8px 8px 0 0;}
+#guest-dialog #talk-name {font-family:var(--brush);font-size:30px;line-height:1.1;color:#51482f;font-weight:400;}
+#guest-dialog .talk-header .eyebrow {color:#935c3c;}
+#guest-dialog .talk-close {min-height:44px;background:#f3e6c766;color:#6c5135;border-color:#aa8d5e;border-radius:4px;}
+#guest-dialog .talk-notes summary {min-height:44px;display:flex;align-items:center;}
+#guest-dialog #talk-known-fields {background:#e3dbbf66;color:#6d6046;border-color:#b49b6c;border-radius:3px;}
+#guest-dialog .talk-player-line {background:#dce3c9;color:#536244;border-color:#a7b287;border-radius:4px;}
+#guest-dialog .talk-speech {background:#fff8e7b0;border-color:#bda67a;color:#474535;border-radius:3px 11px 9px 8px;}
+#guest-dialog .talk-speech::before {background:#f7ecd5;border-color:#bda67a;}
+#guest-dialog .talk-order {background:#d5d9b945;border-color:#a1ab7b;border-radius:4px;}
+#guest-dialog .talk-choices>button {background:#fff3d3;color:#4e5138;border-color:#af9867;border-radius:4px;}
+#guest-dialog .talk-choices.optional>button {min-height:44px;background:#f2e5c438;}
+#guest-dialog #talk-gift {min-height:44px;}
+
+/* Tactile paper revision: fibers stay visible, with a fine lit top edge and
+   compressed/shadowed lower edge. Surface-only: no scene/food/portrait filters. */
+.sheet,#report-dialog,#story-dialog {
+  background-position:0 0,center top;
+  box-shadow:0 0 0 1px #af8657,0 20px 70px #0009,inset 0 2px 1px #fff9e5,inset 2px 0 2px #fff8e399,inset -2px -3px 3px #9b77412e;
+}
+.sheet-header,#report-dialog .sheet-header,#story-dialog .sheet-header {
+  background-position:0 0,center 22%;
+  box-shadow:inset 0 1px #fffbea,0 2px 2px #6f50261c;
+}
+.stock-prep,.stock-card,.menu-card,.upgrade-card,
+.item-shop-grid .furnish-card,.shop-benefits,.report-metric,.report-unlocks,.heat-lesson {
+  border-color:#b79a6b;
+  box-shadow:inset 0 1px 1px #fffbea,inset 1px 0 #fff8df99,inset 0 -2px 2px #8e6b3522,0 1px 0 #c7ac7b,0 4px 6px #51391b21;
+  background-position:0 0,center 35%;
+}
+#guest-dialog .talk-card {
+  background-position:0 0,center top;
+  box-shadow:inset 0 2px 1px #fffbea,inset 2px 0 #fff8e399,inset -2px 0 2px #9b774126,0 -8px 30px #0005;
+}
+#guest-dialog .talk-speech,.story-message-body p {
+  background-image:linear-gradient(#fff9e752,#fff9e752),url('./assets/ui-washi-v21.webp');
+  background-size:auto,480px;
+  background-position:0 0,center center;
+  box-shadow:inset 0 1px #fffbea,inset 0 -1px 2px #9b774122,0 2px 3px #79562b20;
+}
+#guest-dialog .talk-choices>button {
+  background-image:var(--ui-paper);
+  background-size:auto,520px;
+  background-position:0 0,center 65%;
+  box-shadow:inset 0 1px #fffbea,0 2px 0 #bba272,0 4px 5px #79562b17;
+}
+#guest-dialog .talk-player-line {
+  background-image:linear-gradient(#dce3c97d,#dce3c97d),url('./assets/ui-washi-v21.webp');
+  background-size:auto,520px;
+}
+.stock-prepared-check {
+  background-image:linear-gradient(#dfe7cd99,#dfe7cd99),url('./assets/ui-washi-v21.webp');
+  background-size:auto,500px;
+}
+/* Paper edges catch light differently on each side, rather than a drawn outline. */
+.stock-card,.menu-card,.upgrade-card,.item-shop-grid .furnish-card,
+.shop-benefits,.report-metric,.report-unlocks,.heat-lesson,
+#guest-dialog .talk-speech,#guest-dialog .talk-choices>button,
+.story-message-body p {
+  border-width:1px;
+  border-style:solid;
+  border-color:#fff9e4d9 #d7bf9673 #b49a717d #f5e7cba6;
+  border-radius:3px 2px 4px 2px;
+}
+#guest-dialog .talk-speech::before {border-color:#fff9e4d9;}
