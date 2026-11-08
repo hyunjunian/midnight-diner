@@ -1,0 +1,18 @@
+Minamo — PeriTune (Sei Mutsuki / むつき醒)
+Original publication: 2016-06-12
+Official track: https://peritune.com/blog/2016/06/12/minamo/
+Official licensing statement: https://peritune.com/about/
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+PeriTune states that music published before March 2026 continues under CC BY 4.0.
+This track may be used and adapted, including in games, with attribution under that license.
+No endorsement by PeriTune is implied.
+
+Copy obtained from the public mirror (pinned revision):
+https://github.com/evgenyvinnik/tensho-web/blob/1d50c09f82ba2d733edb3a1c43f1ebf1528a9b86/public/assets/music/Minamo.mp3
+Mirror documentation identifies its source as PeriTune's Konohana collection and describes prior MP3/RMS conversion.
+Source SHA-256: ca2d9e94e800b15101cfc47a79e3adef273b0141bd1057660d810933bcbd807a
+
+Changes for Midnight Diner v29: loudness normalization to approximately -23 LUFS and MP3 re-encoding.
+Playback volume is adjustable in game settings. Attribution and license links are also shown there.

@@ -66,16 +66,7 @@
   const measurements={soy:{amount:15,unit:'mL',vessel:'계량스푼'},dashi:{amount:150,unit:'mL',vessel:'계량컵'},milk:{amount:100,unit:'mL',vessel:'계량컵'},miso:{amount:1,unit:'스푼',vessel:'나무 스푼'},flour:{amount:30,unit:'g',vessel:'계량 그릇'},sugar:{amount:1,unit:'스푼',vessel:'계량스푼'}};
   function measureSpec(){return measurements[step()?.part]||measurements.soy;}
   function gestureId(st){if(st.id==='prep'&&st.part==='miso')return 'paste';return st.id==='prep'?({cut:'cut',wash:'beat',peel:'peel',crack:'crack',fold:'shape',measure:'measure'}[st.mode]):st.id;}
-  function guideText(st){
-    if(local.done)return '';
-    if(st.id==='heat'&&!state().stoveTutorialDone)return '연습에서도 익힘이 실제처럼 올라가요. 다이얼을 돌려 켜고 초록 구간에서 꺼 보세요.';
-    if(st.id==='prep'&&st.part==='miso')return '왼쪽 된장통의 동그라미에서 한 숟갈 떠서 오른쪽 빈 그릇에 놓아 주세요.';
-    if(st.id==='prep'&&st.mode==='cut')return '준비된 칼로 점선의 위쪽 동그라미에서 화살표 끝까지 내려 썰어 주세요.';
-    if(st.id==='prep'&&st.mode==='wash')return '그릇 안 동그란 점선을 한 바퀴 따라 움직이며 씻어 주세요.';
-    if(st.id==='prep'&&st.mode==='fold')return '김 가장자리의 동그라미에서 가운데까지 한 번 접어 주세요.';
-    if(st.id==='prep'&&st.mode==='measure'){const m=measureSpec();return `왼쪽 용기를 오른쪽 ${m.vessel} 위로 끌어 ${m.amount}${m.unit}가 될 때까지 유지하세요. 손을 떼면 멈춰요.`;}
-    return {beat:'동그란 점선을 따라 그릇 안을 저으세요. 3바퀴면 준비돼요.',lid:'뚜껑의 동그라미에서 위로 밀어 밥솥을 열어 주세요.',shape:'흩어진 밥을 모으고, 둥글게 쥔 뒤 세모로 빚어요. 점선을 세 번 따라 주세요.',portion:'왼쪽 밥솥에서 밥을 떠 점선을 따라 오른쪽 아래 그릇에 담아 주세요. 세 주걱이면 돼요.',assemble:'조리된 음식 위 동그라미를 잡고 점선을 따라 서빙 접시로 옮겨 주세요.',pour:'위쪽 동그라미에서 아래로 끌어 그릇을 기울여 부으세요.',broth:'위쪽 동그라미에서 아래로 끌어 냄비에 부으세요. 두 번 반복해요.','wrap-legacy':'왼쪽 김을 잡고 가운데로 감싸 주세요.',wrap:'왼쪽의 좁은 김을 잡고 주먹밥 앞면 가운데로 가져와 위로 올려 붙여요.',drain:'아래 동그라미에서 위로 끌어 면을 건져 주세요.',crack:'위쪽 동그라미에서 아래로 내려 달걀을 깨 주세요.',peel:'가운데 동그라미에서 바깥쪽 화살표 끝까지 벗겨 주세요.',heat:st.flip?'다이얼로 불을 켜고 뒤집기 버튼으로 반대쪽도 익혀요. 초록 구간에서 불을 꺼 주세요.':'다이얼로 불을 켜고 초록 구간에서 불 끄고 마무리를 눌러 주세요.'}[gestureId(st)]||'동그라미를 잡고 점선을 따라 움직여 주세요.';
-  }
+  function guideText(st){return local.done?'':'동그라미에서 시작해 점선 끝까지 움직여 주세요.';}
   function guideMarkup(st){
     if(local.done||st.id==='heat')return '';
     const paths=G.guide(gestureId(st),{cuts:local.cutSlots}),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -103,7 +94,7 @@
     $('kitchen-screen').classList.toggle('immersive-heat',isHeat&&!!R.heatArt(order().recipe));
     if(isHeat&&!state().stoveTutorialDone){state().stoveTutorialDone=true;bridge.save();}
     const scene=isHeat?`${heatControls(st,spec)}${stoveUnit(st)}`:`<div class="prep-scene ${st.id} ${local.done?'action-done':''}"><button id="cook-object" class="cook-object" aria-label="${st.title} 조작">${objectContent(st)}</button><div class="action-spark" aria-hidden="true"></div></div>${st.id==='prep'&&st.mode==='measure'?measureDisplay():''}<div class="action-counter" aria-live="polite">${st.part==='miso'?'':st.id==='portion'?`그릇에 밥 ${local.count}주걱 / 3주걱`:local.done?'':`${Math.min(local.count,st.goal)} / ${st.goal}`}</div>`;
-    $('kitchen-content').innerHTML=`<div class="process-view station-${st.station} ${isHeat?'':R.inImagePilot(order().recipe)?'photo-workspace':'legacy-workspace'}"><div class="process-heading"><span>${names[st.station]} · ${state().kitchen.step+1}단계</span><h3>${st.title}</h3><p>${guideText(st)}</p></div>${scene}</div>`;
+    $('kitchen-content').innerHTML=`<div class="process-view station-${st.station} ${isHeat?'':R.inImagePilot(order().recipe)?'photo-workspace':'legacy-workspace'}"><div class="process-heading"><span>${names[st.station]} · ${state().kitchen.step+1}단계</span><h3>${st.title}</h3></div>${scene}</div>`;
     processFooter();fitWorkspace();requestAnimationFrame(fitWorkspace);if(isHeat)updateHeat();else FX?.heat(false,0);
   }
   function fitWorkspace(){const area=$('kitchen-content'),hot=document.querySelector('.native-stove');if(hot){const ratio=9/16,width=Math.max(area.clientWidth,area.clientHeight*ratio);hot.style.width=`${width}px`;hot.style.height=`${width/ratio}px`;const height=width/ratio,mount=R.heatLayout[order().recipe]?.y||.845,safe=$('kitchen-footer').getBoundingClientRect().top-area.getBoundingClientRect().top,lift=Math.max(0,(area.clientHeight-height)/2+height*mount+width*.095-safe+8);hot.style.top=`calc(50% - ${lift}px)`;const nav=$('location-nav').getBoundingClientRect();area.style.setProperty('--heat-caption-top',`${nav.bottom+3}px`);return;}const workspace=document.querySelector('.photo-workspace');if(!workspace)return;const ratio=2/3,width=Math.max(area.clientWidth,area.clientHeight*ratio);workspace.style.setProperty('--work-width',`${width}px`);workspace.style.setProperty('--work-height-source',`${width/ratio}px`);workspace.style.setProperty('--work-height',`${area.clientHeight}px`);workspace.dataset.sourceAspect=String(ratio);}

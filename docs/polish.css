@@ -406,3 +406,15 @@
 #kitchen-content .native-stove .recipe-frame{inset:-.4%;clip-path:inset(.4%)}
 
 #kitchen-content .native-stove .dial-wrap{height:auto;aspect-ratio:1;width:19%}
+
+/* v29: place step labels lower on the empty workbench, without instruction paragraphs. */
+#kitchen-screen #kitchen-content .photo-workspace .process-heading{position:absolute;top:clamp(32px,7%,50px);left:12px;right:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;background:none;min-height:0}
+#kitchen-content .photo-workspace .process-heading h3{font-size:19px;line-height:1.4;margin:0}
+#kitchen-content .process-heading>p{display:none}
+#progress-hud.progress-hud{left:calc(var(--safe-left) + 12px)}
+@media(orientation:landscape) and (min-height:551px){#progress-hud.progress-hud{left:calc(var(--safe-left) + 22px)}}
+
+.music-credit{display:block;font:400 10px/1.6 var(--reading-serif);margin:2px 0 0;color:#6d5b40}.music-credit a{color:inherit;text-underline-offset:2px}
+
+#kitchen-content .legacy-workspace .process-heading{margin-top:32px;background:none;border:0}
+@media(orientation:landscape) and (max-height:550px){#progress-hud.progress-hud{left:40%}}

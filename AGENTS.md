@@ -108,3 +108,7 @@
 - The user explicitly requested quiet cozy original instrumental BGM, independently enabled/disabled and volume-adjustable in Settings with persistent preferences. This music request supersedes the previous no-background-music direction; rain/room/traffic/speech ambience remains removed. Pause BGM during intro, background and pagehide. Keep approved intro media unchanged.
 
 - Keep the main service tally and story hint near71.5% of the portrait viewport, below guest plaques and clearly above the dock. Tall screens must not push the notes back down against the dock.
+
+- v29 non-heating step titles sit lower on the clear board area; do not restore the long “준비된 칼로…” or other process-heading instruction paragraphs. Keep live gesture paths/counters and short invalid-action feedback. Pouring egg mixture is a board preparation scene with the pan directly on wood and no portable stove/grate; broth/draining preparation also uses the board. Real heating retains the approved centered stove.
+- Main portrait HUD: align the progress-panel left edge with the night/time-panel left edge, including safe-area offsets.
+- v29 BGM is the licensed free track “Minamo” by PeriTune (CC BY 4.0, published 2016); preserve in-settings author/source/license/change credits and the offline license file. It replaces the v28 synthesized track. Keep saved independent music controls and intro/background pause.

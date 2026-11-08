@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const VERSION = 'midnight-diner-pwa-20261108-v28-approved-stove';
+const VERSION = 'midnight-diner-pwa-20261108-v29-clear-preparation';
 const ROOT = new URL('./', self.location.href);
 const INDEX = new URL('index.html', ROOT).href;
 const FILES = [
@@ -64,7 +64,8 @@ const FILES = [
   'kitchen.js',
   'audio.js',
   'music.js',
-  'assets/music-cozy-v28.mp3',
+  'assets/music-minamo-v29.mp3',
+  'assets/music-Minamo-LICENSE.txt',
   'furnishings.js',
   'gestures.js',
   'kitchen.css',
@@ -287,7 +288,7 @@ const FILES = [
   'assets/portrait-v28-core-portion.webp',
   'assets/portrait-v28-core-shape.webp',
   'assets/portrait-v28-core-beat.webp',
-  'assets/portrait-v28-core-pour.webp',
+  'assets/portrait-v29-core-pour.webp',
   'assets/portrait-v28-core-broth.webp',
   'assets/portrait-v28-core-drain.webp',
   'assets/portrait-v28-core-wrap.webp',

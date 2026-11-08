@@ -42,6 +42,7 @@ test('only the approved fifteen recipes route to the new portrait workbench sour
  }
  assert.equal(R.nightImage('hiyayakko',R.prepImage('hiyayakko','scallion')),'portrait-v28-prep-scallion');
  assert.equal(R.nightImage('onigiri','core-portion-v19'),'portrait-v28-core-portion');
+ assert.equal(R.portraitImage('tamago','core-pour'),true,'new-version portrait art keeps guide/input coordinates aligned');
  for(const id of Object.keys(E.recipes)){
   const art=R.heatArt(id,3),expected=E.recipes[id].level<=5&&R.heated.includes(id);assert.equal(!!art,expected,id);
   if(art){assert.equal(art.col+art.row*2,3);assert.ok(fs.existsSync(path.join(__dirname,'../docs/assets',art.file+'.webp')));}
