@@ -67,8 +67,8 @@
       el.classList.toggle('pleased',g.status==='eating' && g.score>=80);
       el.classList.toggle('disappointed',g.status==='eating' && g.score<60);
       el.querySelector('.customer-avatar').disabled=false;el.querySelector('.customer-avatar').setAttribute('aria-label',`${profile.name} 님과 대화하기`);el.classList.toggle('dining',g.status==='eating');
-      const status={seated:'',waiting:'주문 접수',eating:'식사 중',paying:'계산할게요',farewell:'배웅하기'},name=el.querySelector('.customer-name'),knownName=profile.known.includes('name')?profile.name:'';
-      name.textContent=[knownName,status[g.status]].filter(Boolean).join(' · ');name.hidden=!name.textContent;
+      const status={seated:'',waiting:'주문 접수',eating:'식사 중',paying:'계산할게요',farewell:'배웅하기'},name=el.querySelector('.customer-name'),knownName=profile.name;
+      name.innerHTML=`<span class="customer-name-text">${knownName}</span>${status[g.status]?`<small>${status[g.status]}</small>`:''}`;name.hidden=false;
       el.querySelector('.customer-avatar').setAttribute('aria-label',`${knownName||'손님'}과 이야기 나누기`);
       const served=el.querySelector('.served-dish');served.classList.toggle('uncooked-dish',g.bill?.appearance==='raw'||E.Cooking.family(g.recipe,E.recipes[g.recipe])==='cold');served.classList.toggle('overdone-dish',['dry','burnt'].includes(g.bill?.appearance));const hasDish=['eating','paying','farewell'].includes(g.status);served.hidden=!hasDish;
       if(hasDish&&served.dataset.recipe!==g.recipe){served.innerHTML=food(g.recipe,false,g.bill?.appearance||'good')+'<span class="dish-steam"></span><span class="eaten-dish">'+food(g.recipe,true)+'</span>';served.dataset.recipe=g.recipe;served.classList.add('dish-arriving');}
@@ -384,7 +384,7 @@
   window.addEventListener('pageshow', event => {
     if (event.persisted) { lastFrame = 0; arrivalTimer = setInterval(() => { if (!$('reset-dialog').open) tryArrival(); }, 6500); raf = requestAnimationFrame(frame); }
   });
-  Kitchen.init({getState:()=>state,food,toast,clearToast:()=>{$('kitchen-inline-feedback')?.remove();clearTimeout(toastTimer);$('toast').classList.remove('visible');},changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
+  Kitchen.init({getState:()=>state,food,toast,openPantry:()=>{tab='pantry';renderManagement();openSheet('management-dialog');},clearToast:()=>{$('kitchen-inline-feedback')?.remove();clearTimeout(toastTimer);$('toast').classList.remove('visible');},changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
   render();
   window.MidnightApp = { launch: startIntro, save, isCooking:()=>Boolean(state.kitchen) };
   if (saveMessage) toast(saveMessage);

@@ -26,6 +26,8 @@
   <link rel="stylesheet" href="./tactile-controls.css">
   <link rel="stylesheet" href="./physical-icons.css">
   <link rel="stylesheet" href="./polish.css">
+  <link rel="stylesheet" href="./analog-feedback-v25.css">
+  <link rel="stylesheet" href="./location-nav-v25.css">
   <script src="./catalog.js" defer></script>
   <script src="./stories.js" defer></script>
   <script src="./cooking-rules.js" defer></script>
@@ -65,7 +67,7 @@
           <div id="customers" class="customers"></div>
         </div>
       </div>
-      <div class="scene-controls"><button id="area-toggle">가게 밖 보기 </button><span id="pan-hint"> 좌우로 밀어 가게를 둘러보세요 </span><div class="pan-controls" hidden aria-hidden="true"><button id="pan-left" aria-label="가게 왼쪽 보기"></button><span id="pan-position">카운터</span><button id="pan-right" aria-label="가게 오른쪽 보기"></button></div></div>
+      <div class="scene-controls"><nav id="location-nav" class="location-nav" aria-label="가게 안팎 이동"><button type="button" data-location="counter" aria-pressed="true">카운터</button><button type="button" data-location="kitchen" aria-pressed="false">부엌<small class="nav-cooking-note" hidden>조리 중</small></button><button type="button" id="area-toggle" data-location="outside" aria-pressed="false">가게 밖</button></nav><span id="pan-hint"> 좌우로 밀어 가게를 둘러보세요 </span><div class="pan-controls" hidden aria-hidden="true"><button id="pan-left" aria-label="가게 왼쪽 보기"></button><span id="pan-position">카운터</span><button id="pan-right" aria-label="가게 오른쪽 보기"></button></div></div>
       <div id="placement-banner" class="placement-banner" role="status" hidden></div>
       <header class="game-hud">
         <div class="night-hud"><span class="hud-moon">☾</span><div><b id="day">1번째 밤</b><span id="open-status">영업 준비</span></div><span id="clock">23:50</span></div>
@@ -82,7 +84,7 @@
         <button id="story-open" aria-label="손님 이야기 열기"><span>☷</span><b>이야기</b><i id="story-badge" hidden></i></button>
       </nav>
     </section>
-    <section id="kitchen-screen" class="kitchen-screen" hidden aria-label="조리 부엌"><header class="kitchen-header"><button id="kitchen-back" aria-label="손님이 있는 카운터로 돌아가기"><span class="back-label">카운터로</span></button><div><span id="kitchen-guest"></span><h2 id="kitchen-order"></h2></div><span id="kitchen-step-count"></span></header><div id="kitchen-content"></div><footer id="kitchen-footer"></footer></section>
+    <section id="kitchen-screen" class="kitchen-screen" hidden aria-label="조리 부엌"><header class="kitchen-header"><button id="kitchen-back" hidden aria-label="손님이 있는 카운터로 돌아가기"><span class="back-label">카운터로</span></button><div><span id="kitchen-guest"></span><h2 id="kitchen-order"></h2></div><span id="kitchen-step-count"></span></header><div id="kitchen-content"></div><footer id="kitchen-footer"></footer></section>
   </main>
 
   <dialog id="guest-dialog" class="guest-dialog" aria-labelledby="talk-name">

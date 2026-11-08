@@ -117,9 +117,9 @@ test('every heat method selects food-appropriate boiling or frying foley, with n
 
 test('new cooking images are explicitly limited to the five early pilot dishes until user approval',()=>{assert.deepEqual(E.Cooking.imagePilot,['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);assert.equal(E.Cooking.imagePilot.includes('butadon'),false);assert.ok(Object.isFrozen(E.Cooking.imagePilot));});
 
-test('guest identity is discovered through chosen dialogue and never by arrival or viewing',()=>{
+test('guest background is learned through dialogue while the name is visible from arrival',()=>{
  const {s,g}=setup(),before=structuredClone(s);
- assert.deepEqual(E.guestProfile(s,g.person),{known:[],name:'손님',role:null,age:null,style:null,bio:null});
+ assert.deepEqual(E.guestProfile(s,g.person),{known:[],name:E.person(g.person).name,role:null,age:null,style:null,bio:null});
  const hello=E.guestConversation(s,g.id);assert.equal(hello.node,'hello');assert.equal(hello.orderReady,false);assert.deepEqual(s,before);
  assert.equal(E.answerGuest(s,g.id,'about'),false);assert.deepEqual(s,before);
  assert.equal(E.answerGuest(s,g.id,'welcome'),true);assert.equal(E.guestProfile(s,g.person).name,E.person(g.person).name);assert.equal(E.guestProfile(s,g.person).role,null);assert.equal(E.guestProfile(s,g.person).age,null);assert.ok(E.guestProfile(s,g.person).style);

@@ -1,0 +1,21 @@
+/* One physical location rail moves between the main HUD and kitchen header. */
+.scene-controls{top:var(--location-nav-top,calc(var(--safe-top) + 130px));left:12px;right:12px;display:flex;justify-content:center;gap:5px}
+#location-nav.location-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:min(100%,390px);min-width:0;gap:2px;padding:0;border:3px solid #6f482e;border-image:var(--walnut-frame) 10.2% / 1 / 0 stretch;background:#302016 url('./assets/ui-walnut-v21.webp') center/460px;color:#f4dfb6;box-shadow:0 3px 5px #0a0608a6;pointer-events:auto;flex-shrink:0;isolation:isolate}
+#location-nav.location-nav button{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;min-width:0;min-height:44px;margin:0;padding:8px 5px;border:2px solid transparent;border-image:none;border-radius:0;background:linear-gradient(#452b1b22,#180d0b55);box-shadow:inset 0 1px #e6bc7933;color:#dec8a3;font:400 15px/1.5 var(--reading-serif,var(--serif));letter-spacing:0;white-space:nowrap;text-shadow:0 1px #170d08;transform:none;outline-offset:-4px;touch-action:manipulation;pointer-events:auto}
+#location-nav.location-nav button[aria-pressed=true]{border-color:#d5ad60;background:linear-gradient(#b58a3a33,#9b6b2115);box-shadow:inset 0 1px #ffe2a373,inset 0 -2px #d2a25555,0 0 7px #dbad5540;color:#ffe5a0;text-shadow:0 1px #311c0a}
+#location-nav.location-nav button:active{transform:none;background-color:#bb934533;box-shadow:inset 0 2px 4px #110b07}
+#location-nav.location-nav button:focus-visible{outline:2px solid #ffe1a0}
+#location-nav .nav-cooking-note{font:10px/1.4 var(--sans);letter-spacing:0;color:#eac177;text-shadow:none}
+#location-nav .nav-cooking-note[hidden]{display:none!important}
+#kitchen-screen>#location-nav{width:calc(100% - 20px);max-width:520px;margin:4px auto 6px;position:relative;z-index:4}
+#kitchen-screen #kitchen-back,#resume-kitchen,.scene-controls .pan-controls{display:none!important}
+#pan-hint{font-size:10px;line-height:1.5;margin:0;pointer-events:none}
+#app[data-location=outside] #pan-hint{display:none}
+.empty-kitchen .room-task{top:3%;padding:10px 14px}
+.empty-kitchen .room-task b{font-size:19px;margin:3px 0}
+.empty-kitchen .room-task>span{font-size:13px}
+#kitchen-footer #empty-kitchen-note{font:13px/1.7 var(--reading-serif,var(--serif));color:#e4cfaa;word-break:keep-all;margin:0 0 8px}
+@media(max-width:359px){#location-nav.location-nav button{font-size:14px;gap:4px;padding-left:3px;padding-right:3px}#location-nav .nav-cooking-note{font-size:9px}.empty-kitchen .room-task b{font-size:17px}.empty-kitchen .room-task>span{font-size:12px}}
+@media(orientation:landscape) and (max-height:550px){.scene-controls{top:calc(var(--safe-top) + 68px);left:12px;right:auto;width:min(37vw,310px)}#location-nav.location-nav button{font-size:13px}#pan-hint{display:none}#kitchen-screen>#location-nav{max-width:520px;margin-top:2px;margin-bottom:3px}.empty-kitchen .room-task{top:2%;padding:7px 12px}}
+/* A stroll outside shows the facade; preparation remains available at the counter. */
+#app[data-location=outside] #stock-prep,#app[data-location=outside] #service-hint{display:none}

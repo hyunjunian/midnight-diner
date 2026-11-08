@@ -198,3 +198,59 @@
 .kitchen-screen #gas-dial{border:3px solid #9e8b65;background:radial-gradient(circle at 35% 28%,#d3c4a0,#7b704f 62%,#30291d 66%);box-shadow:inset 0 1px 2px #fff0c1aa,inset 0 -2px 3px #251b10,0 4px 4px #140d0999;border-radius:50%}
 .kitchen-screen #gas-dial i{inset:-8%;background:url('./assets/gas-knob-v24.webp') center/100% 100% no-repeat;filter:drop-shadow(1px 3px 2px #110c0880)}
 .kitchen-screen #gas-dial i::after{display:none}
+/* Full-bleed kitchen photography: no flat green stage or letterbox bands. */
+#kitchen-screen{background-color:#281a11;background-size:cover;background-position:center}
+#kitchen-screen::before{background:linear-gradient(#180e0840,transparent 40%,#180e0866)}
+#kitchen-screen #kitchen-content{background:transparent}
+#kitchen-content .fridge-view{padding:0;min-height:100%;background:transparent}
+#kitchen-content .fridge-cabinet{width:100%;min-width:0;max-width:none}
+#kitchen-content .fridge-pages:empty{display:none}
+#kitchen-content .process-view{background:linear-gradient(#20140c66,#160e0866);min-height:100%}
+#kitchen-content .kitchen-room-art{max-width:none}
+#kitchen-content .completed-dish{background:radial-gradient(ellipse,#a7733022,#180e0877)}
+#kitchen-screen #kitchen-content .prep-scene{width:100%;max-width:none;border-radius:0;box-shadow:none;background:none}
+#kitchen-content .recipe-frame{inset:-.82%;border-radius:0;clip-path:inset(.8%)}
+/* A complete stove: the native pan/burner picture joins a real front fascia.
+   The one live knob is mounted on that fascia, not in a separate UI panel. */
+#kitchen-screen #kitchen-content .prep-scene.stove-unit{height:auto;aspect-ratio:auto;overflow:visible;margin:7px 0 0}
+.stove-unit .heat-worktop{position:relative;width:100%;aspect-ratio:1;overflow:hidden;border:4px solid #887659;border-bottom:0;background:#8a795d;box-shadow:inset 1px 1px #e5d3a677;isolation:isolate}
+#kitchen-content .stove-unit .heat-worktop .cook-object{inset:0;width:100%;height:100%;transform:none;aspect-ratio:1;touch-action:pan-y}
+.stove-unit .stove-front{position:relative;width:100%;aspect-ratio:5.35;background:url('./assets/stove-front-v25.webp') center/100% 100% no-repeat;margin-top:-1px;isolation:isolate}
+.stove-front .dial-wrap{position:absolute;left:30%;top:52%;width:13.5%;min-width:44px;aspect-ratio:1;transform:translate(-50%,-50%);padding:0}
+#kitchen-screen .stove-front #gas-dial{position:absolute;inset:0;width:100%;height:100%;min-height:44px;border:0;background:none;box-shadow:none;border-radius:50%}
+#kitchen-screen .stove-front #gas-dial i{inset:-8%;filter:drop-shadow(1px 2px 1px #201309aa)}
+.stove-front .dial-guide{display:none}
+.stove-front .dial-demo{inset:0;width:100%;height:100%}
+.stove-front .stove-off-tick,.stove-front .stove-high-tick{position:absolute;top:70%;font:700 10px/1 var(--reading-serif);color:#302519;text-shadow:0 1px #e3d3b877;pointer-events:none}
+.stove-front .stove-off-tick{left:20%}.stove-front .stove-high-tick{left:38%}
+.stove-front .stove-enamel{position:absolute;left:83%;top:65%;transform:translate(-50%,-50%);font:400 10px/1 var(--reading-serif);color:#493c2a;white-space:nowrap;text-shadow:0 1px #f0dfc188}
+#kitchen-content .stove-controls{padding:0 18px;margin:0 auto 3px}
+#kitchen-content .stove-controls .cook-look{margin:0 0 3px;font-size:12px;line-height:1.5}
+#kitchen-content .stove-controls .heat-label{line-height:1.5}
+#kitchen-content .stove-controls .heat-meter{height:12px;margin-bottom:0}
+.stove-tools{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 12px}
+.stove-tools .guide-replay,.stove-tools .subtle-action{margin:0;min-height:44px;font-size:11px}
+#kitchen-footer .heat-actions{margin:0;gap:8px}
+#kitchen-footer .heat-actions button{min-height:48px}
+#kitchen-screen #kitchen-footer [data-work=heat-stop]:not(.at-ideal){animation:none}
+.customer .customer-name{padding:5px 8px;max-width:96%;min-height:44px;font:400 13px/1.5 var(--reading-serif)}
+.customer-name .customer-name-text{display:block;font:inherit;color:inherit;white-space:nowrap}
+.customer-name small{display:block;font:400 10px/1.5 var(--reading-serif);margin-top:1px;color:#e9d1a2}
+@media(max-height:730px){#kitchen-content .station-stove .process-heading{padding-top:0}#kitchen-content .station-stove .process-heading h3{font-size:20px;margin:3px 0}#kitchen-content .station-stove .process-heading>span{font-size:10px}}
+@media(max-height:730px){#kitchen-content .station-stove .process-heading{display:flex;align-items:center;justify-content:center;gap:8px;min-height:30px;padding:0 12px}#kitchen-content .station-stove .process-heading h3{font-size:18px;line-height:1.5;margin:0}#kitchen-content .station-stove .process-heading>span{font-size:10px}}
+/* Keep the complete stove and its handle visible together on portrait phones. */
+#kitchen-content .station-stove .process-heading{display:flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:0 12px}
+#kitchen-content .station-stove .process-heading h3{font-size:20px;line-height:1.5;margin:0}
+#kitchen-content .station-stove .process-heading>span{font-size:10px}
+@media(max-height:730px){#kitchen-screen .kitchen-header{padding-top:5px;padding-bottom:5px}#kitchen-content .station-stove #cook-look{display:none}#kitchen-content .station-stove .process-heading{min-height:30px}#kitchen-content .station-stove .process-heading h3{font-size:18px}}
+.customer-name .customer-name-text{white-space:normal;word-break:keep-all;overflow-wrap:normal;line-height:1.4}
+.stove-unit .live-gas{left:16%;bottom:9%;width:68%;height:10%}
+#kitchen-content .stove-controls .heat-label{margin:2px 0 3px}
+#kitchen-screen #kitchen-content .prep-scene.stove-unit{margin-top:3px}
+@media(max-height:730px){#kitchen-content .station-stove{padding-top:0}#kitchen-screen>#location-nav{margin-top:0;margin-bottom:2px}#kitchen-screen .kitchen-header{padding-top:4px;padding-bottom:4px}}
+@media(max-height:730px){#kitchen-screen>#location-nav.location-nav{margin-top:0;margin-bottom:2px}}
+#kitchen-content .station-stove{padding-top:3px}
+#kitchen-content .station-stove #cook-look{display:none}
+#kitchen-screen>#location-nav.location-nav{margin:2px auto 3px}
+@media(max-height:730px){#kitchen-screen>#location-nav.location-nav{margin:0 auto 2px}}
+@media(min-width:650px){#kitchen-screen #kitchen-content .prep-scene.stove-unit{max-width:560px;margin-left:auto;margin-right:auto}}

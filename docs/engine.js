@@ -155,7 +155,7 @@
   ];
   function guestProfile(s,id){
     const p=person(id),known=(s.customerBook[id]?.known||[]).filter(x=>guestFacts.includes(x));
-    return {known,name:known.includes('name')?p.name:(s.customerBook[id]?.visits>1?'낯익은 손님':'손님'),
+    return {known,name:p.name,
       role:known.includes('role')?p.role:null,age:known.includes('age')?p.age:null,
       style:known.includes('style')?p.style:null,bio:known.includes('bio')?p.bio:null};
   }

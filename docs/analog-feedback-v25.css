@@ -1,0 +1,160 @@
+/* Small physical notices, not website alerts. Existing visibility, reward
+   accounting and installation timing remain owned by the game/scene rules. */
+:root {--feedback-paper:url('./assets/ui-washi-v21.webp');--feedback-frame:url('./assets/ui-frame-walnut-v21.webp');--feedback-ink:#4c3d29;--feedback-green:#48623d;--feedback-red:#a24f38;}
+/* Installation receives a framed paper note; the scene and flying item stay live. */
+.placement-banner {
+  width:min(calc(100vw - 32px),370px);
+  padding:14px 17px 15px;
+  border:7px solid #61412b;
+  border-image:var(--feedback-frame) 10.2% / 1 / 0 stretch;
+  border-radius:0;
+  background-color:#f0e0ba;
+  background-image:linear-gradient(#fff7dc16,#fff7dc16),var(--feedback-paper);
+  background-size:auto,470px;
+  background-position:center,center 38%;
+  background-clip:padding-box;
+  color:var(--feedback-ink);
+  box-shadow:0 3px 2px #130c0780,0 9px 22px #0005,inset 0 1px #fff9df,inset 0 -2px 3px #79522c25;
+  text-align:center;
+  pointer-events:none;
+}
+.placement-banner b {font:400 15px/1.7 var(--reading-serif,var(--serif));color:#4d5536;word-break:keep-all;overflow-wrap:anywhere;}
+.placement-banner span {margin-top:7px;font:400 12px/1.75 var(--reading-serif,var(--serif));color:#7c6241;word-break:keep-all;overflow-wrap:anywhere;}
+/* Short gain tags echo pencilled inventory labels, with legible signed values. */
+.placement-gain {
+  width:max-content;max-width:150px;min-width:82px;
+  padding:8px 12px 8px 13px;
+  border:1px solid #d3bc8f;
+  border-left:3px solid #72815a;
+  border-radius:1px 3px 2px 1px;
+  background-color:#f4e4bf;
+  background-image:var(--feedback-paper);
+  background-size:360px;
+  background-position:40% 55%;
+  color:var(--feedback-green);
+  font:700 12px/1.5 var(--reading-serif,var(--serif));
+  text-align:center;white-space:normal;
+  box-shadow:inset 0 1px #fff9e0,0 2px 0 #ae93632b,0 4px 9px #24170c30;
+  text-shadow:none;
+}
+.placement-gain.loss {color:var(--feedback-red);border-left-color:#a96249;background-color:#f4e4bf;background-image:var(--feedback-paper);}
+/* These transient slips remain noninteractive and never steal a cooking gesture. */
+#toast,
+#kitchen-inline-feedback {
+  isolation:isolate;
+  color:var(--feedback-ink);
+  background:transparent;
+  border:0;border-radius:0;
+  box-shadow:none;
+  text-shadow:none;
+  font:400 12px/1.85 var(--reading-serif,var(--serif));
+  word-break:keep-all;overflow-wrap:anywhere;
+  padding:13px 19px;
+  filter:drop-shadow(1px 4px 3px #24150766);
+  pointer-events:none;
+}
+#toast {max-width:min(calc(100vw - 36px),420px);}
+#toast::before,
+#kitchen-inline-feedback::before {
+  content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-color:#f4e4c2;
+  background-image:linear-gradient(100deg,#b3986421,transparent 5%,transparent 96%,#a58a5c26),var(--feedback-paper);
+  background-size:auto,460px;
+  background-position:center,38% 63%;
+  clip-path:polygon(.2% 2%,14% 0,36% 1.3%,64% .2%,87% 1%,99.7% 0,100% 26%,99.7% 68%,100% 99%,78% 100%,56% 98.6%,28% 100%,9% 99.2%,0 100%,.3% 66%,0 29%);
+  box-shadow:inset 0 1px #fff9df,inset 0 -2px 2px #92733c42;
+}
+#kitchen-inline-feedback {position:relative;margin:0 0 10px;padding:10px 13px;filter:drop-shadow(0 2px 1px #130c0738);}
+/* Currency keeps its actual flight path; only the note material changes. */
+.cash-flight {
+  background-color:#e9ddba;
+  background-image:linear-gradient(#b6c49c2b,#b6c49c2b),var(--feedback-paper);
+  background-size:auto,260px;
+  border:3px double #73805a;
+  outline:1px solid #e2cf9f;
+  border-radius:1px;
+  color:#4d6542;
+  font:700 13px/1.4 var(--reading-serif,var(--serif));
+  box-shadow:inset 0 0 0 2px #f9efd35e,0 3px 8px #24170c55;
+}
+/* Small shop benefits are ink stamps on the same paper, never capsule badges. */
+.furnish-card .ambience-reward,.replace-delta {
+  border-radius:2px;
+  color:var(--feedback-green);
+  background-color:transparent;
+  background-image:linear-gradient(#e4e5c640,#e4e5c640),var(--feedback-paper);
+  background-size:auto,400px;
+  border:1px solid #94a07780;
+  box-shadow:inset 0 1px #fff7dc77;
+}
+.replace-delta {display:inline-block;padding:5px 7px;font:400 11px/1.6 var(--reading-serif,var(--serif));}
+.replace-delta.negative {color:var(--feedback-red);border-color:#b27b5e80;background-image:var(--feedback-paper);}
+@media(max-width:359px) {
+  .placement-banner {width:calc(100vw - 28px);padding:12px 13px;border-width:6px;}
+  .placement-banner b {font-size:14px;}
+  .placement-banner span {font-size:11px;}
+  .placement-gain {font-size:11px;padding:7px 9px;min-width:76px;}
+  #toast {font-size:11px;padding:11px 15px;}
+}
+
+/* A small candle on the existing brass/wood object base. Only the flame moves;
+   the paper button and its steady attention rim never flash. Visibility is
+   still #story-badge[hidden], set by storyNeedsAttention in the game rules. */
+.game-dock #story-badge {
+  width:24px;height:29px;right:-1px;top:-9px;
+  border:0;border-radius:0;box-shadow:none;
+  background-color:transparent;
+  background-image:linear-gradient(#3c2816,#3c2816),linear-gradient(90deg,#c6ad7d,#fff2d0 45%,#e6d1a3 72%,#bca06e);
+  background-size:1px 4px,8px 12px;
+  background-position:center 10px,center 14px;
+  background-repeat:no-repeat;
+  filter:none;animation:none;
+  pointer-events:none;
+}
+.game-dock #story-badge::before {
+  content:'';position:absolute;width:24px;height:24px;left:0;bottom:-3px;
+  background:var(--ui-objects) 33.333333% 100%/400% 200% no-repeat;
+  clip-path:inset(66% 0 0 0);
+  pointer-events:none;
+}
+.game-dock #story-badge::after {
+  content:'';position:absolute;width:7px;height:12px;left:50%;top:0;
+  border-radius:80% 18% 65% 45%;
+  background:radial-gradient(ellipse at 48% 76%,#fff9dd 0 15%,#ffe9a0 28%,#f3b65c 58%,#df793428 83%,transparent 88%);
+  transform-origin:50% 100%;
+  transform:translateX(-50%) rotate(-2deg);
+  filter:drop-shadow(0 0 3px #f7be6680);
+  animation:candle-flame-v25 13.7s linear infinite;
+  pointer-events:none;
+}
+/* Fixed flutter seed: 25051; modest nonuniform shape changes, no brightness flash. */
+@keyframes candle-flame-v25 {
+ 0% {transform:translateX(-50%) rotate(2.67deg) scale(0.980,1.053);}
+ 4% {transform:translateX(-50%) rotate(-0.32deg) scale(1.054,0.994);}
+ 8% {transform:translateX(-50%) rotate(-2.82deg) scale(0.984,0.944);}
+ 12% {transform:translateX(-50%) rotate(-1.49deg) scale(0.930,0.970);}
+ 16% {transform:translateX(-50%) rotate(-1.02deg) scale(1.016,0.980);}
+ 20% {transform:translateX(-50%) rotate(-2.53deg) scale(1.055,0.949);}
+ 24% {transform:translateX(-50%) rotate(2.79deg) scale(1.039,1.056);}
+ 28% {transform:translateX(-50%) rotate(1.91deg) scale(1.007,1.038);}
+ 32% {transform:translateX(-50%) rotate(-0.76deg) scale(0.915,0.985);}
+ 36% {transform:translateX(-50%) rotate(-1.70deg) scale(0.962,0.966);}
+ 40% {transform:translateX(-50%) rotate(2.67deg) scale(1.055,1.053);}
+ 44% {transform:translateX(-50%) rotate(-0.60deg) scale(1.002,0.988);}
+ 48% {transform:translateX(-50%) rotate(2.66deg) scale(0.912,1.053);}
+ 52% {transform:translateX(-50%) rotate(1.34deg) scale(0.998,1.027);}
+ 56% {transform:translateX(-50%) rotate(-2.51deg) scale(0.967,0.950);}
+ 60% {transform:translateX(-50%) rotate(-0.57deg) scale(1.059,0.989);}
+ 64% {transform:translateX(-50%) rotate(-1.14deg) scale(0.918,0.977);}
+ 68% {transform:translateX(-50%) rotate(0.64deg) scale(0.966,1.013);}
+ 72% {transform:translateX(-50%) rotate(0.87deg) scale(0.921,1.017);}
+ 76% {transform:translateX(-50%) rotate(2.80deg) scale(1.055,1.056);}
+ 80% {transform:translateX(-50%) rotate(-2.29deg) scale(0.926,0.954);}
+ 84% {transform:translateX(-50%) rotate(1.50deg) scale(0.967,1.030);}
+ 88% {transform:translateX(-50%) rotate(-1.90deg) scale(1.034,0.962);}
+ 92% {transform:translateX(-50%) rotate(-2.54deg) scale(1.051,0.949);}
+ 96% {transform:translateX(-50%) rotate(-2.10deg) scale(1.021,0.958);}
+ 100% {transform:translateX(-50%) rotate(2.72deg) scale(1.006,1.054);}
+}
+@media(max-width:359px){.game-dock #story-badge{right:-2px;top:-9px;}}
+@media(prefers-reduced-motion:reduce){.game-dock #story-badge::after{animation:none;transform:translateX(-50%);}}

@@ -19,10 +19,9 @@
   function showArea(next) {
     area = next; pan = 0;
     $('scene').classList.toggle('outside',area==='outside');
-    $('area-toggle').textContent = area==='inside' ? '가게 밖 보기 ' : '가게 안 보기 ';
     $('pan-hint').textContent = area==='inside' ? ' 좌우로 밀어 가게를 둘러보세요 ' : '가게 앞도 나만의 모습으로 꾸며요';
     if(current) render(current,selected,cookingNow);
-    placePan();
+    placePan();syncNavigation();
   }
 
  function preparePlacement(id,from=0,gain=0){++placementSerial;$('scene').classList.remove('installation-overview');document.querySelectorAll('.installation-flight,.installation-aura').forEach(el=>el.remove());document.querySelectorAll('.placement-installing,.placement-shining,.placement-pending').forEach(el=>el.classList.remove('placement-installing','placement-shining','placement-pending'));pending=id;pendingFrom=from;pendingGain=gain;}
@@ -48,8 +47,32 @@
   const source=theme===null?'room-bare-v19':`room-collection-${theme}`,closed=theme===null?'room-closed-v19':`room-collection-${theme}-closed`;
   for(const el of document.querySelectorAll('.interior-art,.counter-front'))if(!el.src.endsWith(source+'.webp'))el.src='./assets/'+source+'.webp';if(!$('scene-world').querySelector('.interior-closed').src.endsWith(closed+'.webp'))$('scene-world').querySelector('.interior-closed').src='./assets/'+closed+'.webp';
   const ext=$('scene-world').querySelector('.exterior-art');ext.style.backgroundImage=`url('./assets/${outTheme===null?'exterior-bare-v19':outTheme===0?'exterior-furnished-v19':`exterior-collection-${outTheme}`}.webp')`;ext.style.setProperty('--exterior-closed-image',`url('./assets/${outTheme===null?'exterior-closed-v19':outTheme===0?'exterior-furnished-closed-v19':`exterior-collection-${outTheme}-closed`}.webp')`);
-  $('customers').hidden=area==='outside';$('scene-world').classList.toggle('exterior-world',area==='outside');$('scene').classList.toggle('has-lantern',!!lamp&&pending!==lamp);$('scene').style.setProperty('--lamp-ambient',String(1+(lamp?F.count(s,lamp):0)*.018));
+  $('customers').hidden=area==='outside';$('scene-world').classList.toggle('exterior-world',area==='outside');$('scene').classList.toggle('has-lantern',!!lamp&&pending!==lamp);$('scene').style.setProperty('--lamp-ambient',String(1+(lamp?F.count(s,lamp):0)*.018));syncNavigation();
  }
- $('area-toggle').addEventListener('click',()=>showArea(area==='inside'?'outside':'inside'));$('pan-left').addEventListener('click',()=>{pan+=180;placePan()});$('pan-right').addEventListener('click',()=>{pan-=180;placePan()});$('scene').addEventListener('pointerdown',e=>{if(performance.now()<placingUntil||e.target.closest('button'))return;dragging=true;startX=e.clientX;startPan=pan});window.addEventListener('pointermove',e=>{if(!dragging)return;pan=startPan+e.clientX-startX;placePan()});window.addEventListener('pointerup',()=>dragging=false);window.addEventListener('pointercancel',()=>dragging=false);window.addEventListener('resize',placePan);
- window.MidnightScene={character,itemArt,decoration,preview:itemArt,slots,render,showArea,showItem,preparePlacement,isPlacing:()=>performance.now()<placingUntil};
+ function syncNavigation(){
+  const nav=$('location-nav');if(!nav)return;const focused=nav.contains(document.activeElement)?document.activeElement:null,kitchen=window.MidnightKitchen?.isVisible(),location=kitchen?'kitchen':area==='outside'?'outside':'counter';
+  if(kitchen){const header=document.querySelector('.kitchen-header');if(nav.previousElementSibling!==header)header.after(nav);}else{const host=document.querySelector('.scene-controls');if(nav.parentElement!==host)host.prepend(nav);}
+  for(const button of nav.querySelectorAll('[data-location]'))button.setAttribute('aria-pressed',String(button.dataset.location===location));
+  const note=nav.querySelector('.nav-cooking-note');if(note)note.hidden=!current?.kitchen;$('app').dataset.location=location;if(focused&&document.activeElement!==focused)focused.focus({preventScroll:true});queueNavigationPlacement();
+ }
+ let navigationFrame=0;
+ function queueNavigationPlacement(){if(!navigationFrame)navigationFrame=requestAnimationFrame(()=>{navigationFrame=0;placeNavigation();});}
+ function placeNavigation(){
+  const host=document.querySelector('.scene-controls');if(!host)return;
+  if(innerWidth>innerHeight&&innerHeight<=550){host.style.removeProperty('--location-nav-top');return;}
+  const safe=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
+  let bottom=0;for(const el of document.querySelectorAll('#progress-hud,.night-hud,.wallet-hud,#settings-open'))if(el.getClientRects().length)bottom=Math.max(bottom,el.getBoundingClientRect().bottom);
+  host.style.setProperty('--location-nav-top',`${Math.ceil(Math.max(130+safe,bottom+8))}px`);
+ }
+ function navigate(location){
+  if(!['counter','kitchen','outside'].includes(location))return false;
+  if(location==='kitchen'&&window.MidnightKitchen?.isVisible()){syncNavigation();return true;}
+  if(location==='kitchen')window.MidnightKitchen?.open();else{window.MidnightKitchen?.hide();showArea(location==='outside'?'outside':'inside');}
+  syncNavigation();return true;
+ }
+ $('location-nav')?.addEventListener('click',event=>{const button=event.target.closest('[data-location]');if(button)navigate(button.dataset.location);});
+ document.addEventListener('midnight:kitchen',syncNavigation);
+ const navigationObserver=new ResizeObserver(queueNavigationPlacement);for(const el of document.querySelectorAll('#progress-hud,.game-hud,.night-hud,.wallet-hud,#settings-open'))navigationObserver.observe(el);window.addEventListener('resize',queueNavigationPlacement);
+ $('pan-left').addEventListener('click',()=>{pan+=180;placePan()});$('pan-right').addEventListener('click',()=>{pan-=180;placePan()});$('scene').addEventListener('pointerdown',e=>{if(performance.now()<placingUntil||e.target.closest('button'))return;dragging=true;startX=e.clientX;startPan=pan});window.addEventListener('pointermove',e=>{if(!dragging)return;pan=startPan+e.clientX-startX;placePan()});window.addEventListener('pointerup',()=>dragging=false);window.addEventListener('pointercancel',()=>dragging=false);window.addEventListener('resize',placePan);
+ window.MidnightScene={navigate,syncNavigation,character,itemArt,decoration,preview:itemArt,slots,render,showArea,showItem,preparePlacement,isPlacing:()=>performance.now()<placingUntil};
 })();
