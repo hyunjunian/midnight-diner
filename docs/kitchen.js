@@ -3,8 +3,8 @@
   'use strict';
   const E=window.MidnightEngine,R=window.MidnightCookingRules,G=window.MidnightGestures,$=id=>document.getElementById(id);
   const FX=window.MidnightAudio;
-  let refillQuantity=1,completedKitchen=null,fridgeGuestKey='',retainedKitchen=null;
-  let bridge,view='room',visible=false,stepKey='',local={},doors={fridge:false,freezer:false},pages={fridge:0,freezer:0},focused=null,down=null,skipClick=0;
+  let completedKitchen=null,retainedKitchen=null;
+  let bridge,view='room',visible=false,stepKey='',local={},doors={fridge:false,freezer:false},pages={fridge:0,freezer:0},down=null,skipClick=0;
   const state=()=>bridge.getState(),order=()=>state().guests.find(g=>g.id===state().kitchen?.guest),recipe=()=>E.recipes[order()?.recipe],plan=()=>R.plan(order().recipe,recipe()),step=()=>plan()[state().kitchen.step];
   function resetStep(){const key=`${state().night}-${order().id}-${state().kitchen.step}`;if(stepKey===key)return;stepKey=key;local={count:0,done:false,quality:1,heat:0,power:0,started:false,flipped:false,flipQuality:1,oil:null,knife:true,cutSlots:[],tutorial:0,toolX:.35,toolY:.22,fill:0,motion:0,practiceScore:0,practiceGood:false,demoUntil:0};}
   function show(){
@@ -12,7 +12,6 @@
     if(!k){view='room';header();room();document.dispatchEvent(new Event('midnight:kitchen'));return;}
     const guestKey=`${state().night}-${order().id}`,sameSession=retainedKitchen===k,sameStep=sameSession&&stepKey===`${guestKey}-${k.step}`;
     if(!sameSession){stepKey='';retainedKitchen=k;}
-    if(!sameSession||fridgeGuestKey!==guestKey){focused=null;refillQuantity=1;fridgeGuestKey=guestKey;}
     if(!sameStep)view=k.stage==='fridge'?'fridge':k.stage==='complete'?'complete':k.stage==='process'?'process':'room';
     resetStep();render();document.dispatchEvent(new Event('midnight:kitchen'));
   }
@@ -32,19 +31,18 @@
     }).join('');return{buttons,count};
   }
   function doorControl(chamber){const name=chamber==='freezer'?'냉동실':'냉장실',needed=recipe().ingredients.some(id=>E.ingredients[id].storage===chamber&&!state().kitchen.selected.includes(id));
-    return `<div class="fridge-door door-${chamber}" aria-hidden="true"></div><button class="fridge-door-touch touch-${chamber} ${needed?'door-needed':''}" data-door="${chamber}" aria-label="${name} 문 ${doors[chamber]?'닫기':'열기'}" aria-expanded="${doors[chamber]}" aria-controls="shelf-${chamber}"><span class="door-handle-cue" aria-hidden="true"></span></button>`;
+    return `<div class="fridge-door door-${chamber}" aria-hidden="true"></div><button class="fridge-door-touch touch-${chamber} ${needed?'door-needed':''} ${needed&&!state().fridgeDoorHintSeen&&!doors[chamber]?'first-door-hint':''}" data-door="${chamber}" aria-label="${name} 문 ${doors[chamber]?'닫기':'열기'}" aria-expanded="${doors[chamber]}" aria-controls="shelf-${chamber}"><span class="door-handle-cue" aria-hidden="true"></span></button>`;
   }
   function fridge(){const cold=stockButtons('fridge'),frozen=stockButtons('freezer');
     $('kitchen-content').innerHTML=`<div class="fridge-view"><div class="fridge-cabinet ${doors.fridge?'fridge-open':''} ${doors.freezer?'freezer-open':''} ${E.hasUpgrade(state(),'fridge')?'upgraded':''}"><img src="./assets/fridge-open.webp" alt="선반이 있는 냉장고와 냉동실 내부"><div id="shelf-freezer" class="shelf-items freezer-items" ${doors.freezer?'':'inert'}>${frozen.buttons}</div><div id="shelf-fridge" class="shelf-items fridge-items" ${doors.fridge?'':'inert'}>${cold.buttons}</div>${doorControl('freezer')}${doorControl('fridge')}</div><div class="fridge-pages">${frozen.count>1?`<button data-shelf-page="freezer">냉동실 선반 ${pages.freezer+1}/${frozen.count}</button>`:''}${cold.count>1?`<button data-shelf-page="fridge">냉장실 선반 ${pages.fridge+1}/${cold.count}</button>`:''}</div></div>`;
     fridgeFooter();
   }
-  function refillMax(){return focused?Math.max(0,Math.min(99,999-state().inventory[focused],Math.floor(state().money/E.buyPrice(state(),focused)))):0;}
   function fridgeFooter(){
-    const k=state().kitchen,missing=recipe().ingredients.filter(id=>!k.selected.includes(id)),item=E.ingredients[focused],max=refillMax(),locked=Object.entries(E.ingredients).filter(([id])=>!E.ingredientAvailable(state(),id));refillQuantity=Math.max(1,Math.min(refillQuantity,max||1));
+    const k=state().kitchen,missing=recipe().ingredients.filter(id=>!k.selected.includes(id));
     const selected=recipe().ingredients.length-missing.length;
-    footer(`<section class="recipe-ingredients" aria-label="이번 요리에 필요한 재료"><header><h3>이번 요리 재료</h3><strong id="fridge-selection-status" role="status">${selected} / ${recipe().ingredients.length}</strong></header><div class="recipe-ingredient-cards" >${recipe().ingredients.map(id=>`<div class="required-ingredient ${k.selected.includes(id)?'is-ready':'is-missing'}" data-required="${id}">${bridge.food(id)}<b>${k.selected.includes(id)?'<svg class="ingredient-check" viewBox="0 0 20 20" role="img" aria-label="담음"><path d="m3 10 4 4 10-10"/></svg>':''}${E.ingredients[id].name}</b></div>`).join('')}</div></section>${item?`<div class="stock-inspector"><div><b>${item.name} 보충</b><span>재고 ${state().inventory[focused]}개</span></div><div class="refill-order"><div class="quantity-stepper"><button data-refill-step="-1" ${refillQuantity<=1?'disabled':''} aria-label="구매 수량 줄이기">−</button><input data-refill-qty type="number" inputmode="numeric" min="1" max="${max||1}" value="${refillQuantity}" aria-label="${item.name} 구매 수량"><button data-refill-step="1" ${refillQuantity>=max?'disabled':''} aria-label="구매 수량 늘리기">+</button></div><button data-refill="${focused}" ${!max?'disabled':''}>${refillQuantity}개 채우기 · ¥${E.buyPrice(state(),focused)*refillQuantity}</button></div></div>`:''}${E.rescueNeeds(state())?'<button data-work="rescue" class="neighbor-help">재료 도움받기 · 평판 −3</button>':''}<button data-work="ingredients-next" class="primary" ${!k.step&&!E.readyIngredients(state())?'disabled':''}>조리대로 이동</button>`);
+    footer(`<section class="recipe-ingredients" aria-label="이번 요리에 필요한 재료"><header><h3>이번 요리 재료</h3><strong id="fridge-selection-status" role="status">${selected} / ${recipe().ingredients.length}</strong></header><div class="recipe-ingredient-cards" >${recipe().ingredients.map(id=>`<div class="required-ingredient ${k.selected.includes(id)?'is-ready':'is-missing'}" data-required="${id}">${bridge.food(id)}<b>${k.selected.includes(id)?'<svg class="ingredient-check" viewBox="0 0 20 20" role="img" aria-label="담음"><path d="m3 10 4 4 10-10"/></svg>':''}${E.ingredients[id].name}</b></div>`).join('')}</div></section>${E.rescueNeeds(state())?'<button data-work="rescue" class="neighbor-help">재료 도움받기 · 평판 −3</button>':''}<button data-work="ingredients-next" class="primary" ${!k.step&&!E.readyIngredients(state())?'disabled':''}>조리대로 이동</button>`);
   }
-  function toggleDoor(chamber){FX?.play('door');doors[chamber]=!doors[chamber];document.querySelector('.fridge-cabinet')?.classList.toggle(`${chamber}-open`,doors[chamber]);const shelf=document.querySelector(`.${chamber}-items`);if(shelf)shelf.inert=!doors[chamber];document.querySelectorAll(`[data-door="${chamber}"]`).forEach(b=>{b.setAttribute('aria-expanded',String(doors[chamber]));b.setAttribute('aria-label',`${chamber==='freezer'?'냉동실':'냉장실'} 문 ${doors[chamber]?'닫기':'열기'}`);});}
+  function toggleDoor(chamber){FX?.play('door');doors[chamber]=!doors[chamber];if(doors[chamber]&&!state().fridgeDoorHintSeen){state().fridgeDoorHintSeen=true;document.querySelectorAll('.first-door-hint').forEach(el=>el.classList.remove('first-door-hint'));bridge.save();}document.querySelector('.fridge-cabinet')?.classList.toggle(`${chamber}-open`,doors[chamber]);const shelf=document.querySelector(`.${chamber}-items`);if(shelf)shelf.inert=!doors[chamber];document.querySelectorAll(`[data-door="${chamber}"]`).forEach(b=>{b.setAttribute('aria-expanded',String(doors[chamber]));b.setAttribute('aria-label',`${chamber==='freezer'?'냉동실':'냉장실'} 문 ${doors[chamber]?'닫기':'열기'}`);});}
   function visual(st){
     const count=Math.max(0,local.count+(local.motion||0));
     if(st.id==='assemble')return R.platingArt(order().recipe,E.kitchenLook(state()));
@@ -84,7 +82,7 @@
   }
   function refreshGuides(){const el=$('motion-guides');if(el)el.innerHTML=guideMarkup(step());}
   function measureDisplay(){if(step().part==='miso')return `<div class="paste-status" role="status">${local.done?'✓ 된장 한 숟갈을 담았어요':'한 숟갈 · 된장통에서 빈 그릇으로'}</div>`;const m=measureSpec();return `<div class="measure-status" aria-live="polite"><b>${R.prepNames[step().part]} · 목표 ${m.amount}${m.unit}</b><span id="measure-value">${Math.round(local.fill*m.amount)} / ${m.amount}${m.unit}</span><div class="measure-progress"><i id="measure-fill" style="width:${local.fill*100}%"></i></div><small id="measure-help">${local.done?'✓ 계량됐어요':local.fill>=1?'다 찼어요. 손을 떼세요.':'점선 끝의 용기 위에 잠시 유지하면 채워져요.'}</small></div>`;}
-  function fire(){return `<svg class="live-gas" viewBox="0 0 240 90" aria-label="실제 불 세기에 따라 흔들리는 가스 불꽃">${Array.from({length:14},(_,i)=>{const x=20+i*15;return `<path style="animation-delay:${-i*.073}s" d="M${x} 80 Q${x-10} 60 ${x} 25 Q${x+13} 62 ${x} 80" fill="#318ffc"/><path style="animation-delay:${-i*.073}s" d="M${x} 79 Q${x-4} 65 ${x} 48 Q${x+5} 65 ${x} 79" fill="#b6eeff"/>`;}).join('')}</svg>`;}
+  function fire(){return `<svg class="live-gas" viewBox="0 0 240 60" preserveAspectRatio="none" aria-hidden="true">${Array.from({length:18},(_,i)=>{const x=21+i*198/17,y=29+17*(1-((x-120)/102)**2),h=10+(i%3)*1.5;return `<g class="gas-jet" style="animation-delay:${-i*.19}s"><path d="M${x-3.2} ${y} Q${x-3} ${y-h*.45} ${x} ${y-h} Q${x+3} ${y-h*.45} ${x+3.2} ${y}Z" fill="#398fd8" fill-opacity=".78"/><path d="M${x-1.5} ${y} Q${x-1.4} ${y-3} ${x} ${y-h*.53} Q${x+1.4} ${y-3} ${x+1.5} ${y}Z" fill="#a1d9f2" fill-opacity=".8"/></g>`;}).join('')}</svg>`;}
   function knifeAngle(x,y){return Math.atan2(1.16-y,.86-x)*180/Math.PI-48;}
   function cookingMode(){return R.heatMode(order().recipe,recipe());}
   function cookingMotion(){return `<svg class="cooking-surface" viewBox="0 0 100 100" aria-hidden="true">${Array.from({length:20},(_,i)=>`<circle class="cooking-bubble" cx="${25+(i*17)%52}" cy="${35+(i*11)%30}" r="${1.2+(i%4)*.6}" style="animation-delay:${-i*.17}s"/>`).join('')}<path class="surface-ripple" d="M20 50 Q35 44 50 50 T80 50 M25 60 Q40 54 55 60 T75 60"/></svg><svg class="cooking-steam" viewBox="0 0 100 100" aria-hidden="true">${[35,50,65].map((x,i)=>`<path d="M${x} 65 Q${x-8} 45 ${x} 28 T${x} 5" style="animation-delay:${-i*.6}s"/>`).join('')}</svg>`;}
@@ -160,13 +158,11 @@
     root.addEventListener('click',event=>{if(event.target.closest('[data-browse-pantry]')){bridge.openPantry?.();return;}const station=event.target.closest('[data-station]');if(station){const id=station.dataset.station,k=state().kitchen;if(!k){if(id==='fridge')bridge.openPantry?.();else{$('empty-kitchen-note').textContent={rice:'밥솥에서 따뜻한 밥을 지어요. 손님 주문을 받은 뒤 밥을 준비할 수 있어요.',stove:'불 세기를 조절해 굽고 끓이는 화구예요. 주문받은 요리에 맞춰 사용할 수 있어요.',board:'재료를 하나씩 손질하고 마지막 한 접시를 담는 작업대예요.'}[id];}return;}if(id==='fridge'){view='fridge';if(!k.step)k.stage='fridge';render();}else if(k.stage==='process'&&step().station===id){view='process';render();}else bridge.toast(k.stage==='process'?`다음은 ${step().title} 단계예요. 표시된 도구를 눌러 주세요.`:'먼저 냉장고에서 주문에 필요한 재료를 꺼내 주세요.');return;}
       const door=event.target.closest('[data-door]');if(door){toggleDoor(door.dataset.door);return;}
       const page=event.target.closest('[data-shelf-page]');if(page){const chamber=page.dataset.shelfPage,per=chamber==='freezer'?8:12,total=Object.keys(E.ingredients).filter(id=>E.ingredients[id].storage===chamber&&E.ingredientAvailable(state(),id)).length;pages[chamber]=(pages[chamber]+1)%Math.ceil(total/per);render();return;}
-      const stock=event.target.closest('[data-stock]');if(stock){const id=stock.dataset.stock;if(focused!==id)refillQuantity=1;focused=id;
-        if(state().kitchen.selected.includes(id)||!state().kitchen.step&&recipe().ingredients.includes(id)){
-          if(!state().inventory[id]||state().kitchen.selected.includes(id)){if(E.buy(state(),id,1)){FX?.play('buy');if(!state().kitchen.selected.includes(id))E.selectIngredient(state(),id);bridge.changed();}else bridge.toast('재료를 채울 자금과 수량을 확인해 주세요.');}
+      const stock=event.target.closest('[data-stock]');if(stock){const id=stock.dataset.stock;
+        if(state().kitchen.selected.includes(id)||!recipe().ingredients.includes(id)||!state().kitchen.step&&recipe().ingredients.includes(id)){
+          if(!state().inventory[id]||state().kitchen.selected.includes(id)||!recipe().ingredients.includes(id)){if(E.buy(state(),id,1)){FX?.play('buy');if(!state().kitchen.selected.includes(id))E.selectIngredient(state(),id);bridge.changed();}else bridge.toast('재료를 채울 자금과 수량을 확인해 주세요.');}
           else E.selectIngredient(state(),id);
         }render();return;}
-      const qty=event.target.closest('[data-refill-step]');if(qty){refillQuantity=Math.max(1,Math.min(refillMax()||1,refillQuantity+Number(qty.dataset.refillStep)));fridgeFooter();return;}
-      const refill=event.target.closest('[data-refill]');if(refill){const id=refill.dataset.refill;if(E.buy(state(),id,refillQuantity)){FX?.play('buy');if(!state().kitchen.step&&recipe().ingredients.includes(id)&&!state().kitchen.selected.includes(id))E.selectIngredient(state(),id);render();bridge.changed();}return;}
       const power=event.target.closest('[data-power]');if(power){local.power=Number(power.dataset.power);document.querySelectorAll('[data-power]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.power)===local.power)));return;}
       const button=event.target.closest('[data-work]');if(button&&!button.disabled){work(button.dataset.work);return;}
     });
@@ -199,8 +195,6 @@
     });
     root.addEventListener('pointerup',event=>{if(!down||down.id!==event.pointerId)return;const current=down;if(current.paste)G.move(current.gesture,(event.clientX-current.box.x)/current.box.width,(event.clientY-current.box.y)/current.box.height);FX?.flow(step(),false);down=null;local.motion=0;document.querySelector('.prep-scene')?.classList.remove('is-dragging','is-pouring');if(!current.dial){if(current.cutsCommitted)process();else commitDrag(current.gesture);}});
     root.addEventListener('pointercancel',()=>{if(!state().kitchen){down=null;return;}FX?.flow(step(),false);down=null;local.motion=0;paintFrame();document.querySelector('.prep-scene')?.classList.remove('is-dragging','is-pouring');});
-    root.addEventListener('input',event=>{if(!event.target.matches('[data-refill-qty]'))return;refillQuantity=Math.max(1,Math.min(refillMax()||1,Math.floor(Number(event.target.value)||1)));const buy=root.querySelector('[data-refill]');if(buy)buy.textContent=`${refillQuantity}개 채우기 · ¥${E.buyPrice(state(),focused)*refillQuantity}`;});
-    root.addEventListener('change',event=>{if(event.target.matches('[data-refill-qty]'))event.target.value=String(refillQuantity);});
     root.addEventListener('keydown',event=>{if(event.target.id==='gas-dial'&&['ArrowLeft','ArrowRight','ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();setPower(Math.max(0,Math.min(1.6,local.power+(['ArrowRight','ArrowUp'].includes(event.key)?.1:-.1))));}});
   }
 

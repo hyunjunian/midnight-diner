@@ -227,7 +227,7 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version:11,nightNewsRead:0,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    version:11,nightNewsRead:0,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,fridgeDoorHintSeen:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1,atmosphere:0 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
     totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:3,miso:3,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
     unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [],upgradeQty:{},equipped:{}, special: 'onigiri',
@@ -266,6 +266,7 @@
       new Set(v.guests.map(g => g.seat)).size !== v.guests.length ||
       new Set(v.guests.map(g => g.id)).size !== v.guests.length) throw new Error('Invalid save');
     const restored = { ...s, ...v,version:11,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
+    restored.fridgeDoorHintSeen=v.fridgeDoorHintSeen===true;
     restored.nightElapsedMs=Number.isFinite(v.nightElapsedMs)&&v.nightElapsedMs>=0?Math.min(1e9,Math.round(v.nightElapsedMs)):0;
     restored.nightNewsRead=Number.isSafeInteger(v.nightNewsRead)?Math.max(0,Math.min(restored.nightNews.length,v.nightNewsRead)):(restored.event==='resolved'?restored.nightNews.length:0);
     restored.upgrades=[...new Set(restored.upgrades)];

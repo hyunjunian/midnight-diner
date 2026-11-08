@@ -14,6 +14,11 @@
     const limit = Math.max(0, ($('scene-world').offsetWidth - $('scene').offsetWidth) / 2);
     pan = Math.max(-limit, Math.min(limit, pan));
     $('scene-world').style.setProperty('--pan', `${pan}px`);
+    const box=$('scene-world').getBoundingClientRect(),sceneBox=$('scene').getBoundingClientRect();
+    $('scene').style.setProperty('--scene-art-top',`${Math.max(0,box.top-sceneBox.top)}px`);
+    $('scene').style.setProperty('--scene-art-bottom',`${Math.min(sceneBox.height,box.bottom-sceneBox.top)}px`);
+    $('scene').style.setProperty('--scene-art-width',`${box.width}px`);
+    $('scene').style.setProperty('--scene-art-pan',`${pan}px`);
     $('pan-position').textContent = area==='inside' ? (pan > 60 ? '부엌 쪽' : pan < -60 ? '찻장 쪽' : '카운터') : '골목 입구';
   }
   function showArea(next) {
@@ -46,8 +51,9 @@
   const inside=active.filter(id=>E.upgrades[id].area==='inside'),outside=active.filter(id=>E.upgrades[id].area==='outside'),same=list=>list.length&&list.every(id=>E.upgrades[id].theme===E.upgrades[list[0]].theme),lamp=F.activeId(s,'lantern'),fullInside=!pending&&inside.length===9&&same(inside)&&F.count(s,lamp)===3,theme=fullInside?E.upgrades[inside[0]].theme:null,fullOutside=!pending&&outside.length===6&&same(outside),outTheme=fullOutside?E.upgrades[outside[0]].theme:null;
   const source=theme===null?'room-bare-v19':`room-collection-${theme}`,closed=theme===null?'room-closed-v19':`room-collection-${theme}-closed`;
   for(const el of document.querySelectorAll('.interior-art,.counter-front'))if(!el.src.endsWith(source+'.webp'))el.src='./assets/'+source+'.webp';if(!$('scene-world').querySelector('.interior-closed').src.endsWith(closed+'.webp'))$('scene-world').querySelector('.interior-closed').src='./assets/'+closed+'.webp';
+  $('scene').style.setProperty('--scene-room-image',`url('./assets/${s.phase==='prep'?closed:source}.webp')`);
   const ext=$('scene-world').querySelector('.exterior-art');ext.style.backgroundImage=`url('./assets/${outTheme===null?'exterior-bare-v19':outTheme===0?'exterior-furnished-v19':`exterior-collection-${outTheme}`}.webp')`;ext.style.setProperty('--exterior-closed-image',`url('./assets/${outTheme===null?'exterior-closed-v19':outTheme===0?'exterior-furnished-closed-v19':`exterior-collection-${outTheme}-closed`}.webp')`);
-  $('customers').hidden=area==='outside';$('scene-world').classList.toggle('exterior-world',area==='outside');$('scene').classList.toggle('has-lantern',!!lamp&&pending!==lamp);$('scene').style.setProperty('--lamp-ambient',String(1+(lamp?F.count(s,lamp):0)*.018));syncNavigation();
+  $('customers').hidden=area==='outside';$('scene-world').classList.toggle('exterior-world',area==='outside');$('scene').classList.toggle('has-lantern',!!lamp&&pending!==lamp);$('scene').style.setProperty('--lamp-ambient',String(1+(lamp?F.count(s,lamp):0)*.018));syncNavigation();placePan();
  }
  function syncNavigation(){
   const nav=$('location-nav');if(!nav)return;const focused=nav.contains(document.activeElement)?document.activeElement:null,kitchen=window.MidnightKitchen?.isVisible(),location=kitchen?'kitchen':area==='outside'?'outside':'counter';
@@ -61,6 +67,7 @@
   const host=document.querySelector('.scene-controls');if(!host)return;
   if(innerWidth>innerHeight&&innerHeight<=550){host.style.removeProperty('--location-nav-top');return;}
   const safe=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
+  const growth=$('progress-hud').getBoundingClientRect(),settings=$('settings-open');settings.style.top=`${Math.round(growth.top+(growth.height-44)/2)}px`;
   let bottom=0;for(const el of document.querySelectorAll('#progress-hud,.night-hud,.wallet-hud,#settings-open'))if(el.getClientRects().length)bottom=Math.max(bottom,el.getBoundingClientRect().bottom);
   host.style.setProperty('--location-nav-top',`${Math.ceil(Math.max(130+safe,bottom+8))}px`);
  }

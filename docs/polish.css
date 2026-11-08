@@ -254,3 +254,67 @@
 #kitchen-screen>#location-nav.location-nav{margin:2px auto 3px}
 @media(max-height:730px){#kitchen-screen>#location-nav.location-nav{margin:0 auto 2px}}
 @media(min-width:650px){#kitchen-screen #kitchen-content .prep-scene.stove-unit{max-width:560px;margin-left:auto;margin-right:auto}}
+
+/* v26: small horizontal service plaques, with a quiet physical invitation. */
+@property --cue-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+.customer .customer-name{display:flex;align-items:center;justify-content:center;width:max-content;min-width:86px;max-width:calc(120% - 8px);height:30px;min-height:30px;padding:3px 8px;border-radius:4px;font:400 11px/1.4 var(--reading-serif);white-space:nowrap;overflow:visible;box-shadow:inset 0 1px #e9c58d38,inset 0 -2px #22130880,0 3px 4px #0005}
+.customer-name .customer-name-text{display:block;white-space:nowrap;word-break:keep-all;line-height:1.4}
+.customer-name::after{content:'';position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%);background:none;border:0;pointer-events:auto}
+.guest-arriving-label{display:none}
+.arriving .guest-arriving-label{display:block}
+.arriving .customer-name.order-ready .customer-name-text{display:none}
+.customer .customer-name.order-ready{border-color:#e6c477;animation:service-plaque-beat 3.6s ease-in-out infinite}
+.customer-name.order-ready::before,.fridge-door-touch.first-door-hint::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:2px;pointer-events:none;background:conic-gradient(from var(--cue-angle),#b48a4644 0deg,#d4ab5f88 245deg,#fff1bb 287deg,#e8be6d 312deg,#b48a4644 360deg);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;animation:service-gold-trace 4s linear infinite;filter:drop-shadow(0 0 3px #edc67599)}
+.customer.arriving .customer-name{animation:none;border-color:#b28b566e}
+.customer.arriving .customer-name::before{display:none}
+@keyframes service-gold-trace{to{--cue-angle:360deg}}
+@keyframes service-plaque-beat{0%,34%,60%,100%{transform:translateX(-50%) translateY(0) scale(1)}42%{transform:translateX(-50%) translateY(-1px) scale(1.025)}50%{transform:translateX(-50%) translateY(0) scale(1)}55%{transform:translateX(-50%) translateY(-.5px) scale(1.015)}}
+.customer .customer-name:active{animation:none;transform:translateX(-50%) translateY(1px) scale(.98)}
+.fridge-door-touch.first-door-hint{border-radius:15px;box-shadow:inset 0 0 0 1px #ebc77b88,inset 0 0 13px #e9b85b33}
+.fridge-door-touch.first-door-hint::before{inset:3px;padding:3px;filter:drop-shadow(0 0 5px #edc675cc);animation-duration:3.4s}
+/* Continue the room's own ceiling/floor behind the service notes and dock. */
+.scene:not(.outside){background:#35251a}
+.scene:not(.outside)::before{content:none}
+.scene:not(.outside)::after{background:linear-gradient(#150d0740,transparent 30%,transparent 68%,#160d0733)}
+.scene-backfill{position:absolute;inset:0;pointer-events:none;z-index:-1;overflow:hidden;background:#35251a}
+.scene-backfill>div{position:absolute;left:0;width:100%;background-image:var(--scene-room-image,url('./assets/room-bare-v19.webp'));background-repeat:repeat-x;background-position:calc(50% + var(--scene-art-pan,0px)) top;background-size:var(--scene-art-width,100vw) 850%}
+.ceiling-extension{top:0;height:calc(var(--scene-art-top,25dvh) + 1px)}
+.scene-backfill>.floor-extension{top:calc(var(--scene-art-bottom,75dvh) - 1px);bottom:0;background-position:calc(50% + var(--scene-art-pan,0px)) bottom}
+.outside .scene-backfill{display:none}
+@media(prefers-reduced-motion:reduce){.customer .customer-name.order-ready,.customer-name.order-ready::before,.fridge-door-touch.first-door-hint::before{animation:none}.arriving .guest-arriving-label{display:none}.arriving .customer-name.order-ready .customer-name-text{display:block}}
+
+/* Keep plaques below the full serving-vessel silhouette, including used dishes. */
+.customer .customer-name{top:calc(130% + 8px);bottom:auto}
+.customer .wait-meter{top:calc(130% + 43px);bottom:auto}
+.customer .customer-name,.customer .customer-payment{left:var(--guest-center,50%)}
+.customer .served-dish{left:calc(var(--guest-center,50%) - 27%)}
+.customer .wait-meter{left:calc(var(--guest-center,50%) - 27%)}
+/* Compact location signs; invisible extra height keeps the touch target generous. */
+#location-nav.location-nav.location-nav,#kitchen-screen>#location-nav.location-nav.location-nav{width:min(78vw,296px);max-width:296px;margin-top:5px;margin-bottom:6px;gap:0;border-width:2px}
+#location-nav.location-nav.location-nav button{position:relative;min-height:32px;padding:4px 6px;font:400 12px/1.5 var(--reading-serif);border-width:1px}
+#location-nav.location-nav.location-nav button::after{content:'';position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
+#location-nav.location-nav .nav-cooking-note{font-size:9px}
+/* Remaining growth first, then the three independent level conditions. */
+#progress-hud.progress-hud{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:5px;width:min(calc(100vw - 96px),340px);max-width:340px;padding:6px 10px;font:400 10px/1.5 var(--reading-serif)}
+.progress-hud .hud-level{grid-row:1;align-self:center;font:400 15px/1.4 var(--reading-serif);color:#f3d495}
+.hud-growth{min-width:0;display:grid;gap:4px;font-size:11px}
+.hud-growth strong{font-weight:400;color:#ffe3a2}
+#progress-hud .hud-growth progress{width:100%;height:7px}
+.hud-conditions{grid-column:1/-1;display:flex;justify-content:space-between;gap:5px;padding-top:4px;border-top:1px solid #be9b5b44;font-size:9px;color:#dbc8a7;white-space:nowrap}
+.hud-conditions b{font-weight:400;color:#f0d4a4}
+.hud-conditions .met,.hud-conditions .met b{color:#d5caa6}
+/* One work space: do not put a second kitchen room behind the prep photograph. */
+#kitchen-content .process-view{background:linear-gradient(#21150ed9,#2b1b11a6),url('./assets/ui-walnut-v21.webp') center/600px; padding-top:0}
+#kitchen-content .process-view .process-heading{padding:10px 16px;background:linear-gradient(#1e120a55,#2f1c1144);border-bottom:1px solid #c69e5b44}
+#kitchen-content .process-view .prep-scene:not(.stove-unit),#kitchen-content .process-view .prep-scene .cook-object,#kitchen-content .process-view .recipe-frame{border-radius:0}
+#kitchen-content .process-view .prep-scene:not(.stove-unit){margin-top:0}
+#progress-hud.progress-hud{width:min(calc(100vw - 80px),340px)}
+.game-hud #settings-open{position:fixed;right:calc(var(--safe-right) + 12px);width:44px;height:44px;min-height:44px}
+/* A small front arc of blue burner jets, tucked below the vessel rather than on it. */
+.stove-unit .live-gas{left:22%;bottom:17%;width:56%;height:7%;mix-blend-mode:normal;filter:blur(.25px) drop-shadow(0 0 1px #78bbdf66);clip-path:ellipse(50% 48% at 50% 52%);mask-image:linear-gradient(90deg,#000 0 36%,transparent 44% 56%,#000 64% 100%)}
+.stove-unit.fire-on .live-gas{opacity:calc(.35 + var(--gas-strength,0)*.45);transform:scaleY(calc(.5 + var(--gas-strength,0)*.45));transform-origin:50% 80%}
+.stove-unit .live-gas path{animation:none;transform:none}
+.stove-unit .gas-jet{transform-box:fill-box;transform-origin:center bottom;animation:burner-shimmer 1.7s ease-in-out infinite alternate}
+@keyframes burner-shimmer{0%,100%{transform:scaleY(.93);opacity:.85}37%{transform:scaleY(1);opacity:1}71%{transform:scaleY(.97);opacity:.93}}
+@media(prefers-reduced-motion:reduce){.stove-unit .gas-jet{animation:none}}
+#kitchen-content .station-stove.process-view .process-heading{padding:0 12px;min-height:30px}

@@ -60,16 +60,20 @@
         el=document.createElement('div');el.dataset.customer=g.id;el.dataset.person=g.person;
         el.className=`customer seat-${g.seat}${seenCustomers.has(key)?'':' arriving'}`;seenCustomers.add(key);
         el.innerHTML=`<button class="customer-avatar" data-guest="${g.id}" aria-label="${profile.name} 님과 대화하기">${portrait(p,g.person)}</button><button class="customer-name" data-guest="${g.id}"></button><span class="wait-meter" aria-hidden="true"><i></i></span><div class="served-dish" hidden></div><button class="customer-payment" hidden></button><span class="dining-chopsticks" hidden></span>`;
+        setTimeout(()=>el.classList.remove('arriving'),1400);
         el.addEventListener('animationend',e=>{if(e.animationName==='counter-arrival')el.classList.remove('arriving')});
         $('customers').append(el);
       }
+      el.style.setProperty('--guest-center',`${[56.23,53.3,47.67,47,57,54.63,48.94,49.63,56.31,53.85,46.6,46.66,53.35,52.9,50.94,49.84,51.82,52.86,50.63,50.33,53.76,50.89,49.9,50.85][g.person%24]}%`);
       el.classList.toggle('selected',g.id===selectedGuest);el.classList.toggle('needs-payment',g.status==='paying');
       el.classList.toggle('pleased',g.status==='eating' && g.score>=80);
       el.classList.toggle('disappointed',g.status==='eating' && g.score<60);
       el.querySelector('.customer-avatar').disabled=false;el.querySelector('.customer-avatar').setAttribute('aria-label',`${profile.name} 님과 대화하기`);el.classList.toggle('dining',g.status==='eating');
-      const status={seated:'',waiting:'주문 접수',eating:'식사 중',paying:'계산할게요',farewell:'배웅하기'},name=el.querySelector('.customer-name'),knownName=profile.name;
-      name.innerHTML=`<span class="customer-name-text">${knownName}</span>${status[g.status]?`<small>${status[g.status]}</small>`:''}`;name.hidden=false;
-      el.querySelector('.customer-avatar').setAttribute('aria-label',`${knownName||'손님'}과 이야기 나누기`);
+      const status={seated:'주문 준비 완료',waiting:'요리 기다려요',eating:'식사 중',paying:'계산할게요',farewell:'잘 먹었어요'},name=el.querySelector('.customer-name');
+      const serviceLabel=g.status==='waiting'&&state.kitchen?.guest===g.id&&state.kitchen.stage==='complete'?'음식 나왔어요':status[g.status];
+      name.innerHTML=`${g.status==='seated'?'<span class="guest-arriving-label" aria-hidden="true">메뉴 고르는 중</span>':''}<span class="customer-name-text">${serviceLabel}</span>`;name.hidden=false;
+      name.classList.toggle('order-ready',g.status==='seated');name.setAttribute('aria-label',`${profile.name} · ${serviceLabel}`);
+      el.querySelector('.customer-avatar').setAttribute('aria-label',`${profile.name}과 이야기 나누기`);
       const served=el.querySelector('.served-dish');served.classList.toggle('uncooked-dish',g.bill?.appearance==='raw'||E.Cooking.family(g.recipe,E.recipes[g.recipe])==='cold');served.classList.toggle('overdone-dish',['dry','burnt'].includes(g.bill?.appearance));const hasDish=['eating','paying','farewell'].includes(g.status);served.hidden=!hasDish;
       if(hasDish&&served.dataset.recipe!==g.recipe){served.innerHTML=food(g.recipe,false,g.bill?.appearance||'good')+'<span class="dish-steam"></span><span class="eaten-dish">'+food(g.recipe,true)+'</span>';served.dataset.recipe=g.recipe;served.classList.add('dish-arriving');}
       served.classList.toggle('finished-meal',g.status!=='eating');
@@ -197,7 +201,8 @@
     $('service-hint').textContent = state.phase === 'prep' ? (E.stockPlan(state,3).units?'아래 재료 준비를 먼저 확인해 주세요.':'재료가 준비됐어요. 식당 불을 켜고 손님을 맞이해요.') : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요.\n반짝이는 이야기 버튼을 눌러 답해 주세요.' : state.guests.some(g=>g.status==='paying')?'식사를 마친 손님의 별점 위 금액을 눌러 결제해 주세요.':'손님을 눌러 대화하고 주문을 받아 주세요.';
     $('night-action').classList.toggle('close-ready',canClose);
     const nextLevel=E.levels.find(l=>l.level>state.level);
-    $('progress-hud').innerHTML=`<b>Lv.${state.level}</b><span class="hud-atmosphere">분위기 ${E.atmosphere(state)}${nextLevel?` / ${nextLevel.atmosphere}`:''}</span><span>만족도 ${E.satisfaction(state)} · 성장 ${state.xp}${nextLevel?` / ${nextLevel.xp}`:' · MAX'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}"></progress>`;
+    const remaining=nextLevel?Math.max(0,nextLevel.xp-state.xp):0,conditions=nextLevel?[[state.reputation,nextLevel.reputation,'평판'],[E.satisfaction(state),nextLevel.satisfaction,'만족도'],[E.atmosphere(state),nextLevel.atmosphere,'분위기']]:[];
+    $('progress-hud').innerHTML=`<b class="hud-level">Lv.${state.level}</b><div class="hud-growth"><span>${nextLevel?`Lv.${nextLevel.level}까지 <strong>${remaining?remaining.toLocaleString()+'점 더':'성장 달성'}</strong>`:'최고 레벨 달성'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}" aria-label="${nextLevel?'다음 레벨까지 '+remaining+'점':'최고 레벨'}"></progress></div><div class="hud-conditions">${conditions.map(([v,t,label])=>`<span class="${v>=t?'met':''}" title="${label} ${v} / ${t}" aria-label="${label} ${v}점, 목표 ${t}점${v>=t?', 달성':''}">${label} <b>${v>=t?'✓':(t-v)+'점 더'}</b></span>`).join('')}</div>`;
     renderStockPrep();renderScene();renderTalk();renderStory();renderManagement();save();
     $('story-badge').hidden=!E.storyNeedsAttention(state);
     if (state.phase==='end') renderReport();
