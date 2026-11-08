@@ -1,6 +1,6 @@
 // Real worker migration with deliberately year-long HTTP caching; no hard reload or cleared storage.
 const{chromium}=require('playwright'),http=require('node:http'),fs=require('node:fs'),path=require('node:path'),{execFileSync}=require('node:child_process'),assert=require('node:assert/strict'),E=require('../../docs/engine');
-const root=path.resolve(__dirname,'../../docs'),repo=path.resolve(root,'..'),current='20261108-v32-auto-update',future='20261109-v33-test';
+const root=path.resolve(__dirname,'../../docs'),repo=path.resolve(root,'..'),current=fs.readFileSync(path.join(root,'sw.js'),'utf8').match(/const RELEASE = '([^']+)'/)[1],future='20990101-v999-test';
 (async()=>{
   const old=new Map(['index.html','pwa.js','game.js','sw.js','polish.css'].map(f=>[f,execFileSync('git',['show',`fc45ef5:docs/${f}`],{cwd:repo})]));
   let phase=0;

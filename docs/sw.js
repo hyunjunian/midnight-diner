@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261108-v32-auto-update';
+const RELEASE = '20261108-v33-centered-cooking';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -26,6 +26,11 @@ const FILES = [
   'assets/prep-night-v24-pork.webp',
   'assets/prep-night-v24-rice.webp',
   'assets/prep-night-v24-salmon.webp',
+  'assets/workbench-v33.webp',
+  'assets/stove-background-v33.webp',
+  'mobile-layout-v33.css',
+  'cooking-layout.js',
+  'dialogue-motion.js',
   'index.html',
   'style.css',
   'customer.css',
