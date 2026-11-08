@@ -98,16 +98,11 @@
     // Keep the live mesh and controls intact through HUD/inventory/timer updates.
     if($('guest-dialog').dataset.person!==String(g.person)){$('talk-portrait').innerHTML=portrait(p,g.person);$('guest-dialog').dataset.person=g.person;}
     $('talk-name').textContent=profile.name;
-    $('talk-profile').textContent=profile.known.length?(profile.role||'인사를 나눈 손님'):'아직 이름과 이야기를 나누지 않았어요.';
-    $('talk-regular').textContent=E.regular(state,g.person)?'익숙한 단골 · 지난 대화의 기억이 이어져요.':'인사를 나누고 궁금한 것을 물어보세요. 알게 된 이야기는 기억해 둬요.';
+    $('talk-profile').textContent=profile.role||'';$('talk-profile').hidden=!profile.role;
     const fields=['role','age','style'],factsKey=JSON.stringify(fields.map(id=>profile[id]));
     if($('talk-known-fields').dataset.key!==factsKey){$('talk-known-fields').dataset.key=factsKey;$('talk-known-fields').replaceChildren(...fields.map(id=>{const item=document.createElement('div'),label=document.createElement('dt'),value=document.createElement('dd');label.textContent=factLabels[id];value.textContent=profile[id]||'아직 몰라요';item.className=profile[id]?'known':'unknown';label.append(document.createTextNode(profile[id]?' ✓':''));item.append(label,value);return item;}));}
     $('talk-line').textContent=view?view.line:lines[Math.min(talkIndex,lines.length-1)];
-    $('talk-progress').textContent=view?view.caption:g.status==='farewell'?'식사 끝, 잠깐의 인사':g.status==='paying'?'오늘의 식사 계산':'느긋하게 식사 중';
-    $('talk-player-line').hidden=!view?.playerLine;$('talk-player-line').textContent=view?.playerLine||'';
-    const discovered=view?.discovered||[];const discoveryKey=`${g.id}:${view?.node}:${discovered.join(',')}`;
-    if($('talk-discovery').dataset.key!==discoveryKey){$('talk-discovery').dataset.key=discoveryKey;$('talk-discovery').textContent=discovered.length?`손님을 조금 더 알게 됐어요 · ${discovered.map(id=>factLabels[id]).join(' · ')}`:'';}
-    $('talk-discovery').hidden=!discovered.length;
+    $('talk-player-line').hidden=!view?.playerLine;$('talk-player-words').textContent=view?.playerLine||'';
     const choicesKey=JSON.stringify([g.id,view?.node,view?.choices.map(x=>[x.id,x.label])]);
     if($('talk-choices').dataset.key!==choicesKey){$('talk-choices').dataset.key=choicesKey;$('talk-choices').replaceChildren(...(view?.choices||[]).map(choice=>{const button=document.createElement('button');button.type='button';button.dataset.guestReply=choice.id;button.textContent=choice.label;return button;}));}
     $('talk-choices').classList.toggle('optional',!!view?.orderReady);
@@ -287,9 +282,8 @@
   $('story-open').addEventListener('click',()=>{storyRenderKey='';renderStory();openSheet('story-dialog');window.MidnightVoice?.play();});
   $('story-dialog').addEventListener('close',()=>window.MidnightVoice?.stop());
   $('story-dialog').addEventListener('click',event=>{if(event.target.closest('[data-story-voice]'))window.MidnightVoice?.toggle();if(event.target.closest('[data-story-replay]'))window.MidnightVoice?.play();});
-  function soundLabel(){if(FX){$('sound-effects').textContent=FX.enabled?'게임 소리 · 켜짐':'게임 소리 · 꺼짐';$('sound-effects').setAttribute('aria-pressed',String(FX.enabled));$('ambient-sound').textContent=FX.ambientEnabled?'식당 환경음 · 켜짐':'식당 환경음 · 꺼짐';$('ambient-sound').setAttribute('aria-pressed',String(!!FX.ambientEnabled));$('ambient-sound').disabled=!FX.enabled;}}
-  $('sound-effects').addEventListener('click',()=>{FX?.setEnabled(!FX.enabled);soundLabel();});
-  $('ambient-sound').addEventListener('click',()=>{FX?.setAmbientEnabled(!FX.ambientEnabled);soundLabel();});soundLabel();
+  function soundLabel(){if(FX){$('sound-effects').textContent=FX.enabled?'조리·게임 효과음 · 켜짐':'조리·게임 효과음 · 꺼짐';$('sound-effects').setAttribute('aria-pressed',String(FX.enabled));}}
+  $('sound-effects').addEventListener('click',()=>{FX?.setEnabled(!FX.enabled);soundLabel();});soundLabel();
   $('settings-open').addEventListener('click', () => openSheet('settings-dialog'));
   $('fullscreen').addEventListener('click', async () => {
     if (document.fullscreenElement) return;

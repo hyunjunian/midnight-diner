@@ -34,5 +34,9 @@
   const catalog=typeof module!=='undefined'?require('./catalog.js'):window.MidnightCatalog;
   const heated=Object.keys(catalog.recipes).filter(id=>family(id,catalog.recipes[id])!=='cold'&&id!=='shio_onigiri');
   const imagePilot=Object.freeze(['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);
-  const api={imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
+  // The user specifically requested nighttime for the pictured hiyayakko prep scene.
+  // This narrow lighting correction does not expand the general cooking-image pilot.
+  const nightPrepRecipes=Object.freeze([...imagePilot,'hiyayakko']);
+  function prepImage(recipe,part){return `prep-${nightPrepRecipes.includes(recipe)&&['vegetables','scallion'].includes(part)?'night-v22':'hi'}-${part}`;}
+  const api={prepImage,nightPrepRecipes,imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
 })();

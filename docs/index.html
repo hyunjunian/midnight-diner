@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="./frames.css">
   <link rel="stylesheet" href="./tactile-controls.css">
   <link rel="stylesheet" href="./physical-icons.css">
+  <link rel="stylesheet" href="./polish.css">
   <script src="./catalog.js" defer></script>
   <script src="./stories.js" defer></script>
   <script src="./cooking-rules.js" defer></script>
@@ -40,7 +41,6 @@
   <script src="./voice.js" defer></script>
   <script src="./kitchen.js" defer></script>
   <script src="./game.js" defer></script>
-  <script src="./soundscape.js" defer></script>
   <script src="./pwa.js" defer></script>
 </head>
 <body>
@@ -87,14 +87,11 @@
   </main>
 
   <dialog id="guest-dialog" class="guest-dialog" aria-labelledby="talk-name">
-    <div id="talk-portrait" class="talk-portrait" aria-hidden="true"></div>
     <div class="talk-card">
       <header class="talk-header"><span class="eyebrow">카운터에서 나누는 이야기</span><button type="button" data-close="guest-dialog" class="talk-close" aria-label="대화를 잠시 접고 자리로 돌아가기">잠시 자리로</button></header>
-      <h2 id="talk-name"></h2><p id="talk-profile"></p><p id="talk-regular"></p>
-      <details class="talk-notes"><summary>손님에 대해 알게 된 것</summary><dl id="talk-known-fields"></dl></details>
-      <p id="talk-player-line" class="talk-player-line" hidden></p>
-      <div class="talk-speech"><p id="talk-line" aria-live="polite"></p><span id="talk-progress"></span></div>
-      <p id="talk-discovery" role="status" hidden></p>
+      <div id="talk-player-line" class="talk-player-line" hidden><strong class="talk-owner-label">주인장</strong><p id="talk-player-words"></p></div>
+      <div class="talk-guest-message"><div id="talk-portrait" class="talk-portrait" aria-hidden="true"></div><div class="talk-guest-copy"><h2 id="talk-name"></h2><p id="talk-profile"></p><div class="talk-speech"><p id="talk-line" aria-live="polite"></p></div></div></div>
+      <details class="talk-notes"><summary>손님 수첩</summary><dl id="talk-known-fields"></dl></details>
       <div id="talk-order" class="talk-order" hidden></div>
       <div id="talk-choices" class="talk-choices" aria-label="내가 할 말 고르기"></div>
       <button id="talk-gift" hidden></button><button id="talk-next" class="primary" hidden>주문 받고 부엌으로 →</button>
@@ -114,7 +111,6 @@
     <div class="sheet-body settings-list">
       <button id="replay">인트로 다시 보기 <span>▶</span></button>
       <button id="sound-effects" aria-pressed="true">게임 소리 · 켜짐</button>
-      <button id="ambient-sound" aria-pressed="true">식당 환경음 · 켜짐</button>
       <button id="fullscreen">전체 화면 <span>⛶</span></button>
       <button id="reset">처음부터 시작 <span>↺</span></button>
       <button id="update-app" hidden>새 버전으로 다시 열기 <span>↻</span></button>

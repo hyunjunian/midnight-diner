@@ -1,0 +1,48 @@
+/* Quiet late-night typography and clear table-side speech. */
+@font-face{font-family:DinerMyeongjo;src:url('./assets/fonts/nanum-myeongjo.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+:root{--reading-serif:DinerMyeongjo,'Times New Roman','Noto Serif CJK KR',serif}
+#guest-dialog #talk-name,.sheet-header h2,#story-dialog .sheet-header h2,#report-dialog .sheet-header h2,.kitchen-header h2,.process-heading h3,.room-task b,.completed-dish h3,.completed-dish>strong{font-family:var(--reading-serif);font-weight:400;letter-spacing:.015em;text-shadow:none;font-synthesis:none;line-height:1.45}
+.room-task b{font-size:clamp(21px,5.2vw,29px);margin:6px 0 12px}
+.process-heading h3{font-size:clamp(24px,6.4vw,33px);margin:8px 0 12px}
+.kitchen-header h2{font-size:clamp(18px,4.5vw,24px)}
+#guest-dialog .talk-card{padding-top:16px}
+#guest-dialog .talk-header{margin-bottom:12px}
+#guest-dialog #talk-name{font-size:28px;margin:5px 0 8px}
+#guest-dialog #talk-profile{font-size:14px;line-height:1.7;margin-bottom:10px;color:#534733}
+#guest-dialog .talk-notes{margin:8px 0 12px}
+#guest-dialog .talk-player-line{margin:14px 0 18px 18px;padding:13px 16px;background:#f5eddb url('./assets/ui-washi-v21.webp') center/580px;border:0;border-left:3px solid #9b7d42;border-radius:0;box-shadow:0 2px 4px #50321926;color:#403928;text-shadow:none}
+#guest-dialog .talk-player-line::before{content:none}
+#guest-dialog .talk-owner-label{display:block;font:600 13px/1.5 var(--sans);letter-spacing:.04em;color:#6a5030;margin:0 0 7px}
+#guest-dialog #talk-player-words{margin:0;font:400 16px/1.85 var(--reading-serif);color:#403928;overflow-wrap:anywhere}
+#guest-dialog .talk-speech{padding:18px 17px;margin-top:14px;min-height:0}
+#guest-dialog #talk-line{font:400 17px/1.9 var(--reading-serif);color:#403523;margin:0}
+#guest-dialog .talk-choices:empty{display:none}
+/* Appliance markers are wooden nameplates fastened to the kitchen's surfaces. */
+.kitchen-screen .room-hotspot span{font:400 15px/1.5 var(--reading-serif);color:#fff0cc;min-width:72px;min-height:44px;display:flex;justify-content:center;align-items:center;padding:8px 14px;border:4px solid #76502b;border-image:var(--walnut-frame) 10.2% / 1 / 0 stretch;border-radius:0;background:linear-gradient(#76502b30,#28180e60),url('./assets/ui-walnut-v21.webp') center/260px;box-shadow:0 3px 4px #0008,inset 0 1px #e9bf7b55;text-shadow:0 1px 1px #000;white-space:nowrap}
+.kitchen-screen .station-next span{color:#fff0c4;filter:drop-shadow(0 0 5px #ffc96570)}
+.kitchen-screen .room-task{border:5px solid #76502b;border-image:var(--walnut-frame) 10.2% / 1 / 0 stretch;border-radius:0}
+.kitchen-screen .room-task>span{font:400 14px/1.8 var(--reading-serif);color:#f3dfb8}
+.kitchen-screen .measure-status{background:#f1e5c9 url('./assets/ui-washi-v21.webp') center/600px;border:3px solid #bda979;border-radius:2px;box-shadow:0 3px 6px #28180755;color:#483e2b}
+.kitchen-screen .measure-status>b{font-weight:500}
+.kitchen-screen .measure-progress{border-radius:2px;background:#b49a6e40;box-shadow:inset 0 1px 3px #4e351a55}
+.kitchen-screen .measure-progress>i{background:linear-gradient(90deg,#ac7c38,#d5b56a);border-radius:2px}
+/* The sole enabled next action has a gold rim, while the paper and wood remain visible. */
+#kitchen-footer .primary:not(:disabled){border:2px solid #e5c276;background-image:linear-gradient(#f3d79720,#341c1133),url('./assets/ui-walnut-v21.webp');box-shadow:inset 0 1px 2px #fff0b9aa,inset 0 -2px 2px #46250f,0 0 0 1px #8d642c,0 0 15px #e2b65370,0 4px 0 #301d10;color:#fff1c8;font:500 17px/1.6 var(--reading-serif);animation:next-action-gold 2.8s ease-in-out infinite}
+@keyframes next-action-gold{50%{box-shadow:inset 0 1px 2px #fff0b9cc,inset 0 -2px 2px #46250f,0 0 0 1px #b58b42,0 0 20px #e2b65399,0 4px 0 #301d10}}
+#kitchen-footer>p:empty,.process-heading>p:empty,.action-counter:empty{display:none}
+#kitchen-footer .primary{margin-bottom:4px}
+@media(max-width:359px){#guest-dialog .talk-card{padding-left:14px;padding-right:14px}#guest-dialog #talk-player-words{font-size:15px}#guest-dialog #talk-line{font-size:16px}#guest-dialog .talk-player-line{margin-left:10px}.kitchen-screen .room-hotspot span{font-size:13px;min-width:64px;padding:7px 10px}#kitchen-footer .primary:not(:disabled){font-size:16px}}
+@media(prefers-reduced-motion:reduce){#kitchen-footer .primary:not(:disabled){animation:none}}
+
+/* The speaking guest sits immediately beside her/his own name and words. */
+#guest-dialog .talk-guest-message{display:flex;align-items:flex-start;gap:13px;margin:18px 0 12px}
+#guest-dialog .talk-guest-message .talk-portrait{position:relative;inset:auto;flex:0 0 64px;width:64px;height:auto;aspect-ratio:3/4;margin:1px 0 0;overflow:hidden;filter:none;border:0;background:none}
+#guest-dialog .talk-guest-message .talk-portrait .actor{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:3/4}
+#guest-dialog .talk-guest-copy{flex:1;min-width:0}
+#guest-dialog .talk-guest-copy #talk-name{font:500 17px/1.6 var(--reading-serif);margin:0 0 5px;color:#5c4328}
+#guest-dialog .talk-guest-copy #talk-profile{font:400 12px/1.6 var(--reading-serif);margin:0 0 7px}
+#guest-dialog .talk-guest-copy .talk-speech{margin:5px 0 0;padding:15px 16px}
+#guest-dialog .talk-guest-copy .talk-speech::before{left:-6px;top:15px}
+#guest-dialog .talk-player-line{margin-left:70px}
+#guest-dialog .talk-notes{margin:4px 0 10px}
+@media(max-width:359px){#guest-dialog .talk-guest-message{gap:10px}#guest-dialog .talk-guest-message .talk-portrait{flex-basis:52px;width:52px}#guest-dialog .talk-player-line{margin-left:38px}#guest-dialog .talk-guest-copy .talk-speech{padding:13px 12px}}

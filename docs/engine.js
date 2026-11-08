@@ -138,7 +138,6 @@
     quiet:'말없이 편히 쉴 수 있는 한 끼가 좋아요.',
     about:'괜찮다면, 자기소개를 조금 더 해 주실래요?',
     order:'오늘 드실 음식을 준비해 드릴까요?',
-    more:'식사 전에 잠깐 더 이야기 나눌까요?',
   };
   const guestJobs=[
     '출판사에서 책을 만드는 편집 일을 해요.', '이 근처에서 꽃집을 하고 있어요.',
@@ -185,7 +184,6 @@
     }else{
       caption=g.status==='waiting'?'접수한 주문':'오늘의 주문';
       line=g.status==='waiting'?`${recipes[g.recipe].name}, 따뜻하게 기다리고 있을게요.`:requests[Math.floor((g.lineKey||0)/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
-      if(g.status==='seated')offer('more','day');
     }
     return {node,line,caption,choices,orderReady:node==='order',
       playerLine:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};

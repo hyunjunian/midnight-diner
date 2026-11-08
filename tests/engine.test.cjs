@@ -155,3 +155,10 @@ test('night clock progress survives v11 reload, safely defaults for older saves,
  const s=E.fresh();assert.equal(s.nightElapsedMs,0);s.nightElapsedMs=123456;let loaded=E.restore(JSON.stringify(s));assert.equal(loaded.nightElapsedMs,123456);assert.ok(E.open(loaded));assert.equal(loaded.nightElapsedMs,0);
  const raw=JSON.parse(JSON.stringify(loaded));delete raw.nightElapsedMs;assert.equal(E.restore(JSON.stringify(raw)).nightElapsedMs,0);raw.nightElapsedMs=-100;assert.equal(E.restore(JSON.stringify(raw)).nightElapsedMs,0);
 });
+test('ordering finishes personal chat without offering another pre-meal conversation',()=>{
+ const {s,g}=setup();for(const id of ['welcome','menu'])assert.ok(E.answerGuest(s,g.id,id));assert.deepEqual(E.guestConversation(s,g.id).choices,[]);assert.equal(E.answerGuest(s,g.id,'more'),false);
+});
+test('night prep lighting corrects the pictured dish without expanding the general image pilot',()=>{
+ assert.deepEqual(E.Cooking.imagePilot,['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);
+ assert.equal(E.Cooking.prepImage('negi_omelette','scallion'),'prep-night-v22-scallion');assert.equal(E.Cooking.prepImage('hiyayakko','vegetables'),'prep-night-v22-vegetables');assert.equal(E.Cooking.prepImage('butadon','scallion'),'prep-hi-scallion');assert.equal(E.Cooking.prepImage('onigiri','rice'),'prep-hi-rice');
+});
