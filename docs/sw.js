@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const VERSION = 'midnight-diner-pwa-20261108-v30-red-notifications';
+const VERSION = 'midnight-diner-pwa-20261108-v31-clean-start';
 const ROOT = new URL('./', self.location.href);
 const INDEX = new URL('index.html', ROOT).href;
 const FILES = [
@@ -266,10 +266,10 @@ const FILES = [
   'assets/exterior-collection-2-closed.webp',
   'assets/exterior-collection-3.webp',
   'assets/exterior-collection-3-closed.webp',
-  'assets/icon-192.png',
-  'assets/icon-512.png',
-  'assets/icon-maskable-512.png',
-  'assets/apple-touch-icon.png',
+  'assets/icon-diner-v31-192.png',
+  'assets/icon-diner-v31-512.png',
+  'assets/icon-diner-v31-maskable-512.png',
+  'assets/apple-touch-icon-v31.png',
   'scene-assets-v28.js',
   'assets/portrait-v28-prep-rice.webp',
   'assets/portrait-v28-prep-nori.webp',

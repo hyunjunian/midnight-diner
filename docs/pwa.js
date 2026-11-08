@@ -6,7 +6,7 @@
   let installPrompt = null, registration = null, applyingUpdate = false, launched = false;
   function launch() {
     if (launched) return;
-    launched = true; $('install-screen').hidden = true; window.MidnightApp.launch();
+    launched = true; window.MidnightApp.launch();
   }
   function installGuide() {
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -35,10 +35,10 @@
   mode.addEventListener?.('change', () => { if (standalone()) launch(); });
   const full = matchMedia('(display-mode: fullscreen)');
   full.addEventListener?.('change', () => { if (standalone()) launch(); });
-  // Explicit browser preview for playtesting; normal visits remain installation-only.
-  const preview = new URLSearchParams(location.search).get('preview') === '1';
-  if (standalone() || preview) launch();
-  else $('install-screen').hidden = false;
+  // Main entry plays immediately in browsers and installed apps alike.
+  // The embedded preview is kept hidden until its parent finishes loading it.
+  const embeddedPreview = document.documentElement.dataset.preview === 'embedded';
+  if (!embeddedPreview) launch();
 
   function updateAvailable() {
     $('update-app').hidden = false;

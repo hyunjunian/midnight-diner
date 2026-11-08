@@ -14,7 +14,7 @@
 
 # PWA delivery
 
-- The browser URL is an installation entry. Preserve installed-app-only gameplay, a full-viewport intro followed by a separate game stage, and repository-relative manifest scope/start URLs.
+- The user now requires the main browser URL to start the intro/game immediately without installation. Installation is optional in Settings. Preserve a full-viewport intro followed by a separate game stage, and repository-relative manifest scope/start URLs.
 - Keep the explicit `preview.html` playtest entry available without installation. Bump its `release` query tag with UI releases so an older worker cannot serve stale preview scripts.
 - Whenever any precached app file changes, bump `VERSION` in `docs/sw.js`; keep its precache file list in sync. Verify offline navigation and MP4 byte-range responses.
 - The current intro uses newly generated 9:16 visuals. Do not restore the source video's footage. Keep portrait orientation and mobile-safe captions.
@@ -117,3 +117,6 @@
 - Menu unread badges use a clearly visible glowing red circle with a light contrast border; preserve unread/unfinished gating and remove the badge when attention is no longer needed. The user subsequently requested a bright shimmer: animate only the red dot glow, with a static bright dot under reduced motion. Do not restore the gold light or candle.
 - Guest conversation panels have no header tagline or temporary-leave button. Dismiss on a complete outside-panel tap (not an inside-to-outside drag); preserve conversation progress. Replies use contrasting dark stained wood with light text, including optional replies. Keep the paper folio compact.
 - User requested no keyboard focus outlines; retain keyboard behavior and persistent selected-state borders.
+
+- Startup must never flash the old installation UI before the intro. Preview frames enforce `[hidden]` in their own inline CSS and mark their embedded document so the parent launches the intro only after loading. Keep critical hidden-stage CSS inline in the main entry. Never restore installation gating on the main browser URL. Preserve the approved intro.
+- The PWA icon now uses the generated cooked pork-rice bowl and hanging amber lantern in the same painted midnight-diner style. Keep the versioned icon URLs, opaque square artwork and a separately padded maskable variant; preserve manifest id/start scope and optional installation.

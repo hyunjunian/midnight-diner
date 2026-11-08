@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <title>심야식당 · 플레이 미리보기</title>
-  <style>html,body{margin:0;width:100%;height:100%;background:#000;color:#ead7b5;font:14px sans-serif}iframe{display:block;border:0;width:100%;height:100%;height:100dvh}#status{position:absolute;top:45%;width:100%;text-align:center}</style>
+  <style>html,body{margin:0;width:100%;height:100%;background:#000;color:#ead7b5;font:14px sans-serif}[hidden]{display:none!important}iframe{display:block;border:0;width:100%;height:100%;height:100dvh}#status{position:absolute;top:45%;width:100%;text-align:center}</style>
 </head>
 <body>
   <p id="status" role="status">식당의 불을 켜는 중…</p>
@@ -13,10 +13,12 @@
   <script>
     // Preview uses release-specific script URLs so a previously installed worker cannot serve an old game.
     (async () => {
-      const release = 'red-notifications-v30', root = new URL('./', location.href);
+      const release = 'clean-start-v31', root = new URL('./', location.href);
       const response = await fetch(new URL(`index.html?preview-release=${release}`, root), {cache:'no-store'});
       if (!response.ok) throw new Error('load');
       const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+      // The embedded preview launches only after its load completes. Never show installation UI inside it.
+      doc.documentElement.dataset.preview = 'embedded';
       const base = doc.createElement('base'); base.href = root.href; doc.head.prepend(base);
       doc.querySelectorAll('script[src],link[rel="stylesheet"]').forEach(el => {
         const key = el.tagName === 'SCRIPT' ? 'src' : 'href';

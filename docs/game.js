@@ -350,7 +350,7 @@
   function startIntro() {
     if ($('intro').open) return;
     for (const id of sheetIds) if ($(id).open) $(id).close();
-    $('app').hidden = true; $('install-screen').hidden = true;
+    $('app').hidden = true;
     video.pause(); video.currentTime = 0;
     $('intro-progress').style.width = '0%'; $('video-status').textContent = '';
     $('play-intro').textContent = '터치해서 시작 ▶'; $('play-intro').hidden = true;

@@ -4,14 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#111d20">
-  <meta name="description" content="골목 끝, 당신의 작은 심야식당. 설치해서 즐기는 식당 운영 게임.">
+  <meta name="description" content="골목 끝, 당신의 작은 심야식당. 브라우저에서 바로 즐기는 식당 운영 게임.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="심야식당">
   <title>심야식당</title>
+  <!-- Hide inactive stages before any external stylesheet or script loads. -->
+  <style>[hidden]{display:none!important}html,body{background:#000}dialog:not([open]){display:none}</style>
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./assets/icon-192.png" type="image/png">
-  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+  <link rel="icon" href="./assets/icon-diner-v31-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./assets/apple-touch-icon-v31.png">
   <link rel="preload" as="image" href="./assets/visitors-a.webp">
   <link rel="preload" as="image" href="./assets/visitors-b.webp">
   <link rel="preload" as="image" href="./assets/intro-world.webp">
@@ -47,18 +49,6 @@
   <script src="./pwa.js" defer></script>
 </head>
 <body>
-  <section id="install-screen" class="install-screen" hidden aria-labelledby="install-title">
-    <img class="install-backdrop" src="./assets/exterior.svg" alt="">
-    <div class="install-content">
-      <span class="app-seal">夜</span><p class="install-overline">골목 끝, 작은 불빛 하나</p>
-      <h1 id="install-title">심야식당</h1><p class="install-description">당신의 밤이 시작되는 곳.</p>
-      <button id="install-app" class="primary install-button">앱 설치하기 <span></span></button>
-      <p id="install-hint">홈 화면에 설치해서 전체 화면으로 즐겨 주세요.</p>
-      <div id="install-guide" hidden></div>
-      <p id="install-status" role="status"></p>
-    </div>
-  </section>
-
   <main id="app" class="game-app" hidden aria-label="심야식당 게임">
     <section class="restaurant" aria-label="식당과 손님">
       <div id="scene" class="scene">
@@ -115,6 +105,9 @@
       <button id="replay">인트로 다시 보기 <span>▶</span></button>
       <button id="sound-effects" aria-pressed="true">게임 소리 · 켜짐</button>
       <section class="music-settings" aria-label="배경음악 설정"><div><span>배경음악</span><button id="music-toggle" type="button" aria-pressed="true">켜짐</button></div><label for="music-volume">음량 <output id="music-volume-value">25%</output></label><input id="music-volume" type="range" min="0" max="100" value="25" aria-label="배경음악 음량"><small class="music-credit">음악: <a href="https://peritune.com/blog/2016/06/12/minamo/" target="_blank" rel="noopener">Minamo · PeriTune</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><br>음량 조정·MP3 재인코딩</small></section>
+      <button id="install-app">홈 화면에 설치하기 <span></span></button>
+      <p id="install-hint">설치는 선택 사항이에요. 홈 화면에서도 식당을 열 수 있어요.</p>
+      <div id="install-guide" hidden></div><p id="install-status" role="status"></p>
       <button id="fullscreen">전체 화면 <span>⛶</span></button>
       <button id="reset">처음부터 시작 <span></span></button>
       <button id="update-app" hidden>새 버전으로 다시 열기 <span></span></button>
