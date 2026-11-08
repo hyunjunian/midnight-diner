@@ -1,11 +1,11 @@
 const{test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),E=require('../docs/engine'),R=E.Cooking;
 function fixture(id){const s=E.fresh();s.level=34;s.money=2000000;s.stoveTutorialDone=true;for(const key in s.inventory)s.inventory[key]=20;E.progress(s);E.open(s);const g=E.arrive(s);g.recipe=id;s.nightOrders[0]=id;assert.ok(E.acceptOrder(s,g.id));assert.ok(E.beginCooking(s,g.id));for(const key of E.recipes[id].ingredients)assert.ok(E.selectIngredient(s,key));assert.ok(E.prepareIngredients(s));return{s,g};}
-test('all 100 plating mappings use valid authored cells and only the five pilots use new condition scenes',()=>{
- assert.equal(Object.keys(E.recipes).length,100);
+test('the approved Lv.1–5 image scope has 15 recipes and condition-aware plating',()=>{
+ const early=Object.keys(E.recipes).filter(id=>E.recipes[id].level<=5);assert.deepEqual([...R.imagePilot],early);assert.equal(early.length,15);
  for(const id of Object.keys(E.recipes))for(const look of ['good','raw','dry','burnt']){
   const art=R.platingArt(id,look);assert.ok(fs.existsSync(path.join(__dirname,'../docs/assets',art.file+'.webp')),id+' '+look);assert.ok(art.col>=0&&art.col<art.cols&&art.row>=0&&art.row<art.rows);
-  if(!R.imagePilot.includes(id)||look==='good')assert.ok(/^plating-\d+$/.test(art.file),'retain approved original scene for '+id);
-  else{assert.ok(art.file.includes('-v24'));assert.ok(art.file.includes(look==='raw'?'raw':'burnt'));assert.equal(art.cols,id==='negi_omelette'?1:2);assert.ok(!Object.keys(E.recipes).filter(x=>!R.imagePilot.includes(x)).some(x=>R.platingArt(x,look).file===art.file),'never borrow pilot food for another recipe');}
+  if(early.includes(id)){assert.equal(art.file,'portrait-v28-plate-'+id);const n=look==='raw'?1:['dry','burnt'].includes(look)?2:0;assert.equal(art.col+art.row*2,n);}
+  else assert.ok(/^plating-\d+$/.test(art.file),'higher levels retain original sources');
  }
  assert.equal(R.platingArt('missing'),null);
 });
@@ -33,14 +33,19 @@ test('the pilot onigiri wrap preserves raw/scorched rice in every action frame w
   if(id!=='onigiri'||look==='good')assert.equal(art,null,id+' '+look);
   else{assert.equal(art.file,`core-wrap-${look==='raw'?'raw':'burnt'}-v24`);assert.equal(art.cols,2);assert.equal(art.rows,2);assert.ok(fs.existsSync(path.join(__dirname,'../docs/assets',art.file+'.webp')));}
  }
- for(const id of R.imagePilot){const p=R.plan(id,E.recipes[id]),at=p.findIndex(x=>x.id==='heat');assert.deepEqual(p.slice(at+1).map(x=>x.id),id==='onigiri'?['wrap','assemble']:['assemble']);}
+ for(const id of R.imagePilot){const p=R.plan(id,E.recipes[id]),at=p.findIndex(x=>x.id==='heat');if(at>=0)assert.deepEqual(p.slice(at+1).map(x=>x.id),id==='onigiri'?['wrap','assemble']:['soba','udon'].includes(id)?['drain','assemble']:['assemble']);}
 });
-test('updated cooking artwork routes exactly the five approved dishes, preserving all other recipe assets',()=>{
- assert.equal(Object.keys(R.nightSceneFiles).length,16);
+test('only the approved fifteen recipes route to the new portrait workbench sources',()=>{
  for(const id of Object.keys(E.recipes))for(const [source,target]of Object.entries(R.nightSceneFiles)){
   assert.ok(fs.existsSync(path.join(__dirname,'../docs/assets',target+'.webp')),target);
-  assert.equal(R.nightImage(id,source),R.imagePilot.includes(id)?target:source,id+' '+source);
+  assert.equal(R.nightImage(id,source),E.recipes[id].level<=5?target:source,id+' '+source);
  }
- assert.equal(R.nightImage('hiyayakko',R.prepImage('hiyayakko','scallion')),'prep-night-v22-scallion');
- assert.equal(R.nightImage('onigiri','core-portion-v19'),'core-portion-v27');
+ assert.equal(R.nightImage('hiyayakko',R.prepImage('hiyayakko','scallion')),'portrait-v28-prep-scallion');
+ assert.equal(R.nightImage('onigiri','core-portion-v19'),'portrait-v28-core-portion');
+ for(const id of Object.keys(E.recipes)){
+  const art=R.heatArt(id,3),expected=E.recipes[id].level<=5&&R.heated.includes(id);assert.equal(!!art,expected,id);
+  if(art){assert.equal(art.col+art.row*2,3);assert.ok(fs.existsSync(path.join(__dirname,'../docs/assets',art.file+'.webp')));}
+  const raw=R.finalArt(id,'raw');if(expected){assert.ok(raw);assert.equal(raw.n,1);assert.ok(fs.existsSync(path.join(__dirname,'../docs/assets',raw.file+'.webp')));}
+  else assert.equal(raw,null);
+ }
 });

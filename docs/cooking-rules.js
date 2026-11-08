@@ -32,33 +32,30 @@
   function preparations(r){return r.ingredients.flatMap(id=>(id==='vegetables'?['vegetables','scallion']:[id]).map(part=>{const mode=prepMode(part),name=names[part],verb={cut:'썰기',wash:'씻기',peel:'손질',crack:'깨기',fold:'접기',measure:'계량'}[mode];return {...step('prep',`${name} ${verb}`,{cut:`${name}만 도마에 올렸어요. 준비된 칼로 재료 위를 세 번 썰어 주세요.`,wash:`${name}에 물을 더하고 부드럽게 원을 그리며 씻어 주세요.`,peel:`${name}의 겉부분을 잡고 바깥쪽으로 벗겨 주세요.`,crack:'달걀을 그릇 가장자리 쪽으로 내린 뒤 벌려 주세요.',fold:'김의 가장자리를 가운데로 접어 주세요.',measure:`${part==='miso'?'된장 한 숟갈을 덜어 준비해 주세요.':`${name} 한 분량을 계량컵에 덜어 준비해 주세요.`} 용기를 아래로 기울여 덜어 주세요.`}[mode],'board','ingredient',mode==='cut'?3:1),ingredient:id,part,mode,art:prepOrder.indexOf(part)};}));}
   function plan(id,r,legacyLid=false){return [...preparations(r),...cookPlan(id,r).filter(st=>(legacyLid||st.id!=='lid')&&st.id!=='cut'&&st.id!=='season'&&st.id!=='oil')];}
   const catalog=typeof module!=='undefined'?require('./catalog.js'):window.MidnightCatalog;
+  const sceneAssets=typeof module!=='undefined'?require('./scene-assets-v28.js'):window.MidnightSceneAssets;
   const heated=Object.keys(catalog.recipes).filter(id=>family(id,catalog.recipes[id])!=='cold'&&id!=='shio_onigiri');
-  const imagePilot=Object.freeze(['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);
-  // Plating must use the food's recorded heat state, never a filtered healthy meal.
-  // New scene artwork stays inside the five-dish review boundary.
+  const imagePilot=Object.freeze(Object.keys(catalog.recipes).filter(id=>catalog.recipes[id].level<=5));
+  // The user approved the new workbench/stove direction for levels 1–5 only.
+  const inImagePilot=id=>imagePilot.includes(id);
   function platingArt(id,appearance='good'){
     const index=Object.keys(catalog.recipes).indexOf(id);if(index<0)return null;
-    const condition=appearance==='raw'?'raw':['dry','burnt'].includes(appearance)?'burnt':'good';
-    if(condition!=='good'&&imagePilot.includes(id))return id==='negi_omelette'
-      ?{file:`plating-negi-${condition}-v24`,cols:1,rows:1,col:0,row:0,className:'plating-frame'}
-      :{file:`plating-${condition}-v24`,cols:2,rows:2,col:index%2,row:Math.floor(index/2),className:'plating-frame'};
+    if(inImagePilot(id)){const n=appearance==='raw'?1:['dry','burnt'].includes(appearance)?2:0;return{file:`portrait-v28-plate-${id}`,cols:2,rows:2,col:n%2,row:Math.floor(n/2),className:'plating-frame'};}
     return {file:`plating-${Math.floor(index/4)+1}`,cols:2,rows:2,col:index%2,row:Math.floor(index%4/2),className:'plating-frame'};
   }
   function wrapArt(id,appearance='good'){
-    if(id!=='onigiri'||!imagePilot.includes(id))return null;
-    const condition=appearance==='raw'?'raw':['dry','burnt'].includes(appearance)?'burnt':null;
+    if(id!=='onigiri')return null;const condition=appearance==='raw'?'raw':['dry','burnt'].includes(appearance)?'burnt':null;
     return condition?{file:`core-wrap-${condition}-v24`,cols:2,rows:2,className:'core-frame'}:null;
   }
-  // The user specifically requested nighttime for the pictured hiyayakko prep scene.
-  // This narrow lighting correction does not expand the general cooking-image pilot.
-  const nightPrepRecipes=Object.freeze([...imagePilot,'hiyayakko']);
-  function prepImage(recipe,part){return `prep-${nightPrepRecipes.includes(recipe)&&['vegetables','scallion'].includes(part)?'night-v22':'hi'}-${part}`;}
-  // Lighting-only replacements share the original atlas geometry and stay in the five-dish pilot.
-  const nightSceneFiles=Object.freeze({
-    'prep-hi-egg':'prep-night-v24-egg','prep-hi-nori':'prep-night-v24-nori','prep-hi-pork':'prep-night-v24-pork','prep-hi-rice':'prep-night-v24-rice','prep-hi-salmon':'prep-night-v24-salmon',
-    'core-portion-v19':'core-portion-v27','core-beat':'core-beat-night-v24','core-lid':'core-lid-night-v24','core-pour':'core-pour-night-v24','core-broth':'core-broth-night-v24','core-wrap-v20':'core-wrap-v20-night-v24','measure-dashi':'measure-dashi-night-v24',
-    'heat-hi-2':'heat-hi-2-night-v24','heat-hi-3':'heat-hi-3-night-v24','heat-burnt-2':'heat-burnt-2-night-v24','heat-burnt-3':'heat-burnt-3-night-v24'
-  });
-  function nightImage(recipe,file){return imagePilot.includes(recipe)?nightSceneFiles[file]||file:file;}
-  const api={nightImage,nightSceneFiles,wrapArt,platingArt,prepImage,nightPrepRecipes,imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
+  function heatArt(id,phase=0){return inImagePilot(id)&&heated.includes(id)?{file:`stove-v28-${id}`,cols:2,rows:2,col:phase%2,row:Math.floor(phase/2),className:'heat-frame'}:null;}
+  function finalArt(id,appearance='good',eaten=false){
+    if(id==='onigiri'){const n=eaten?3:appearance==='raw'?1:['dry','burnt'].includes(appearance)?2:0;return{file:'onigiri-final-v28',n,ratio:'3/4'};}
+    if(inImagePilot(id)&&heated.includes(id))return{file:`final-v28-${id}`,n:eaten?3:appearance==='raw'?1:['dry','burnt'].includes(appearance)?2:0,ratio:'3/4'};
+    return null;
+  }
+  const nightPrepRecipes=imagePilot;
+  function prepImage(recipe,part){return `prep-hi-${part}`;}
+  const nightSceneFiles=sceneAssets.files;
+  function nightImage(recipe,file){return inImagePilot(recipe)?nightSceneFiles[file]||file:file;}
+  function portraitImage(recipe,file){return sceneAssets.portrait(nightImage(recipe,file));}
+  const api={heatLayout:sceneAssets.heatLayout,inImagePilot,heatArt,finalArt,portraitImage,nightImage,nightSceneFiles,wrapArt,platingArt,prepImage,nightPrepRecipes,imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
 })();

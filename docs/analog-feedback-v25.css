@@ -97,64 +97,6 @@
   #toast {font-size:11px;padding:11px 15px;}
 }
 
-/* A small candle on the existing brass/wood object base. Only the flame moves;
-   the paper button and its steady attention rim never flash. Visibility is
-   still #story-badge[hidden], set by storyNeedsAttention in the game rules. */
-.game-dock #story-badge {
-  width:24px;height:29px;right:-1px;top:-9px;
-  border:0;border-radius:0;box-shadow:none;
-  background-color:transparent;
-  background-image:linear-gradient(#3c2816,#3c2816),linear-gradient(90deg,#c6ad7d,#fff2d0 45%,#e6d1a3 72%,#bca06e);
-  background-size:1px 4px,8px 12px;
-  background-position:center 10px,center 14px;
-  background-repeat:no-repeat;
-  filter:none;animation:none;
-  pointer-events:none;
-}
-.game-dock #story-badge::before {
-  content:'';position:absolute;width:24px;height:24px;left:0;bottom:-3px;
-  background:var(--ui-objects) 33.333333% 100%/400% 200% no-repeat;
-  clip-path:inset(66% 0 0 0);
-  pointer-events:none;
-}
-.game-dock #story-badge::after {
-  content:'';position:absolute;width:7px;height:12px;left:50%;top:0;
-  border-radius:80% 18% 65% 45%;
-  background:radial-gradient(ellipse at 48% 76%,#fff9dd 0 15%,#ffe9a0 28%,#f3b65c 58%,#df793428 83%,transparent 88%);
-  transform-origin:50% 100%;
-  transform:translateX(-50%) rotate(-2deg);
-  filter:drop-shadow(0 0 3px #f7be6680);
-  animation:candle-flame-v25 13.7s linear infinite;
-  pointer-events:none;
-}
-/* Fixed flutter seed: 25051; modest nonuniform shape changes, no brightness flash. */
-@keyframes candle-flame-v25 {
- 0% {transform:translateX(-50%) rotate(2.67deg) scale(0.980,1.053);}
- 4% {transform:translateX(-50%) rotate(-0.32deg) scale(1.054,0.994);}
- 8% {transform:translateX(-50%) rotate(-2.82deg) scale(0.984,0.944);}
- 12% {transform:translateX(-50%) rotate(-1.49deg) scale(0.930,0.970);}
- 16% {transform:translateX(-50%) rotate(-1.02deg) scale(1.016,0.980);}
- 20% {transform:translateX(-50%) rotate(-2.53deg) scale(1.055,0.949);}
- 24% {transform:translateX(-50%) rotate(2.79deg) scale(1.039,1.056);}
- 28% {transform:translateX(-50%) rotate(1.91deg) scale(1.007,1.038);}
- 32% {transform:translateX(-50%) rotate(-0.76deg) scale(0.915,0.985);}
- 36% {transform:translateX(-50%) rotate(-1.70deg) scale(0.962,0.966);}
- 40% {transform:translateX(-50%) rotate(2.67deg) scale(1.055,1.053);}
- 44% {transform:translateX(-50%) rotate(-0.60deg) scale(1.002,0.988);}
- 48% {transform:translateX(-50%) rotate(2.66deg) scale(0.912,1.053);}
- 52% {transform:translateX(-50%) rotate(1.34deg) scale(0.998,1.027);}
- 56% {transform:translateX(-50%) rotate(-2.51deg) scale(0.967,0.950);}
- 60% {transform:translateX(-50%) rotate(-0.57deg) scale(1.059,0.989);}
- 64% {transform:translateX(-50%) rotate(-1.14deg) scale(0.918,0.977);}
- 68% {transform:translateX(-50%) rotate(0.64deg) scale(0.966,1.013);}
- 72% {transform:translateX(-50%) rotate(0.87deg) scale(0.921,1.017);}
- 76% {transform:translateX(-50%) rotate(2.80deg) scale(1.055,1.056);}
- 80% {transform:translateX(-50%) rotate(-2.29deg) scale(0.926,0.954);}
- 84% {transform:translateX(-50%) rotate(1.50deg) scale(0.967,1.030);}
- 88% {transform:translateX(-50%) rotate(-1.90deg) scale(1.034,0.962);}
- 92% {transform:translateX(-50%) rotate(-2.54deg) scale(1.051,0.949);}
- 96% {transform:translateX(-50%) rotate(-2.10deg) scale(1.021,0.958);}
- 100% {transform:translateX(-50%) rotate(2.72deg) scale(1.006,1.054);}
-}
-@media(max-width:359px){.game-dock #story-badge{right:-2px;top:-9px;}}
-@media(prefers-reduced-motion:reduce){.game-dock #story-badge::after{animation:none;transform:translateX(-50%);}}
+/* Small steady unread indicator; no candle, flame or decorative glyph. */
+.game-dock #story-badge{width:8px;height:8px;right:6px;top:6px;border:1px solid #ebc47a;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff3b3,#d69535 60%,#945019);box-shadow:0 0 5px 1px #e7ad5066;filter:none;animation:none;transform:none;pointer-events:none}
+.game-dock #story-badge::before,.game-dock #story-badge::after{content:none;display:none;animation:none}

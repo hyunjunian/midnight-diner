@@ -115,7 +115,7 @@ test('under, correct and excessive heat stay visually distinct through delivery,
 
 test('every heat method selects food-appropriate boiling or frying foley, with no heat for cold food',()=>{for(const[id,r]of Object.entries(E.recipes)){const heat=E.Cooking.plan(id,r).some(st=>st.id==='heat'),mode=E.Cooking.heatMode(id,r);assert.equal(mode==='none',!heat,id);if(/chazuke|curry|kamameshi/.test(id)||['soup','noodle'].includes(E.Cooking.family(id,r)))assert.equal(mode,'boil',id);}for(const id of ['onigiri','tamago','friedrice','shrimp_chahan'])assert.equal(E.Cooking.heatMode(id,E.recipes[id]),'sizzle');});
 
-test('new cooking images are explicitly limited to the five early pilot dishes until user approval',()=>{assert.deepEqual(E.Cooking.imagePilot,['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);assert.equal(E.Cooking.imagePilot.includes('butadon'),false);assert.ok(Object.isFrozen(E.Cooking.imagePilot));});
+test('new cooking images stay inside the approved Lv.1–5 fifteen-dish boundary',()=>{assert.deepEqual(E.Cooking.imagePilot,['onigiri','tamago','tonjiru','ochazuke','negi_omelette','hiyayakko','butadon','misoshiru','cabbage_stir','salmonbowl','potato_soup','salmon_teriyaki','midnight','soba','udon']);assert.equal(E.Cooking.imagePilot.includes('butadon'),true);assert.equal(E.Cooking.imagePilot.includes('oden'),false);assert.ok(Object.isFrozen(E.Cooking.imagePilot));});
 
 test('guest background is learned through dialogue while the name is visible from arrival',()=>{
  const {s,g}=setup(),before=structuredClone(s);
@@ -158,9 +158,9 @@ test('night clock progress survives v11 reload, safely defaults for older saves,
 test('ordering finishes personal chat without offering another pre-meal conversation',()=>{
  const {s,g}=setup();for(const id of ['welcome','menu'])assert.ok(E.answerGuest(s,g.id,id));assert.deepEqual(E.guestConversation(s,g.id).choices,[]);assert.equal(E.answerGuest(s,g.id,'more'),false);
 });
-test('night prep lighting corrects the pictured dish without expanding the general image pilot',()=>{
- assert.deepEqual(E.Cooking.imagePilot,['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);
- assert.equal(E.Cooking.prepImage('negi_omelette','scallion'),'prep-night-v22-scallion');assert.equal(E.Cooking.prepImage('hiyayakko','vegetables'),'prep-night-v22-vegetables');assert.equal(E.Cooking.prepImage('butadon','scallion'),'prep-hi-scallion');assert.equal(E.Cooking.prepImage('onigiri','rice'),'prep-hi-rice');
+test('early prep keeps canonical source keys for scoped portrait routing',()=>{
+ assert.deepEqual(E.Cooking.imagePilot,['onigiri','tamago','tonjiru','ochazuke','negi_omelette','hiyayakko','butadon','misoshiru','cabbage_stir','salmonbowl','potato_soup','salmon_teriyaki','midnight','soba','udon']);
+ assert.equal(E.Cooking.prepImage('negi_omelette','scallion'),'prep-hi-scallion');assert.equal(E.Cooking.prepImage('hiyayakko','vegetables'),'prep-hi-vegetables');assert.equal(E.Cooking.prepImage('butadon','scallion'),'prep-hi-scallion');assert.equal(E.Cooking.prepImage('onigiri','rice'),'prep-hi-rice');
 });
 test('completed stories stop attention and read news stays read after reload',()=>{
  const {s}=setup();E.arrive(s);assert.ok(E.conversation(s));assert.ok(E.storyNeedsAttention(s));E.markStoryRead(s);assert.ok(E.storyNeedsAttention(s),'an outstanding decision still needs attention');

@@ -8,9 +8,9 @@
 
 # Cooking-image approval gate
 
-- For every future cooking-image improvement, first generate/edit/apply only these five early dishes: `onigiri` (구운 주먹밥), `tamago` (다시 달걀말이), `tonjiru` (돼지고기 된장국), `ochazuke` (연어 오차즈케), `negi_omelette` (파 달걀부침).
-- Show those five in a playable preview for the user to review. Generate, edit or apply images to other recipes ONLY after explicit user approval. Passing tests or an older request for all-menu changes does not authorize expansion. Do not spend time generating the whole catalogue in advance.
-- `MidnightCookingRules.imagePilot` is the current image rollout boundary. Keep other recipes on their existing images until the user approves expansion. This gate concerns cooking images; the separately authorized furnishing catalogue, UI, effects and sound work can proceed.
+- Current explicit user approval is **levels 1–5 only: 15 recipes**, after approving the v28 full-width steel stove with one centered pan/burner and one centered working knob. `MidnightCookingRules.imagePilot` is exactly the recipes whose catalogue level is at most 5. Do not generate, edit or apply cooking imagery for level 6 or higher without a new explicit approval. Earlier all-menu requests do not expand this scope.
+- Workbench scenes use only the approved continuous wooden cutting-board background, with necessary food/tools/hands; no room/window/utensil holder props or falling water from an invisible source. Stove scenes use the approved full-width parallel-sided steel background and tile wall, centered food/vessel and ONE centered physical control. No gas flame visuals at all.
+- Rice must follow the user's real photograph: separate overlapping elongated moist grains, never radial flower/rosette/star clumps. Shaping has no nori; wrapping applies the narrow vertical strip afterward. Preserve food appearance through heating, plating, completion and service.
 
 # PWA delivery
 
@@ -102,3 +102,9 @@
 - Rice texture correction core-portion-v27 applies through the same five-recipe image gate; other recipes retain original art. Four bowl states stay0/1/2/3 scoops. Never restore flower/star-shaped rice grains.
 - Completion restores the original1.25s cue from v22, replacing the wind-chime samples. Normalize recorded and generated gameplay effects to the same active-window reference with soft peak limiting, preserving natural envelopes, master mute and heat-power changes. Intro audio stays untouched and background sound stays removed.
 - Burner flame is visible only through lower LEFT/RIGHT vessel-side gaps, masked by vessel/handle, never as a front row or high on the pan walls. Reference research and v27 source/testing records are in planning/staggered-orders-v27.md.
+
+- v28 removes all replay/helper/practice buttons above Next; retain live gesture guides and actual heat/stop/flip controls. The old forced stove practice is skipped without changing heat quality or inventory.
+- v28 replaces the story candle with a small steady warm circular light, keeps its unread/unfinished gate, and removes decorative four-point star gains. Reports use smaller regular text/compact metrics; level badges say 레벨 above a centered number. No bulk-restock success toast.
+- The user explicitly requested quiet cozy original instrumental BGM, independently enabled/disabled and volume-adjustable in Settings with persistent preferences. This music request supersedes the previous no-background-music direction; rain/room/traffic/speech ambience remains removed. Pause BGM during intro, background and pagehide. Keep approved intro media unchanged.
+
+- Keep the main service tally and story hint near71.5% of the portrait viewport, below guest plaques and clearly above the dock. Tall screens must not push the notes back down against the dock.

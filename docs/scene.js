@@ -18,7 +18,7 @@
     $('scene').style.setProperty('--scene-art-top',`${Math.max(0,box.top-sceneBox.top)}px`);
     $('scene').style.setProperty('--scene-art-bottom',`${Math.min(sceneBox.height,box.bottom-sceneBox.top)}px`);
     $('scene').style.setProperty('--scene-art-width',`${box.width}px`);
-    $('scene').style.setProperty('--scene-art-pan',`${pan}px`);
+    $('scene').style.setProperty('--scene-art-pan',`${pan}px`);placeServiceNote();
     $('pan-position').textContent = area==='inside' ? (pan > 60 ? '부엌 쪽' : pan < -60 ? '찻장 쪽' : '카운터') : '골목 입구';
   }
   function showArea(next) {
@@ -47,7 +47,7 @@
  }
  function render(s,guest,cook){current=s;selected=guest;cookingNow=cook;const active=F.activeItems(s),ids=active.filter(id=>E.upgrades[id].area===area),entries=ids.flatMap(id=>Array.from({length:F.count(s,id)},(_,n)=>({id,n,key:id+'--'+n}))),root=$('decorations');
   for(const el of [...root.children])if(!entries.some(e=>e.key===el.dataset.decorationKey))el.remove();
-  for(const {id,n,key}of entries){const u=E.upgrades[id],r=rectOf(id,n),[x,y,w,h]=r;let el=root.querySelector(`[data-decoration-key="${key}"]`);if(!el){el=document.createElement('div');el.dataset.decorationKey=key;el.dataset.decoration=id;el.className=`placed-decoration decor-${id} slot-${u.slot}${pending===id&&n>=pendingFrom?' placement-pending':''}`;el.innerHTML=decoration(id,n)+'<span class="placement-halo" aria-hidden="true">✦<i>✧</i><em>✦</em></span><span class="placement-gain" role="status"></span>';root.append(el)}Object.assign(el.style,{left:x+'%',top:y+'%',width:w+'%',height:h+'%',zIndex:u.slot==='barfront'?'5':area==='outside'?String(Math.round(y+h)):'2'});}
+  for(const {id,n,key}of entries){const u=E.upgrades[id],r=rectOf(id,n),[x,y,w,h]=r;let el=root.querySelector(`[data-decoration-key="${key}"]`);if(!el){el=document.createElement('div');el.dataset.decorationKey=key;el.dataset.decoration=id;el.className=`placed-decoration decor-${id} slot-${u.slot}${pending===id&&n>=pendingFrom?' placement-pending':''}`;el.innerHTML=decoration(id,n)+'<span class="placement-gain" role="status"></span>';root.append(el)}Object.assign(el.style,{left:x+'%',top:y+'%',width:w+'%',height:h+'%',zIndex:u.slot==='barfront'?'5':area==='outside'?String(Math.round(y+h)):'2'});}
   const inside=active.filter(id=>E.upgrades[id].area==='inside'),outside=active.filter(id=>E.upgrades[id].area==='outside'),same=list=>list.length&&list.every(id=>E.upgrades[id].theme===E.upgrades[list[0]].theme),lamp=F.activeId(s,'lantern'),fullInside=!pending&&inside.length===9&&same(inside)&&F.count(s,lamp)===3,theme=fullInside?E.upgrades[inside[0]].theme:null,fullOutside=!pending&&outside.length===6&&same(outside),outTheme=fullOutside?E.upgrades[outside[0]].theme:null;
   const source=theme===null?'room-bare-v19':`room-collection-${theme}`,closed=theme===null?'room-closed-v19':`room-collection-${theme}-closed`;
   for(const el of document.querySelectorAll('.interior-art,.counter-front'))if(!el.src.endsWith(source+'.webp'))el.src='./assets/'+source+'.webp';if(!$('scene-world').querySelector('.interior-closed').src.endsWith(closed+'.webp'))$('scene-world').querySelector('.interior-closed').src='./assets/'+closed+'.webp';
@@ -55,6 +55,8 @@
   const ext=$('scene-world').querySelector('.exterior-art');ext.style.backgroundImage=`url('./assets/${outTheme===null?'exterior-bare-v19':outTheme===0?'exterior-furnished-v19':`exterior-collection-${outTheme}`}.webp')`;ext.style.setProperty('--exterior-closed-image',`url('./assets/${outTheme===null?'exterior-closed-v19':outTheme===0?'exterior-furnished-closed-v19':`exterior-collection-${outTheme}-closed`}.webp')`);
   $('customers').hidden=area==='outside';$('scene-world').classList.toggle('exterior-world',area==='outside');$('scene').classList.toggle('has-lantern',!!lamp&&pending!==lamp);$('scene').style.setProperty('--lamp-ambient',String(1+(lamp?F.count(s,lamp):0)*.018));syncNavigation();placePan();
  }
+ function placeServiceNote(){const bar=document.querySelector('.service-bar'),dock=document.querySelector('.game-dock');if(!bar||!dock)return;if(!bar.classList.contains('is-serving')||innerWidth>innerHeight){bar.style.removeProperty('top');bar.style.removeProperty('bottom');return;}const world=$('scene-world').getBoundingClientRect(),br=bar.getBoundingClientRect(),dr=dock.getBoundingClientRect();const plaques=[...document.querySelectorAll('.customer .customer-name')].filter(e=>e.offsetParent).map(e=>e.getBoundingClientRect().bottom),clearance=plaques.length?Math.max(...plaques)+14:0,desired=Math.min(world.bottom+14,innerHeight*.715,dr.top-br.height-50);bar.style.top=`${Math.round(Math.max(clearance,desired,0))}px`;bar.style.bottom='auto';}
+ const serviceObserver=new ResizeObserver(()=>requestAnimationFrame(placeServiceNote));for(const el of document.querySelectorAll('.service-bar,.game-dock'))serviceObserver.observe(el);
  function syncNavigation(){
   const nav=$('location-nav');if(!nav)return;const focused=nav.contains(document.activeElement)?document.activeElement:null,kitchen=window.MidnightKitchen?.isVisible(),location=kitchen?'kitchen':area==='outside'?'outside':'counter';
   if(kitchen){const header=document.querySelector('.kitchen-header');if(nav.previousElementSibling!==header)header.after(nav);}else{const host=document.querySelector('.scene-controls');if(nav.parentElement!==host)host.prepend(nav);}

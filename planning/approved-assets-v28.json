@@ -1,0 +1,332 @@
+[
+  {
+    "asset": "portrait-v28-prep-egg.webp",
+    "generated": "/workspace/generated_images/exec-6aed3980-48d3-479d-ba2f-01d716284a55.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-prep-noodles.webp",
+    "generated": "/workspace/generated_images/exec-4ba6d3e8-69a6-44b9-a666-0a71585fc6ad.png",
+    "kind": "wash"
+  },
+  {
+    "asset": "portrait-v28-prep-potato.webp",
+    "generated": "/workspace/generated_images/exec-97772aed-4473-4588-a518-d03ce6022d67.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-prep-pork.webp",
+    "generated": "/workspace/generated_images/exec-a95eacbb-d778-42bc-be2d-793b6af10d48.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-prep-nori.webp",
+    "generated": "/workspace/generated_images/exec-526b53ca-cff1-4e21-b6ca-9dc507bede29.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-prep-rice.webp",
+    "generated": "/workspace/generated_images/exec-d37b747c-c138-4e45-b9e1-eb163da42f81.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-prep-vegetables.webp",
+    "generated": "/workspace/generated_images/exec-67b9b638-14c0-4602-a577-0cdca89bf225.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-measure-dashi.webp",
+    "generated": "/workspace/generated_images/exec-49ad836c-4a73-4f59-96c3-2e3e97890905.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-prep-salmon.webp",
+    "generated": "/workspace/generated_images/exec-5a59f0fc-fc16-400e-a502-a4df10a19041.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-prep-scallion.webp",
+    "generated": "/workspace/generated_images/exec-112bfe95-d50d-46f3-b19c-3b30f93e29f8.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-measure-miso.webp",
+    "generated": "/workspace/generated_images/exec-a722230b-0e0b-4d10-8a32-7494125c208f.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-core-portion.webp",
+    "generated": "/workspace/generated_images/exec-c1efd1ed-e4e2-48ae-802d-c0470d289036.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-measure-sugar.webp",
+    "generated": "/workspace/generated_images/exec-f8b37fa8-1fab-4b5f-b278-1f20d54913b9.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-prep-tofu.webp",
+    "generated": "/workspace/generated_images/exec-c4bf2a56-72dd-4428-adb9-e06f5549bc4b.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-measure-soy.webp",
+    "generated": "/workspace/generated_images/exec-9bd4d6ba-5998-4c23-84cf-d6904371ff18.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-core-shape.webp",
+    "generated": "/workspace/generated_images/exec-5634f7ad-74d6-4e56-89f1-43055ca0a89b.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-core-beat.webp",
+    "generated": "/workspace/generated_images/exec-d89fb92f-bc7b-4a4b-8330-2cbd7926524e.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-core-pour.webp",
+    "generated": "/workspace/generated_images/exec-f673c560-4887-401c-871e-aaeb939a8df5.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-core-wrap-raw.webp",
+    "generated": "/workspace/generated_images/exec-9fca69d3-f4bd-4382-91c5-6123d9595c54.png",
+    "kind": "final imagegen cleanup"
+  },
+  {
+    "asset": "stove-v28-tamago.webp",
+    "generated": "/workspace/generated_images/exec-7f7a9284-0f1e-4229-9376-160597392ca9.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "stove-v28-onigiri.webp",
+    "generated": "/workspace/generated_images/exec-8c8fa9bc-3af9-4b10-9f3e-0d7e9b4c31e0.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "stove-v28-ochazuke.webp",
+    "generated": "/workspace/generated_images/exec-9cab5ba8-38a9-4cd6-9e91-6316aafda164.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-plate-onigiri.webp",
+    "generated": "/workspace/generated_images/exec-34c738cb-72c5-4b48-89fd-65451a84a8c8.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-plate-ochazuke.webp",
+    "generated": "/workspace/generated_images/exec-0bf9d693-d704-4509-824f-ae6b920975b2.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "final-v28-tamago.webp",
+    "generated": "/workspace/generated_images/exec-3d68b00b-ceb3-4e47-8042-a6a1b43f5930.png",
+    "kind": "final"
+  },
+  {
+    "asset": "final-v28-ochazuke.webp",
+    "generated": "/workspace/generated_images/exec-714611c8-d106-4f05-804e-c036d6167684.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-plate-tamago.webp",
+    "generated": "/workspace/generated_images/exec-56e5b6f4-d06e-42a0-a45e-3e7922af3427.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "stove-v28-negi_omelette.webp",
+    "generated": "/workspace/generated_images/exec-3bae9232-f8e1-4b2b-b428-aca1433fb554.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "stove-v28-butadon.webp",
+    "generated": "/workspace/generated_images/exec-a0f99214-c5e6-4885-bcd5-c31b69296398.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "final-v28-tonjiru.webp",
+    "generated": "/workspace/generated_images/exec-2b9d3eb2-35f2-4348-be4e-08997721ff36.png",
+    "kind": "final"
+  },
+  {
+    "asset": "stove-v28-tonjiru.webp",
+    "generated": "/workspace/generated_images/exec-62af8597-2d5b-46cb-8a1e-2ec5739fb7e8.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "portrait-v28-plate-tonjiru.webp",
+    "generated": "/workspace/generated_images/exec-bec34116-1661-482b-9ad0-f1da8dc83822.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "portrait-v28-plate-negi_omelette.webp",
+    "generated": "/workspace/generated_images/exec-48939dae-98f8-4dce-b549-524712970355.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "final-v28-butadon.webp",
+    "generated": "/workspace/generated_images/exec-b10f9c11-648c-4d1f-bd65-c7f043995440.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "final-v28-negi_omelette.webp",
+    "generated": "/workspace/generated_images/exec-5746c523-010a-49d7-8554-007412102bc5.png",
+    "kind": "final"
+  },
+  {
+    "asset": "portrait-v28-plate-butadon.webp",
+    "generated": "/workspace/generated_images/exec-a0c4fcbb-e2c9-40c7-a43c-692c599d344e.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-plate-hiyayakko.webp",
+    "generated": "/workspace/generated_images/exec-952e9c35-e044-48f9-927b-1769bd523d70.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "final-v28-misoshiru.webp",
+    "generated": "/workspace/generated_images/exec-3f48d872-2868-450e-8f5a-a7223f75e20c.png",
+    "kind": "final"
+  },
+  {
+    "asset": "stove-v28-cabbage_stir.webp",
+    "generated": "/workspace/generated_images/exec-d37a6dcb-d495-422d-9114-1a68b73eee7b.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "stove-v28-potato_soup.webp",
+    "generated": "/workspace/generated_images/exec-4eec6508-3015-4686-9c34-031e5adfbda8.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "stove-v28-misoshiru.webp",
+    "generated": "/workspace/generated_images/exec-dd327e5f-9a21-4376-8b5a-1afeac93c68e.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "final-v28-cabbage_stir.webp",
+    "generated": "/workspace/generated_images/exec-1fc02483-a108-4a5a-9131-08282ff0ab9c.png",
+    "kind": "final"
+  },
+  {
+    "asset": "portrait-v28-plate-potato_soup.webp",
+    "generated": "/workspace/generated_images/exec-53e08af7-f35a-4b52-b032-65c926d03dc0.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "portrait-v28-plate-cabbage_stir.webp",
+    "generated": "/workspace/generated_images/exec-967b91d7-b61f-4410-89f3-816c678d5bd6.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "final-v28-potato_soup.webp",
+    "generated": "/workspace/generated_images/exec-e2d8ceb0-e7aa-423f-9060-ccbe0a830b1d.png",
+    "kind": "final"
+  },
+  {
+    "asset": "final-v28-salmon_teriyaki.webp",
+    "generated": "/workspace/generated_images/exec-143ce89e-0426-4b3b-ade3-f2cea596de8d.png",
+    "kind": "final"
+  },
+  {
+    "asset": "portrait-v28-plate-misoshiru.webp",
+    "generated": "/workspace/generated_images/exec-bf0cf54c-60cb-4694-afaa-ed4d10153a7f.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "stove-v28-salmonbowl.webp",
+    "generated": "/workspace/generated_images/exec-b79c8499-0c62-419e-8d66-6db86c8bf686.png",
+    "kind": "final imagegen cleanup"
+  },
+  {
+    "asset": "stove-v28-salmon_teriyaki.webp",
+    "generated": "/workspace/generated_images/exec-69a342cb-e145-4867-89bc-23457b490f57.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "final-v28-salmonbowl.webp",
+    "generated": "/workspace/generated_images/exec-6531e0f5-c806-4ba5-9728-f801527b8518.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "stove-v28-midnight.webp",
+    "generated": "/workspace/generated_images/exec-cf394312-46d8-4802-998a-9961e18c7158.png",
+    "kind": "final imagegen cleanup"
+  },
+  {
+    "asset": "portrait-v28-plate-salmon_teriyaki.webp",
+    "generated": "/workspace/generated_images/exec-5b37f9d0-a80d-4d13-a385-4297b46db6bf.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "portrait-v28-plate-midnight.webp",
+    "generated": "/workspace/generated_images/exec-3fb822d7-52c6-4705-b188-874773819e4c.png",
+    "kind": "final imagegen cleanup"
+  },
+  {
+    "asset": "stove-v28-udon.webp",
+    "generated": "/workspace/generated_images/exec-0b5f1289-f6d3-4eed-accb-da20f8cbcdab.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "stove-v28-soba.webp",
+    "generated": "/workspace/generated_images/exec-a5be2831-bb61-4243-9f53-5c4fb4389c4c.png",
+    "kind": "heat"
+  },
+  {
+    "asset": "final-v28-midnight.webp",
+    "generated": "/workspace/generated_images/exec-07a0047e-acbe-4f3d-826c-635b19641714.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-core-drain.webp",
+    "generated": "/workspace/generated_images/exec-8e0c7cc9-e02e-4ac0-98a5-a034586155fb.png",
+    "kind": "core"
+  },
+  {
+    "asset": "portrait-v28-core-wrap.webp",
+    "generated": "/workspace/generated_images/exec-ecd914d6-d725-49db-9611-9bd8118ee1d0.png",
+    "kind": "final imagegen cleanup"
+  },
+  {
+    "asset": "portrait-v28-core-broth.webp",
+    "generated": "/workspace/generated_images/exec-c5861566-8b5f-4220-96fc-694b1c70c2b1.png",
+    "kind": "core"
+  },
+  {
+    "asset": "portrait-v28-plate-udon.webp",
+    "generated": "/workspace/generated_images/exec-6e5bef16-194d-4228-9173-22b78cdf7e53.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "final-v28-soba.webp",
+    "generated": "/workspace/generated_images/exec-69f57f02-7fce-40bc-8909-dfe8095c31b4.png",
+    "kind": "final"
+  },
+  {
+    "asset": "final-v28-udon.webp",
+    "generated": "/workspace/generated_images/exec-09cc57a6-55ea-402b-8868-b246b30250ee.png",
+    "kind": "final"
+  },
+  {
+    "asset": "portrait-v28-plate-salmonbowl.webp",
+    "generated": "/workspace/generated_images/exec-d1564a32-833b-4daf-bfd3-caed81953020.png",
+    "kind": "imagegen edit"
+  },
+  {
+    "asset": "portrait-v28-plate-soba.webp",
+    "generated": "/workspace/generated_images/exec-f7ca5fb0-7641-4378-b6d7-2fffe7bc5dda.png",
+    "kind": "plate"
+  },
+  {
+    "asset": "portrait-v28-core-wrap-burnt.webp",
+    "generated": "/workspace/generated_images/exec-d0ac988a-23a2-40f1-8d0f-3c991c84f6b3.png",
+    "kind": "final imagegen cleanup"
+  },
+  {
+    "asset": "onigiri-final-v28.webp",
+    "generated": "/workspace/generated_images/exec-edad37c3-6d02-4936-a5e6-fcbb82310378.png",
+    "kind": "imagegen edit"
+  }
+]

@@ -143,6 +143,7 @@
 /* Printed hierarchy across reports, rewards, menus and kitchen headings. */
 #report-dialog .sheet-header h2{font-size:20px;line-height:1.5}
 #report-content .report-heading h3{font:400 22px/1.6 var(--reading-serif);margin:9px 0 4px}
+#report-content .next-goal h4{font-size:14px}
 #report-content .report-heading{margin-bottom:15px}
 #report-content .report-heading p{font-size:12px}
 #report-content .night-stamp{font-size:11px;letter-spacing:2px;padding:4px 12px}
@@ -314,26 +315,94 @@
 #kitchen-content .station-stove.process-view .process-heading{padding:0 12px;min-height:30px}
 
 @media(prefers-reduced-motion:reduce){.customer .customer-name.order-ready,.customer-name.order-ready::before,.fridge-door-touch.first-door-hint::before{animation:none}}
-/* The active cooking picture is the workspace, with compact captions over it. */
-@media(orientation:portrait){
+/* One native portrait work photograph fills the cooking area, without an inset. */
 #kitchen-content:has(.photo-workspace){overflow:hidden}
-#kitchen-content .photo-workspace{height:var(--work-height,100%);min-height:100%;padding:0;overflow:hidden;background:none;isolation:isolate}
-#kitchen-screen #kitchen-content .photo-workspace .prep-scene{position:absolute;left:50%;top:50%;width:var(--work-size,100%);height:var(--work-size,100%);max-width:none;aspect-ratio:1;margin:0;transform:translate(-50%,-50%);z-index:0}
-#kitchen-content .photo-workspace .process-heading{position:relative;z-index:2;flex-shrink:0;padding:8px 14px 22px;pointer-events:none;border:0;background:linear-gradient(#150e08db,#150e0877 75%,transparent);text-shadow:0 1px 3px #000}
+#kitchen-content .photo-workspace{height:var(--work-height,100%);min-height:100%;padding:0;overflow:hidden;background:#281c13;isolation:isolate}
+#kitchen-screen #kitchen-content .photo-workspace .prep-scene{position:absolute;left:50%;top:50%;width:var(--work-width);height:var(--work-height-source);max-width:none;max-height:none;aspect-ratio:auto;margin:0;transform:translate(-50%,-50%);z-index:0}
+#kitchen-content .photo-workspace .process-heading{position:relative;z-index:2;flex-shrink:0;padding:7px 12px 12px;pointer-events:none;border:0;background:linear-gradient(#20140a9c,transparent);text-shadow:0 1px 3px #000}
 #kitchen-content .photo-workspace .process-heading>span{font-size:10px}
-#kitchen-content .photo-workspace .process-heading h3{font-size:21px;line-height:1.4;margin:2px 0 3px}
+#kitchen-content .photo-workspace .process-heading h3{font-size:19px;line-height:1.4;margin:2px 0 3px}
 #kitchen-content .photo-workspace .process-heading p{font-size:11px;line-height:1.6}
 #kitchen-content .photo-workspace .action-counter{position:absolute;bottom:5px;left:0;right:0;z-index:2;padding:7px 10px;background:linear-gradient(transparent,#160e0899);text-shadow:0 1px 3px #000;pointer-events:none}
 #kitchen-content .photo-workspace .measure-status,#kitchen-content .photo-workspace .paste-status{position:absolute;bottom:7px;left:5%;right:5%;z-index:2;margin:0;padding:9px 12px}
-#kitchen-content .photo-workspace .subtle-action{position:absolute;right:8px;bottom:8px;z-index:3;margin:0;font-size:10px;padding:5px 9px;background:#3c2819d9}
-}
-/* Only the two exposed burner sides are visible; vessel and handle mask the rest. */
-.stove-unit .live-gas.side-burner{inset:0;width:100%;height:100%;clip-path:none;mask-image:none;mix-blend-mode:screen;filter:blur(.28px) drop-shadow(0 0 .7px #68b5df66);transform:none}
-.stove-unit.fire-on .live-gas.side-burner{opacity:calc(.45 + var(--gas-strength,0)*.45);transform:none}
-.stove-unit .side-burner .gas-jet{animation:side-flame-breathe 1.37s ease-in-out infinite alternate;transform-origin:center bottom;transform-box:fill-box}
-@keyframes side-flame-breathe{0%,100%{transform:scaleY(calc(.52 + var(--gas-strength,0)*.52)) skewX(-2deg);opacity:.83}43%{transform:scaleY(calc(.58 + var(--gas-strength,0)*.56)) skewX(2deg);opacity:1}76%{transform:scaleY(calc(.55 + var(--gas-strength,0)*.5));opacity:.9}}
-@media(prefers-reduced-motion:reduce){.stove-unit .side-burner .gas-jet{animation:none}}
-@media(orientation:portrait){#kitchen-screen #kitchen-content .photo-workspace .prep-scene{left:calc(50% + var(--work-offset,0px))}}
-/* Burner light peeks from the lower side gaps, never along the upper pan walls. */
-.stove-unit .side-burner .gas-jet path:first-child{filter:blur(.13px)}
-#kitchen-content .photo-workspace .subtle-action{color:#f5e3bd;border:1px solid #bda36d}
+/* No rendered gas flame layer. Heat logic, sound and dial remain independent. */
+.live-gas,.stove-burner{display:none!important}
+/* Stable, identical paper tabs; icon and text align independently of their natural widths. */
+.game-dock{align-items:stretch}
+.game-dock>button{display:grid;grid-template-rows:34px 16px;justify-items:center;align-content:center;gap:4px;height:66px;min-height:66px;padding:6px 3px;box-sizing:border-box;transform:none;translate:none;scale:none;border-radius:1px;background-position:center,center 40%}
+.game-dock>button>span{width:34px;height:34px;margin:0;align-self:center;flex-shrink:0}
+.game-dock>button>b{display:block;align-self:center;margin:0;font:400 11px/16px var(--reading-serif);white-space:nowrap}
+.game-dock>button:active{transform:none;translate:0 1px;scale:none}
+/* A tiny steady pilot light replaces the candle, using the existing attention gate. */
+.game-dock #story-badge{width:8px;height:8px;min-width:0;right:6px;top:6px;border:1px solid #ebc47a;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff3b3,#d69535 60%,#945019);box-shadow:0 0 5px 1px #e7ad5066;filter:none;animation:none;transform:none}
+.game-dock #story-badge::before,.game-dock #story-badge::after{content:none;display:none;animation:none}
+/* Reports are compact printed figures, with no decorative star suffixes. */
+.score-delta.gain::after{content:none;display:none}
+.score-delta.gain{animation:none}
+.placement-halo{display:none}
+#report-content .next-goal h4{font-size:14px}
+#report-content .report-heading{padding:8px 0 13px}
+#report-content .report-heading h3{font:400 20px/1.5 var(--reading-serif);margin:5px 0}
+#report-content h4,#report-content .earned-gallery h4,#report-content .upcoming-items>h3,#report-content .reward-heading h3{font:400 14px/1.5 var(--reading-serif);margin:0 0 8px}
+#report-content .growth-banner{padding:10px;gap:10px;margin-bottom:12px}
+#report-content .growth-banner h3{font:400 16px/1.5 var(--reading-serif)}
+#report-content .report-metric{padding:10px 11px;margin-bottom:10px;min-height:0}
+#report-content .report-metric-pair{gap:8px}
+#report-content .report-metric-pair .report-metric{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:4px 6px}
+#report-content .report-metric-pair .report-metric h4{grid-column:1/-1;font-size:13px;margin:0 0 2px}
+#report-content .report-metric strong{font:400 21px/1.4 var(--reading-serif)}
+#report-content .report-metric strong>small{font-size:11px}
+#report-content .report-metric-pair .report-metric>.score-delta{font:400 15px/1.4 var(--reading-serif);margin:0}
+#report-content .score-delta{font-size:19px}
+#report-content .score-delta small{font-size:10px}
+/* Korean level caption above its centered number, in every level badge. */
+.level-tile,.progress-hud .hud-level{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3px;line-height:1;margin:0;padding:5px}
+.level-tile>small,.progress-hud .hud-level>small{display:block;font:400 10px/1.2 var(--reading-serif);letter-spacing:0;color:inherit;margin:0}
+#report-content .level-tile,#report-content .growth-banner .level-tile,#report-content .reward-heading .level-tile{width:44px;height:54px;flex:0 0 44px;gap:3px;border-radius:3px}
+#report-content .level-tile>b,#report-content .growth-banner .level-tile>b,#report-content .reward-heading .level-tile>b{display:block;font:400 24px/1 var(--reading-serif);margin:0;color:inherit}
+.progress-hud .hud-level{min-width:32px;padding:0;gap:2px}
+.progress-hud .hud-level>strong{font:400 18px/1 var(--reading-serif);color:inherit}
+.game-dock>button,.game-dock>button.active{border:2px solid transparent}
+#app .game-dock>button:active{transform:none;translate:0 1px}
+.music-settings{padding:12px 14px;background:#f1e3c5 url('./assets/ui-washi-v21.webp') center/500px;border:1px solid #b49b6f;color:#51432d}
+.music-settings>div{display:flex;align-items:center;justify-content:space-between;gap:12px;font:400 14px/1.5 var(--reading-serif)}
+.music-settings #music-toggle{min-height:44px;min-width:64px;padding:6px 12px;font:400 12px/1.5 var(--reading-serif);background:#4a5b42;color:#fff0c5;border:1px solid #a18c5e;border-radius:2px}
+.music-settings #music-toggle[aria-pressed=false]{background:#c9b995;color:#65543b}
+.music-settings label{display:flex;justify-content:space-between;margin:9px 0 0;font:400 12px/1.5 var(--reading-serif)}
+.music-settings input[type=range]{appearance:none;width:100%;height:44px;margin:0;background:transparent;cursor:pointer}
+.music-settings input[type=range]::-webkit-slider-runnable-track{height:7px;background:linear-gradient(#b89b64,#765731);border-radius:2px;border:1px solid #8e7146}
+.music-settings input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:26px;margin-top:-10px;background:#f2dfad;border:2px solid #96723b;border-radius:3px;box-shadow:0 2px 2px #52351355}
+.music-settings input[type=range]::-moz-range-track{height:7px;background:#a78a54;border-radius:2px}
+.music-settings input[type=range]::-moz-range-thumb{width:18px;height:24px;background:#f2dfad;border:2px solid #96723b;border-radius:3px}
+
+/* Approved full-screen stove art; the one working knob belongs to its center mount. */
+#kitchen-screen.immersive-heat{background:#3e2b1c}
+.immersive-heat::before{display:none}
+#kitchen-screen.immersive-heat #kitchen-content{position:absolute;inset:0;overflow:hidden}
+.immersive-heat .kitchen-header{background:linear-gradient(#23140ddb,#26170bb3);border:0;box-shadow:none}
+#kitchen-screen.immersive-heat #location-nav{z-index:6}
+#kitchen-content .immersive-heat .process-view{background:none}
+#kitchen-screen.immersive-heat .process-view{height:100%;padding:0;background:none}
+#kitchen-screen.immersive-heat #kitchen-content .native-stove{position:absolute;left:50%;top:50%;margin:0;max-width:none;transform:translate(-50%,-50%);overflow:visible}
+#kitchen-content .native-stove .heat-worktop{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;border:0;background:none;box-shadow:none}
+#kitchen-content .native-stove .heat-worktop .cook-object{aspect-ratio:auto;touch-action:none}
+#kitchen-content .native-stove .recipe-frame{inset:0;clip-path:none}
+#kitchen-content .native-stove .stove-front{position:absolute;inset:0;margin:0;width:100%;height:100%;aspect-ratio:auto;background:none;pointer-events:none}
+#kitchen-content .native-stove .dial-wrap{left:50%;top:83.6%;width:22%;min-width:44px;pointer-events:auto}
+#kitchen-content .native-stove #gas-dial i{inset:0;filter:drop-shadow(1px 2px 2px #1a100aaa)}
+#kitchen-screen.immersive-heat .process-heading{position:absolute;z-index:3;left:8%;right:8%;top:var(--heat-caption-top,118px);padding:0;min-height:24px;border:0;background:none;text-shadow:0 1px 3px #000}
+#kitchen-screen.immersive-heat .stove-controls{position:absolute;z-index:3;left:8%;right:8%;top:calc(var(--heat-caption-top,118px) + 27px);width:auto;margin:0;padding:0;color:#fff1cb;text-shadow:0 1px 3px #000}
+#kitchen-screen.immersive-heat .heat-label{font-size:10px;margin:0 0 4px}
+#kitchen-screen.immersive-heat .heat-meter{height:9px;margin:0}
+.native-stove-state{display:block;font:400 10px/1.4 var(--reading-serif);text-align:right;margin-bottom:2px}
+#kitchen-screen.immersive-heat #kitchen-footer{position:absolute;z-index:5;left:0;right:0;bottom:0;padding:7px 14px calc(7px + env(safe-area-inset-bottom));background:linear-gradient(#352417aa,#352417eb);border:0}
+#kitchen-screen.immersive-heat #kitchen-footer button{min-height:44px;font-size:13px;padding:8px}
+@media(max-height:740px){#kitchen-screen.immersive-heat .process-heading{display:none}#kitchen-screen.immersive-heat .stove-controls{top:var(--heat-caption-top,105px)}}
+/* Small printed report figures, without an oversized frame around each number. */
+#report-content .report-metric-pair .report-metric{border:0;border-image:none;box-shadow:none;padding:8px;min-width:0;grid-template-columns:minmax(0,1fr) auto;gap:3px 4px}
+#report-content .report-metric-pair .report-metric h4{font-size:12px;white-space:nowrap}
+#report-content .report-metric-pair .report-metric strong{font-size:20px;white-space:nowrap}
+#report-content .report-metric-pair .report-metric>.score-delta{font-size:13px;white-space:nowrap}
+#kitchen-content .native-stove .recipe-frame{inset:-.4%;clip-path:inset(.4%)}
+
+#kitchen-content .native-stove .dial-wrap{height:auto;aspect-ratio:1;width:19%}
