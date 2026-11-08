@@ -205,7 +205,9 @@
     const remaining=nextLevel?Math.max(0,nextLevel.xp-state.xp):0,conditions=nextLevel?[[state.reputation,nextLevel.reputation,'평판'],[E.satisfaction(state),nextLevel.satisfaction,'만족도'],[E.atmosphere(state),nextLevel.atmosphere,'분위기']]:[];
     $('progress-hud').innerHTML=`<b class="hud-level"><small>레벨</small><strong>${state.level}</strong></b><div class="hud-growth"><span>${nextLevel?`레벨 ${nextLevel.level}까지 <strong>${remaining?remaining.toLocaleString()+'점 더':'성장 달성'}</strong>`:'최고 레벨 달성'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}" aria-label="${nextLevel?'다음 레벨까지 '+remaining+'점':'최고 레벨'}"></progress></div><div class="hud-conditions">${conditions.map(([v,t,label])=>`<span class="${v>=t?'met':''}" title="${label} ${v} / ${t}" aria-label="${label} ${v}점, 목표 ${t}점${v>=t?', 달성':''}">${label} <b>${v>=t?'✓':(t-v)+'점 더'}</b></span>`).join('')}</div>`;
     renderStockPrep();renderScene();renderTalk();renderStory();renderManagement();save();
-    $('story-badge').hidden=!E.storyNeedsAttention(state);
+    const storyAttention=E.storyNeedsAttention(state);
+    $('story-badge').hidden=!storyAttention;
+    $('story-open').setAttribute('aria-label',storyAttention?'손님 이야기 열기 · 새 알림 있음':'손님 이야기 열기');
     if (state.phase==='end') renderReport();
     maybeStory();
   }
@@ -226,6 +228,20 @@
     const button=event.target.closest('[data-guest]');if(!button)return;const g=state.guests.find(g=>g.id===Number(button.dataset.guest));if(!g)return;
     if(g.status==='paying'){const payment=document.querySelector(`[data-pay="${g.id}"]`);payment?.click();return;}openTalk(g.id);
   });
+  // Dismiss only a complete outside tap, never a drag that started in the panel.
+  const guestDialog=$('guest-dialog');
+  let guestOutsidePress=false;
+  function outsideGuestPanel(event){
+    const rect=guestDialog.getBoundingClientRect();
+    return event.target===guestDialog&&(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom);
+  }
+  guestDialog.addEventListener('pointerdown',event=>{guestOutsidePress=outsideGuestPanel(event);});
+  guestDialog.addEventListener('pointercancel',()=>{guestOutsidePress=false;});
+  guestDialog.addEventListener('click',event=>{
+    if(guestOutsidePress&&outsideGuestPanel(event)){guestDialog.close();maybeStory();}
+    guestOutsidePress=false;
+  });
+  guestDialog.addEventListener('close',()=>{guestOutsidePress=false;});
   $('talk-choices').addEventListener('click',event=>{
     const button=event.target.closest('[data-guest-reply]');if(!button)return;
     if(E.answerGuest(state,selectedGuest,button.dataset.guestReply)){render();const focus=$('talk-choices').querySelector('button')||$('talk-next');focus.focus({preventScroll:true});}
