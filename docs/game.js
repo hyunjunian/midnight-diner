@@ -170,7 +170,7 @@
   }
   function renderManagement() {
     const rescue = E.rescueNeeds(state) ? '<div class="rescue-box"><span>재료 살 돈이 부족한가요? 이웃 상인이 이번 주문에 필요한 재료를 나눠 줘요.</span><button data-rescue="true">도움받기 · 평판 −3</button></div>' : '';
-    document.querySelectorAll('[data-tab]').forEach(b => { b.classList.toggle('active', b.dataset.tab === tab); b.setAttribute('aria-pressed', String(b.dataset.tab === tab)); });
+    syncDockState();
     $('management-title').textContent = { pantry: '냉장고', menu: '메뉴 수첩', shop: '가게 꾸미기' }[tab];
     if (tab === 'pantry') {
       $('management-content').innerHTML=`${rescue}<p class="management-note">수량을 정해 한 번에 채워 두세요.<span>재료 그림을 누르면 1개씩 바로 추가돼요.</span></p><div class="stock-grid">${Object.entries(E.ingredients).map(([id,item])=>{
@@ -207,7 +207,7 @@
     $('service-progress').innerHTML=`<span>손님맞이 <b>${Math.min(3,Math.floor(state.nightScores.length/3)+1)} / 3</b></span><i aria-hidden="true"></i><span>대접 <b>${state.nightScores.length} / ${state.target}</b></span>`;
     document.querySelector('.service-bar').classList.toggle('is-serving',serving);
     $('night-action').innerHTML = state.phase === 'prep' ? '식당 불 켜기 <span></span>' : state.phase === 'end' ? '오늘의 영업보고 <span></span>' : canClose ? '밤 마무리하기 · 영업보고 <span>☾</span>' : '';
-    $('service-hint').textContent = state.phase === 'prep' ? (E.stockPlan(state,3).units?'아래 재료 준비를 먼저 확인해 주세요.':'재료가 준비됐어요. 식당 불을 켜고 손님을 맞이해요.') : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요.\n반짝이는 이야기 버튼을 눌러 답해 주세요.' : state.guests.some(g=>g.status==='paying')?'식사를 마친 손님의 별점 위 금액을 눌러 결제해 주세요.':'손님을 눌러 대화하고 주문을 받아 주세요.';
+    $('service-hint').textContent = state.phase === 'prep' ? (E.stockPlan(state,3).units?'아래 재료 준비를 먼저 확인해 주세요.':'재료가 준비됐어요. 식당 불을 켜고 손님을 맞이해요.') : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요.\n빨간 알림이 있는 이야기 메뉴를 눌러 답해 주세요.' : state.guests.some(g=>g.status==='paying')?'식사를 마친 손님의 별점 위 금액을 눌러 결제해 주세요.':'손님을 눌러 대화하고 주문을 받아 주세요.';
     $('night-action').classList.toggle('close-ready',canClose);
     const nextLevel=E.levels.find(l=>l.level>state.level);
     const remaining=nextLevel?Math.max(0,nextLevel.xp-state.xp):0,conditions=nextLevel?[[state.reputation,nextLevel.reputation,'평판'],[E.satisfaction(state),nextLevel.satisfaction,'만족도'],[E.atmosphere(state),nextLevel.atmosphere,'분위기']]:[];
@@ -298,14 +298,29 @@
     if (button && E.resolveEvent(state, button.dataset.choice)) { render(); $('story-dialog').scrollTop=0; toast(state.event==='pending'?'그다음 이야기가 이어집니다.':'이 선택의 소식이 다음 밤에 도착해요.'); }
   });
   const sheetIds = ['report-dialog', 'guest-dialog', 'management-dialog', 'story-dialog', 'settings-dialog'];
+  function syncDockState() {
+    for (const button of document.querySelectorAll('.game-dock>button')) {
+      const panel=button.id==='story-open'?'story-dialog':'management-dialog';
+      const expanded=$(panel).open&&(panel==='story-dialog'||button.dataset.tab===tab);
+      button.classList.toggle('active',expanded);
+      button.setAttribute('aria-expanded',String(expanded));
+      button.setAttribute('aria-controls',panel);
+      button.removeAttribute('aria-pressed');
+    }
+  }
+  for (const id of sheetIds) $(id).addEventListener('close',syncDockState);
+  const dockPanels=new MutationObserver(syncDockState);
+  for (const id of ['management-dialog','story-dialog']) dockPanels.observe($(id),{attributes:true,attributeFilter:['open']});
   function anySheetOpen() { return sheetIds.some(id => $(id).open); }
   function openSheet(id) {
     if(['settings-dialog','reset-dialog'].includes(id))FX?.stopCooking();
     for (const other of sheetIds) if (other !== id && $(other).open) $(other).close();
     if (!$(id).open) $(id).showModal();
+    syncDockState();
   }
   function maybeStory() {
-    if (!$('app').hidden && E.storyNeedsAttention(state)) $('story-open').classList.add('story-waiting'); else $('story-open').classList.remove('story-waiting');
+    $('story-open').classList.remove('story-waiting');
+    syncDockState();
   }
   document.addEventListener('click', event => {
     const close = event.target.closest('[data-close]');

@@ -399,7 +399,6 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; }
 .upgrade-card.locked { background:#dfdacb; border-style:dashed; }
 .upgrade-card.locked .decor-thumbnail { filter:saturate(.35); }
 .close-ready { animation:close-pulse 1.8s ease-in-out infinite; outline:2px solid #f7ce89; outline-offset:4px; }
-.story-waiting { box-shadow:inset 0 0 0 1px #e7bc7d; border-radius:12px!important; animation:story-pulse 2s infinite; }
 .conversation-cast { display:flex; gap:20px; justify-content:center; margin-bottom:15px; }
 .conversation-cast > div { width:110px; aspect-ratio:3/4; background:#172b29; border-radius:50px 50px 10px 10px; overflow:hidden; }
 .report { width:min(94vw,620px); background:#eee3cb; }

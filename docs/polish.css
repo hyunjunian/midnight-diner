@@ -70,7 +70,6 @@
 #kitchen-back .back-label{font:inherit;color:inherit;letter-spacing:0}
 .kitchen-header #kitchen-back:active,.scene-controls #area-toggle:active{transform:translateY(1px);box-shadow:inset 0 1px 4px #0c0608a6}
 .game-app #resume-kitchen{border:2px solid #e5c276;border-radius:1px;background:#f1e3c7 url('./assets/ui-washi-v21.webp') center/420px;color:#584328;min-height:44px;font:400 14px/1.7 var(--reading-serif);box-shadow:0 0 12px #e1b76088,0 2px 4px #0006;animation:none}
-.game-dock #story-open.story-waiting{border:2px solid #e5c276!important;border-radius:2px!important;animation:none!important;box-shadow:inset 0 0 0 1px #7f5c30,0 0 12px #e4b55b88!important;background-color:#e7d4ae;background-image:linear-gradient(180deg,#faf0d851,#b99a642b),var(--slip-paper)}
 .game-dock #story-badge{animation:none;filter:drop-shadow(0 0 3px #ffc45e88)}
 /* Ingredients are the primary view; refilling is a compact secondary row. */
 #kitchen-footer.fridge-footer{max-height:47dvh;padding-top:10px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
