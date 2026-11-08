@@ -25,7 +25,7 @@
 
 - The catalogue contains 100 individually illustrated dishes. Start with 3 at Lv.1; add exactly 3 each level through Lv.33, then the remaining one at Lv.34. Never restore ten dishes per level. Progression caps at Lv.34; the replacement fridge unlocks at Lv.20 and discounts ingredient purchases by 10%.
 - Furnishings use measured surface slots, keyed DOM elements, automatic area/pan focus, visible installation and completion glow. Keep the fridge replacement at the original fridge footprint. Do not recreate decoration nodes during ordinary state renders.
-- No old no-timer checkbox. Preparation uses direct appliance/drag actions, while stove heating uses active timing; align the target label with its green zone. Show varied guest dialogue only in detail/story panels. Preserve v2–v5 saves when migrating to the v6 save key.
+- No old no-timer checkbox. Preparation uses direct appliance/drag actions, while stove heating uses active timing; align the target label with its green zone. Show varied guest dialogue only in detail/story panels. Preserve v2–v6 saves when migrating to the v7 save key.
 
 - Live gameplay now has moderate downward rain in the outdoor view and behind indoor glass panes only; the user explicitly requested this. Preserve the approved intro video. Keep stronger smooth breathing/head/hair motion without changing mouths or breaking mesh continuity.
 
@@ -34,3 +34,5 @@
 - Clicking a guest opens the bottom conversation, not the former kitchen sheet. After the final request the player can enter a full-screen first-person kitchen. Keep the fridge/freezer doors, physical stock selection, recipe-specific station sequences and tactile riceball interactions.
 - Payment/star badges above guests are explicitly authorized; speech still belongs only in conversation/story screens. Eating can move hands/chopsticks and body, never mouths.
 - Ingredients unlock at the earliest recipe level using them. Block locked purchases in engine and UI; retain old owned quantities. The ceramics upgrade uses the edited original-shelf image patch, not a separate floating shelf sprite. Keep room overflow clipped so dialog focus cannot scroll the service camera.
+
+- Direct cooking v15 uses 25 8×4 full-scene atlases (`process-1`–`process-25`) with eight painted states per recipe. Never restore separate tiny food/plate/board stickers in the preparation view. Use deliberate gesture paths for cutting, circular beating, source-to-target transfers and the rotary gas dial. Taps cannot advance these actions. No final plate-tapping step: successful final transfer goes directly to ready-to-serve. Preserve v6 money/inventory/payment records when migrating to v7; restart unfinished old cooking sequences because the step order changed.

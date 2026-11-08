@@ -1,12 +1,13 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const VERSION = 'midnight-diner-pwa-20261108-v14-service-kitchen';
+const VERSION = 'midnight-diner-pwa-20261108-v15-direct-cooking';
 const ROOT = new URL('./', self.location.href);
 const INDEX = new URL('index.html', ROOT).href;
 const FILES = [
-  'index.html', 'style.css', 'cooking-rules.js', 'kitchen.js', 'kitchen.css', 'catalog.js', 'stories.js', 'engine.js', 'game.js', 'scene.js', 'rain.js', 'morph.js', 'pwa.js', 'manifest.webmanifest',
+  'index.html', 'style.css', 'cooking-rules.js', 'kitchen.js', 'gestures.js', 'kitchen.css', 'catalog.js', 'stories.js', 'engine.js', 'game.js', 'scene.js', 'rain.js', 'morph.js', 'pwa.js', 'manifest.webmanifest',
   'assets/visitors-a.webp', 'assets/visitors-b.webp', 'assets/decor-real.webp', 'assets/food-clean.webp', 'assets/restaurant-counter.webp', 'assets/intro-world.webp', 'assets/interior.svg', 'assets/exterior.svg', 'assets/opening-visible-rain.mp4', 'assets/opening-portrait-poster.jpg',
   'assets/menu-1.webp', 'assets/menu-2.webp', 'assets/menu-3.webp', 'assets/menu-4.webp', 'assets/menu-5.webp', 'assets/menu-6.webp', 'assets/menu-7.webp', 'assets/menu-8.webp', 'assets/menu-9.webp', 'assets/menu-10.webp', 'assets/pantry-a.webp', 'assets/pantry-b.webp', 'assets/decor-growth.webp', 'assets/restaurant-fridge.webp',
   'assets/kitchen-room.webp', 'assets/kitchen-upgraded.webp', 'assets/fridge-upgraded.webp', 'assets/fridge-open.webp', 'assets/fridge-closed.webp', 'assets/cooking-tools.webp', 'assets/cooking-vessels.webp', 'assets/cooking-rice.webp', 'assets/restaurant-ceramics.webp',
+  'assets/process-1.webp', 'assets/process-2.webp', 'assets/process-3.webp', 'assets/process-4.webp', 'assets/process-5.webp', 'assets/process-6.webp', 'assets/process-7.webp', 'assets/process-8.webp', 'assets/process-9.webp', 'assets/process-10.webp', 'assets/process-11.webp', 'assets/process-12.webp', 'assets/process-13.webp', 'assets/process-14.webp', 'assets/process-15.webp', 'assets/process-16.webp', 'assets/process-17.webp', 'assets/process-18.webp', 'assets/process-19.webp', 'assets/process-20.webp', 'assets/process-21.webp', 'assets/process-22.webp', 'assets/process-23.webp', 'assets/process-24.webp', 'assets/process-25.webp', 'assets/held-knife.webp',
   'assets/icon-192.png', 'assets/icon-512.png', 'assets/icon-maskable-512.png', 'assets/apple-touch-icon.png',
 ].map(path => new URL(path, ROOT).href);
 self.addEventListener('install', event => {

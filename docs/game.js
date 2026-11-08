@@ -1,11 +1,11 @@
 (() => {
   'use strict';
   const E = window.MidnightEngine;
-  const KEY = 'midnight-diner-save-v6';
+  const KEY = 'midnight-diner-save-v7';
   const $ = id => document.getElementById(id);
   const yen = n => `¥${n.toLocaleString('ja-JP')}`;
   let state, storageAvailable = true, saveMessage = '';
-  try { state = E.restore(localStorage.getItem(KEY) || localStorage.getItem('midnight-diner-save-v5') || localStorage.getItem('midnight-diner-save-v4') || localStorage.getItem('midnight-diner-save-v2'), localStorage.getItem('midnight-diner-save-v1')); }
+  try { state = E.restore(localStorage.getItem(KEY) || localStorage.getItem('midnight-diner-save-v6') || localStorage.getItem('midnight-diner-save-v5') || localStorage.getItem('midnight-diner-save-v4') || localStorage.getItem('midnight-diner-save-v2'), localStorage.getItem('midnight-diner-save-v1')); }
   catch { state = E.fresh(); saveMessage = '저장 정보를 읽지 못해 새 식당을 준비했습니다.'; }
   let selectedGuest=null,tab='pantry',talkIndex=0,cashAnimation=null;
   const Kitchen=window.MidnightKitchen;
@@ -338,7 +338,7 @@
   window.addEventListener('pageshow', event => {
     if (event.persisted) { lastFrame = 0; arrivalTimer = setInterval(() => { if (!$('reset-dialog').open) tryArrival(); }, 6500); raf = requestAnimationFrame(frame); }
   });
-  Kitchen.init({getState:()=>state,food,toast,changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
+  Kitchen.init({getState:()=>state,food,toast,clearToast:()=>{clearTimeout(toastTimer);$('toast').classList.remove('visible');},changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
   render();
   window.MidnightApp = { launch: startIntro, save, isCooking:()=>Boolean(state.kitchen) };
   if (saveMessage) toast(saveMessage);
