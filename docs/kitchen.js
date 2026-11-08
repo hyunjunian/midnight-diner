@@ -11,7 +11,6 @@
   function resetStep(){const key=`${state().night}-${order().id}-${state().kitchen.step}`;if(stepKey===key)return;stepKey=key;local={count:0,done:false,quality:1,heat:0,power:0,started:false,flipped:false,flipQuality:1,oil:null,knife:true,cutSlots:[],tutorial:0,toolX:.35,toolY:.22,fill:0,motion:0,practiceScore:0,practiceGood:false,demoUntil:0};restoreCheckpoint();}
   function checkpointKey(){const k=state().kitchen;return k?`${state().night}-${k.guest}-${order()?.recipe}-${k.stage}-${k.step}`:null;}
   function clearCheckpoint(){try{localStorage.removeItem(CHECKPOINT);}catch{}}
-  function suspendForUpdate(){down=null;local.motion=0;FX?.stopCooking();}
   function checkpoint(){
     if(!bridge)return false;
     try {const key=checkpointKey();if(!key){localStorage.removeItem(CHECKPOINT);return true;}
@@ -267,5 +266,5 @@
     if(local.heat>=1){stopHeat();if(state().stoveTutorialDone)bridge.toast('불을 늦게 껐어요. 다음에는 초록 구간에서 멈춰 주세요.');}
   }
 
-  window.MidnightKitchen={init,open,show,hide,tick,checkpoint,clearCheckpoint,suspendForUpdate,isVisible:()=>visible};
+  window.MidnightKitchen={init,open,show,hide,tick,checkpoint,clearCheckpoint,isVisible:()=>visible};
 })();

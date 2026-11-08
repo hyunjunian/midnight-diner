@@ -1,0 +1,11 @@
+# Silent mobile updates and physical notification lamp
+
+The v35 foreground gate caused a visible walnut checking screen and paused gameplay on every app return. The user rejected that behavior. v36 removes the checking dialog, critical hide class, pause hook and music-check dependency entirely. Intro/game launch immediately. Nonce/no-store version requests and atomic hash-verified downloads run without covering the interface or stopping gameplay.
+
+A fully prepared release waits while visible cooking, dialogs, held pointers/keys, recent input, furnishing/cash animations or opening transitions are active. It saves v11 and the existing partial-cooking checkpoint, then applies while the app is hidden or at a safe foreground moment after 1.5 seconds without input. Update resumes skip the intro. Same-release, slow/offline checks and failed downloads/saves leave the current playthrough running; silent retries remain available. Pagehide saves and marks navigation away, without hijacking it. Multiple pointer/key holds are tracked individually.
+
+The dock notification keeps its original unread/unfinished gating but now resembles a small red glass pilot lamp: shaded red lens, reflected warm highlight, aged brass bezel, contact shadow and restrained brightness shimmer. Reduced motion leaves it static. No food, portrait, intro or cooking artwork was changed.
+
+Validation: 113 Node tests, six mobile real-worker scenarios, startup/browser/standalone/embedded checks, legacy migration/offline reopening, and dock regression checks passed. The lamp was visually reviewed and reduced-motion rendering is static. Coverage includes mobile touch/standalone real-worker tests with deliberately held version responses, live settings interaction and rice gestures during checks, uninterrupted clock, safe deferred/background application with saved partial cooking, offline reopening and media ranges. Browser startup/embedded preview, existing-client migration and dock state regression tests remain applicable. Mobile lifecycle coverage uses Chromium emulation rather than a physical iPhone/Safari.
+
+Artifacts are outside the release under `/workspace/work/midnight-diner/v36/` and `v36-*.log`; the lamp preview is `v36-badge.png`.

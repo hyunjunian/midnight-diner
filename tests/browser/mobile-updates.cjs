@@ -6,13 +6,13 @@ const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
 const crypto=require('node:crypto'),assert=require('node:assert/strict');
 const E=require('../../docs/engine');
 const root=path.resolve(__dirname,'../../docs');
-const output=process.env.DINER_TEST_OUTPUT||'/workspace/work/midnight-diner/v35';
+const output=process.env.DINER_TEST_OUTPUT||'/workspace/work/midnight-diner/v36';
 const source=new Map();
 const read=file=>{if(!source.has(file))source.set(file,fs.readFileSync(path.join(root,file)));return source.get(file)};
 const current=read('sw.js').toString().match(/const RELEASE = '([^']+)'/)[1];
 const releases=[current,'20990101-v999-mobile-test','20990102-v1000-mobile-test'];
 const hash=body=>crypto.createHash('sha256').update(body).digest('hex');
-let phase=0,markerHold=null,coldIndexOnce=null;
+let phase=0,markerHold=null;
 const requests=[],failures=[],passes=[];
 const mime={'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.webmanifest':'application/manifest+json','.png':'image/png','.webp':'image/webp','.jpg':'image/jpeg','.svg':'image/svg+xml','.mp4':'video/mp4','.mp3':'audio/mpeg','.woff2':'font/woff2','.wav':'audio/wav'};
 function bodyFor(file,build){
@@ -36,10 +36,6 @@ const server=http.createServer(async(req,res)=>{
   const file=u.pathname.replace(/^\/midnight-diner\//,'')||'index.html';
   if(file.includes('..')){res.writeHead(403);return res.end()}
   let build=phase;
-  // Model a stale HTML shell restored at cold launch while marker/worker are new.
-  if(file==='index.html'&&coldIndexOnce!==null&&!u.searchParams.has('asset-rev')){
-    build=coldIndexOnce;coldIndexOnce=null;
-  }
   const entry={file,url:u.pathname+u.search,build,at:Date.now(),requestCache:req.headers['cache-control']||'',bytes:0};
   requests.push(entry);
   if(file==='version.json'&&markerHold)await markerHold.promise;
@@ -85,8 +81,10 @@ async function lifecycle(page,{hidden=true,persisted=true,duplicates=true}={}){
     if(duplicates)window.dispatchEvent(new Event('focus'));
   },{hidden,persisted,duplicates});
 }
-async function gateVisible(page){return page.evaluate(()=>document.documentElement.classList.contains('app-checking-update')&&document.querySelector('#app-update-gate')?.open)}
-async function gateGone(page){return page.evaluate(()=>!document.documentElement.classList.contains('app-checking-update')&&!document.querySelector('#app-update-gate')?.open)}
+async function quiet(page){
+  assert.equal(await page.locator('#app-update-gate').count(),0,'no checking dialog exists');
+  assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('app-checking-update')),false);
+}
 async function controllerIs(page,release){
   await until(()=>page.evaluate(release=>new Promise(resolve=>{
     const worker=navigator.serviceWorker?.controller;if(!worker)return resolve(false);
@@ -121,116 +119,109 @@ async function controllerIs(page,release){
     },fixture());
     holdMarker();
     await page.goto(url,{waitUntil:'domcontentloaded'});
-    await until(()=>gateVisible(page),'cold launch freshness gate');
-    assert.equal(await page.locator('#intro').evaluate(el=>el.open),false,'intro must wait for freshness');
-    assert.equal(await page.locator('#app').isVisible(),false,'old game must not flash');
-    await page.screenshot({path:path.join(output,'mobile-update-cold-gate.png')});
-    releaseMarker();
-    await page.locator('#intro').waitFor({state:'visible',timeout:30000});
+    await page.locator('#intro').waitFor({state:'visible'});
+    await quiet(page);
     await page.locator('#skip-intro').click();
-    await until(()=>gateGone(page),'cold gate dismissed');
-    await controllerIs(page,current);
-    assert.equal(await page.evaluate(()=>window.loadedMobileTestRelease),current);
     await page.locator('#cook-object').waitFor({state:'visible'});
-    pass('standalone cold launch blocks old UI and intro until an uncached version response');
+    await quiet(page);
+    pass('standalone cold launch and gameplay start immediately while the version request is held');
 
-    // Commit one real diagonal rice gesture, leaving this step partially complete.
-    const rect=await page.locator('#cook-object').boundingBox();
-    const start={x:rect.x+rect.width*.3,y:rect.y+rect.height*(.35+.4)/1.5};
-    const end={x:rect.x+rect.width*.72,y:rect.y+rect.height*(.7+.4)/1.5};
-    await page.mouse.move(start.x,start.y);await page.mouse.down();
-    await page.mouse.move(end.x,end.y,{steps:12});await page.mouse.up();
-    await until(async()=>/1주걱/.test(await page.locator('.action-counter').innerText()),'one rice scoop');
+    async function scoop(){
+      const rect=await page.locator('#cook-object').boundingBox();
+      const start={x:rect.x+rect.width*.3,y:rect.y+rect.height*(.35+.4)/1.5};
+      const end={x:rect.x+rect.width*.72,y:rect.y+rect.height*(.7+.4)/1.5};
+      await page.mouse.move(start.x,start.y);await page.mouse.down();
+      await page.mouse.move(end.x,end.y,{steps:12});await page.mouse.up();
+    }
+    await scoop();
+    await until(async()=>/1주걱/.test(await page.locator('.action-counter').innerText()),'one rice scoop during held request');
+    releaseMarker();await controllerIs(page,current);
     const before=await page.evaluate(()=>({n:sessionStorage.mobileTestNavigations,intros:window.mobileTestIntroOpens,save:JSON.parse(localStorage.getItem('midnight-diner-save-v11'))}));
 
-    // An already-open modal must also be covered by the blocking update gate.
-    await page.evaluate(()=>document.querySelector('#settings-dialog').showModal());
+    await page.locator('#settings-open').evaluate(el=>el.click());
     const rapidStart=Date.now();
     for(let n=0;n<2;n++){
       const count=requests.filter(r=>r.file==='version.json').length;
       holdMarker();await lifecycle(page);
-      await until(()=>gateVisible(page),'foreground blocking gate');
       await until(()=>requests.filter(r=>r.file==='version.json').length>count,'fresh foreground marker');
-      const top=await page.evaluate(()=>{const el=document.elementFromPoint(innerWidth/2,innerHeight/2);return el?.id==='app-update-gate'||!!el?.closest('#app-update-gate')});
-      assert.equal(top,true,'update gate must block the pre-existing settings dialog');
-      if(n===0)await page.screenshot({path:path.join(output,'mobile-update-modal-gate.png')});
-      releaseMarker();await until(()=>gateGone(page),'same-release foreground completes');
-      await delay(150);
-      assert.equal(requests.filter(r=>r.file==='version.json').length,count+1,'one return must coalesce visibility/pageshow/focus events');
+      await quiet(page);
+      assert.equal(await page.locator('#settings-dialog').evaluate(el=>el.open),true);
+      const enabled=await page.locator('#music-toggle').getAttribute('aria-pressed');
+      await page.locator('#music-toggle').click();
+      assert.notEqual(await page.locator('#music-toggle').getAttribute('aria-pressed'),enabled,'settings stay interactive during check');
+      if(n===0)await page.screenshot({path:path.join(output,'quiet-return-settings.png')});
+      releaseMarker();await delay(200);
+      assert.equal(requests.filter(r=>r.file==='version.json').length,count+1,'duplicate return events coalesce');
       assert.equal(await page.evaluate(()=>sessionStorage.mobileTestNavigations),before.n);
       assert.equal(await page.evaluate(()=>window.mobileTestIntroOpens),before.intros);
-      assert.equal(await page.locator('#settings-dialog').evaluate(el=>el.open),true);
     }
-    assert.ok(Date.now()-rapidStart<15000,'rapid returns should exercise the removed 15 second throttle');
-    await page.evaluate(()=>document.querySelector('#settings-dialog').close());
-    pass('two rapid mobile returns each check once; duplicate events coalesce; same release preserves modal and never reloads/replays intro');
+    assert.ok(Date.now()-rapidStart<15000);
+    await page.locator('#settings-dialog [data-close]').click();
+    pass('rapid returns check silently once each; held requests leave settings interactive without navigation or intro replay');
 
-    const upgradeStart=requests.length;phase=1;holdMarker();
-    await lifecycle(page);await until(()=>gateVisible(page),'upgrade foreground gate');
-    assert.equal(await page.evaluate(()=>window.loadedMobileTestRelease),current,'running JS stays old behind the gate until atomic update is ready');
-    releaseMarker();
-    await until(()=>page.evaluate(release=>window.loadedMobileTestRelease===release,releases[1]),'automatic foreground upgraded JS',180000);
-    await until(()=>gateGone(page),'upgraded gate dismissed');
+    const upgradeStart=requests.length;phase=1;holdMarker();await lifecycle(page);
+    await quiet(page);
+    const elapsedBefore=await page.evaluate(()=>{MidnightApp.saveForUpdate();return JSON.parse(localStorage.getItem('midnight-diner-save-v11')).nightElapsedMs});
+    await scoop();
+    await until(async()=>/2주걱/.test(await page.locator('.action-counter').innerText()),'second rice scoop while update is pending');
+    await delay(900);
+    const elapsedAfter=await page.evaluate(()=>{MidnightApp.saveForUpdate();return JSON.parse(localStorage.getItem('midnight-diner-save-v11')).nightElapsedMs});
+    assert.ok(elapsedAfter-elapsedBefore>500,'game clock keeps advancing during held check');
+    releaseMarker();await controllerIs(page,releases[1]);await delay(250);
+    assert.equal(await page.evaluate(()=>window.loadedMobileTestRelease),current,'prepared update must not replace active cooking');
+    assert.match(await page.locator('.action-counter').innerText(),/2주걱/);
+    await quiet(page);
+    for(const file of ['assets/opening-visible-rain.mp4','assets/music-minamo-v29.mp3'])assert.equal(requests.slice(upgradeStart).filter(r=>r.file===file).length,0,'reuse unchanged media '+file);
+    pass('cooking gestures and clock continue during download; prepared worker never interrupts cooking or redownloads large media');
+
+    // A real app switch permits the prepared page replacement out of sight.
+    await page.evaluate(()=>{window.__testHidden=true;document.dispatchEvent(new Event('visibilitychange'))});
+    await until(()=>page.evaluate(release=>window.loadedMobileTestRelease===release,releases[1]),'prepared update applied in background',30000);
     await page.locator('#cook-object').waitFor({state:'visible'});
-    assert.equal(await page.locator('#intro').evaluate(el=>el.open),false,'foreground upgrade must resume without intro');
+    await quiet(page);
+    assert.equal(await page.locator('#intro').evaluate(el=>el.open),false);
     assert.equal(await page.evaluate(()=>window.mobileTestIntroOpens),0);
     assert.equal(await page.locator('#money').innerText(),'¥54,321');
-    assert.match(await page.locator('.action-counter').innerText(),/1주걱 \/ 3주걱/,'partial cooking gesture must survive updated reload');
+    assert.match(await page.locator('.action-counter').innerText(),/2주걱 \/ 3주걱/);
     const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('midnight-diner-save-v11')));
-    assert.equal(after.kitchen.step,before.save.kitchen.step);
     assert.deepEqual(after.inventory,before.save.inventory);
-    const upgradeRequests=requests.slice(upgradeStart);
-    for(const file of ['assets/opening-visible-rain.mp4','assets/music-minamo-v29.mp3'])assert.equal(upgradeRequests.filter(r=>r.file===file).length,0,'unchanged cached media must be reused: '+file);
-    await page.screenshot({path:path.join(output,'mobile-update-resumed-cooking.png')});
-    pass('foreground alone atomically loads changed JavaScript, preserves funds/inventory/one partial scoop, skips intro, and reuses unchanged large media');
-
-    // iOS can restore a frozen page using pageshow without a visibility transition.
-    phase=2;
-    await lifecycle(page,{hidden:false,persisted:true,duplicates:false});
-    await until(()=>page.evaluate(release=>window.loadedMobileTestRelease===release,releases[2]),'pageshow-only automatic update',180000);
-    await until(()=>gateGone(page),'pageshow restored gate dismissed');
-    assert.equal(await page.locator('#intro').evaluate(el=>el.open),false);
-    assert.match(await page.locator('.action-counter').innerText(),/1주걱 \/ 3주걱/);
-    pass('persisted pageshow alone detects and applies a newer build with no manual refresh');
-
-    // A stale shell can be returned before the first intro has launched. Its
-    // initial update must retain the last session's separate cooking checkpoint.
-    const coldNavigation=Number(await page.evaluate(()=>sessionStorage.mobileTestNavigations));
-    coldIndexOnce=1;
-    await page.goto(url,{waitUntil:'domcontentloaded'});
-    await until(()=>page.evaluate(({release,count})=>window.loadedMobileTestRelease===release&&Number(sessionStorage.mobileTestNavigations)>=count+2,{release:releases[2],count:coldNavigation}),'cold stale shell automatically replaced before intro',30000);
-    await until(()=>gateGone(page),'cold initial update completes');
-    if(await page.locator('#intro').evaluate(el=>el.open))await page.locator('#skip-intro').click();
-    await page.locator('#cook-object').waitFor({state:'visible'});
-    assert.match(await page.locator('.action-counter').innerText(),/1주걱 \/ 3주걱/,'initial upgrade before launch must not overwrite saved cooking checkpoint');
-    assert.equal(await page.locator('#money').innerText(),'¥54,321');
-    pass('cold stale shell updates before intro without overwriting the previous partial cooking checkpoint');
+    await page.screenshot({path:path.join(output,'quiet-update-resumed-cooking.png')});
+    pass('prepared background replacement preserves two partial scoops, funds and inventory without intro replay');
 
     await context.setOffline(true);
     const offlineNavigation=await page.evaluate(()=>sessionStorage.mobileTestNavigations);
-    await lifecycle(page);await until(()=>gateGone(page),'offline foreground fallback',30000);
+    await lifecycle(page);await delay(250);await quiet(page);
     assert.equal(await page.evaluate(()=>sessionStorage.mobileTestNavigations),offlineNavigation);
-    assert.equal(await page.evaluate(()=>window.loadedMobileTestRelease),releases[2]);
-    assert.match(await page.locator('.action-counter').innerText(),/1주걱 \/ 3주걱/);
-    pass('offline return releases freshness gate and resumes the cached build without losing cooking progress');
-
-    // This navigation represents closing/reopening the installed app offline;
-    // upgrades above were applied exclusively by production lifecycle handlers.
+    assert.match(await page.locator('.action-counter').innerText(),/2주걱/);
+    // This navigation represents app close/reopen, never applying an upgrade.
     await page.goto(url,{waitUntil:'domcontentloaded'});
-    await until(()=>gateGone(page),'offline cold reopen freshness fallback',30000);
-    if(await page.locator('#intro').evaluate(el=>el.open))await page.locator('#skip-intro').click();
-    await page.locator('#cook-object').waitFor({state:'visible'});
-    assert.equal(await page.evaluate(()=>window.loadedMobileTestRelease),releases[2]);
+    await page.locator('#intro').waitFor({state:'visible'});await page.locator('#skip-intro').click();
+    await page.locator('#cook-object').waitFor({state:'visible'});await quiet(page);
     assert.equal(await page.locator('#money').innerText(),'¥54,321');
-    assert.match(await page.locator('.action-counter').innerText(),/1주걱 \/ 3주걱/,'offline cold reopen retains partial cooking');
-    assert.equal(await page.evaluate(async()=>(await fetch('assets/opening-visible-rain.mp4',{headers:{Range:'bytes=4-31'}})).status),206);
-    assert.equal(await page.evaluate(async()=>(await fetch('assets/music-minamo-v29.mp3',{headers:{Range:'bytes=4-31'}})).status),206);
-    const reopenedNavigation=await page.evaluate(()=>sessionStorage.mobileTestNavigations);
-    await delay(750);
-    assert.equal(await page.evaluate(()=>sessionStorage.mobileTestNavigations),reopenedNavigation,'offline cold reopen must not loop');
-    assert.equal(await gateGone(page),true);
-    pass('offline cold app reopen preserves funds/partial scoop, completes freshness gate without a loop, and serves cached MP4/MP3 byte ranges');
+    assert.match(await page.locator('.action-counter').innerText(),/2주걱 \/ 3주걱/);
+    for(const file of ['assets/opening-visible-rain.mp4','assets/music-minamo-v29.mp3'])assert.equal(await page.evaluate(async file=>(await fetch(file,{headers:{Range:'bytes=4-31'}})).status,file),206);
+    pass('offline returns and cold reopen remain immediately playable, retaining partial cooking and cached media ranges');
     await context.setOffline(false);
+    // An unoccupied prep screen may apply when its open dialog and input finish.
+    const idleContext=await browser.newContext({viewport:{width:393,height:852},isMobile:true,hasTouch:true});
+    const idle=await idleContext.newPage();idle.on('pageerror',error=>failures.push(error.message));
+    const workerDebug=await idleContext.newCDPSession(idle);await workerDebug.send('ServiceWorker.enable');
+    workerDebug.on('ServiceWorker.workerErrorReported',event=>console.error('Worker error',JSON.stringify(event)));
+    const prep=E.fresh();prep.money=54321;
+    await idle.addInitScript(saved=>{if(!sessionStorage.seeded){localStorage.setItem('midnight-diner-save-v11',JSON.stringify(saved));sessionStorage.seeded='1'}},prep);
+    await idle.goto(url,{waitUntil:'domcontentloaded'});await idle.locator('#skip-intro').click();
+    await controllerIs(idle,releases[1]);
+    await idle.locator('#settings-open').click();
+    phase=2;await idle.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
+    await controllerIs(idle,releases[2]);await quiet(idle);
+    assert.equal(await idle.evaluate(()=>window.loadedMobileTestRelease),releases[1]);
+    await idle.locator('#settings-dialog [data-close]').click();
+    await until(()=>idle.evaluate(release=>window.loadedMobileTestRelease===release,releases[2]),'automatic safe foreground update');
+    await idle.locator('#app').waitFor({state:'visible'});await quiet(idle);
+    assert.equal(await idle.locator('#intro').evaluate(el=>el.open),false);
+    assert.equal(await idle.locator('#money').innerText(),'¥54,321');
+    pass('pageshow prepares silently behind an open dialog, then applies automatically after closing and idle input');
+    await idleContext.close();
     assert.deepEqual(failures,[],'no uncaught browser errors');
     const markers=requests.filter(r=>r.file==='version.json');
     assert.ok(markers.length>=5);

@@ -1,9 +1,8 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
-  const standalone = () => navigator.standalone === true ||
-    ['standalone', 'fullscreen', 'minimal-ui'].some(mode => matchMedia(`(display-mode: ${mode})`).matches);
   let installPrompt = null, registration = null;
+  const watched=new WeakSet();
   function installGuide() {
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const safari = /Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Edg|CriOS/.test(navigator.userAgent);
@@ -32,34 +31,20 @@
   const app = window.MidnightApp;
   const appURL=document.baseURI||location.href;
   const newer = (a,b) => typeof a === 'string' && a.localeCompare(b,'en',{numeric:true}) > 0;
-  let launched=false,started=false,applying=false,pendingRelease='',flight=null,epoch=0,needsForeground=false,lastForegroundAt=0;
+  let launched=false,started=false,applying=false,pendingRelease='',readyRelease='',flight=null,epoch=0,needsForeground=false,lastForegroundAt=0;
+  let lastInteraction=Date.now(),leaving=false;
+  const pressedPointers=new Set(),pressedKeys=new Set();
   const params=new URL(location.href).searchParams;
   let resume=params.get('resume-update')==='1';
   if(params.has('app-update')||params.has('resume-update')){
     const clean=new URL(location.href);clean.searchParams.delete('app-update');clean.searchParams.delete('resume-update');
     history.replaceState(null,'',clean);
   }
-  function cover(){
-    document.documentElement.classList.add('app-checking-update');
-    app.setUpdatePaused(true);
-    const gate=$('app-update-gate');
-    if(!gate.open)gate.showModal();
-    $('app-update-message').textContent='최신 화면을 확인하고 있어요…';
-    $('app-update-retry').hidden=true;$('app-update-offline').hidden=true;
+  function launch(){
+    if(launched)return;
+    launched=true;
+    if(resume)app.resumeAfterUpdate();else app.launch();
   }
-  function uncover(){
-    if(document.hidden||applying)return;
-    if(!launched){launched=true;if(resume)app.resumeAfterUpdate();else app.launch();}
-    $('app-update-gate').close();document.documentElement.classList.remove('app-checking-update');
-    app.setUpdatePaused(false);
-  }
-  function failure(message){
-    $('app-update-message').textContent=message;
-    $('app-update-retry').hidden=false;$('app-update-offline').hidden=false;
-  }
-  $('app-update-gate').addEventListener('cancel',event=>event.preventDefault());
-  $('app-update-retry').addEventListener('click',()=>foreground(true));
-  $('app-update-offline').addEventListener('click',uncover);
   function readRelease(worker){
     if(!worker||typeof MessageChannel==='undefined')return Promise.resolve('');
     return new Promise(resolve=>{
@@ -84,6 +69,7 @@
   }
   function watch(reg){
     registration=reg;
+    if(watched.has(reg))return reg;watched.add(reg);
     const prepared=()=>{$('offline-status').textContent='인트로와 게임이 저장됐어요. 오프라인으로 실행할 수 있어요.';$('install-status').textContent='오프라인 실행 준비 완료';};
     if(reg.active?.state==='activated')prepared();
     const inspect=()=>{
@@ -123,68 +109,68 @@
     }
     throw new Error('install');
   }
-  function navigate(release){
-    if(document.hidden)return;
-    if(app.saveForUpdate()===false){failure('진행을 저장하지 못했어요. 저장 공간을 확인한 뒤 다시 시도해 주세요.');return;}
+  function applyPreparedUpdate(){
+    if(leaving||!newer(readyRelease,currentRelease)||applying||!launched||$('app').hidden)return;
+    // A prepared shell can replace a background page without touching its next
+    // visible frame. Foreground play waits for cooking, dialogs and input to end.
+    if(!document.hidden&&(app.isCooking()||document.querySelector('dialog[open]')||
+      app.canApplyUpdate?.()===false||pressedPointers.size||pressedKeys.size||Date.now()-lastInteraction<1500))return;
+    if(app.saveForUpdate()===false)return; // Keep playing; retry later without UI.
     applying=true;
-    const url=new URL('./',appURL);url.searchParams.set('app-update',release);
-    if(launched&&!$('app').hidden||resume)url.searchParams.set('resume-update','1');
+    const url=new URL('./',appURL);url.searchParams.set('app-update',readyRelease);
+    url.searchParams.set('resume-update','1');
     location.replace(url.href);
   }
-  async function checkForeground(checkEpoch){
+  async function checkForeground(){
     const marker=await latestRelease();
     const active=await readRelease(navigator.serviceWorker?.controller);
     let target=currentRelease;
     for(const candidate of [marker,active,pendingRelease])if(newer(candidate,target))target=candidate;
-    if(checkEpoch!==epoch||document.hidden)return;
     if(newer(target,currentRelease)){
-      $('app-update-message').textContent='새 화면을 준비하고 있어요…';
-      try{const ready=await ensureRelease(target);if(checkEpoch===epoch&&!document.hidden)navigate(ready);}
-      catch{if(checkEpoch===epoch&&!document.hidden)failure('새 버전을 준비하지 못했어요. 연결과 저장 공간을 확인한 뒤 다시 시도해 주세요.');}
-    }else{
-      // An unavailable network marker must never prevent installed offline play.
-      uncover();
-      register(currentRelease);
-    }
+      pendingRelease=target;
+      try{const ready=await ensureRelease(target);if(newer(ready,readyRelease))readyRelease=ready;applyPreparedUpdate();}
+      catch{} // Failed/slow/offline updates never interrupt the running game.
+    }else register(currentRelease);
   }
   function foreground(force=false){
     if(!started||document.hidden||applying)return;
     const now=Date.now();
     if(!force&&!needsForeground&&now-lastForegroundAt<500)return flight;
-    needsForeground=false;lastForegroundAt=now;cover();
+    needsForeground=false;lastForegroundAt=now;
     if(flight)return flight;
     const checkEpoch=epoch;
-    flight=checkForeground(checkEpoch).catch(()=>failure('화면을 준비하지 못했어요. 다시 시도해 주세요.')).finally(()=>{
+    flight=checkForeground().catch(()=>{}).finally(()=>{
       flight=null;if(!document.hidden&&!applying&&checkEpoch!==epoch)foreground(true);
     });
     return flight;
   }
   function background(){
     if(!started)return;
-    epoch++;needsForeground=true;cover();app.saveForUpdate();
+    epoch++;needsForeground=true;pressedPointers.clear();pressedKeys.clear();app.saveForUpdate();applyPreparedUpdate();
   }
-  function start(){if(started)return flight;started=true;return foreground(true);}
+  function start(){if(started)return flight;started=true;launch();return foreground(true);}
   window.MidnightPWA={start};
   document.addEventListener('visibilitychange',()=>document.hidden?background():foreground());
-  window.addEventListener('pagehide',background);
-  window.addEventListener('pageshow',event=>{if(event.persisted){if(!flight)needsForeground=true;foreground();}});
+  window.addEventListener('pagehide',()=>{leaving=true;app.saveForUpdate();});
+  window.addEventListener('pageshow',event=>{leaving=false;if(event.persisted){if(!flight)needsForeground=true;foreground();}});
   window.addEventListener('focus',()=>foreground());
   window.addEventListener('online',()=>foreground(true));
-  // Updates found while actively playing wait for a safe pause. Returning to the
-  // app is always a foreground check, including cooking and already-open dialogs.
-  function applyIdle(){
-    if(!newer(pendingRelease,currentRelease)||flight||applying||document.hidden||!launched||$('app').hidden||app.isCooking()||document.querySelector('dialog[open]'))return;
-    foreground(true);
-  }
+  // Input tracking prevents a background download from replacing a page under a
+  // finger or keyboard action. There is no checking overlay or checking pause.
+  document.addEventListener('pointerdown',event=>{pressedPointers.add(event.pointerId);lastInteraction=Date.now();},true);
+  for(const type of ['pointerup','pointercancel'])document.addEventListener(type,event=>{pressedPointers.delete(event.pointerId);lastInteraction=Date.now();},true);
+  document.addEventListener('keydown',event=>{pressedKeys.add(event.code||event.key);lastInteraction=Date.now();},true);
+  document.addEventListener('keyup',event=>{pressedKeys.delete(event.code||event.key);lastInteraction=Date.now();},true);
   navigator.serviceWorker?.addEventListener('message',event=>{
     if(event.data?.type!=='APP_UPDATED'||!newer(event.data.release,currentRelease))return;
-    pendingRelease=event.data.release;setTimeout(applyIdle,0);
+    pendingRelease=event.data.release;foreground(true);
   });
   navigator.serviceWorker?.addEventListener('controllerchange',async()=>{
     const release=await readRelease(navigator.serviceWorker.controller);
-    if(newer(release,currentRelease)){pendingRelease=release;applyIdle();}
+    if(newer(release,currentRelease)){pendingRelease=release;foreground(true);}
   });
-  document.addEventListener('close',applyIdle,true);document.addEventListener('midnight:kitchen',applyIdle);
+  document.addEventListener('close',applyPreparedUpdate,true);document.addEventListener('midnight:kitchen',applyPreparedUpdate);
+  setInterval(applyPreparedUpdate,1000);
   $('update-app').addEventListener('click',()=>foreground(true));
   setInterval(async()=>{
     if(!document.hidden&&registration)try{await registration.update();}catch{}

@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261109-v35-mobile-refresh';
+const RELEASE = '20261109-v36-quiet-refresh';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -372,10 +372,10 @@ const FILE_HASHES = {
   "assets/workbench-v33.webp": "6b118e1fc369542c1c52054c43167761138588ec02fb5c7896744697b4650b87",
   "assets/stove-background-v33.webp": "8107a9738cf2e41b826dede1e586e3469e0e778e5b31e948f14dc21ff5c44e9f",
   "mobile-layout-v33.css": "1579fabef83f00a74f7ec3a451e20dc2ab16fb7ddbc808f0640106cd8b387729",
-  "wood-ui-v35.css": "99d6cc6aa96dacf4859734b2ccedba6d786d210e1a4e2eed88442503d8c47037",
+  "wood-ui-v35.css": "89462d4e84e4abd2d1b7e8faaec4e0ec089e645ce788ff508245a96f3eb63454",
   "cooking-layout.js": "239b22acd06e880b4204d7a8a0bc15a47f4958c1cedfe509047da1b1e8c97dca",
   "dialogue-motion.js": "28bd7aba2c4a1d927236109b528d0148441977ccf017db84ddf4d94af9e2b1aa",
-  "index.html": "a122d513f567c704d0eb8727fc42d890549ffde9b5a7d177ec239a0224bfeb11",
+  "index.html": "93bb4cd66c6951832ea1108f2b195c0a226c6b7d6c3eb30e777c68282604210b",
   "style.css": "5f447981dd9d0d91d1037c2b2c5b53a90cd79bbaf7f3c317f51b52b701a79e96",
   "customer.css": "3e2b3d4fc4781651d11c9c887d87ae45ea12fe01dec75cf591f9a99b1775d880",
   "motion.css": "b0b20530ae8929d2e91b2b109df20038484fb654fba3ed8be2c3c58d5046df75",
@@ -412,9 +412,9 @@ const FILE_HASHES = {
   "assets/fonts/nanum-brush-script.woff2": "26a3e9787ec57ada7de18824ac0c8b728a8ed5f35a7457a88a1368a58facfe9a",
   "assets/fonts/OFL-NanumBrushScript.txt": "90f6a909ffb2af7f6422ea20042a26180fe5520cba80bbbf75a5e660320d7924",
   "cooking-rules.js": "b7340f3891601ea0a254aab42b36e48f81254a21ede64588164a3a51cc941b81",
-  "kitchen.js": "4aa60035d87095737b6ecf9b4767623e5e9dc3c2184543affddee959536fac8a",
+  "kitchen.js": "1581b18f28face69c7b84a263db81d77f132937627e46fbd1b91bf98639985d7",
   "audio.js": "aad17de5f9ff33747d555d7d19eab9957d4ce08a0d669bf7aa7043943adf41bd",
-  "music.js": "93f4743a141b2e005424d74f0e2bcb6029283dc0d0ec24465ff0960a4c293c7d",
+  "music.js": "70793ea6d4234c746fe743e448b6dfcb1328f7934c0254e1c0a180aa693739a9",
   "assets/music-minamo-v29.mp3": "4dfbbb4451a3af95def3e83feb63fef910ab6b69c86527f765126d27d277fae7",
   "assets/music-Minamo-LICENSE.txt": "3506d459d7c61d7ff78ed3f3e982515c946c5bc767b7a33115240b6fc48ff8b8",
   "furnishings.js": "04dbe02b7b55408e29876c44e35af50b45c21299b0748381db0633178123b931",
@@ -423,11 +423,11 @@ const FILE_HASHES = {
   "catalog.js": "fa5f93ed52cd38482aed7a7188fa12c63e6f304cb59813fa24a615d2a8f56af6",
   "stories.js": "000415984d1c791dc184bba686bd97d124031614dda6a0f6c6636df7a0c6ab0c",
   "engine.js": "a37f9a8e6bb1816473d77b9a48df061dccf570113107726f1085e514d381be22",
-  "game.js": "dd3137834c1d4986b9baf6f65ef6f0f0530f4355ac1387891c5be4cac3d7c853",
+  "game.js": "0bfde00d92997b62e05955c1ce54ec1f1b6de24a9b6e02643b2fe3dba86d06e7",
   "scene.js": "de2fd0d34a821918e9a1db4cfb72b9a8191daf0a4230c57986bf9dcbb0b902c4",
   "rain.js": "62e228a7a79c5c36537ef2b94d8805be363aa62af90bd849becebc83b9dc6731",
   "morph.js": "3717749af5436dda9d7398e2d08f1c84f6b17846c6c09e676536b6751efb20ef",
-  "pwa.js": "4f5a2e7c7419f6a7a232bc8dd0225b96d406d31eaf5ee676e0afcad680acc71d",
+  "pwa.js": "eb693cdcde0e0e905cfbc3e545f0ca12b7acd20a62fa73dbfa9adb82caac97b0",
   "manifest.webmanifest": "bfc50819ed617ac5d80e52147d5c622ed5d603bdbc47a4305e21aa9518eee2f6",
   "assets/visitors-a.webp": "08e89e5b02b98d4b84ddc2b23f2e3b125c950070ba6c6f2841f8427a84a173c9",
   "assets/visitors-b.webp": "3f73fce661107d56ec552b93081af5b48f51701fc9fc91473036400a28fbcb83",
