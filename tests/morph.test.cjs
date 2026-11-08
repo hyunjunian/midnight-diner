@@ -1,6 +1,6 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');const M=require('../docs/morph.js');
 test('one connected mesh remains continuous and never folds across idle, speech, walking and cooking',()=>{
- for(const person of [0,3,6,15,23]){const m=M.mesh(person);for(const state of [{},{cook:1},{walk:1},{cook:1,walk:1}])for(const t of [0,.37,1.1,3.3,8.2]){
+ for(const person of [0,3,6,15,23]){const m=M.mesh(person);for(const state of [{},{cook:1},{walk:1},{cook:1,walk:1},{eat:1}])for(const t of [0,.37,1.1,3.3,8.2]){
   const v=M.deform(m,t,state);assert.ok(v.every(Number.isFinite));
   for(let i=0;i<m.indices.length;i+=3){const a=m.indices[i]*4,b=m.indices[i+1]*4,c=m.indices[i+2]*4;const area=(v[b]-v[a])*(v[c+1]-v[a+1])-(v[b+1]-v[a+1])*(v[c]-v[a]);assert.ok(area>0,'no inverted / detached triangles');}
   const next=M.deform(m,t+.001,state);assert.ok(Math.max(...next.map((n,i)=>Math.abs(n-v[i])))<.001,'no temporal jump');

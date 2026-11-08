@@ -5,7 +5,7 @@
   const slots={
     lantern:{rect:[48.5,3.2,6.6,16],place:'중앙의 기존 천장등',light:true},
     plants:{rect:[44,48,22,15.5],place:'입구 왼쪽의 바닥',tile:1,box:[.013,.057,.969,.951]},
-    ceramics:{rect:[10.5,29.8,10,8.1],place:'왼쪽 수납장 안의 빈 선반',tile:2,box:[.016,.348,.982,.738]},
+    ceramics:{rect:[9.7,38.5,10.5,7.7],place:'냉장고 옆 기존 찬장의 가운데 선반',surface:true},
     noren:{rect:[63,25.5,34,15.8],place:'출입문 위의 나무 봉',tile:3,box:[.034,.207,.979,.789]},
     bonsai:{rect:[35.5,43,9.7,15.5],place:'창 아래 작업대 왼쪽',tile:4,box:[.026,.127,.964,.871]},
     bench:{rect:[58,63.1,36,10],place:'입구 오른쪽의 평평한 길가',tile:5,box:[0,.410,1,.781]},
@@ -22,6 +22,7 @@
   function decoration(id){
     const slot=slots[id];
     if(slot.light)return '<span class="fixture-light" aria-hidden="true"></span>';
+    if(slot.surface)return '<span class="ceramics-surface" role="img" aria-label="기존 나무 선반에 놓인 손으로 빚은 그릇"></span>';
     if(slot.fridge)return '<span class="fridge-patch" role="img" aria-label="깨끗한 아이보리 냉장고"></span>';
     const [x,y,right,bottom]=slot.box,w=right-x,h=bottom-y,n=slot.tile;
     return `<span class="prop-crop"><span class="prop-art" role="img" aria-label="${MidnightEngine.upgrades[id].name}" style="left:${-x/w*100}%;top:${-y/h*100}%;width:${100/w}%;height:${100/h}%;background-image:url('./assets/${slot.growth?'decor-growth':'decor-real'}.webp');--prop-x:${n%4*100/3}%;--prop-y:${Math.floor(n/4)*100}%"></span></span>`;

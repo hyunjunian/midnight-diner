@@ -1,0 +1,107 @@
+/* Conversations remain at the table; preparation lives in a separate full-screen kitchen. */
+.guest-dialog {position:fixed;inset:auto 0 0;margin:0 auto;width:min(100%,530px);max-width:100%;max-height:94dvh;overflow:visible;border:0;padding:0;background:transparent;color:#f4e5c9;box-shadow:none;}
+.guest-dialog::backdrop {background:#08191c80;backdrop-filter:blur(1px);}
+.talk-close {position:absolute;right:15px;top:-40px;z-index:3;width:34px;height:34px;border:1px solid #e2cb9d66;border-radius:50%;padding:0;color:#f4dec0;background:#192e30;font-size:24px;}
+.talk-portrait {position:relative;width:150px;height:200px;margin:0 0 -3px 20px;pointer-events:none;overflow:hidden;filter:drop-shadow(0 -8px 30px #e0a65c24);}
+.talk-portrait .actor {position:absolute;inset:0;width:100%;height:100%;}
+.talk-card {position:relative;padding:22px 24px calc(22px + env(safe-area-inset-bottom));border:1px solid #ba9c6c;border-bottom:0;border-radius:24px 24px 0 0;background:linear-gradient(120deg,#213c3d,#12292d);box-shadow:0 -6px 50px #0004;}
+.talk-card>.eyebrow {font-size:8px;color:#c7ad7d;letter-spacing:2px;}
+#talk-name {font:25px var(--serif);color:#fae8c8;margin:6px 0 5px;}#talk-name small {font:10px var(--sans);color:#d7b273;border:1px solid #ac946b;padding:3px 7px;border-radius:10px;vertical-align:middle;}
+#talk-profile {font:11px/1.7 var(--sans);color:#c4c7ad;margin:0;}#talk-regular {font:9px/1.5 var(--sans);color:#9ba997;margin:5px 0 14px;}
+.talk-speech {position:relative;padding:18px 18px 26px;background:#f9efdb;color:#435341;border-radius:3px 18px 18px 18px;min-height:95px;}
+.talk-speech::before {content:'';position:absolute;width:14px;height:14px;background:#f9efdb;top:-6px;left:26px;transform:rotate(45deg);}
+#talk-line {position:relative;font:16px/1.8 var(--serif);margin:0;white-space:pre-line;}#talk-progress {position:absolute;right:14px;bottom:8px;font-size:10px;color:#999477;}
+.talk-order {display:flex;align-items:center;gap:15px;margin:13px 0;background:#0e222655;border:1px solid #c8af7755;padding:9px 15px;border-radius:12px;}
+.talk-order .food-art {width:47px;flex-shrink:0;}.talk-order>span:last-child {font-size:14px;color:#eddbb6;}.talk-order small {display:block;font-size:10px;color:#aeb6a1;margin-top:5px;}
+#talk-gift {display:block;width:100%;margin-top:10px;background:#3c5145;border-color:#778461;color:#e6d4ae;font-size:11px;}
+#talk-next {width:100%;min-height:51px;margin-top:16px;border-radius:15px;font-size:14px;}
+#talk-next:disabled {font-size:11px;}
+.resume-kitchen {position:fixed;left:50%;bottom:calc(290px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9;padding:9px 16px;background:#eed19e;color:#314440;box-shadow:0 4px 15px #0004;border-radius:25px;font-size:11px;white-space:nowrap;}
+.kitchen-screen {position:fixed;inset:0;z-index:20;background:#1c201c var(--kitchen-image,url('./assets/kitchen-room.webp')) center/cover no-repeat;isolation:isolate;color:#f5e4c4;overflow:hidden;display:flex;flex-direction:column;}
+.kitchen-screen[hidden],.guest-dialog [hidden],.kitchen-screen [hidden],.served-dish[hidden],.customer-payment[hidden],.dining-chopsticks[hidden],.resume-kitchen[hidden] {display:none!important;}
+.in-kitchen>.restaurant {display:none;}
+.kitchen-screen::before {content:'';position:absolute;inset:0;background:linear-gradient(#0c202473,transparent 35%,#151b18c9);z-index:-1;}
+.kitchen-header {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(15px + env(safe-area-inset-top)) 17px 14px;flex-shrink:0;background:#11282cec;border-bottom:1px solid #d8b7794d;z-index:4;}
+.kitchen-header>button {padding:8px 12px;background:#294042;color:#e3d3b4;border-color:#65756a;border-radius:22px;font-size:11px;white-space:nowrap;}
+.kitchen-header>div {flex:1;min-width:0;}.kitchen-header span {font-size:9px;letter-spacing:.5px;color:#b9c2a8;}.kitchen-header h2 {font:17px var(--serif);margin:5px 0 0;color:#f5dfb3;}.kitchen-header>#kitchen-step-count {font-size:11px;white-space:nowrap;}
+#kitchen-content {position:relative;flex:1;min-height:0;overflow:auto;scrollbar-width:thin;}
+#kitchen-footer {flex-shrink:0;position:relative;background:#12282ded;border-top:1px solid #b89e6955;padding:12px 20px calc(15px + env(safe-area-inset-bottom));max-height:36dvh;overflow:auto;}
+#kitchen-footer>p {font-size:11px;line-height:1.7;text-align:center;color:#c2c6ac;margin:3px 0 10px;}#kitchen-footer>.primary {width:100%;min-height:46px;border-radius:13px;padding:12px;font-size:14px;}
+#kitchen-footer button:disabled {opacity:.5;}
+.kitchen-room-art {position:relative;width:100%;height:100%;min-height:400px;background:var(--kitchen-image,url('./assets/kitchen-room.webp')) center/100% 100% no-repeat;}
+.room-task {position:absolute;left:7%;right:7%;top:4%;padding:15px 18px;background:#142b2edf;border:1px solid #d9b87788;border-radius:16px;text-align:center;box-shadow:0 5px 30px #0003;}
+.room-task small {display:block;font-size:10px;color:#d4b77f;letter-spacing:2px;}.room-task b {display:block;font:20px var(--serif);margin:7px 0;color:#f6e5c6;}.room-task span {display:block;font-size:11px;color:#b4c4b0;}
+.room-hotspot {position:absolute;background:transparent;border:1px solid transparent;border-radius:18px;padding:0;box-shadow:none;}
+.room-hotspot span {position:absolute;left:50%;bottom:0;transform:translate(-50%,50%);padding:8px 15px;background:#193438e6;color:#eed8ac;border:1px solid #b19b6a88;border-radius:24px;font-size:12px;white-space:nowrap;}
+.hotspot-fridge {left:1%;top:25%;width:29%;height:49%;}.hotspot-stove {left:32%;top:46%;width:38%;height:13%;}.hotspot-rice {left:76%;top:42%;width:21%;height:11%;}.hotspot-board {left:62%;top:56%;width:37%;height:13%;}
+.station-next {border:2px solid #ffdd93;box-shadow:inset 0 0 25px #f2cc5d22,0 0 15px #edb95155;animation:station-call 2s ease-in-out infinite;}.station-next span {background:#e7c087;color:#314139;font-weight:700;}
+@keyframes station-call {50%{box-shadow:inset 0 0 35px #f2cc5d33,0 0 30px #edb95188;border-color:#fff0c8}}
+.fridge-view {position:relative;min-height:100%;display:flex;align-items:center;flex-direction:column;padding:8px 0 0;background:#1e2c28;}
+.fridge-tabs {display:flex;gap:10px;justify-content:center;flex-shrink:0;margin-bottom:5px;}.fridge-tabs button {font-size:11px;padding:8px 14px;background:#354b45;color:#f3dfb6;border:1px solid #ad9a73;border-radius:20px;}
+.fridge-cabinet {position:relative;width:min(100%,calc((100dvh - 290px)*.563));min-width:245px;aspect-ratio:941/1672;flex-shrink:0;perspective:800px;}
+.fridge-cabinet>img {display:block;width:100%;height:100%;}.fridge-cabinet.upgraded>img {filter:brightness(1.08) saturate(.8);}
+.fridge-door {position:absolute;left:9%;width:82%;padding:0;border:0;border-radius:5px;background-image:url('./assets/fridge-closed.webp');background-repeat:no-repeat;transform-origin:left center;transition:transform .65s cubic-bezier(.25,.6,.25,1),filter .65s;z-index:3;box-shadow:none;}
+.door-freezer {top:9.5%;height:28.5%;background-size:121.9512% 350.8772%;background-position:50% 13.2867%;}
+.door-fridge {top:38.5%;height:53%;background-size:121.9512% 188.6792%;background-position:50% 81.9149%;}
+.freezer-open .door-freezer,.fridge-open .door-fridge {transform:rotateY(-105deg);filter:brightness(.68);pointer-events:none;}
+.shelf-items {position:absolute;inset:0;pointer-events:none;}.shelf-items button {pointer-events:auto;}.freezer-items {z-index:1;}.fridge-items {z-index:1;}
+.shelf-items[inert] button {pointer-events:none;}
+.stored-ingredient {position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;width:17%;height:9%;padding:0;border:1px solid transparent;background:transparent;border-radius:8px;overflow:visible;color:#334d40;}
+.stored-ingredient .food-art {width:86%;height:auto;max-height:77%;filter:drop-shadow(0 3px 1px #27372f44);}
+.stored-ingredient b {position:absolute;bottom:-6px;background:#f4efdbdf;color:#486050;border-radius:8px;padding:2px 4px;font-size:8px;font-weight:500;white-space:nowrap;}
+.stored-ingredient small {position:absolute;top:0;right:0;background:#213e38dc;color:#f1e5bc;padding:2px 4px;font-size:8px;border-radius:6px;}
+.stored-ingredient.empty-stock .food-art {opacity:.18;filter:grayscale(1);}.stored-ingredient.stock-required {border-color:#91a47b;}.stored-ingredient.stock-selected {border:2px solid #5a8359;background:#90a56233;box-shadow:0 0 11px #9cba6b55;}
+.fridge-pages {display:flex;gap:8px;margin:4px 0 8px;}.fridge-pages button {background:#3b5146;color:#ead9b8;border-color:#768667;font-size:10px;padding:5px 10px;}
+.stock-inspector {display:flex;gap:10px;align-items:center;justify-content:space-between;margin:0 0 10px;font-size:12px;color:#f0d6a6;}.stock-inspector button {background:#526b4f;color:#f3e4c3;border-color:#879976;font-size:11px;padding:8px 10px;}
+.needed-ingredients {display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:1px 0 8px;}.needed-ingredients span {font-size:10px;padding:5px 9px;border:1px solid #768373;border-radius:14px;color:#b7c1aa;}.needed-ingredients .ready {color:#f9e9bc;border-color:#c5bd79;background:#5e704944;}
+.fridge-locked {margin-top:9px;font-size:10px;color:#a8b79e;}.fridge-locked summary {cursor:pointer;}.fridge-locked>span {display:inline-block;margin:6px 6px 0 0;background:#263c37;padding:5px;border-radius:5px;}.neighbor-help {display:block;margin:5px auto 10px;background:#425c48;color:#eedfbc;border-color:#87966d;padding:6px 12px;font-size:10px;}
+.process-view {position:relative;min-height:100%;padding:22px 0 12px;background:linear-gradient(#172c2be6,#3b291ba6),var(--kitchen-image,url('./assets/kitchen-room.webp')) center 58%/cover;display:flex;flex-direction:column;}
+.process-heading {text-align:center;padding:0 25px;}.process-heading>span {font-size:10px;letter-spacing:1px;color:#d2b889;}.process-heading h3 {font:26px var(--serif);color:#f5e3bc;margin:9px 0;}.process-heading p {font:12px/1.8 var(--sans);color:#c4c8ad;max-width:360px;margin:0 auto;}
+.prep-scene {position:relative;width:100%;max-width:520px;margin:10px auto 0;aspect-ratio:1.3;flex-shrink:0;background:radial-gradient(ellipse at 50% 82%,#af82432b,transparent 65%);overflow:hidden;}
+.cook-object {position:absolute;inset:0;width:100%;height:100%;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none;touch-action:none;-webkit-tap-highlight-color:transparent;}
+.tool-art {display:block;position:absolute;width:100%;aspect-ratio:1;background-image:var(--tool-file);background-size:400% var(--tool-rows);background-position:var(--tool-x) var(--tool-y);background-repeat:no-repeat;pointer-events:none;clip-path:inset(1%);}
+.cook-object>.tool-art {left:15%;top:2%;width:70%;}.prep-scene.lid .cook-object>.tool-art {width:73%;left:13.5%;top:1%;}
+.portion-pot {position:absolute;width:68%;left:-3%;top:-4%;aspect-ratio:1;}.portion-pot>.tool-art {width:100%;}.portion-bowl {position:absolute;width:48%;right:1%;bottom:0;aspect-ratio:1;}.portion-rice {position:absolute;width:70%;left:2%;top:3%;aspect-ratio:1;transform-origin:50% 70%;}.scoop-flight {position:absolute;left:30%;top:40%;width:40%;aspect-ratio:1;opacity:0;pointer-events:none;}
+.shaping-rice {left:25%!important;top:23%!important;width:50%!important;}.shaping-hands {position:absolute;inset:0;}.shaping-hands>.tool-art {width:95%;left:2.5%;top:2%;}
+.wrapping-rice {left:25%!important;top:13%!important;width:50%!important;}.wrapping-nori {position:absolute;width:28%;aspect-ratio:1;left:5%;top:38%;transition:left .5s,top .5s,transform .5s;}.wrapping-nori.wrapped {left:37%;top:29%;transform:scale(.75);}
+.oil-cruet {position:absolute;right:2%;top:3%;width:27%;aspect-ratio:1;padding:0;border:0;background:transparent;}.oil-cruet span:last-child:not(.tool-art) {position:absolute;bottom:-7px;left:0;right:0;font-size:10px;color:#e4cf9e;}.oil-sheen {position:absolute;width:27%;height:12%;left:33%;top:36%;background:radial-gradient(ellipse,#f0c65e77,#dbc56b22 70%,transparent);border-radius:50%;opacity:0;}.oil-sheen.oiled {opacity:1;}
+.stove-burner {position:absolute;left:25%;top:32%;width:50%;aspect-ratio:1;opacity:0;}.fire-on .stove-burner {opacity:1;animation:blue-flame .4s ease-in-out infinite alternate;}.heat-vessel {top:0!important;}.pan-food {position:absolute;width:34%;aspect-ratio:1;left:27%;top:12%;}.pan-food>.tool-art {width:100%;}#heat-brown {position:absolute;inset:0;opacity:0;}#heat-brown>.tool-art {width:100%;}.heat-steam {opacity:0;}.fire-on .heat-steam {opacity:.7;}
+.ingredient-in-action {position:absolute;left:44%;top:38%;width:18%;}.ingredient-in-action .food-art {width:100%;}.base-plate {left:18%!important;top:10%!important;width:64%!important;}.plating-food {position:absolute;left:31%;top:16%;width:38%;opacity:.3;transform:scale(.7);transition:opacity .5s,transform .5s;}.plating-food .food-art {width:100%;}.plating-food.plated {opacity:1;transform:scale(1);}
+.action-counter {text-align:center;font-size:12px;color:#ead4a6;min-height:22px;padding:2px;}.subtle-action {display:block;margin:8px auto 0;font-size:11px;color:#becbb3;background:transparent;border:1px solid #80907c66;border-radius:18px;padding:7px 15px;}.action-spark {position:absolute;inset:15%;border:1px solid #e6c78a88;border-radius:50%;box-shadow:0 0 30px #dcb36d44;pointer-events:none;opacity:0;}
+.stove-controls {padding:0 26px;margin:0 auto;width:100%;max-width:500px;}.stove-controls .heat-label {font-size:10px;color:#c4cfba;}.stove-controls .heat-target {color:#e4d39d;}.stove-controls .heat-meter {height:16px;margin:0 6px;}.stove-controls .perfect-zone {background:#a5b785;}.flame-dials {display:flex;gap:8px;margin:16px 0 10px;}.flame-dials button {flex:1;padding:9px;border-radius:10px;background:#253d3e;color:#d5d9bb;border-color:#6d7b6b;font-size:12px;}.flame-dials button[aria-pressed="true"] {background:#dfb67a;color:#2e413a;border-color:#f4d7a8;}.heat-actions {display:flex;gap:8px;}.heat-actions button {flex:1;font-size:11px;background:#48644f;color:#f3e0b7;border-color:#9caa7d;padding:10px 7px;}.heat-actions button:disabled {opacity:.45;}
+.cooking-steam {position:absolute;left:39%;top:13%;width:23%;height:20%;background:radial-gradient(ellipse,#fff6dd55,transparent 70%);filter:blur(5px);animation:food-steam 2.5s ease-in-out infinite;pointer-events:none;}
+@keyframes food-steam {0%{transform:translateY(0) scale(.8);opacity:.2}65%{opacity:.65}100%{transform:translateY(-25px) scale(1.2);opacity:0}}@keyframes blue-flame {to{filter:brightness(1.2);transform:scale(1.015)}}
+.completed-dish {min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 25px;text-align:center;background:radial-gradient(ellipse,#8b663450,#152828ed 80%);}.completed-dish>.eyebrow {font-size:9px;letter-spacing:3px;color:#e3c386;}.completed-dish h3 {font:26px var(--serif);color:#f5e1bc;margin:13px 0 0;}.ready-plate {position:relative;width:70%;max-width:280px;background:radial-gradient(ellipse,#e7b66822,transparent 70%);}.ready-plate>.food-art {width:100%;}.completed-dish>strong {font:21px var(--serif);color:#eed6a8;}.completed-dish>p {font:12px/1.8 var(--sans);color:#bec8ae;}
+.served-dish {position:absolute;left:27%;top:76%;width:54%;aspect-ratio:3/4;pointer-events:none;z-index:6;filter:drop-shadow(0 2px 2px #0006);}.served-dish>.food-art {width:100%;height:auto;}.dish-arriving {animation:set-dish .75s ease-out both;}.dish-steam {position:absolute;left:38%;top:19%;width:25%;height:27%;background:radial-gradient(ellipse,#fff4d455,transparent 65%);animation:food-steam 2.4s infinite;}.empty-plate {display:none;position:absolute;inset:0;background:url('./assets/cooking-vessels.webp') 66.6667% 100%/400% 200%;}.finished-meal>.food-art,.finished-meal .dish-steam {display:none;}.finished-meal .empty-plate {display:block;}
+@keyframes set-dish {from{transform:translateY(35px) scale(.75);opacity:0}to{transform:none;opacity:1}}
+.dining-chopsticks {position:absolute;z-index:6;left:59%;top:80%;width:24%;height:2px;border-top:1.3px solid #dbb979;border-bottom:1.3px solid #aa773f;box-shadow:0 3px 0 #b08548;transform-origin:right;animation:eating-chopsticks 3s ease-in-out infinite;pointer-events:none;}
+@keyframes eating-chopsticks {0%,30%,100%{transform:rotate(-17deg) translateY(0)}60%,80%{transform:rotate(-48deg) translate(0,-12px)}}
+.customer-payment {position:absolute;bottom:104%;left:50%;transform:translateX(-50%);z-index:7;width:104px;min-height:62px;padding:7px 9px;background:#f7e9cc;color:#324a40;border:1px solid #d1ac69;border-radius:13px;box-shadow:0 3px 12px #0005;animation:payment-ready 1.9s ease-in-out infinite;}.customer-payment>b {display:block;font-size:15px;font-weight:700;}.customer-payment>small {display:block;font-size:8px;color:#6d775c;margin-top:2px;}.five-stars {position:relative;display:block;overflow:hidden;width:74px;height:15px;margin:3px auto 0;font-size:15px;letter-spacing:0;line-height:15px;text-align:left;}.five-stars i,.five-stars em {position:absolute;inset:0;overflow:hidden;white-space:nowrap;font-style:normal;}.five-stars i {color:#d69d37;z-index:1;}.five-stars em {color:#c7c5ad;}
+@keyframes payment-ready {50%{box-shadow:0 0 18px #edc46b80}}
+.cash-flight {position:fixed;z-index:2147483647;width:76px;height:38px;display:grid;place-items:center;font:700 13px var(--serif);letter-spacing:1px;background:repeating-linear-gradient(45deg,#e6d6a9,#e6d6a9 3px,#dfcda1 3px,#dfcda1 4px);border:3px double #72836a;outline:2px solid #e4d3a9;border-radius:3px;color:#466449;box-shadow:0 3px 9px #0005;pointer-events:none;}.money-receiving {animation:wallet-credit .5s ease-out 2;}@keyframes wallet-credit {50%{color:#ffe2a1;text-shadow:0 0 18px #ffd383;transform:scale(1.09)}}
+.ceramics-surface {position:absolute;inset:0;background:url('./assets/restaurant-ceramics.webp') 10.838% 41.7118%/952.381% 1298.7013% no-repeat;mask-image:linear-gradient(transparent,#000 3%,#000 97%,transparent);}.decor-ceramics.placement-installing {animation:install-surface 1.35s ease both;}@keyframes install-surface {from{opacity:0;filter:brightness(1.6)}to{opacity:1;filter:brightness(1)}}
+.stock-card.ingredient-locked .food-art {filter:blur(1.2px) saturate(.2);opacity:.5;}.stock-card.ingredient-locked h3 {color:#93927e;}.stock-card.ingredient-locked button {font-size:10px;}
+@media(min-width:650px){.kitchen-room-art {max-width:520px;margin:auto;}.fridge-cabinet {width:min(100%,calc((100dvh - 250px)*.563));}.process-view {padding-top:25px;}.prep-scene {width:min(100%,440px);aspect-ratio:1.5;}#kitchen-footer {padding-left:max(20px,calc((100vw - 500px)/2));padding-right:max(20px,calc((100vw - 500px)/2));}}
+@media(max-height:730px){.kitchen-header {padding-top:10px;padding-bottom:9px;}.process-heading h3 {font-size:22px;}.process-view {padding-top:15px;}.prep-scene {aspect-ratio:1.6;}.process-heading p {font-size:11px;}#kitchen-footer {padding-top:9px;padding-bottom:10px;}.talk-portrait {width:120px;height:160px;}.talk-card {padding:17px 21px;}.talk-speech {min-height:80px;}#talk-line {font-size:14px;}#talk-regular {font-size:8px;margin-bottom:10px;}}
+@media(prefers-reduced-motion:reduce){.station-next,.dish-arriving,.dining-chopsticks,.customer-payment,.cooking-steam,.dish-steam,.money-receiving {animation:none!important;}.fridge-door {transition:none;}}
+
+.upgrade-card:has(.ceramics-surface) .decor-thumbnail {aspect-ratio:2/1;}
+.lid.action-done .cook-object>.tool-art {animation:rice-lid-open .55s ease-out both;}
+@keyframes rice-lid-open {from {opacity:.4;transform:translateY(10px) scale(.96)} to {opacity:1;transform:none}}
+
+.wrapping-nori.wrapped {animation:wrap-nori .65s ease-out both;}
+@keyframes wrap-nori {0%{left:5%;top:38%;opacity:1;transform:scale(1)}70%{left:37%;top:29%;opacity:1;transform:scale(.75)}100%{left:37%;top:29%;opacity:0;transform:scale(.75)}}
+/* The service camera pans explicitly; focusing a dialog must never scroll the room. */
+.scene {overflow:clip;}
+.customer-payment:active:not(:disabled) {transform:translateX(-50%) scale(.98);}
+.customer-name:active:not(:disabled) {transform:translateX(-50%) scale(.98);}
+.resume-kitchen:active:not(:disabled) {transform:translateX(-50%) scale(.98);}
+
+.kitchen-upgraded {--kitchen-image:url('./assets/kitchen-upgraded.webp');}
+.fridge-cabinet.upgraded .fridge-door {background-image:url('./assets/fridge-upgraded.webp');}
+.served-dish {top:70%;width:48%;left:30%;}
+.customer-name {bottom:-43%;}
+.wait-meter {bottom:-49%;}
+
+.cutting-ingredients {position:absolute;left:25%;top:20%;width:43%;display:flex;align-items:center;justify-content:center;gap:8px;}
+.cutting-ingredients .food-art {width:45%;}

@@ -18,12 +18,15 @@
   <link rel="preload" as="image" href="./assets/decor-real.webp">
   <link rel="preload" as="image" href="./assets/food-clean.webp">
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./kitchen.css">
   <script src="./catalog.js" defer></script>
   <script src="./stories.js" defer></script>
+  <script src="./cooking-rules.js" defer></script>
   <script src="./engine.js" defer></script>
   <script src="./morph.js" defer></script>
   <script src="./rain.js" defer></script>
   <script src="./scene.js" defer></script>
+  <script src="./kitchen.js" defer></script>
   <script src="./game.js" defer></script>
   <script src="./pwa.js" defer></script>
 </head>
@@ -57,7 +60,7 @@
         <div class="wallet-hud"><div><span>자금</span><strong id="money">¥3,200</strong></div><div><span>평판</span><strong id="reputation">12</strong></div></div>
         <button id="settings-open" class="round-button" aria-label="설정 열기">⚙</button>
       </header>
-      <div id="progress-hud" class="progress-hud"></div>
+      <div id="progress-hud" class="progress-hud"></div><button id="resume-kitchen" class="resume-kitchen" hidden>진행 중인 요리로 돌아가기 ↗</button>
       <div class="service-bar"><p id="service-hint"></p><button id="night-action" class="primary">식당 불 켜기 <span>↗</span></button></div>
       <nav class="game-dock" aria-label="식당 도구">
         <button data-tab="pantry" aria-label="냉장고 열기"><span>▤</span><b>냉장고</b></button>
@@ -66,11 +69,12 @@
         <button id="story-open" aria-label="손님 이야기 열기"><span>☷</span><b>이야기</b><i id="story-badge" hidden></i></button>
       </nav>
     </section>
+    <section id="kitchen-screen" class="kitchen-screen" hidden aria-label="조리 부엌"><header class="kitchen-header"><button id="kitchen-back" aria-label="손님 테이블로 돌아가기">‹ 테이블</button><div><span id="kitchen-guest"></span><h2 id="kitchen-order"></h2></div><span id="kitchen-step-count"></span></header><div id="kitchen-content"></div><footer id="kitchen-footer"></footer></section>
   </main>
 
-  <dialog id="kitchen-dialog" class="sheet kitchen" aria-labelledby="kitchen-title">
-    <header class="sheet-header"><div><span class="eyebrow">COUNTER & KITCHEN</span><h2 id="kitchen-title">주인장의 부엌</h2></div><button data-close="kitchen-dialog" class="round-button" aria-label="부엌 닫기">×</button></header>
-    <div id="order-panel" class="sheet-body"></div>
+  <dialog id="guest-dialog" class="guest-dialog" aria-labelledby="talk-name">
+    <button data-close="guest-dialog" class="talk-close" aria-label="대화 잠시 닫기">×</button>
+    <div id="talk-portrait" class="talk-portrait"></div><div class="talk-card"><span class="eyebrow">COUNTER CONVERSATION</span><h2 id="talk-name"></h2><p id="talk-profile"></p><p id="talk-regular"></p><div class="talk-speech"><p id="talk-line" aria-live="polite"></p><span id="talk-progress"></span></div><div id="talk-order" class="talk-order" hidden></div><button id="talk-gift" hidden></button><button id="talk-next" class="primary">다음 이야기 →</button></div>
   </dialog>
   <dialog id="report-dialog" class="sheet report" aria-labelledby="report-title"><header class="sheet-header"><div><span class="eyebrow">NIGHTLY REPORT</span><h2 id="report-title">오늘의 영업보고</h2></div><button data-close="report-dialog" class="round-button" aria-label="영업보고 닫기">×</button></header><div id="report-content" class="sheet-body"></div></dialog>
   <dialog id="management-dialog" class="sheet management" aria-labelledby="management-title">

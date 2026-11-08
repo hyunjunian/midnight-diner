@@ -18,7 +18,7 @@
   }
   // All fields are smooth, overlapping weights in one connected mesh.
   function deform(m,t,state={},out=new Float32Array(m.points.length*4)) {
-    const seed=state.seed??m.person*.79,breath=Math.sin(t*1.42+seed),walk=clamp(state.walk||0),cook=clamp(state.cook||0);
+    const seed=state.seed??m.person*.79,breath=Math.sin(t*1.42+seed),walk=clamp(state.walk||0),cook=clamp(state.cook||0),eat=clamp(state.eat||0);
     const stride=Math.sin(t*10.5+seed),sway=Math.sin(t*.92+seed)*.022-walk*stride*.024;
     const hairLag=Math.sin(t*.92+seed-.65)*.007+walk*Math.sin(t*10.5+seed-.7)*.005;
     for(let i=0;i<m.points.length;i++){
@@ -32,6 +32,8 @@
       y+=Math.sin(t*1.1+seed-.9)*.0027*p.hairEdge;
       x+=walk*stride*.005*(1-p.head);y+=walk*Math.cos(t*21+seed)*.003*(1-p.y);
       x+=cook*Math.sin(t*4+seed)*.005*p.hand;y+=cook*Math.cos(t*4+seed)*.004*p.hand;
+      x+=eat*Math.sin(t*2.1+seed)*.007*p.hand;y-=eat*(.012+.013*Math.sin(t*2.1+seed))*p.hand;
+      y+=eat*Math.sin(t*2.1+seed)*.002*p.head;
       out[i*4]=x;out[i*4+1]=y;out[i*4+2]=p.x;out[i*4+3]=p.y;
     }
     return out;
@@ -64,7 +66,7 @@
   function attach(){for(const el of document.querySelectorAll('.actor[data-person]'))if(!records.has(el)){
     const canvas=el.querySelector('.actor-morph');if(!canvas)continue;canvas.width=240;canvas.height=320;
     const ctx=canvas.getContext('2d');if(!ctx)continue;const m=mesh(Number(el.dataset.person));
-    records.set(el,{el,canvas,ctx,m,vertices:new Float32Array(m.points.length*4),walk:0,cook:0,seed:m.person*.79+records.size*.37});
+    records.set(el,{el,canvas,ctx,m,vertices:new Float32Array(m.points.length*4),walk:0,cook:0,eat:0,seed:m.person*.79+records.size*.37});
   }}
   let dirty=true;new MutationObserver(()=>dirty=true).observe(document.documentElement,{childList:true,subtree:true});
   function frame(now){requestAnimationFrame(frame);if(!ready||document.hidden||now-last<1000/30)return;const dt=Math.min(.08,(now-last)/1000||.033);last=now;
@@ -75,8 +77,8 @@
       const customer=el.closest('.customer');
       const walking=customer?.classList.contains('arriving')?1:0;
       r.cook+=((el.closest('.cooking')?1:0)-r.cook)*ease;
-      r.walk+=(walking-r.walk)*ease;
-      const t=reduced.matches?0:now/1000;deform(r.m,t,{seed:r.seed,walk:r.walk,cook:r.cook},r.vertices);
+      r.walk+=(walking-r.walk)*ease;r.eat+=((customer?.classList.contains('dining')?1:0)-r.eat)*ease;
+      const t=reduced.matches?0:now/1000;deform(r.m,t,{seed:r.seed,walk:r.walk,cook:r.cook,eat:r.eat},r.vertices);
       gl.bindBuffer(gl.ARRAY_BUFFER,vertex);gl.bufferData(gl.ARRAY_BUFFER,r.vertices,gl.DYNAMIC_DRAW);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,index);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,r.m.indices,gl.STATIC_DRAW);
       const art=portrait(r.m.person);gl.bindTexture(gl.TEXTURE_2D,textures[art.sheet]);gl.uniform2f(uniform('tile'),art.tile%4,Math.floor(art.tile/4));gl.uniform1f(uniform('rows'),art.rows);
       gl.clear(gl.COLOR_BUFFER_BIT);gl.drawElements(gl.TRIANGLES,r.m.indices.length,gl.UNSIGNED_SHORT,0);

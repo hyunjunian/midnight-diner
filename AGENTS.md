@@ -25,6 +25,12 @@
 
 - The catalogue contains 100 individually illustrated dishes. Start with 3 at Lv.1; add exactly 3 each level through Lv.33, then the remaining one at Lv.34. Never restore ten dishes per level. Progression caps at Lv.34; the replacement fridge unlocks at Lv.20 and discounts ingredient purchases by 10%.
 - Furnishings use measured surface slots, keyed DOM elements, automatic area/pan focus, visible installation and completion glow. Keep the fridge replacement at the original fridge footprint. Do not recreate decoration nodes during ordinary state renders.
-- No leisurely/manual cooking mode. Both preparation and heat use timing; align the target label with its green zone. Show varied guest dialogue only in detail/story panels. Preserve v4 saves when migrating to the v5 save key.
+- No old no-timer checkbox. Preparation uses direct appliance/drag actions, while stove heating uses active timing; align the target label with its green zone. Show varied guest dialogue only in detail/story panels. Preserve v2–v5 saves when migrating to the v6 save key.
 
 - Live gameplay now has moderate downward rain in the outdoor view and behind indoor glass panes only; the user explicitly requested this. Preserve the approved intro video. Keep stronger smooth breathing/head/hair motion without changing mouths or breaking mesh continuity.
+
+- Service lifecycle is seated → accepted/waiting → cooking → eating → paying → farewell → left. Never award money/XP/score on delivery; collect once on explicit payment, then wait for the player to finish goodbye before freeing the seat.
+- Each wave of three must have three different recipes, including recommendation orders. Only start the next wave after all three previous guests leave. Migrate duplicate old unaccepted orders without discarding progress.
+- Clicking a guest opens the bottom conversation, not the former kitchen sheet. After the final request the player can enter a full-screen first-person kitchen. Keep the fridge/freezer doors, physical stock selection, recipe-specific station sequences and tactile riceball interactions.
+- Payment/star badges above guests are explicitly authorized; speech still belongs only in conversation/story screens. Eating can move hands/chopsticks and body, never mouths.
+- Ingredients unlock at the earliest recipe level using them. Block locked purchases in engine and UI; retain old owned quantities. The ceramics upgrade uses the edited original-shelf image patch, not a separate floating shelf sprite. Keep room overflow clipped so dialog focus cannot scroll the service camera.
