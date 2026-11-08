@@ -42,10 +42,10 @@
   function header(){const k=state().kitchen,g=order();if(!k||!g){$('kitchen-guest').textContent='내 가게 · 준비와 점검';$('kitchen-order').textContent='부엌 둘러보기';$('kitchen-step-count').textContent='';return;}$('kitchen-guest').textContent=`${E.person(g.person).name} 님의 주문 · COUNTER 0${g.seat+1}`;$('kitchen-order').textContent=recipe().name;$('kitchen-step-count').textContent=k.stage==='complete'?'완성':`${k.step+1} / ${plan().length}`;}
   function footer(html){$('kitchen-footer').classList.toggle('fridge-footer',view==='fridge');$('kitchen-footer').innerHTML=html;}
   function room(){setStage('room');const k=state().kitchen,names={fridge:'냉장고',rice:'밥솥',stove:'화구',board:'작업대'};
-    if(!k){$('kitchen-content').innerHTML=`<div class="kitchen-room-art empty-kitchen ${E.hasUpgrade(state(),'fridge')?'renovated':''}"><p class="room-task"><b>다음 한 끼를 준비하는 곳</b><span>냉장고를 채워 두고 조리 도구를 둘러보세요.</span></p>${['fridge','stove','rice','board'].map(id=>`<button data-station="${id}" class="room-hotspot hotspot-${id} ${id==='fridge'?'station-next':''}" aria-label="${names[id]} 둘러보기"><span>${names[id]}</span></button>`).join('')}</div>`;footer('<p id="empty-kitchen-note" role="status">손님에게 주문을 받으면 이곳에서 요리를 시작해요.</p><button type="button" data-browse-pantry class="primary">냉장고 미리 채우기</button>');return;}
+    if(!k){$('kitchen-content').innerHTML=`<div class="kitchen-room-art empty-kitchen ${E.hasUpgrade(state(),'fridge')?'renovated':''}"><p class="room-task"><b>다음 한 끼를 준비하는 곳</b><span>냉장고를 채워 두고 조리 도구를 둘러보세요.</span></p>${['fridge','stove','rice','board'].map(id=>`<button data-station="${id}" class="room-hotspot hotspot-${id} ${id==='fridge'?'station-next':''}" aria-label="${names[id]} 둘러보기"><span>${names[id]}</span></button>`).join('')}</div>`;footer('<p id="empty-kitchen-note" role="status">손님에게 주문을 받으면 이곳에서 요리를 시작해요.</p><button type="button" data-browse-pantry class="primary">냉장고 미리 채우기</button>');fitWorkspace();requestAnimationFrame(fitWorkspace);return;}
     const prepared=k.stage==='process',target=prepared?step().station:'fridge';
     $('kitchen-content').innerHTML=`<div class="kitchen-room-art ${E.hasUpgrade(state(),'fridge')?'renovated':''}"><p class="room-task"><b>${prepared?step().title:'냉장고에서 재료 꺼내기'}</b><span>${prepared?names[target]+'를 눌러 이어서 만들어요.':'냉장고와 냉동실 문을 직접 열어 보세요.'}</span></p>${['fridge','stove','rice','board'].map(id=>`<button data-station="${id}" class="room-hotspot hotspot-${id} ${target===id?'station-next':''}" aria-label="${names[id]}로 이동"><span>${names[id]}</span></button>`).join('')}</div>`;
-    footer(`${k.step?'<button data-work="resume" class="primary">진행 중인 조리 이어서 하기 </button>':''}`);
+    footer(`${k.step?'<button data-work="resume" class="primary">진행 중인 조리 이어서 하기 </button>':''}`);fitWorkspace();requestAnimationFrame(fitWorkspace);
   }
   function stockButtons(chamber){const ids=Object.keys(E.ingredients).filter(id=>E.ingredients[id].storage===chamber&&E.ingredientAvailable(state(),id)),per=chamber==='freezer'?8:12,count=Math.max(1,Math.ceil(ids.length/per));pages[chamber]=Math.min(pages[chamber],count-1);
     const buttons=ids.slice(pages[chamber]*per,(pages[chamber]+1)*per).map((id,i)=>{const item=E.ingredients[id],stock=state().inventory[id],selected=state().kitchen.selected.includes(id),required=recipe().ingredients.includes(id),row=Math.floor(i/4),top=(chamber==='freezer'?15.8+row*7.5:45.1+row*11.1);
@@ -128,6 +128,8 @@
   }
   function fitWorkspace(){
     const area=$('kitchen-content'),hot=document.querySelector('.native-stove');
+    const room=area.querySelector('.kitchen-room-art');
+    if(room){const layout=L.room(room.clientWidth,room.clientHeight);for(const[id,box]of Object.entries(layout.hotspots)){const button=room.querySelector(`[data-station="${id}"]`);for(const key of ['left','top','width','height'])button.style[key]=`${box[key]}px`;button.hidden=!box.width||!box.height;}return;}
     const areaRect=area.getBoundingClientRect(),footerRect=$('kitchen-footer').getBoundingClientRect(),separateColumn=footerRect.right<=areaRect.left+2;
     const footerTop=separateColumn?area.clientHeight:footerRect.top-areaRect.top;
     area.style.setProperty('--work-bottom',`${Math.max(10,area.clientHeight-footerTop+16)}px`);
@@ -149,7 +151,7 @@
     }
     const completed=area.querySelector('.completed-dish');
     if(completed){const plate=completed.querySelector('.original-ready'),art=plate.querySelector('.food-art'),other=[...completed.children].filter(el=>el!==plate).reduce((n,el)=>n+el.getBoundingClientRect().height+8,0),ratioParts=getComputedStyle(art).getPropertyValue('--food-ratio').trim().split('/'),ratio=(Number(ratioParts[0])||1)/(Number(ratioParts[1])||1),height=Math.max(20,area.clientHeight-other-32),width=Math.min(area.clientWidth*.84,height*ratio,370);art.style.width=`${width}px`;art.style.height=`${width/ratio}px`;}
-    const cabinet=area.querySelector('.fridge-cabinet');if(cabinet){const pages=area.querySelector('.fridge-pages'),height=area.clientHeight-(pages?.getBoundingClientRect().height||0);cabinet.style.height=`${height}px`;cabinet.style.width=`${Math.min(area.clientWidth,height*.563)}px`;}
+    const cabinet=area.querySelector('.fridge-cabinet');if(cabinet){const pages=area.querySelector('.fridge-pages'),ratio=941/1672,height=Math.max(1,Math.min(area.clientHeight-(pages?.getBoundingClientRect().height||0),area.clientWidth/ratio));cabinet.style.flex='0 0 auto';cabinet.style.height=`${height}px`;cabinet.style.width=`${height*ratio}px`;}
   }
 
   new ResizeObserver(fitWorkspace).observe($('kitchen-content'));

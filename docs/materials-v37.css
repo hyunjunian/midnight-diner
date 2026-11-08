@@ -1,0 +1,77 @@
+/* Reading belongs on washi; room furniture and physical controls stay walnut. */
+:root {
+  --folio-face:linear-gradient(#fff9e719,#fff9e719),url('./assets/ui-washi-v21.webp');
+  --folio-raised:linear-gradient(#fff8e73b,#fff8e71a),url('./assets/ui-washi-v21.webp');
+  --folio-inset:linear-gradient(#b28e4a10,#b28e4a10),url('./assets/ui-washi-v21.webp');
+}
+:is(#guest-dialog .talk-card,#story-dialog,#report-dialog,#management-dialog[data-section=menu],#stock-prep,.customer-payment,#toast,.placement-banner,.placement-gain,.cash-flight) {
+  --wood-face:var(--folio-face);--wood-raised:var(--folio-raised);--wood-inset:var(--folio-inset);
+  --wood-ink:#493b2b;--wood-muted:#776247;--wood-gain:#46693f;--wood-loss:#a3432f;
+  --ui-paper:var(--folio-face);--ui-ink:#493b2b;--ui-muted:#776247;--ui-red:#a3432f;
+  --slip-paper:url('./assets/ui-washi-v21.webp');--slip-ink:#493b2b;
+  --feedback-paper:url('./assets/ui-washi-v21.webp');--feedback-ink:#493b2b;
+  --feedback-green:#46693f;--feedback-red:#a3432f;
+  color-scheme:light;color:var(--wood-ink);
+  background-color:#f2e4c5;background-image:var(--folio-face);background-size:auto,620px;
+}
+:is(#story-dialog,#report-dialog,#management-dialog[data-section=menu]) .sheet-header {
+  color:var(--wood-ink);background-image:var(--folio-face);border-color:#b298715c;
+  box-shadow:0 1px 3px #7751251c,inset 0 1px #fff9df;
+}
+:is(#story-dialog,#report-dialog,#management-dialog[data-section=menu]) .sheet-header .eyebrow,
+#guest-dialog .talk-header .eyebrow,#guest-dialog .talk-owner-label {color:#936342}
+:is(#story-dialog,#report-dialog,#management-dialog[data-section=menu]) .sheet-header .round-button {color:#725338}
+#guest-dialog .talk-speech,#guest-dialog .talk-player-line,#guest-dialog #talk-known-fields,#guest-dialog .talk-order,
+#story-dialog .story-message-body p,#story-dialog .story-voice-controls,#story-dialog #story-content .story-result,
+#report-content .report-metric,#report-content .growth-banner,#report-content .next-goal,
+#report-content .night-review>div,#report-content .reward-foods>div,#report-content .unlock-item-grid article,
+#management-dialog[data-section=menu] .menu-card,#stock-prep .stock-prep-list>span,#stock-prep .stock-prepared-check {
+  border-color:#b59b6e77;box-shadow:inset 0 1px #fff9e1,0 2px 4px #60401d1c;
+}
+#guest-dialog .talk-speech::before {background:#f5e8cc url('./assets/ui-washi-v21.webp') center/440px;border-color:#b59b6e77}
+#guest-dialog #talk-line.is-typing .dialogue-ink::after {background:#8a6840}
+#guest-dialog:has(#talk-line.is-typing) #talk-name::after {color:#8a6840}
+#guest-dialog #talk-choices>button,#guest-dialog #talk-choices.optional>button {text-shadow:none}
+#guest-dialog #talk-choices>button::before,#guest-dialog #talk-choices.optional>button::before,
+#story-dialog #story-content .story-choice-card::before {
+  background-color:#f3e4bf;background-image:var(--folio-raised);
+  box-shadow:inset 0 1px #fff9df,inset 0 -1px #b4945f55,0 2px 3px #72502a20;
+}
+#story-dialog #story-content .story-choice-card {text-shadow:none}
+#story-dialog #story-content .story-choice-card .choice-number,
+#story-dialog #story-content .story-choice-card .choice-arrow,
+#story-dialog #story-content .story-scene>span,#story-dialog #story-content .story-result>span {color:#91633c}
+#story-dialog #story-content .story-choice-card:disabled .choice-copy b,
+#story-dialog #story-content .story-choice-card:disabled .choice-copy small {color:#8c795a}
+#report-content .night-stamp,#report-content .night-review header>span {color:#936342;border-color:#b49260}
+#report-content .level-tile,#report-content .growth-banner .level-tile {
+  color:#fff0cf;background:#432719 url('./assets/ui-walnut-v21.webp') center/320px;
+}
+#management-dialog[data-section=menu] #menu-search {color:#493b2b;border-color:#b2987177;caret-color:#795132}
+#management-dialog[data-section=menu] #menu-search::placeholder {color:#8a7657}
+#management-dialog[data-section=menu] .menu-filters button.active {color:#74472a;border-color:#ac7b40;box-shadow:inset 0 -2px #ad7945}
+#management-dialog[data-section=menu] .menu-lock {color:#785537!important;border-color:#b59b6e77}
+#stock-prep .stock-prep-list .stock-short small {color:#985b32}
+/* Actions retain a solid wooden face beside the readable paper content. */
+:is(#guest-dialog .talk-card,#report-content,#management-dialog[data-section=menu],#stock-prep) .primary,
+#management-dialog[data-section=menu] .menu-card button {
+  color:#fff0cf;background-color:#52311e;
+  background-image:linear-gradient(#512d1ba6,#30190dcc),url('./assets/ui-walnut-v21.webp');
+  background-size:auto,420px;text-shadow:0 1px #1b0e09;
+}
+:is(#guest-dialog .talk-card,#report-content,#management-dialog[data-section=menu],#stock-prep) .primary:disabled,
+#management-dialog[data-section=menu] .menu-card button:disabled {color:#cdbb9e;opacity:.76}
+.customer .customer-payment {border-color:#c4a676;box-shadow:inset 0 1px #fff9e1,0 3px 0 #a2814a55,0 5px 9px #21140955}
+#toast {background:none}
+#toast::before {background-color:#f3e4bf;background-image:var(--folio-face);box-shadow:inset 0 1px #fff9df,inset 0 -1px #b4945f55}
+/* Guidance floats over the scene; it is neither a board nor a paper card. */
+.scene-controls #pan-hint {background:none;border:0;box-shadow:none}
+
+#report-content .till-summary {background:#422a1d url('./assets/ui-walnut-v21.webp') center/650px;color:#f5e3bd}
+#kitchen-screen .dial-turn-label {color:#665035;background:var(--folio-face);box-shadow:0 1px 3px #39200f55}
+.stored-ingredient b,.stored-ingredient small {color:#59452e;background:#f3e5c7 url('./assets/ui-washi-v21.webp') center/260px;border-color:#b79c7077}
+#report-content .till-summary {--wood-gain:#c0ddb0;--wood-loss:#ffb5a0;--wood-muted:#d6c19e;--wood-ink:#fff0cf}
+#kitchen-screen .kitchen-room-art .room-task {background:#f2e4c5;background-image:var(--folio-face);background-size:auto,500px;color:#59452e;text-shadow:none;box-shadow:0 3px 9px #28170d38}
+#kitchen-screen .kitchen-room-art .room-task b,#kitchen-screen .kitchen-room-art .room-task>span {color:#59452e}
+/* One room photograph; the surrounding controls sit on timber, without a second differently cropped room behind them. */
+#kitchen-screen[data-stage=room]{background:#352219 url('./assets/ui-walnut-v21.webp') center/620px}
