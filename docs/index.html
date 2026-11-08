@@ -38,7 +38,6 @@
   <script src="./daylight.js" defer></script>
   <script src="./gestures.js" defer></script>
   <script src="./audio.js" defer></script>
-  <script src="./voice.js" defer></script>
   <script src="./kitchen.js" defer></script>
   <script src="./game.js" defer></script>
   <script src="./pwa.js" defer></script>
@@ -49,7 +48,7 @@
     <div class="install-content">
       <span class="app-seal">夜</span><p class="install-overline">골목 끝, 작은 불빛 하나</p>
       <h1 id="install-title">심야식당</h1><p class="install-description">당신의 밤이 시작되는 곳.</p>
-      <button id="install-app" class="primary install-button">앱 설치하기 <span>↓</span></button>
+      <button id="install-app" class="primary install-button">앱 설치하기 <span></span></button>
       <p id="install-hint">홈 화면에 설치해서 전체 화면으로 즐겨 주세요.</p>
       <div id="install-guide" hidden></div>
       <p id="install-status" role="status"></p>
@@ -66,16 +65,16 @@
           <div id="customers" class="customers"></div>
         </div>
       </div>
-      <div class="scene-controls"><button id="area-toggle">가게 밖 보기 ↗</button><span id="pan-hint">← 좌우로 밀어 가게를 둘러보세요 →</span><div class="pan-controls"><button id="pan-left" aria-label="가게 왼쪽 보기">‹</button><span id="pan-position">카운터</span><button id="pan-right" aria-label="가게 오른쪽 보기">›</button></div></div>
+      <div class="scene-controls"><button id="area-toggle">가게 밖 보기 </button><span id="pan-hint"> 좌우로 밀어 가게를 둘러보세요 </span><div class="pan-controls" hidden aria-hidden="true"><button id="pan-left" aria-label="가게 왼쪽 보기"></button><span id="pan-position">카운터</span><button id="pan-right" aria-label="가게 오른쪽 보기"></button></div></div>
       <div id="placement-banner" class="placement-banner" role="status" hidden></div>
       <header class="game-hud">
         <div class="night-hud"><span class="hud-moon">☾</span><div><b id="day">1번째 밤</b><span id="open-status">영업 준비</span></div><span id="clock">23:50</span></div>
         <div class="wallet-hud"><div><span>자금</span><strong id="money">¥3,200</strong></div><div><span>평판</span><strong id="reputation">12</strong></div></div>
         <button id="settings-open" class="round-button" aria-label="설정 열기">⚙</button>
       </header>
-      <div id="progress-hud" class="progress-hud"></div><button id="resume-kitchen" class="resume-kitchen" hidden>진행 중인 요리로 돌아가기 ↗</button>
+      <div id="progress-hud" class="progress-hud"></div><button id="resume-kitchen" class="resume-kitchen" hidden>진행 중인 요리로 돌아가기 </button>
       <section id="stock-prep" class="stock-prep" aria-label="영업 전 재료 준비" hidden></section>
-      <div class="service-bar"><p id="service-hint"></p><button id="night-action" class="primary">식당 불 켜기 <span>↗</span></button></div>
+      <div class="service-bar"><p id="service-hint"></p><output id="service-progress" class="service-progress" aria-label="오늘의 영업 진행" hidden></output><button id="night-action" class="primary">식당 불 켜기 <span></span></button></div>
       <nav class="game-dock" aria-label="식당 도구">
         <button data-tab="pantry" aria-label="냉장고 열기"><span>▤</span><b>냉장고</b></button>
         <button data-tab="menu" aria-label="메뉴 수첩 열기"><span>▧</span><b>메뉴 수첩</b></button>
@@ -83,7 +82,7 @@
         <button id="story-open" aria-label="손님 이야기 열기"><span>☷</span><b>이야기</b><i id="story-badge" hidden></i></button>
       </nav>
     </section>
-    <section id="kitchen-screen" class="kitchen-screen" hidden aria-label="조리 부엌"><header class="kitchen-header"><button id="kitchen-back" aria-label="손님 테이블로 돌아가기">‹ 테이블</button><div><span id="kitchen-guest"></span><h2 id="kitchen-order"></h2></div><span id="kitchen-step-count"></span></header><div id="kitchen-content"></div><footer id="kitchen-footer"></footer></section>
+    <section id="kitchen-screen" class="kitchen-screen" hidden aria-label="조리 부엌"><header class="kitchen-header"><button id="kitchen-back" aria-label="손님이 있는 카운터로 돌아가기"><span class="back-label">카운터로</span></button><div><span id="kitchen-guest"></span><h2 id="kitchen-order"></h2></div><span id="kitchen-step-count"></span></header><div id="kitchen-content"></div><footer id="kitchen-footer"></footer></section>
   </main>
 
   <dialog id="guest-dialog" class="guest-dialog" aria-labelledby="talk-name">
@@ -94,7 +93,7 @@
       <details class="talk-notes"><summary>손님 수첩</summary><dl id="talk-known-fields"></dl></details>
       <div id="talk-order" class="talk-order" hidden></div>
       <div id="talk-choices" class="talk-choices" aria-label="내가 할 말 고르기"></div>
-      <button id="talk-gift" hidden></button><button id="talk-next" class="primary" hidden>주문 받고 부엌으로 →</button>
+      <button id="talk-gift" hidden></button><button id="talk-next" class="primary" hidden>주문 받고 부엌으로 </button>
     </div>
   </dialog>
   <dialog id="report-dialog" class="sheet report" aria-labelledby="report-title"><header class="sheet-header"><div><span class="eyebrow">NIGHTLY REPORT</span><h2 id="report-title">오늘의 영업보고</h2></div><button data-close="report-dialog" class="round-button" aria-label="영업보고 닫기">×</button></header><div id="report-content" class="sheet-body"></div></dialog>
@@ -112,8 +111,8 @@
       <button id="replay">인트로 다시 보기 <span>▶</span></button>
       <button id="sound-effects" aria-pressed="true">게임 소리 · 켜짐</button>
       <button id="fullscreen">전체 화면 <span>⛶</span></button>
-      <button id="reset">처음부터 시작 <span>↺</span></button>
-      <button id="update-app" hidden>새 버전으로 다시 열기 <span>↻</span></button>
+      <button id="reset">처음부터 시작 <span></span></button>
+      <button id="update-app" hidden>새 버전으로 다시 열기 <span></span></button>
       <p id="save-status"></p><p id="offline-status" role="status">오프라인 실행 준비 중…</p>
     </div>
   </dialog>
@@ -123,7 +122,7 @@
 
   <dialog id="intro" class="cinema" aria-label="심야식당 인트로 영상">
     <video id="opening-video" src="./assets/opening-visible-rain.mp4" poster="./assets/opening-portrait-poster.jpg" playsinline preload="auto" disablepictureinpicture aria-label="34초 세로형 시네마틱 인트로. 새로 제작한 실사풍 여성 주인장 장면, 한국어 자막, 일본어 여성 합성 내레이션과 직접 만든 음악·환경음이 포함되어 있습니다."></video>
-    <div class="cinema-actions"><button id="sound-intro" aria-label="인트로 소리 켜기">소리 켜기 ♫</button><button id="skip-intro">건너뛰기 →</button></div>
+    <div class="cinema-actions"><button id="sound-intro" aria-label="인트로 소리 켜기">소리 켜기 ♫</button><button id="skip-intro">건너뛰기 </button></div>
     <button id="play-intro" class="cinema-play" hidden>터치해서 시작 <span>▶</span></button>
     <button id="pause-intro" class="cinema-pause" aria-label="인트로 일시정지">Ⅱ</button>
     <p id="video-status" role="status"></p>

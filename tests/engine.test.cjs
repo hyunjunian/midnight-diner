@@ -162,3 +162,9 @@ test('night prep lighting corrects the pictured dish without expanding the gener
  assert.deepEqual(E.Cooking.imagePilot,['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);
  assert.equal(E.Cooking.prepImage('negi_omelette','scallion'),'prep-night-v22-scallion');assert.equal(E.Cooking.prepImage('hiyayakko','vegetables'),'prep-night-v22-vegetables');assert.equal(E.Cooking.prepImage('butadon','scallion'),'prep-hi-scallion');assert.equal(E.Cooking.prepImage('onigiri','rice'),'prep-hi-rice');
 });
+test('completed stories stop attention and read news stays read after reload',()=>{
+ const {s}=setup();E.arrive(s);assert.ok(E.conversation(s));assert.ok(E.storyNeedsAttention(s));E.markStoryRead(s);assert.ok(E.storyNeedsAttention(s),'an outstanding decision still needs attention');
+ const view=E.story(s),choice=view.definition.choices.find(c=>E.canChoose(s,c));assert.ok(E.resolveEvent(s,choice.id));assert.ok(E.resolveEvent(s,E.storyContent.reflection[0].id));assert.equal(E.storyNeedsAttention(s),false);
+ const st=E.storyContent.stories.find(x=>x.choices.some(c=>c.future)),c=st.choices.find(x=>x.future);s.nightNews=[{id:st.id,choice:c.id,night:s.night}];assert.ok(E.storyNeedsAttention(s));E.markStoryRead(s);assert.equal(E.storyNeedsAttention(s),false);assert.equal(E.storyNeedsAttention(E.restore(JSON.stringify(s))),false);
+ const old=JSON.parse(JSON.stringify(s));delete old.nightNewsRead;assert.equal(E.storyNeedsAttention(E.restore(JSON.stringify(old))),false,'old completed stories do not light again');
+});

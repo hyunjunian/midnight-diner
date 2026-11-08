@@ -25,7 +25,7 @@
 #guest-dialog #talk-discovery {margin:11px 0 3px;font:11px/1.6 var(--sans);color:#52703c;}
 #guest-dialog .talk-choices {display:grid;gap:8px;margin-top:15px;}
 #guest-dialog .talk-choices>button {position:relative;width:100%;min-height:47px;padding:12px 32px 12px 15px;margin:0;text-align:left;white-space:normal;overflow-wrap:anywhere;font:13px/1.55 var(--sans);color:#415238;background:#f5edcf;border:1px solid #ad9b70;border-radius:9px;box-shadow:0 3px 0 #c6b489;}
-#guest-dialog .talk-choices>button::after {content:'›';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#90764e;}
+#guest-dialog .talk-choices>button::after {content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#90764e;}
 #guest-dialog .talk-choices>button:hover {background:#fff9e5;border-color:#6f845a;}
 #guest-dialog .talk-choices>button:active {transform:translateY(2px);box-shadow:0 1px 0 #c6b489;}
 #guest-dialog .talk-choices.optional {margin-top:10px;}

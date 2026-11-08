@@ -46,3 +46,59 @@
 #guest-dialog .talk-player-line{margin-left:70px}
 #guest-dialog .talk-notes{margin:4px 0 10px}
 @media(max-width:359px){#guest-dialog .talk-guest-message{gap:10px}#guest-dialog .talk-guest-message .talk-portrait{flex-basis:52px;width:52px}#guest-dialog .talk-player-line{margin-left:38px}#guest-dialog .talk-guest-copy .talk-speech{padding:13px 12px}}
+
+/* The service count is a small printed tally slip, separate from actionable signs. */
+.service-bar.is-serving{gap:10px}
+#service-hint{white-space:pre-line;word-break:keep-all;overflow-wrap:break-word;line-height:1.85;margin:0;max-width:100%}
+.service-progress{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:6px 12px;max-width:100%;min-height:0;color:#66543a;background:#e4d4b5 url('./assets/ui-washi-v21.webp') center/400px;border:0;border-radius:1px;box-shadow:inset 0 1px #fff3d4a6,0 2px 3px #0004;font:400 11px/1.65 var(--reading-serif);letter-spacing:.02em;pointer-events:none}
+.service-progress>span{white-space:nowrap}
+.service-progress b{font:500 12px/1.65 var(--reading-serif);font-variant-numeric:tabular-nums;color:#4f412d;margin-left:4px}
+.service-progress>i{width:1px;height:13px;background:#9f89634d}
+@media(max-width:359px){.service-progress{gap:9px;padding:5px 10px}.service-progress b{font-size:11px}#service-hint{font-size:11px}}
+/* One quiet printed typeface throughout game UI; the approved movie is untouched. */
+.game-app,.sheet,#guest-dialog{--sans:DinerMyeongjo,'Times New Roman',serif;--serif:DinerMyeongjo,'Times New Roman',serif;--brush:DinerMyeongjo,'Times New Roman',serif;font-family:var(--reading-serif);font-synthesis:none}
+.sheet-header h2,#story-dialog .sheet-header h2,#report-dialog .sheet-header h2{font:400 23px/1.5 var(--reading-serif);letter-spacing:.01em;margin-top:4px}
+#story-content .story-choice-heading h3{font:400 21px/1.6 var(--reading-serif);letter-spacing:0}
+#story-content .story-choice-heading>span,#story-content .story-choice-heading p{font:400 12px/1.7 var(--reading-serif)}
+/* Call attention to the label, not a giant outline around the appliance. */
+.kitchen-screen .room-hotspot.station-next{border:0;outline:0;box-shadow:none;animation:none}
+.kitchen-screen .room-hotspot.station-next span{border:2px solid #e5c276;border-image:none;color:#fff0c4;filter:none;box-shadow:inset 0 1px #f9dfa488,0 0 12px #e6bc6266,0 3px 4px #0008;animation:appliance-label-heartbeat 2.6s ease-in-out infinite;transform-origin:center}
+@keyframes appliance-label-heartbeat{0%,25%,80%,100%{transform:translate(-50%,50%) scale(1)}40%{transform:translate(-50%,50%) scale(1.055)}55%{transform:translate(-50%,50%) scale(1)}65%{transform:translate(-50%,50%) scale(1.03)}}
+.kitchen-screen .room-hotspot:focus-visible{outline:0}
+.kitchen-screen .room-hotspot:focus-visible span{outline:2px solid #f6d796;outline-offset:3px}
+.kitchen-header #kitchen-back,.scene-controls #area-toggle{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;min-width:0;padding:7px 10px;border:3px solid #76502b;border-image:var(--walnut-frame) 10.2% / 1 / 0 stretch;border-radius:0;background:linear-gradient(#76502b35,#28180e75),url('./assets/ui-walnut-v21.webp') center/240px;color:#f8e6be;box-shadow:0 2px 3px #0006,inset 0 1px #e4ba7255;font:400 13px/1.5 var(--reading-serif);white-space:nowrap;text-shadow:0 1px #28180e}
+#kitchen-back .back-label{font:inherit;color:inherit;letter-spacing:0}
+.kitchen-header #kitchen-back:active,.scene-controls #area-toggle:active{transform:translateY(1px);box-shadow:inset 0 1px 4px #0c0608a6}
+.game-app #resume-kitchen{border:2px solid #e5c276;border-radius:1px;background:#f1e3c7 url('./assets/ui-washi-v21.webp') center/420px;color:#584328;min-height:44px;font:400 14px/1.7 var(--reading-serif);box-shadow:0 0 12px #e1b76088,0 2px 4px #0006;animation:none}
+.game-dock #story-open.story-waiting{border:2px solid #e5c276!important;border-radius:2px!important;animation:none!important;box-shadow:inset 0 0 0 1px #7f5c30,0 0 12px #e4b55b88!important;background-color:#e7d4ae;background-image:linear-gradient(180deg,#faf0d851,#b99a642b),var(--slip-paper)}
+.game-dock #story-badge{animation:none;filter:drop-shadow(0 0 3px #ffc45e88)}
+/* Ingredients are the primary view; refilling is a compact secondary row. */
+#kitchen-footer.fridge-footer{max-height:47dvh;padding-top:10px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.recipe-ingredients{margin:0 0 10px;color:#f7e7c1}
+.recipe-ingredients>header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
+.recipe-ingredients h3{font:400 16px/1.5 var(--reading-serif);margin:0;color:#f7e7c1}
+#fridge-selection-status{font:400 13px/1.6 var(--reading-serif);color:#e5c276}
+.recipe-ingredient-cards{display:grid;grid-template-columns:repeat(var(--ingredient-columns),minmax(0,1fr));gap:8px}
+.required-ingredient{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;padding:7px 5px;background:#f3e6ca url('./assets/ui-washi-v21.webp') center/400px;border:2px solid #d2b470;box-shadow:0 2px 3px #0004;text-align:center;color:#51412a}
+.required-ingredient>.food-art{width:38px!important;height:38px;flex:0 0 38px;aspect-ratio:1;border:0;border-radius:0;padding:0;opacity:1;filter:none}
+.required-ingredient>b{font:500 13px/1.5 var(--reading-serif);overflow-wrap:anywhere}
+.required-ingredient>.ingredient-state{font:400 11px/1.5 var(--reading-serif);color:#8a632b;border:0;border-radius:0;padding:0;background:none}
+.required-ingredient.is-ready{border-color:#7e9a60;background-image:linear-gradient(#d5dfb844,#d5dfb844),url('./assets/ui-washi-v21.webp')}
+.required-ingredient.is-ready>.ingredient-state{color:#45683c;font-weight:600}
+.fridge-footer .stock-inspector{padding-top:8px;border-top:1px solid #c7a9744d;margin:0 0 10px}
+.fridge-footer .stock-inspector>div:first-child{margin-bottom:5px;font-size:12px}
+.fridge-footer .refill-order{grid-template-columns:126px minmax(0,1fr);gap:8px}
+.fridge-footer .quantity-stepper{grid-template-columns:44px minmax(30px,1fr) 44px;gap:2px}
+.fridge-footer .quantity-stepper button{min-width:44px;min-height:44px;height:44px;padding:5px;font-size:18px}
+.fridge-footer .quantity-stepper input{height:44px;width:100%;min-width:0;font-size:16px}
+#kitchen-footer.fridge-footer .refill-order>[data-refill]{min-height:44px;padding:7px 5px;font:400 12px/1.5 var(--reading-serif)}
+.fridge-footer>.primary{min-height:48px!important;padding:10px!important;font-size:15px!important}
+.paste-status{text-align:center;font:400 14px/1.8 var(--reading-serif);color:#f1d89b;margin:12px 18px}
+@media(max-width:359px){.sheet-header h2,#story-dialog .sheet-header h2,#report-dialog .sheet-header h2{font-size:21px}#story-content .story-choice-heading h3{font-size:20px}.recipe-ingredients h3{font-size:15px}.required-ingredient>b{font-size:14px}.recipe-ingredient-cards{gap:6px}#kitchen-back{font-size:12px}.fridge-footer .refill-order{grid-template-columns:122px minmax(0,1fr);gap:6px}}
+@media(prefers-reduced-motion:reduce){.kitchen-screen .room-hotspot.station-next span{animation:none}}
+:root{--sans:var(--reading-serif);--serif:var(--reading-serif);--brush:var(--reading-serif)}
+.cinema,.cinema button{font-family:'Noto Sans CJK KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif}
+.required-ingredient>.food-art{width:44px!important;height:44px;flex-basis:44px}
+.required-ingredient>b{font-size:14px}
+.required-ingredient>.ingredient-state{font-size:12px}
+.choice-arrow,.back-mark{display:none}

@@ -61,7 +61,7 @@
  }
  const pure={render,flowKind,actionKind,defaults};if(typeof module!=='undefined'&&module.exports){module.exports=pure;return}
  let ctx,master,analyser,compressor,enabled=true,activated=false;const loops=new Map(),plays={},active=new Set(),cache=new Map();try{enabled=localStorage.getItem('midnight-diner-sfx')!=='off'}catch{}
- const sampleFiles={pour:'pour-v22.wav','liquid-pour':'pour-v22.wav',batter:'pour-v22.wav','egg-pour':'pour-v22.wav',oil:'pour-v22.wav','oil-pour':'pour-v22.wav',wash:'pour-v22.wav',boil:'boil-v22.wav'};
+ const sampleFiles={paste:'paste-v23.wav','paste-scoop':'paste-v23.wav',pour:'pour-v22.wav','liquid-pour':'pour-v22.wav',batter:'pour-v22.wav','egg-pour':'pour-v22.wav',oil:'pour-v22.wav','oil-pour':'pour-v22.wav',wash:'pour-v22.wav',boil:'boil-v22.wav'};
  const encoded=new Map(),decoded=new Map(),decoding=new Set(),sampleErrors=[];
  const sampleRoot=new URL('./assets/sfx/',document.currentScript.src);
  function primeSamples(){if(!ctx)return;for(const [file,bytes]of encoded)if(!decoded.has(file)&&!decoding.has(file)){decoding.add(file);ctx.decodeAudioData(bytes.slice(0)).then(b=>decoded.set(file,b)).catch(()=>sampleErrors.push(file));}}

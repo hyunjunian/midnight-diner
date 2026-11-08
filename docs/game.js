@@ -43,8 +43,8 @@
   function renderReport() {
     const r=E.report(state),levelled=r.level>r.previousLevel,next=r.next;
     const reviews=r.reviews.length?`<div class="night-reviews" aria-label="이번 영업 손님 리뷰">${r.reviews.map(x=>`<article class="night-review">${x.person!==null?`<span class="review-face">${portrait(E.person(x.person),x.person)}</span>`:'<span class="review-note" aria-hidden="true">★</span>'}<div><header><b>${x.guest}</b><span>★ ${(x.score/20).toFixed(1)}</span></header><p>“${x.text}”</p><small>${x.dish}</small></div></article>`).join('')}</div>`:'<p class="review-empty">음식값을 받은 손님의 리뷰가 이곳에 남아요.</p>';
-    const goal=next?`<section class="next-goal"><h4>다음 레벨까지 한 걸음</h4><div class="goal-chips">${[[r.xp,next.xp,'성장'],[r.reputation,next.reputation,'평판'],[r.satisfaction,next.satisfaction,'만족도'],[r.atmosphere,next.atmosphere,'분위기']].map(([v,t,label])=>`<span class="${v>=t?'met':''}"><small>${v>=t?'✓ ':''}${label}</small><b>${v} / ${t}</b></span>`).join('')}</div><p>성장 <b>${r.remaining}점</b>을 더 모으고 네 조건을 채우면 레벨이 올라요.</p>${r.atmosphere<next.atmosphere?`<button data-go-shop>가게 꾸미기 · 분위기 ${next.atmosphere-r.atmosphere}점 더하기 →</button>`:''}</section>`:'<p class="max-level-message">백 가지 밤의 주인장이 되었어요.</p>';
-    $('report-content').innerHTML=`<div class="report-heading"><span class="night-stamp">第 ${state.night} 夜</span><h3>오늘 밤도 수고했어요</h3><p>${state.nightScores.length}명 대접 · 평균 만족도 ${r.average}점</p></div><section class="growth-banner ${levelled?'level-up':''}"><span class="level-tile">Lv.<b>${r.level}</b></span><div><small>${levelled?'LEVEL UP!':'오늘의 성장'}</small><h3>${E.levels[r.level-1].name}</h3>${levelled?`<p>Lv.${r.previousLevel} → Lv.${r.level}</p>`:''}${delta(r.xpDelta,'XP')}</div></section><section class="report-reputation report-metric"><div class="metric-heading"><div><h4>골목의 평판</h4><strong>${r.reputation}<small> / 100</small></strong></div>${delta(r.reputationDelta,'점')}</div>${reviews}</section><div class="report-metric-pair"><section class="report-metric"><h4>고객 만족도</h4><strong>${r.satisfaction}<small> / 100</small></strong>${delta(r.satisfactionDelta,'점')}</section><section class="report-metric"><h4>가게의 분위기</h4><strong>${r.atmosphere}<small>점</small></strong>${delta(r.atmosphereDelta,'점')}</section></div><section class="till-summary"><div class="till-heading"><span>오늘의 금고</span><strong>${yen(r.money)}</strong>${delta(r.net,'엔')}</div><div class="till-lines"><p><span>오늘 매출</span><b>${yen(r.revenue)}</b></p><p class="tip-income"><span>매출에 포함된 팁</span><b>+${yen(r.tips)}</b></p>${r.storyIncome?`<p><span>이야기의 답례</span><b class="income">+${yen(r.storyIncome)}</b></p>`:''}${r.purchases?`<p><span>재료·가게 구입</span><b class="expense">−${yen(r.purchases)}</b></p>`:''}${r.storyCosts?`<p><span>이야기에 보탠 비용</span><b class="expense">−${yen(r.storyCosts)}</b></p>`:''}<p><span>영업비 <small>임대·가스·전기</small></span><b class="expense">−${yen(r.expenses)}</b></p></div><small>총 성장 점수 ${r.xp.toLocaleString()} XP</small></section>${goal}${r.menus.length?`<section class="earned-gallery"><h4>이번 밤에 열린 새로운 한 끼</h4>${Array.from({length:Math.min(r.level,34)-r.previousLevel},(_,i)=>rewardGallery(r.previousLevel+i+1)).join('')}</section>`:''}${upcoming()}<button id="report-next" class="primary cook-button">다음 밤 준비 <span>→</span></button>`;
+    const goal=next?`<section class="next-goal"><h4>다음 레벨까지 한 걸음</h4><div class="goal-chips">${[[r.xp,next.xp,'성장'],[r.reputation,next.reputation,'평판'],[r.satisfaction,next.satisfaction,'만족도'],[r.atmosphere,next.atmosphere,'분위기']].map(([v,t,label])=>`<span class="${v>=t?'met':''}"><small>${v>=t?'✓ ':''}${label}</small><b>${v} / ${t}</b></span>`).join('')}</div><p>성장 <b>${r.remaining}점</b>을 더 모으고 네 조건을 채우면 레벨이 올라요.</p>${r.atmosphere<next.atmosphere?`<button data-go-shop>가게 꾸미기 · 분위기 ${next.atmosphere-r.atmosphere}점 더하기 </button>`:''}</section>`:'<p class="max-level-message">백 가지 밤의 주인장이 되었어요.</p>';
+    $('report-content').innerHTML=`<div class="report-heading"><span class="night-stamp">第 ${state.night} 夜</span><h3>오늘 밤도 수고했어요</h3><p>${state.nightScores.length}명 대접 · 평균 만족도 ${r.average}점</p></div><section class="growth-banner ${levelled?'level-up':''}"><span class="level-tile">Lv.<b>${r.level}</b></span><div><small>${levelled?'LEVEL UP!':'오늘의 성장'}</small><h3>${E.levels[r.level-1].name}</h3>${levelled?`<p>Lv.${r.previousLevel}  Lv.${r.level}</p>`:''}${delta(r.xpDelta,'XP')}</div></section><section class="report-reputation report-metric"><div class="metric-heading"><div><h4>골목의 평판</h4><strong>${r.reputation}<small> / 100</small></strong></div>${delta(r.reputationDelta,'점')}</div>${reviews}</section><div class="report-metric-pair"><section class="report-metric"><h4>고객 만족도</h4><strong>${r.satisfaction}<small> / 100</small></strong>${delta(r.satisfactionDelta,'점')}</section><section class="report-metric"><h4>가게의 분위기</h4><strong>${r.atmosphere}<small>점</small></strong>${delta(r.atmosphereDelta,'점')}</section></div><section class="till-summary"><div class="till-heading"><span>오늘의 금고</span><strong>${yen(r.money)}</strong>${delta(r.net,'엔')}</div><div class="till-lines"><p><span>오늘 매출</span><b>${yen(r.revenue)}</b></p><p class="tip-income"><span>매출에 포함된 팁</span><b>+${yen(r.tips)}</b></p>${r.storyIncome?`<p><span>이야기의 답례</span><b class="income">+${yen(r.storyIncome)}</b></p>`:''}${r.purchases?`<p><span>재료·가게 구입</span><b class="expense">−${yen(r.purchases)}</b></p>`:''}${r.storyCosts?`<p><span>이야기에 보탠 비용</span><b class="expense">−${yen(r.storyCosts)}</b></p>`:''}<p><span>영업비 <small>임대·가스·전기</small></span><b class="expense">−${yen(r.expenses)}</b></p></div><small>총 성장 점수 ${r.xp.toLocaleString()} XP</small></section>${goal}${r.menus.length?`<section class="earned-gallery"><h4>이번 밤에 열린 새로운 한 끼</h4>${Array.from({length:Math.min(r.level,34)-r.previousLevel},(_,i)=>rewardGallery(r.previousLevel+i+1)).join('')}</section>`:''}${upcoming()}<button id="report-next" class="primary cook-button">다음 밤 준비 <span></span></button>`;
   }
 
   function renderScene() {
@@ -93,8 +93,8 @@
   function renderTalk(){
     if(!$('guest-dialog').open)return;const g=state.guests.find(g=>g.id===selectedGuest&&g.status!=='left');if(!g){$('guest-dialog').close();return;}
     const p=E.person(g.person),profile=E.guestProfile(state,g.person),view=E.guestConversation(state,g.id),lines=view?null:talkLines(g),last=view?view.orderReady:talkIndex>=lines.length-1,other=state.kitchen&&state.kitchen.guest!==g.id;
-    let action=g.status==='paying'?(last?'계산 받기 →':'계산해 드릴게요 →'):g.status==='farewell'?(last?'조심히 돌아가세요 →':g.score<65?'말씀 새겨들을게요 →':g.score>=90?'맛있게 드셨다니 기뻐요 →':'들러 주셔서 고마워요 →'):'편히 드세요 · 자리로 돌아가기';
-    if(view)action=other?'진행 중인 요리를 먼저 마무리해 주세요':g.status==='waiting'?'접수한 주문 조리하러 가기 →':'주문 받고 부엌으로 →';
+    let action=g.status==='paying'?(last?'계산 받기 ':'계산해 드릴게요 '):g.status==='farewell'?(last?'조심히 돌아가세요 ':g.score<65?'말씀 새겨들을게요 ':g.score>=90?'맛있게 드셨다니 기뻐요 ':'들러 주셔서 고마워요 '):'편히 드세요 · 자리로 돌아가기';
+    if(view)action=other?'진행 중인 요리를 먼저 마무리해 주세요':g.status==='waiting'?'접수한 주문 조리하러 가기 ':'주문 받고 부엌으로 ';
     // Keep the live mesh and controls intact through HUD/inventory/timer updates.
     if($('guest-dialog').dataset.person!==String(g.person)){$('talk-portrait').innerHTML=portrait(p,g.person);$('guest-dialog').dataset.person=g.person;}
     $('talk-name').textContent=profile.name;
@@ -125,7 +125,7 @@
   }
   function renderStory(){
     const view=E.story(state),news=E.news(state),history=state.storyMemory.slice(-5).reverse(),key=JSON.stringify([view?.run,news,state.storyMemory.length,view?.run.cast.map(id=>E.guestProfile(state,id).known)]);
-    if(key===storyRenderKey&&$('story-content').childElementCount){if(view?.run.step===0)for(const choice of view.definition.choices){const button=$('story-content').querySelector(`[data-choice="${choice.id}"]`);if(button)button.disabled=!E.canChoose(state,choice);}return;}storyRenderKey=key;window.MidnightVoice?.stop();
+    if(key===storyRenderKey&&$('story-content').childElementCount){if(view?.run.step===0)for(const choice of view.definition.choices){const button=$('story-content').querySelector(`[data-choice="${choice.id}"]`);if(button)button.disabled=!E.canChoose(state,choice);}return;}storyRenderKey=key;
     $('story-tag').textContent=state.event==='pending'?'주인장의 선택 · 이어지는 이야기':'골목에 남은 기억';
     $('story-title').textContent=view?view.definition.title:'다음 밤에 도착한 소식';
     const memories=`<section class="story-journal"><h4>가게의 작은 수첩</h4>${history.length?history.map(t=>{const st=E.storyContent.stories.find(x=>x.id===t.id),c=st.choices.find(x=>x.id===t.choice);return `<details><summary>${t.night}번째 밤 · ${st.title}</summary><p>${c.result}</p></details>`}).join(''):'<p>손님 둘이 모이면 오늘 밤의 이야기가 시작돼요.</p>'}</section>`;
@@ -134,19 +134,19 @@
     const {run,definition,choice,reflection}=view,cast=run.cast.map(id=>E.person(id));
     const text=t=>t.replaceAll('{a}',cast[0].name).replaceAll('{b}',cast[1].name);
     const faces=`<div class="story-cast-strip">${run.cast.map(id=>`<div class="story-cast-chip"><span class="story-mini-face">${portrait(E.person(id),id)}</span><span><b>${E.guestProfile(state,id).name}</b><small>${E.guestProfile(state,id).role||'아직 이야기를 나누지 않은 손님'}</small></span></div>`).join('')}</div>`;
-    const dialogue=`<div class="story-voice-controls"><button data-story-voice>듣기 · 잠시 멈추기 ♫</button><button data-story-replay>처음부터 듣기 ↻</button><p id="story-voice-status" role="status">손님들의 목소리로 이야기를 들어요.</p></div><div class="story-chat" aria-label="손님들의 대화">${definition.lines.map((line,i)=>{
+    const dialogue=`<div class="story-chat" aria-label="손님들의 대화">${definition.lines.map((line,i)=>{
       const actor=line.startsWith('{b}')?1:line.startsWith('{a}')?0:i%2,id=run.cast[actor],p=cast[actor],words=text(line).replace(new RegExp('^'+p.name+'[：:]\\s*'),'');
       return `<article class="story-message ${actor?'from-right':''}" data-speaker="${id}"><div class="story-chat-face" aria-label="${E.guestProfile(state,id).name}">${portrait(p,id)}</div><div class="story-message-body"><b>${E.guestProfile(state,id).name}</b><p>${words}</p></div></article>`;
     }).join('')}</div>`;
     const prompt=(n,title)=>`<div class="story-choice-heading"><span>${n} / 2 · 당신의 선택</span><h3>${title}</h3><p>마음이 가는 행동 하나를 골라 주세요.</p></div>`;
     if(run.step===0){
-      $('story-content').innerHTML=followups+faces+`<div class="story-scene"><span>오늘 밤, 카운터에서</span><p>${definition.intro}</p></div>`+dialogue+`<button class="story-answer-jump" data-story-jump>내가 할 일 고르기 · ${definition.choices.length}가지 선택 ↓</button><section id="story-decision">`+prompt(1,'주인장인 당신은 어떻게 할까요?')+`<div class="story-choices">${definition.choices.map((c,i)=>{
+      $('story-content').innerHTML=followups+faces+`<div class="story-scene"><span>오늘 밤, 카운터에서</span><p>${definition.intro}</p></div>`+dialogue+`<button class="story-answer-jump" data-story-jump>내가 할 일 고르기 · ${definition.choices.length}가지 선택 </button><section id="story-decision">`+prompt(1,'주인장인 당신은 어떻게 할까요?')+`<div class="story-choices">${definition.choices.map((c,i)=>{
         const available=E.canChoose(state,c),cost=[c.money<0?`${yen(-c.money)} 사용`:'',...Object.entries(c.ingredients||{}).map(([id,n])=>`${E.ingredients[id].name} ${n}개`)].filter(Boolean).join(' · ');
-        return `<button class="story-choice-card" data-choice="${c.id}" ${available?'':'disabled'}><span class="choice-number">${available?String(i+1).padStart(2,'0'):'잠김'}</span><span class="choice-copy"><b>${c.label}</b><small>${available?cost||'부담 없이 이야기를 나눠요':`${cost} 필요 · 냉장고에서 준비해 주세요`}</small></span><span class="choice-arrow" aria-hidden="true">${available?'→':'◇'}</span></button>`;
+        return `<button class="story-choice-card" data-choice="${c.id}" ${available?'':'disabled'}><span class="choice-number">${available?String(i+1).padStart(2,'0'):'잠김'}</span><span class="choice-copy"><b>${c.label}</b><small>${available?cost||'부담 없이 이야기를 나눠요':`${cost} 필요 · 냉장고에서 준비해 주세요`}</small></span><span class="choice-arrow" aria-hidden="true">${available?'':'◇'}</span></button>`;
       }).join('')}</div></section>`;return;
     }
-    if(run.step===1){$('story-content').innerHTML=faces+`<div class="story-result"><span>당신의 마음이 닿았어요</span><p>${choice.result}</p></div>`+prompt(2,'이 밤을 어떻게 남길까요?')+`<div class="story-choices">${E.storyContent.reflection.map((c,i)=>`<button class="story-choice-card" data-choice="${c.id}"><span class="choice-number">0${i+1}</span><span class="choice-copy"><b>${c.label}</b><small>${i?'다음 만남을 약속해요':'오늘의 기억을 간직해요'}</small></span><span class="choice-arrow" aria-hidden="true">→</span></button>`).join('')}</div>`;return;}
-    $('story-content').innerHTML=followups+faces+`<div class="story-result"><span>오늘 밤의 이야기</span><p>${choice?.result||'오늘 손님들과 나눈 이야기가 가게의 기억으로 남았어요.'}</p></div><p class="story-memory">${reflection?.text||''}</p><p class="story-next">다음 영업일에 이 선택의 소식이 도착해요.</p><button class="story-finish primary" data-close="story-dialog">이 온기를 안고 가게로 돌아가기 →</button>`+memories;
+    if(run.step===1){$('story-content').innerHTML=faces+`<div class="story-result"><span>당신의 마음이 닿았어요</span><p>${choice.result}</p></div>`+prompt(2,'이 밤을 어떻게 남길까요?')+`<div class="story-choices">${E.storyContent.reflection.map((c,i)=>`<button class="story-choice-card" data-choice="${c.id}"><span class="choice-number">0${i+1}</span><span class="choice-copy"><b>${c.label}</b><small>${i?'다음 만남을 약속해요':'오늘의 기억을 간직해요'}</small></span><span class="choice-arrow" aria-hidden="true"></span></button>`).join('')}</div>`;return;}
+    $('story-content').innerHTML=followups+faces+`<div class="story-result"><span>오늘 밤의 이야기</span><p>${choice?.result||'오늘 손님들과 나눈 이야기가 가게의 기억으로 남았어요.'}</p></div><p class="story-memory">${reflection?.text||''}</p><p class="story-next">다음 영업일에 이 선택의 소식이 도착해요.</p><button class="story-finish primary" data-close="story-dialog">이 온기를 안고 가게로 돌아가기 </button>`+memories;
   }
 
   function renderShop(){
@@ -186,14 +186,19 @@
     $('open-status').textContent = state.phase === 'prep' ? '영업 준비' : state.phase === 'end' ? '오늘 영업 끝' : '영업 중';
     renderClock();
     const canClose = E.canClose(state);
-    $('night-action').disabled = state.phase === 'open' && !canClose;
-    $('night-action').innerHTML = state.phase === 'prep' ? '식당 불 켜기 <span>↗</span>' : state.phase === 'end' ? '오늘의 영업보고 <span>→</span>' : canClose ? '밤 마무리하기 · 영업보고 <span>☾</span>' : `${Math.min(3,Math.floor(state.nightScores.length/3)+1)} / 3사이클 · ${state.nightScores.length} / ${state.target}끼`;
-    $('service-hint').textContent = state.phase === 'prep' ? (E.stockPlan(state,3).units?'아래 재료 준비를 먼저 확인해 주세요.':'재료가 준비됐어요. 식당 불을 켜고 손님을 맞이해요.') : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요. 반짝이는 이야기 버튼을 눌러 답해 주세요.' : state.guests.some(g=>g.status==='paying')?'식사를 마친 손님의 별점 위 금액을 눌러 결제해 주세요.':'손님을 눌러 대화하고 주문을 받아 주세요.';
+    const serving=state.phase==='open'&&!canClose;
+    $('night-action').hidden=serving;
+    $('night-action').disabled=serving;
+    $('service-progress').hidden=!serving;
+    $('service-progress').innerHTML=`<span>손님맞이 <b>${Math.min(3,Math.floor(state.nightScores.length/3)+1)} / 3</b></span><i aria-hidden="true"></i><span>대접 <b>${state.nightScores.length} / ${state.target}</b></span>`;
+    document.querySelector('.service-bar').classList.toggle('is-serving',serving);
+    $('night-action').innerHTML = state.phase === 'prep' ? '식당 불 켜기 <span></span>' : state.phase === 'end' ? '오늘의 영업보고 <span></span>' : canClose ? '밤 마무리하기 · 영업보고 <span>☾</span>' : '';
+    $('service-hint').textContent = state.phase === 'prep' ? (E.stockPlan(state,3).units?'아래 재료 준비를 먼저 확인해 주세요.':'재료가 준비됐어요. 식당 불을 켜고 손님을 맞이해요.') : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요.\n반짝이는 이야기 버튼을 눌러 답해 주세요.' : state.guests.some(g=>g.status==='paying')?'식사를 마친 손님의 별점 위 금액을 눌러 결제해 주세요.':'손님을 눌러 대화하고 주문을 받아 주세요.';
     $('night-action').classList.toggle('close-ready',canClose);
     const nextLevel=E.levels.find(l=>l.level>state.level);
     $('progress-hud').innerHTML=`<b>Lv.${state.level}</b><span class="hud-atmosphere">분위기 ${E.atmosphere(state)}${nextLevel?` / ${nextLevel.atmosphere}`:''}</span><span>만족도 ${E.satisfaction(state)} · 성장 ${state.xp}${nextLevel?` / ${nextLevel.xp}`:' · MAX'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}"></progress>`;
     renderStockPrep();renderScene();renderTalk();renderStory();renderManagement();save();
-    $('story-badge').hidden=state.event!=='pending'&&!state.nightNews.length;
+    $('story-badge').hidden=!E.storyNeedsAttention(state);
     if (state.phase==='end') renderReport();
     maybeStory();
   }
@@ -269,19 +274,16 @@
     if (!$(id).open) $(id).showModal();
   }
   function maybeStory() {
-    if (!$('app').hidden && (state.event === 'pending'||state.nightNews.length)) $('story-open').classList.add('story-waiting'); else $('story-open').classList.remove('story-waiting');
+    if (!$('app').hidden && E.storyNeedsAttention(state)) $('story-open').classList.add('story-waiting'); else $('story-open').classList.remove('story-waiting');
   }
   document.addEventListener('click', event => {
     const close = event.target.closest('[data-close]');
     if (!close) return;
-    if(close.dataset.close==='story-dialog')window.MidnightVoice?.stop();
     $(close.dataset.close).close();
-    if (close.dataset.close !== 'story-dialog') maybeStory();
+    maybeStory();
   });
   $('report-content').addEventListener('click',e=>{if(e.target.closest('[data-go-shop]')){tab='shop';$('report-dialog').close();renderManagement();openSheet('management-dialog');return;}if(e.target.closest('#report-next') && E.next(state)){resetTransient();$('report-dialog').close();Scene.showArea('inside');render();}});
-  $('story-open').addEventListener('click',()=>{storyRenderKey='';renderStory();openSheet('story-dialog');window.MidnightVoice?.play();});
-  $('story-dialog').addEventListener('close',()=>window.MidnightVoice?.stop());
-  $('story-dialog').addEventListener('click',event=>{if(event.target.closest('[data-story-voice]'))window.MidnightVoice?.toggle();if(event.target.closest('[data-story-replay]'))window.MidnightVoice?.play();});
+  $('story-open').addEventListener('click',()=>{E.markStoryRead(state);storyRenderKey='';render();openSheet('story-dialog');});
   function soundLabel(){if(FX){$('sound-effects').textContent=FX.enabled?'조리·게임 효과음 · 켜짐':'조리·게임 효과음 · 꺼짐';$('sound-effects').setAttribute('aria-pressed',String(FX.enabled));}}
   $('sound-effects').addEventListener('click',()=>{FX?.setEnabled(!FX.enabled);soundLabel();});soundLabel();
   $('settings-open').addEventListener('click', () => openSheet('settings-dialog'));

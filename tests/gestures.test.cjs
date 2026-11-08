@@ -10,3 +10,8 @@ test('every displayed guide path satisfies the same gesture recognizer',()=>{for
 test('cut guides update; heat has no food swipe and measuring requires its target',()=>{assert.equal(G.guide('heat').length,0);assert.equal(G.guide('cut',{cuts:[0,2]}).length,1);assert.equal(G.guide('cut',{cuts:[0,2]})[0].points[0][0],.5);assert.equal(path('measure',[[.5,.25],[.5,.5],[.5,.8]]),false);assert.ok(path('measure',[[.3,.4],[.5,.48],[.72,.6]]));});
 
 test('paste uses a spoon to scoop and return; wrapping travels vertically onto the front',()=>{for(const id of ['paste','wrap']){const path=G.guide(id)[0].points,g=G.begin(id,...path[0]);for(const p of path.slice(1))G.move(g,...p);assert.ok(G.valid(g),id);}const horizontal=G.begin('wrap',.12,.5);G.move(horizontal,.3,.5);G.move(horizontal,.65,.5);assert.equal(G.valid(horizontal),false);});
+test('paste accepts a short jar-to-bowl drag and rejects the old reverse path',()=>{
+ const forward=G.begin('paste',.3,.4);G.move(forward,.74,.68);assert.ok(G.valid(forward));
+ const reverse=G.begin('paste',.74,.68);G.move(reverse,.3,.4);assert.equal(G.valid(reverse),false);
+ const tap=G.begin('paste',.3,.4);G.move(tap,.31,.4);assert.equal(G.valid(tap),false);
+});

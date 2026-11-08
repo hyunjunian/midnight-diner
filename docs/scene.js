@@ -19,8 +19,8 @@
   function showArea(next) {
     area = next; pan = 0;
     $('scene').classList.toggle('outside',area==='outside');
-    $('area-toggle').textContent = area==='inside' ? '가게 밖 보기 ↗' : '가게 안 보기 ↙';
-    $('pan-hint').textContent = area==='inside' ? '← 좌우로 밀어 가게를 둘러보세요 →' : '가게 앞도 나만의 모습으로 꾸며요';
+    $('area-toggle').textContent = area==='inside' ? '가게 밖 보기 ' : '가게 안 보기 ';
+    $('pan-hint').textContent = area==='inside' ? ' 좌우로 밀어 가게를 둘러보세요 ' : '가게 앞도 나만의 모습으로 꾸며요';
     if(current) render(current,selected,cookingNow);
     placePan();
   }

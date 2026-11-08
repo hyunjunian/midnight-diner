@@ -12,11 +12,11 @@
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const safari = /Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Edg|CriOS/.test(navigator.userAgent);
     $('install-guide').hidden = false;
-    $('install-guide').innerHTML = ios ? '<p>Safari에서 <b>공유 ↑ → 홈 화면에 추가</b>를 선택해 주세요.</p><p>설치한 심야식당 아이콘을 누르면 게임이 시작됩니다.</p>' : safari ? '<p>Safari의 <b>파일 → Dock에 추가</b>를 선택해 주세요.</p><p>Dock의 심야식당 아이콘에서 게임을 실행해 주세요.</p>' : '<p>Chrome 또는 Edge의 주소창에 있는 <b>설치 아이콘</b>이나 브라우저 메뉴의 <b>앱 설치 / 홈 화면에 추가</b>를 선택해 주세요.</p><p>설치한 심야식당 아이콘을 누르면 게임이 시작됩니다.</p>';
+    $('install-guide').innerHTML = ios ? '<p>Safari에서 <b>공유   홈 화면에 추가</b>를 선택해 주세요.</p><p>설치한 심야식당 아이콘을 누르면 게임이 시작됩니다.</p>' : safari ? '<p>Safari의 <b>파일  Dock에 추가</b>를 선택해 주세요.</p><p>Dock의 심야식당 아이콘에서 게임을 실행해 주세요.</p>' : '<p>Chrome 또는 Edge의 주소창에 있는 <b>설치 아이콘</b>이나 브라우저 메뉴의 <b>앱 설치 / 홈 화면에 추가</b>를 선택해 주세요.</p><p>설치한 심야식당 아이콘을 누르면 게임이 시작됩니다.</p>';
   }
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault(); installPrompt = event;
-    $('install-app').textContent = '앱 설치하기 ↓';
+    $('install-app').textContent = '앱 설치하기 ';
     $('install-hint').textContent = '한 번 설치하면 인터넷 없이도 식당을 열 수 있어요.';
   });
   $('install-app').addEventListener('click', async () => {
