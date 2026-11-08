@@ -25,8 +25,8 @@
   const signed = n => `${n >= 0 ? '+' : ''}${n}`;
   function portrait(p, i) { return Scene.character(i); }
   const basicFood=['rice','nori','egg','dashi','pork','miso','salmon'];
-  function food(id){const item=E.ingredients[id]||E.recipes[id];let file,index,rows;
-    if(E.recipes[id]){file=`menu-${item.sheet}`;index=item.art;rows=3;}
+  function food(id,eaten=false){const item=E.ingredients[id]||E.recipes[id];let file,index,rows;
+    if(E.recipes[id]){file=`${eaten?'used-menu':'menu'}-${item.sheet}`;index=item.art;rows=3;}
     else{const n=Object.keys(E.ingredients).indexOf(id);file=`stock-anime-${Math.floor(n/12)+1}`;index=n%12;rows=3;}
     return `<span class="food-art" role="img" aria-label="${item.name}" data-food="${id}" style="--food-file:url('./assets/${file}.webp');--food-rows:${rows*100}%;--food-x:${index%4*100/3}%;--food-y:${Math.floor(index/4)*100/(rows-1)}%;--food-ratio:${E.recipes[id]?'3/4':'1'}"></span>`;
   }
@@ -61,7 +61,7 @@
       const status={seated:'대화하기',waiting:'주문 접수',eating:'식사 중',paying:'계산할게요',farewell:'배웅하기'};
       el.querySelector('.customer-name').textContent=`${p.name}${E.regular(state,g.person)?' · 단골':''} · ${status[g.status]}`;
       const served=el.querySelector('.served-dish'),hasDish=['eating','paying','farewell'].includes(g.status);served.hidden=!hasDish;
-      if(hasDish&&served.dataset.recipe!==g.recipe){served.innerHTML=food(g.recipe)+'<span class="dish-steam"></span><span class="empty-plate"></span>';served.dataset.recipe=g.recipe;served.classList.add('dish-arriving');}
+      if(hasDish&&served.dataset.recipe!==g.recipe){served.innerHTML=food(g.recipe)+'<span class="dish-steam"></span><span class="eaten-dish">'+food(g.recipe,true)+'</span>';served.dataset.recipe=g.recipe;served.classList.add('dish-arriving');}
       served.classList.toggle('finished-meal',g.status!=='eating');
       el.querySelector('.dining-chopsticks').hidden=g.status!=='eating';const payment=el.querySelector('.customer-payment');payment.hidden=g.status!=='paying';payment.dataset.pay=g.id;
       if(g.status==='paying')payment.innerHTML=`<b>${yen(g.bill.total)}</b><span class="five-stars" aria-label="만족도 ${g.score}점, 5점 만점에 ${(g.score/20).toFixed(1)}점"><i style="width:${g.score}%">★★★★★</i><em>★★★★★</em></span><small>${(g.score/20).toFixed(1)} / 5 · 눌러 수금</small>`;
@@ -143,13 +143,22 @@
     if(!view){$('story-content').innerHTML=followups+memories;return;}
     const {run,definition,choice,reflection}=view,cast=run.cast.map(id=>E.person(id));
     const text=t=>t.replaceAll('{a}',cast[0].name).replaceAll('{b}',cast[1].name);
-    const faces=`<div class="conversation-cast">${run.cast.map(id=>`<div>${portrait(E.person(id),id)}</div>`).join('')}</div>`;
+    const faces=`<div class="story-cast-strip">${run.cast.map(id=>`<div class="story-cast-chip"><span class="story-mini-face">${portrait(E.person(id),id)}</span><span><b>${E.person(id).name}</b><small>${E.person(id).role}</small></span></div>`).join('')}</div>`;
+    const dialogue=`<div class="story-chat" aria-label="손님들의 대화">${definition.lines.map((line,i)=>{
+      const actor=line.startsWith('{b}')?1:line.startsWith('{a}')?0:i%2,id=run.cast[actor],p=cast[actor],words=text(line).replace(new RegExp('^'+p.name+'[：:]\\s*'),'');
+      return `<article class="story-message ${actor?'from-right':''}"><div class="story-chat-face" aria-label="${p.name}">${portrait(p,id)}</div><div class="story-message-body"><b>${p.name}</b><p>${words}</p></div></article>`;
+    }).join('')}</div>`;
+    const prompt=(n,title)=>`<div class="story-choice-heading"><span>${n} / 2 · 당신의 선택</span><h3>${title}</h3><p>마음이 가는 행동 하나를 골라 주세요.</p></div>`;
     if(run.step===0){
-      $('story-content').innerHTML=followups+faces+`<p class="story-scene">${definition.intro}</p><div class="story-dialogue">${definition.lines.map(t=>`<p>${text(t)}</p>`).join('')}</div><span class="story-step">1 / 2 · 어떻게 손을 내밀까요?</span><div class="story-choices">${definition.choices.map(c=>{const cost=[c.money<0?`${yen(-c.money)} 사용`:'',...Object.entries(c.ingredients||{}).map(([id,n])=>`${E.ingredients[id].name} ${n}개`)].filter(Boolean).join(' · ');return `<button data-choice="${c.id}" ${E.canChoose(state,c)?'':'disabled'}>${c.label}<small>${E.canChoose(state,c)?cost||'지금 할 수 있어요':`${cost} 필요 · 재료나 자금을 준비해 주세요`}</small></button>`}).join('')}</div>`;return;
+      $('story-content').innerHTML=followups+faces+`<div class="story-scene"><span>오늘 밤, 카운터에서</span><p>${definition.intro}</p></div>`+dialogue+`<button class="story-answer-jump" data-story-jump>내가 할 일 고르기 · ${definition.choices.length}가지 선택 ↓</button><section id="story-decision">`+prompt(1,'주인장인 당신은 어떻게 할까요?')+`<div class="story-choices">${definition.choices.map((c,i)=>{
+        const available=E.canChoose(state,c),cost=[c.money<0?`${yen(-c.money)} 사용`:'',...Object.entries(c.ingredients||{}).map(([id,n])=>`${E.ingredients[id].name} ${n}개`)].filter(Boolean).join(' · ');
+        return `<button class="story-choice-card" data-choice="${c.id}" ${available?'':'disabled'}><span class="choice-number">${available?String(i+1).padStart(2,'0'):'잠김'}</span><span class="choice-copy"><b>${c.label}</b><small>${available?cost||'부담 없이 이야기를 나눠요':`${cost} 필요 · 냉장고에서 준비해 주세요`}</small></span><span class="choice-arrow" aria-hidden="true">${available?'→':'◇'}</span></button>`;
+      }).join('')}</div></section>`;return;
     }
-    if(run.step===1){$('story-content').innerHTML=faces+`<p class="story-result">${choice.result}</p><span class="story-step">2 / 2 · 오늘의 마음을 남기기</span><div class="story-choices">${E.storyContent.reflection.map(c=>`<button data-choice="${c.id}">${c.label}</button>`).join('')}</div>`;return;}
-    $('story-content').innerHTML=followups+faces+`<p class="story-result">${choice?.result||'오늘 손님들과 나눈 이야기가 가게의 기억으로 남았어요.'}</p><p class="story-memory">${reflection?.text||''}</p><p class="story-next">이 선택의 소식이 다음 영업일에 도착해요.</p>`+memories;
+    if(run.step===1){$('story-content').innerHTML=faces+`<div class="story-result"><span>당신의 마음이 닿았어요</span><p>${choice.result}</p></div>`+prompt(2,'이 밤을 어떻게 남길까요?')+`<div class="story-choices">${E.storyContent.reflection.map((c,i)=>`<button class="story-choice-card" data-choice="${c.id}"><span class="choice-number">0${i+1}</span><span class="choice-copy"><b>${c.label}</b><small>${i?'다음 만남을 약속해요':'오늘의 기억을 간직해요'}</small></span><span class="choice-arrow" aria-hidden="true">→</span></button>`).join('')}</div>`;return;}
+    $('story-content').innerHTML=followups+faces+`<div class="story-result"><span>오늘 밤의 이야기</span><p>${choice?.result||'오늘 손님들과 나눈 이야기가 가게의 기억으로 남았어요.'}</p></div><p class="story-memory">${reflection?.text||''}</p><p class="story-next">다음 영업일에 이 선택의 소식이 도착해요.</p><button class="story-finish primary" data-close="story-dialog">이 온기를 안고 가게로 돌아가기 →</button>`+memories;
   }
+
   function renderManagement() {
     const rescue = E.rescueNeeds(state) ? '<div class="rescue-box"><span>재료 살 돈이 부족한가요? 이웃 상인이 이번 주문에 필요한 재료를 나눠 줘요.</span><button data-rescue="true">도움받기 · 평판 −3</button></div>' : '';
     document.querySelectorAll('[data-tab]').forEach(b => { b.classList.toggle('active', b.dataset.tab === tab); b.setAttribute('aria-pressed', String(b.dataset.tab === tab)); });
@@ -222,8 +231,9 @@
   });
   $('management-content').addEventListener('input',event=>{if(event.target.id!=='menu-search')return;const pos=event.target.selectionStart;menuQuery=event.target.value;renderManagement();const input=$('menu-search');input.focus({preventScroll:true});input.setSelectionRange(pos,pos);});
   $('story-content').addEventListener('click', event => {
+    if(event.target.closest('[data-story-jump]')){$('story-decision')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
     const button = event.target.closest('[data-choice]');
-    if (button && E.resolveEvent(state, button.dataset.choice)) { render(); toast(state.event==='pending'?'그다음 이야기가 이어집니다.':'이 선택의 소식이 다음 밤에 도착해요.'); }
+    if (button && E.resolveEvent(state, button.dataset.choice)) { render(); $('story-dialog').scrollTop=0; toast(state.event==='pending'?'그다음 이야기가 이어집니다.':'이 선택의 소식이 다음 밤에 도착해요.'); }
   });
   const sheetIds = ['report-dialog', 'guest-dialog', 'management-dialog', 'story-dialog', 'settings-dialog'];
   function anySheetOpen() { return sheetIds.some(id => $(id).open); }
