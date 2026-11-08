@@ -1,11 +1,11 @@
 (() => {
   'use strict';
   const E = window.MidnightEngine;
-  const KEY = 'midnight-diner-save-v7';
+  const KEY = 'midnight-diner-save-v8';
   const $ = id => document.getElementById(id);
   const yen = n => `¥${n.toLocaleString('ja-JP')}`;
   let state, storageAvailable = true, saveMessage = '';
-  try { state = E.restore(localStorage.getItem(KEY) || localStorage.getItem('midnight-diner-save-v6') || localStorage.getItem('midnight-diner-save-v5') || localStorage.getItem('midnight-diner-save-v4') || localStorage.getItem('midnight-diner-save-v2'), localStorage.getItem('midnight-diner-save-v1')); }
+  try { state = E.restore(localStorage.getItem(KEY) || localStorage.getItem('midnight-diner-save-v7') || localStorage.getItem('midnight-diner-save-v6') || localStorage.getItem('midnight-diner-save-v5') || localStorage.getItem('midnight-diner-save-v4') || localStorage.getItem('midnight-diner-save-v2'), localStorage.getItem('midnight-diner-save-v1')); }
   catch { state = E.fresh(); saveMessage = '저장 정보를 읽지 못해 새 식당을 준비했습니다.'; }
   let selectedGuest=null,tab='pantry',talkIndex=0,cashAnimation=null;
   const Kitchen=window.MidnightKitchen;
@@ -27,9 +27,8 @@
   const basicFood=['rice','nori','egg','dashi','pork','miso','salmon'];
   function food(id){const item=E.ingredients[id]||E.recipes[id];let file,index,rows;
     if(E.recipes[id]){file=`menu-${item.sheet}`;index=item.art;rows=3;}
-    else if(item.sheet){file=item.sheet;index=item.art%12;rows=3;}
-    else{file='food-clean';index=basicFood.indexOf(id);rows=4;}
-    return `<span class="food-art" role="img" aria-label="${item.name}" data-food="${id}" style="--food-file:url('./assets/${file}.webp');--food-rows:${rows*100}%;--food-x:${index%4*100/3}%;--food-y:${Math.floor(index/4)*100/(rows-1)}%;--food-ratio:${rows===3?'3/4':'1'}"></span>`;
+    else{const n=Object.keys(E.ingredients).indexOf(id);file=`stock-anime-${Math.floor(n/12)+1}`;index=n%12;rows=3;}
+    return `<span class="food-art" role="img" aria-label="${item.name}" data-food="${id}" style="--food-file:url('./assets/${file}.webp');--food-rows:${rows*100}%;--food-x:${index%4*100/3}%;--food-y:${Math.floor(index/4)*100/(rows-1)}%;--food-ratio:${E.recipes[id]?'3/4':'1'}"></span>`;
   }
   function levelNote(level) {
     const l = E.levels[level - 1];

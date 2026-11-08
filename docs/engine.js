@@ -14,6 +14,7 @@
     salmon: { name: '연어', icon: '🐟', price: 160 },
   };
   Object.assign(ingredients,C.ingredients);
+  ingredients.vegetables.name='양배추·대파';
   const recipes=C.recipes;
   for(const [id,r]of Object.entries(recipes)){
     r.family=/onigiri/.test(id)?'riceball':/udon|soba|ramen|tantan/.test(id)?'noodle':/soup|misoshiru|tonjiru|nabe|shabu|sukiyaki/.test(id)?'soup':/katsu|fry|tempura|karaage|croquette/.test(id)?'fry':/egg|tamago|omelette|chawan/.test(id)?'egg':'plate';
@@ -136,7 +137,7 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version:7,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    version:8,stoveTutorialDone:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
     totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:2,miso:2,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
     unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [], special: 'onigiri',
@@ -156,9 +157,9 @@
     }
     if (!raw) return s;
     const v=JSON.parse(raw);
-    if(v&&[2,3,4,5,6].includes(v.version)&&v.inventory&&typeof v.inventory==='object'&&!Array.isArray(v.inventory))for(const id of Object.keys(C.ingredients))if(v.inventory[id]===undefined)v.inventory[id]=0;
+    if(v&&[2,3,4,5,6,7].includes(v.version)&&v.inventory&&typeof v.inventory==='object'&&!Array.isArray(v.inventory))for(const id of Object.keys(C.ingredients))if(v.inventory[id]===undefined)v.inventory[id]=0;
     const integer = (n, min = 0, max = 1e9) => Number.isSafeInteger(n) && n >= min && n <= max;
-    if (!v || ![2,3,4,5,6,7].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
+    if (!v || ![2,3,4,5,6,7,8].includes(v.version) || typeof v.introSeen !== 'boolean' || !integer(v.night, 1) ||
       !['prep', 'open', 'end'].includes(v.phase) || !integer(v.money) || !integer(v.reputation, 0, 100) ||
       !integer(v.totalServed) || !v.inventory || !Object.keys(ingredients).every(id => integer(v.inventory[id], 0, 999)) ||
       !Array.isArray(v.unlocked) || !['onigiri', 'tamago', 'tonjiru'].every(id => v.unlocked.includes(id)) ||
@@ -174,7 +175,7 @@
         ['seated','waiting','eating','paying','farewell','left'].includes(g.status) && integer(g.score, 0, 100) && (g.waitMs===undefined || (Number.isFinite(g.waitMs)&&g.waitMs>=0&&g.waitMs<=1e9))) ||
       new Set(v.guests.map(g => g.seat)).size !== v.guests.length ||
       new Set(v.guests.map(g => g.id)).size !== v.guests.length) throw new Error('Invalid save');
-    const restored = { ...s, ...v,version:7,lastResult:null };
+    const restored = { ...s, ...v,version:8,stoveTutorialDone:typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
     if (v.version === 2) {
       restored.xp = v.totalServed * 70;
       restored.satisfactionTotal = v.totalServed * 70;
@@ -215,13 +216,15 @@
     }else{
       const validBill=b=>b&&['score','base','tip','total','preparation','heat','waitPenalty'].every(k=>integer(b[k]))&&b.score<=100&&b.base+b.tip===b.total;
       if(!restored.guests.every(g=>(g.eatMs===undefined||integer(g.eatMs,0,1e9))&&(!['eating','paying'].includes(g.status)||validBill(g.bill))&&(!g.bill||validBill(g.bill))))throw new Error('Invalid meal bill');
-      if(v.version===6&&v.kitchen){v.kitchen={...v.kitchen,step:0,marks:[],stage:'room'};}
+      if(v.version<8&&v.kitchen){v.kitchen={...v.kitchen,step:0,marks:[],stage:'room'};}
       const k=v.kitchen;
       if(k!==null){
         const g=restored.guests.find(g=>g.id===k?.guest&&g.status==='waiting');
         if(!g||!['room','fridge','process','complete'].includes(k.stage)||!Array.isArray(k.selected)||new Set(k.selected).size!==k.selected.length||!k.selected.every(id=>Object.hasOwn(ingredients,id))||!Array.isArray(k.marks)||!k.marks.every(q=>Number.isFinite(q)&&q>=0&&q<=1)||!integer(k.step,0,Cooking.plan(g.recipe,recipes[g.recipe]).length)||k.marks.length!==k.step)throw new Error('Invalid kitchen progress');
         // An interrupted action restarts this step, not the whole recipe or order.
-        restored.kitchen={guest:k.guest,stage:k.stage,selected:[...k.selected],step:k.step,marks:[...k.marks]};
+        const selected=k.selected.filter(id=>recipes[g.recipe].ingredients.includes(id));
+        if(v.version===8&&selected.length!==k.selected.length)throw new Error('Unrelated kitchen ingredients');
+        restored.kitchen={guest:k.guest,stage:k.stage,selected,step:k.step,marks:[...k.marks]};
       }
     }
     progress(restored);return restored;
@@ -301,8 +304,8 @@
   }
   function acceptOrder(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='seated');if(s.phase!=='open'||!g)return false;g.status='waiting';return true;}
   function beginCooking(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='waiting');if(s.phase!=='open'||!g)return false;if(s.kitchen)return s.kitchen.guest===id;s.kitchen={guest:id,stage:'room',selected:[],step:0,marks:[]};return true;}
-  function selectIngredient(s,id){const k=s.kitchen;if(!k||k.step||!ingredientAvailable(s,id)||s.inventory[id]<1)return false;k.selected=k.selected.includes(id)?k.selected.filter(x=>x!==id):[...k.selected,id];return true;}
-  function readyIngredients(s){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest&&g.status==='waiting');return !!g&&recipes[g.recipe].ingredients.every(id=>k.selected.includes(id)&&s.inventory[id]>0)&&k.selected.every(id=>ingredientAvailable(s,id)&&s.inventory[id]>0);}
+  function selectIngredient(s,id){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest);if(!k||!g||!recipes[g.recipe].ingredients.includes(id)||k.step||!ingredientAvailable(s,id)||s.inventory[id]<1)return false;k.selected=k.selected.includes(id)?k.selected.filter(x=>x!==id):[...k.selected,id];return true;}
+  function readyIngredients(s){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest&&g.status==='waiting');return !!g&&k.selected.length===recipes[g.recipe].ingredients.length&&recipes[g.recipe].ingredients.every(id=>k.selected.includes(id)&&s.inventory[id]>0)&&k.selected.every(id=>ingredientAvailable(s,id)&&s.inventory[id]>0);}
   function prepareIngredients(s){if(!s.kitchen||s.kitchen.step||!readyIngredients(s))return false;s.kitchen.stage='process';return true;}
   function completeCookingStep(s,quality){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest&&g.status==='waiting');if(!g||k.stage!=='process'||!readyIngredients(s)||!Number.isFinite(quality)||quality<0||quality>1)return false;const steps=Cooking.plan(g.recipe,recipes[g.recipe]);if(k.step>=steps.length)return false;k.marks.push(quality);k.step++;if(k.step===steps.length)k.stage='complete';return true;}
   function deliver(s){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest&&g.status==='waiting');if(!g||k.stage!=='complete'||!readyIngredients(s))return null;const steps=Cooking.plan(g.recipe,recipes[g.recipe]);if(k.step!==steps.length)return null;

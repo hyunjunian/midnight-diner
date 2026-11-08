@@ -2,7 +2,7 @@
 (() => {
   const step=(id,title,action,station,art,goal=1)=>({id,title,action,station,art,goal});
   const lid=()=>step('lid','밥솥 열기','뚜껑을 잡고 위로 밀어 열어 주세요.','rice','rice-closed');
-  const portion=()=>step('portion','밥 담기','왼쪽 밥솥에서 오른쪽 그릇으로 세 주걱 끌어 담으세요.','rice','rice-open',3);
+  const portion=()=>step('portion','밥 담기','주걱을 위로 들어 밥을 뜬 뒤 그릇 쪽으로 내려 주세요.','rice','rice-open',3);
   const cut=()=>step('cut','재료 손질','칼을 집어 들고 표시된 선을 따라 위에서 아래로 썰어 주세요.','board','board',4);
   const oil=required=>({...step('oil','팬 준비',required?'기름병을 눌러 팬에 기름을 둘러 주세요.':'기름을 얇게 두르거나 마른 팬으로 구울 수 있어요.','stove','pan'),required});
   const heat=(art='pan',title='불 조절')=>step('heat',title,'다이얼을 돌려 불을 조절하고 초록 구간에서 0으로 돌려 꺼 주세요.','stove',art);
@@ -16,11 +16,16 @@
     if(/tamago|omelette/.test(id)&&!r.ingredients.includes('rice'))return'egg';
     return r.ingredients.includes('rice')?'ricebowl':'pan';
   }
-  function plan(id,r){const f=family(id,r),assemble=()=>step('assemble','서빙 접시에 옮겨 담기','왼쪽의 조리된 음식을 오른쪽 서빙 그릇까지 직접 끌어 놓으세요.','board','plate',1);
-    if(f==='riceball')return[lid(),portion(),step('shape','세모로 빚기','가장자리에서 가운데로 손을 밀어 세모 모양을 잡으세요.','board','shape',3),oil(false),{...heat('pan','앞뒤로 굽기'),flip:true},...(r.ingredients.includes('nori')?[step('wrap','김 두르기','왼쪽 김을 오른쪽 주먹밥으로 끌어 감싸세요.','board','nori')]:[]),assemble()];
-    if(f==='egg')return[step('beat','달걀 풀기','그릇 안에서 원을 그리며 달걀을 직접 저으세요.','board','egg-bowl',3),oil(true),step('pour','달걀물 붓기','왼쪽 달걀물을 오른쪽 팬으로 끌어 부으세요.','stove','egg-pan'),{...heat('egg-pan','익히고 말기'),flip:true},assemble()];
+  function cookPlan(id,r){const f=family(id,r),assemble=()=>step('assemble','서빙 접시에 옮겨 담기','조리 도구를 위로 들어 음식이 담긴 그릇 쪽으로 부드럽게 내려 주세요.','board','plate',1);
+    if(f==='riceball')return[lid(),portion(),step('shape','세모로 빚기','가장자리에서 가운데로 손을 밀어 세모 모양을 잡으세요.','board','shape',3),oil(false),{...heat('pan','앞뒤로 굽기'),flip:true},...(r.ingredients.includes('nori')?[step('wrap','김 두르기','김의 가장자리를 잡아 주먹밥을 감싸 주세요.','board','nori')]:[]),assemble()];
+    if(f==='egg')return[step('beat','달걀 풀기','그릇 안에서 원을 그리며 달걀을 직접 저으세요.','board','egg-bowl',3),oil(true),step('pour','달걀물 붓기','달걀 그릇을 잡고 팬 쪽으로 천천히 기울여 주세요.','stove','egg-pan'),{...heat('egg-pan','익히고 말기'),flip:true},assemble()];
     if(f==='cold')return[cut(),step('season','간 맞추기','왼쪽 양념을 오른쪽 재료로 끌어 골고루 더하세요.','board','cold',2),assemble()];
-    return[cut(),...(f==='soup'?[step('broth','국물 붓기','왼쪽 육수를 오른쪽 냄비까지 끌어 부으세요.','stove','soup',2)]:[]),heat(f==='noodle'?'noodles':f==='soup'?'soup':f==='fry'?'fryer':'pan','재료 익히기'),...(f==='noodle'?[step('drain','면 건지기','위로 끌어 면을 건져 주세요.','stove','noodles')]:[]),assemble()];
+    return[cut(),...(f==='soup'?[step('broth','국물 붓기','계량한 다시를 냄비 쪽으로 기울여 부어 주세요.','stove','soup',2)]:[]),heat(f==='noodle'?'noodles':f==='soup'?'soup':f==='fry'?'fryer':'pan','재료 익히기'),...(f==='noodle'?[step('drain','면 건지기','위로 끌어 면을 건져 주세요.','stove','noodles')]:[]),assemble()];
   }
-  const api={family,plan};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
+  const prepOrder=['rice','nori','egg','dashi','pork','miso','salmon','tofu','vegetables','mushroom','noodles','flour','shrimp','chicken','beef','tuna','soy','butter','milk','potato','cheese','clam','scallops','oyster','crab','sugar','fish','scallion'];
+  const names={rice:'쌀',nori:'김',egg:'달걀',dashi:'다시',pork:'돼지고기',miso:'된장',salmon:'연어',tofu:'두부',vegetables:'양배추',scallion:'대파',mushroom:'버섯',noodles:'면',flour:'밀가루',shrimp:'새우',chicken:'닭고기',beef:'소고기',tuna:'참치',soy:'간장',butter:'버터',milk:'우유',potato:'감자',cheese:'치즈',clam:'바지락',scallops:'가리비',oyster:'굴',crab:'게살',sugar:'설탕',fish:'생선'};
+  function prepMode(id){if(['pork','salmon','tofu','vegetables','scallion','mushroom','chicken','beef','tuna','butter','cheese','fish'].includes(id))return'cut';if(['rice','noodles','clam','scallops','oyster'].includes(id))return'wash';if(['shrimp','potato','crab'].includes(id))return'peel';if(id==='egg')return'crack';if(id==='nori')return'fold';return'measure';}
+  function preparations(r){return r.ingredients.flatMap(id=>(id==='vegetables'?['vegetables','scallion']:[id]).map(part=>{const mode=prepMode(part),name=names[part],verb={cut:'썰기',wash:'씻기',peel:'손질',crack:'깨기',fold:'접기',measure:'계량'}[mode];return {...step('prep',`${name} ${verb}`,{cut:`${name}만 도마에 올렸어요. 칼을 들고 재료 위를 세 번 썰어 주세요.`,wash:`${name}에 물을 더하고 부드럽게 원을 그리며 씻어 주세요.`,peel:`${name}의 겉부분을 잡고 바깥쪽으로 벗겨 주세요.`,crack:'달걀을 그릇 가장자리 쪽으로 내린 뒤 벌려 주세요.',fold:'김의 가장자리를 가운데로 접어 주세요.',measure:`${part==='miso'?'된장 한 숟갈을 덜어 준비해 주세요.':`${name} 한 분량을 계량컵에 덜어 준비해 주세요.`} 용기를 아래로 기울여 덜어 주세요.`}[mode],'board','ingredient',mode==='cut'?3:1),ingredient:id,part,mode,art:prepOrder.indexOf(part)};}));}
+  function plan(id,r){return [...preparations(r),...cookPlan(id,r).filter(st=>st.id!=='cut'&&st.id!=='season'&&st.id!=='oil')];}
+  const api={family,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
 })();
