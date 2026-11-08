@@ -13,6 +13,7 @@
   const purchaseQuantities={},upgradeQuantities={};let prepExpanded=false,shopTheme='all';
   let menuFilter='all',menuQuery='',storyRenderKey='';
   const seenCustomers = new Set();
+  let updatePaused=false;
   let toastTimer, feedbackTimer, raf, lastFrame = 0, openingUntil=0, lastClock=0;
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); storageAvailable = true; }
@@ -220,11 +221,11 @@
     maybeStory();
   }
   function tryArrival() {
-    if (performance.now()<openingUntil || Scene.isPlacing() || $('app').hidden || $('intro').open || document.hidden || $('settings-dialog').open || $('reset-dialog').open) return;
+    if (updatePaused || performance.now()<openingUntil || Scene.isPlacing() || $('app').hidden || $('intro').open || document.hidden || $('settings-dialog').open || $('reset-dialog').open) return;
     const g = E.arrive(state);
     if (g) { E.conversation(state); render(); }
   }
-  function resetTransient(){prepExpanded=false;selectedGuest=null;talkIndex=0;Kitchen.hide();}
+  function resetTransient(){Kitchen.clearCheckpoint?.();prepExpanded=false;selectedGuest=null;talkIndex=0;Kitchen.hide();}
   $('stock-prep').addEventListener('click',event=>{if(event.target.closest('[data-prep-reset]')){state.prepChoice=null;prepExpanded=true;renderStockPrep();save();return;}const button=event.target.closest('[data-restock]');if(!button||button.disabled)return;const result=E.restock(state,Number(button.dataset.restock));if(result){prepExpanded=false;FX?.play('buy');render();}});
   $('night-action').addEventListener('click', () => {
     if (state.phase === 'prep') { E.open(state);FX?.play('open'); openingUntil=performance.now()+1400;resetTransient(); Scene.showArea('inside'); render(); setTimeout(tryArrival,1450); }
@@ -368,8 +369,17 @@
   function finishIntro() {
     if (!$('intro').open) return;
     video.pause(); $('intro').close(); state.introSeen = true;
-    $('app').hidden=false;lastFrame=0;render();if(state.kitchen)Kitchen.show();
+    enterGame();
   }
+  function enterGame() { $('app').hidden=false;lastFrame=0;render();if(state.kitchen)Kitchen.show(); }
+  function setUpdatePaused(paused) {
+    updatePaused=!!paused;lastFrame=0;
+    if(paused){Kitchen.suspendForUpdate?.();if($('intro').open&&!video.paused){videoWasPlaying=true;video.pause();}FX?.stopCooking();}
+    else if(videoWasPlaying&&$('intro').open){videoWasPlaying=false;playVideo(!video.muted);}
+    document.dispatchEvent(new Event('midnight:update-state'));
+  }
+  function saveForUpdate(){return save() && Kitchen.checkpoint?.()!==false;}
+  function resumeAfterUpdate(){if(state.introSeen)enterGame();else startIntro();}
   function startIntro() {
     if ($('intro').open) return;
     for (const id of sheetIds) if ($(id).open) $(id).close();
@@ -401,7 +411,7 @@
   $('intro').addEventListener('cancel', event => { event.preventDefault(); finishIntro(); });
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) { videoWasPlaying = $('intro').open && !video.paused; if (videoWasPlaying) video.pause(); }
-    else if (videoWasPlaying && $('intro').open) { videoWasPlaying = false; playVideo(!video.muted); }
+    else if (!updatePaused && videoWasPlaying && $('intro').open) { videoWasPlaying = false; playVideo(!video.muted); }
   });
   $('replay').addEventListener('click', () => { if (state.kitchen) return toast('조리 중인 한 끼를 먼저 내어 주세요.'); startIntro(); });
   $('reset').addEventListener('click', () => { if (state.kitchen) return toast('조리 중인 한 끼를 먼저 내어 주세요.'); $('reset-dialog').showModal(); });
@@ -411,7 +421,7 @@
   });
   function frame(now){const dt=lastFrame?Math.min(now-lastFrame,100):0;lastFrame=now;
     if(cashAnimation){const progress=Math.max(0,Math.min(1,(now-cashAnimation.start-450)/650));$('money').textContent=yen(Math.round(cashAnimation.from+(cashAnimation.to-cashAnimation.from)*(1-(1-progress)**3)));if(progress===1)cashAnimation=null;}
-    if(!document.hidden&&!$('app').hidden&&!$('reset-dialog').open&&!$('settings-dialog').open&&!$('intro').open){
+    if(!updatePaused&&!document.hidden&&!$('app').hidden&&!$('reset-dialog').open&&!$('settings-dialog').open&&!$('intro').open){
       Kitchen.tick(dt);
       if(state.phase==='open'&&!Scene.isPlacing()){
         state.nightElapsedMs=Math.min(1e9,Math.round((state.nightElapsedMs||0)+dt));
@@ -431,7 +441,7 @@
   });
   Kitchen.init({getState:()=>state,food,toast,openPantry:()=>{tab='pantry';renderManagement();openSheet('management-dialog');},clearToast:()=>{$('kitchen-inline-feedback')?.remove();clearTimeout(toastTimer);$('toast').classList.remove('visible');},changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
   render();
-  window.MidnightApp = { launch: startIntro, save, isCooking:()=>Boolean(state.kitchen) };
+  window.MidnightApp = { launch:startIntro,resumeAfterUpdate,save,saveForUpdate,setUpdatePaused,isCooking:()=>Boolean(state.kitchen) };
   if (saveMessage) toast(saveMessage);
   raf = requestAnimationFrame(frame);
 })();

@@ -5,9 +5,31 @@
   const FX=window.MidnightAudio,L=window.MidnightCookingLayout;
   const setStage=name=>{$('kitchen-screen').dataset.stage=name;};
   let completedKitchen=null,retainedKitchen=null;
+  const CHECKPOINT='midnight-diner-cooking-checkpoint-v1';
   let bridge,view='room',visible=false,stepKey='',local={},doors={fridge:false,freezer:false},pages={fridge:0,freezer:0},down=null,skipClick=0;
   const state=()=>bridge.getState(),order=()=>state().guests.find(g=>g.id===state().kitchen?.guest),recipe=()=>E.recipes[order()?.recipe],plan=()=>R.plan(order().recipe,recipe()),step=()=>plan()[state().kitchen.step];
-  function resetStep(){const key=`${state().night}-${order().id}-${state().kitchen.step}`;if(stepKey===key)return;stepKey=key;local={count:0,done:false,quality:1,heat:0,power:0,started:false,flipped:false,flipQuality:1,oil:null,knife:true,cutSlots:[],tutorial:0,toolX:.35,toolY:.22,fill:0,motion:0,practiceScore:0,practiceGood:false,demoUntil:0};}
+  function resetStep(){const key=`${state().night}-${order().id}-${state().kitchen.step}`;if(stepKey===key)return;stepKey=key;local={count:0,done:false,quality:1,heat:0,power:0,started:false,flipped:false,flipQuality:1,oil:null,knife:true,cutSlots:[],tutorial:0,toolX:.35,toolY:.22,fill:0,motion:0,practiceScore:0,practiceGood:false,demoUntil:0};restoreCheckpoint();}
+  function checkpointKey(){const k=state().kitchen;return k?`${state().night}-${k.guest}-${order()?.recipe}-${k.stage}-${k.step}`:null;}
+  function clearCheckpoint(){try{localStorage.removeItem(CHECKPOINT);}catch{}}
+  function suspendForUpdate(){down=null;local.motion=0;FX?.stopCooking();}
+  function checkpoint(){
+    if(!bridge)return false;
+    try {const key=checkpointKey();if(!key){localStorage.removeItem(CHECKPOINT);return true;}
+      if(retainedKitchen!==state().kitchen||!Number.isFinite(local.count))return true;
+      localStorage.setItem(CHECKPOINT,JSON.stringify({key,local:{...local,motion:0,demoUntil:0},view,doors,pages}));return true;
+    }catch{return false;}
+  }
+  function restoreCheckpoint(){
+    try {const saved=JSON.parse(localStorage.getItem(CHECKPOINT)||'null');if(saved?.key!==checkpointKey()||!saved.local)return;
+      const data=saved.local,st=step();if(!st)return;
+      for(const key of ['count','heat','power','fill','quality','flipQuality','toolX','toolY'])if(!Number.isFinite(data[key]))return;
+      if(data.count<0||data.count>st.goal||data.heat<0||data.heat>1||data.power<0||data.power>1.6||data.fill<0||data.fill>1||data.quality<0||data.quality>1||data.flipQuality<0||data.flipQuality>1)return;
+      if(!Array.isArray(data.cutSlots)||data.cutSlots.some(x=>![0,1,2].includes(x))||new Set(data.cutSlots).size!==data.cutSlots.length)return;
+      Object.assign(local,{count:data.count,heat:data.heat,power:data.power,fill:data.fill,quality:data.quality,flipQuality:data.flipQuality,toolX:data.toolX,toolY:data.toolY,cutSlots:data.cutSlots,done:!!data.done,started:!!data.started,flipped:!!data.flipped,oil:data.oil===true,knife:true,motion:0});
+      for(const key of ['fridge','freezer'])doors[key]=!!saved.doors?.[key];
+      for(const key of ['fridge','freezer'])if(Number.isInteger(saved.pages?.[key])&&saved.pages[key]>=0)pages[key]=saved.pages[key];
+    }catch{}
+  }
   function show(){
     const k=state().kitchen;visible=true;$('kitchen-screen').classList.remove('immersive-heat');$('kitchen-screen').classList.toggle('kitchen-upgraded',E.hasUpgrade(state(),'fridge'));$('kitchen-screen').hidden=false;$('app').classList.add('in-kitchen');
     if(!k){view='room';header();room();document.dispatchEvent(new Event('midnight:kitchen'));return;}
@@ -245,5 +267,5 @@
     if(local.heat>=1){stopHeat();if(state().stoveTutorialDone)bridge.toast('불을 늦게 껐어요. 다음에는 초록 구간에서 멈춰 주세요.');}
   }
 
-  window.MidnightKitchen={init,open,show,hide,tick,isVisible:()=>visible};
+  window.MidnightKitchen={init,open,show,hide,tick,checkpoint,clearCheckpoint,suspendForUpdate,isVisible:()=>visible};
 })();
