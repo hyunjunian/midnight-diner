@@ -94,7 +94,7 @@
     return {ideal:[.65,.56,.74,.48,.68,.77,.61][i%7]+shift,prepIdeal:.48+((s.night+i)%4)*.055,
       prepTime:Math.max(2100,2900-s.level*55),heatTime:Math.max(3600,5400-s.level*130),tolerance:Math.max(.095,.18-s.level*.009)+F.benefits(s).tolerance,band:Math.max(.065,.11-s.level*.004)+F.benefits(s).tolerance};
   }
-  const openings=['긴 하루 끝에 이 불빛이 보여서 들어왔어요.','오늘은 든든하게 한 끼 먹고 싶네요.','문을 여니 좋은 냄새가 먼저 반겨 주네요.','이 시간에 따뜻한 밥을 먹을 수 있어 다행이에요.','조금 멀리 돌아왔는데, 여기까지 오길 잘했어요.','바깥은 바쁜데 여기는 시간이 천천히 흐르네요.','오늘은 평소와 다른 맛을 먹어 보고 싶어요.','잠깐 쉬었다 가려고요. 편한 자리가 있네요.','친구가 이 골목의 작은 가게를 알려 줬어요.','이런 나무 카운터 앞에 앉으면 마음이 놓여요.','배가 고픈 줄도 모르고 하루를 보냈네요.','들어오자마자 한결 편안해졌어요.'];
+  const openings=['긴 하루 끝에 이 불빛이 보여서 들어왔어요.','오늘은 든든하게 한 끼 먹고 싶네요.','문을 여니 좋은 냄새가 먼저 반겨 주네요.','이 시간에 편히 식사할 수 있어 다행이에요.','조금 멀리 돌아왔는데, 여기까지 오길 잘했어요.','바깥은 바쁜데 여기는 시간이 천천히 흐르네요.','오늘은 평소와 다른 맛을 먹어 보고 싶어요.','잠깐 쉬었다 가려고요. 편한 자리가 있네요.','친구가 이 골목의 작은 가게를 알려 줬어요.','이런 나무 카운터 앞에 앉으면 마음이 놓여요.','배가 고픈 줄도 모르고 하루를 보냈네요.','들어오자마자 한결 편안해졌어요.'];
   const requests=['{dish}, 부탁드릴게요.','오늘은 {dish}, 이게 가장 당기네요.','{dish}, 천천히 즐기고 싶어요.','저는 오늘 {dish}, 먹어 보고 싶어요.','하루 끝에 {dish}, 괜찮겠죠?','{dish}, 이 가게만의 맛이 궁금해요.','{dish}, 준비해 주실래요?','{dish}, 정성껏 부탁해요.','{dish}, 오늘은 이걸로 정했어요.','{dish}, 기다리는 동안 잠깐 쉬어 갈게요.'];
   function dialogue(g) {
     const k=g.lineKey||0,begin=openings[k%openings.length],end=requests[Math.floor(k/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
@@ -134,8 +134,8 @@
     welcome:'어서 오세요. 편히 앉으세요.',
     day:'오늘은 어떤 하루를 보내셨어요?',
     menu:'우선 드시고 싶은 음식을 여쭤볼게요.',
-    warm:'저는 따뜻한 밥과 국이 생각나요.',
-    quiet:'말없이 편히 쉴 수 있는 한 끼가 좋아요.',
+    warm:'그날 좋은 재료로 만든 음식을 먹고 싶어요.',
+    quiet:'천천히 맛보며 쉬어 갈 수 있는 한 끼가 좋아요.',
     about:'괜찮다면, 자기소개를 조금 더 해 주실래요?',
     order:'오늘 드실 음식을 준비해 드릴까요?',
   };
@@ -155,7 +155,7 @@
   ];
   function guestProfile(s,id){
     const p=person(id),known=(s.customerBook[id]?.known||[]).filter(x=>guestFacts.includes(x));
-    return {known,name:known.includes('name')?p.name:(s.customerBook[id]?.visits>1?'낯익은 손님':'처음 만난 손님'),
+    return {known,name:known.includes('name')?p.name:(s.customerBook[id]?.visits>1?'낯익은 손님':'손님'),
       role:known.includes('role')?p.role:null,age:known.includes('age')?p.age:null,
       style:known.includes('style')?p.style:null,bio:known.includes('bio')?p.bio:null};
   }
@@ -176,14 +176,14 @@
       offer('warm','warm');offer('quiet','quiet');
       if(!profile.known.includes('age'))offer('about','about');
     }else if(node==='warm'||node==='quiet'){
-      line=node==='warm'?'맞아요. 따뜻한 밥 냄새만 맡아도 긴장이 풀릴 때가 있죠. 오늘도 그런 한 끼를 먹고 싶네요.':'그런 자리도 꼭 필요하죠. 이곳에서는 서두르지 않아도 될 것 같아 마음이 놓여요.';
+      line=node==='warm'?`재료에 따라 매번 다른 맛을 만나는 것도 좋죠. 저는 오늘 ${recipes[g.recipe].name}, 그걸 먹고 싶어요.`:`그런 자리도 꼭 필요하죠. 오늘은 ${recipes[g.recipe].name} 먹으면서 느긋하게 쉬어 가고 싶네요.`;
       offer('order','order');if(!profile.known.includes('age'))offer('about','about');
     }else if(node==='about'){
       line=`저는 ${p.age}예요. ${guestJobs[g.person%guestJobs.length]}\n${guestDays[g.person%guestDays.length]} 제 이야기를 들어 주셔서 고마워요.`;
       offer('order','order');
     }else{
       caption=g.status==='waiting'?'접수한 주문':'오늘의 주문';
-      line=g.status==='waiting'?`${recipes[g.recipe].name}, 따뜻하게 기다리고 있을게요.`:requests[Math.floor((g.lineKey||0)/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
+      line=g.status==='waiting'?`${recipes[g.recipe].name}, 편히 기다리고 있을게요.`:requests[Math.floor((g.lineKey||0)/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
     }
     return {node,line,caption,choices,orderReady:node==='order',
       playerLine:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};

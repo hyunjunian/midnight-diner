@@ -119,13 +119,13 @@ test('new cooking images are explicitly limited to the five early pilot dishes u
 
 test('guest identity is discovered through chosen dialogue and never by arrival or viewing',()=>{
  const {s,g}=setup(),before=structuredClone(s);
- assert.deepEqual(E.guestProfile(s,g.person),{known:[],name:'처음 만난 손님',role:null,age:null,style:null,bio:null});
+ assert.deepEqual(E.guestProfile(s,g.person),{known:[],name:'손님',role:null,age:null,style:null,bio:null});
  const hello=E.guestConversation(s,g.id);assert.equal(hello.node,'hello');assert.equal(hello.orderReady,false);assert.deepEqual(s,before);
  assert.equal(E.answerGuest(s,g.id,'about'),false);assert.deepEqual(s,before);
  assert.equal(E.answerGuest(s,g.id,'welcome'),true);assert.equal(E.guestProfile(s,g.person).name,E.person(g.person).name);assert.equal(E.guestProfile(s,g.person).role,null);assert.equal(E.guestProfile(s,g.person).age,null);assert.ok(E.guestProfile(s,g.person).style);
  assert.equal(E.answerGuest(s,g.id,'day'),true);assert.equal(E.guestProfile(s,g.person).role,E.person(g.person).role);assert.equal(E.guestProfile(s,g.person).age,null);assert.ok(E.guestConversation(s,g.id).line.includes('주인장님은'));
  assert.deepEqual(E.guestConversation(s,g.id).choices.map(x=>x.id),['warm','quiet','about']);
- assert.equal(E.answerGuest(s,g.id,'warm'),true);const warm=E.guestConversation(s,g.id).line;assert.match(E.guestConversation(s,g.id).playerLine,/따뜻한 밥/);
+ assert.equal(E.answerGuest(s,g.id,'warm'),true);const warm=E.guestConversation(s,g.id).line;assert.match(E.guestConversation(s,g.id).playerLine,/좋은 재료/);assert.ok(warm.includes(E.recipes[g.recipe].name));
  assert.equal(E.answerGuest(s,g.id,'about'),true);assert.equal(E.guestProfile(s,g.person).age,E.person(g.person).age);assert.match(E.guestConversation(s,g.id).line,/세예요/);
  assert.equal(E.answerGuest(s,g.id,'order'),true);assert.equal(E.guestConversation(s,g.id).orderReady,true);assert.match(E.guestConversation(s,g.id).line,new RegExp(E.recipes[g.recipe].name));
  assert.equal(s.money,before.money);assert.equal(s.xp,before.xp);assert.equal(s.totalServed,0);assert.equal(g.status,'seated');
@@ -167,4 +167,10 @@ test('completed stories stop attention and read news stays read after reload',()
  const view=E.story(s),choice=view.definition.choices.find(c=>E.canChoose(s,c));assert.ok(E.resolveEvent(s,choice.id));assert.ok(E.resolveEvent(s,E.storyContent.reflection[0].id));assert.equal(E.storyNeedsAttention(s),false);
  const st=E.storyContent.stories.find(x=>x.choices.some(c=>c.future)),c=st.choices.find(x=>x.future);s.nightNews=[{id:st.id,choice:c.id,night:s.night}];assert.ok(E.storyNeedsAttention(s));E.markStoryRead(s);assert.equal(E.storyNeedsAttention(s),false);assert.equal(E.storyNeedsAttention(E.restore(JSON.stringify(s))),false);
  const old=JSON.parse(JSON.stringify(s));delete old.nightNewsRead;assert.equal(E.storyNeedsAttention(E.restore(JSON.stringify(old))),false,'old completed stories do not light again');
+});
+test('conversation preferences name the actual dish and preserve balanced unlocked menu variety',()=>{
+ for(const level of [1,2,3,20,34]){const s=E.fresh();s.level=level;s.money=100000;E.progress(s);E.open(s);const menu=[...s.unlocked],orders=[];
+  for(let wave=0;wave<3;wave++){const guests=Array.from({length:3},()=>E.arrive(s));for(const [i,g]of guests.entries()){const assigned=g.recipe;for(const reply of ['welcome','day',i%2?'quiet':'warm'])assert.ok(E.answerGuest(s,g.id,reply));assert.equal(g.recipe,assigned);assert.ok(E.guestConversation(s,g.id).line.includes(E.recipes[assigned].name));assert.ok(E.answerGuest(s,g.id,'order'));assert.ok(E.guestConversation(s,g.id).line.includes(E.recipes[assigned].name));orders.push(assigned);cook(s,g);pay(s,g)}}
+  assert.equal(new Set(orders).size,Math.min(9,menu.length));const counts=menu.map(id=>orders.filter(x=>x===id).length);assert.ok(Math.max(...counts)-Math.min(...counts)<=1);
+ }
 });

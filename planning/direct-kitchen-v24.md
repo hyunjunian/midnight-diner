@@ -1,0 +1,36 @@
+# Direct kitchen controls and quiet physical feedback (v24)
+
+The v11 save key and data are retained. Refrigerator/freezer doors are the controls, with no opening tabs. Closed doors have a full-face touch target; the open painted door has a separate at-least44px edge target for closing, so the projected image never disables the action. Closed compartments remain inert. A small local glow identifies a needed compartment's handle. Required ingredients are compact illustrated slips; a bold tick appears directly before a selected ingredient name. Refill controls retain44px targets.
+
+Enabled main actions have a raised wood lip, cast shadow and two small lifts followed by a long rest. Pressing compresses the plaque. The individual scale/translate properties preserve centered resume-button positioning. Disabled actions and completed story attention never pulse; reduced-motion keeps the static physical plaque. Service progress becomes a tiny printed line above a compact two-line hint, directly above the dock. HUD progress uses a brass inlay in timber rather than the browser's green progress color.
+
+Unknown guests no longer have a row of overlapping “처음 만난 손님 · 대화하기” buttons. The character remains the touch target; learned names and service state fit their own counter position. Dialogue's owner response no longer implies rice/soup-only orders: guests mention their actual assigned dish. Existing balanced unlocked-menu selection remains unchanged.
+
+Reports use21px titles/22px greeting,19px growth headings and23px numeric gains; reward headings18px and menu labels12px. Word wrapping preserves whole Korean dish words, including 덮밥. Growth has a semantic progress bar with the exact remaining score; reputation, satisfaction and atmosphere have separate progress/remaining requirements. Earned levels and the four-condition progression rules are unchanged.
+
+## Audio sources and treatment
+
+New local PCM16 mono44.1kHz files, with restrained gain, bounded fades and no background playback:
+
+| File | Source, author and license | Application |
+| --- | --- | --- |
+| `whisk-v24.wav` | **Beating Eggs**, touchysound, Freesound132474, CC0. https://freesound.org/people/touchysound/sounds/132474/ . Obtained from the attributed public mirror `enzoweiss21/enzos-bakeria`, `Assets/Audio/SFX/whisk_loop.wav` at commit `fd8c1a523a560dbc3515077a322d046d1acee6b7`. The mirror's preparation script clips source6–9.25s and closes the loop. License also corroborated by SoundSpool's indexed entry. | Actual egg-beating recording replaces the synthetic whisk. Plays as one loop only while circular hand movement continues, pauses after160ms without movement, stops on release/cancel/leave/mute. No overlapping200ms one-shots and no commit replay. |
+| `cut-v24.wav` | **General Household Sound Effects**, bretbernhoft, CC0. https://opengameart.org/content/general-household-sound-effects . Attributed mirror `baumgartner-games/vr`, `public/audio/kitchen/chop-board-0.ogg` at commit `9c6122d027b7f24ac8f47a121189d2ae58421f6b7`:0.25s cut from `kitchencuttingboard01.wav`. | Knife contacting an actual kitchen cutting board on each valid cut. |
+| `fry-v24.wav` | Same bretbernhoft collection/CC0; mirror `public/audio/kitchen/sizzle.ogg`:4s from `fryingpan01.wav`, starting20s. | Real pan frying loop responds to burner power; boil retains its separate recording. |
+| `wash-v24.wav` | Same collection/CC0; mirror `public/audio/kitchen/water.ogg`:2.2s from `kitchensink02.wav`, starting40s. | Washing uses running water rather than the liquid-measuring recording. |
+| `rice-utensil-v24.wav` | **RPG Audio**, Kenney, CC0. https://kenney.nl/assets/rpg-audio . `Audio/metalPot1.ogg`, obtained from the attributed `enzoweiss21/enzos-bakeria` mirror `Assets/Audio/SFX/bowl_add.ogg`. | A quiet utensil/vessel contact replaces the wet synthetic rice pulse. Low-pass1400Hz and conservative gain. This is utensil contact, not a claimed recording of cooked rice being scooped. |
+| `complete-furin-v24.wav` | **Furin japanese wind chime.wav**, ayustat2001, Freesound501168, CC0. https://freesound.org/people/ayustat2001/sounds/501168/ . Individual page confirms CC0. Attributed mirror `billpwchan/sakura-fantasy`, `public/assets/audio/furin_0.mp3`, commit `3d367e92331b70118cfaa728dc7b8bc4bb4da009`; `pipeline/audio/build.py` identifies original501168. | Short2.4s acoustic Japanese wind-chime completion cue instead of the synthesized four-note tune. Plays once per completed dish. |
+
+Existing liquid207781/boiling recordings and miso squelch sources remain documented in quiet-service-v22.md/service-clarity-v23.md. No scene/rain/dining/arrival scheduler or dialogue speech is restored. Other cooking mappings were reviewed: dry measuring, nori, peel/shell/crack, lid and plating retain their bounded material-specific models; this release does not claim all those effects were newly recorded. The actual egg-pour/oil source remains the filtered liquid recording, pending a suitable cleared recording. No arbitrary raw-grain or egg-cracking clip is substituted for cooked rice or poured beaten egg.
+
+This executor has no supported subjective audio listening input. Verification covers decoded real files, routing, signal levels, one-shot counts and stopping/silence; no direct audition is claimed.
+
+## Gas handle art
+
+`assets/gas-knob-v24.webp` is a generated isolated worn Bakelite gas-stove handle with a raised grip and an ivory index tick, from image_gen output `/workspace/generated_images/exec-130aec55-7205-4ccb-b83e-10f96617cbd8.png`. Encoded at256px with true alpha. Only the handle rotates; its collar stays fixed. The approved intro, main kitchen background and save stay unchanged.
+
+## Cooking artwork and validation
+
+The cooking-image rollout remains the previously requested initial five dishes. Fifteen lighting-only source variants remove remaining daylight from their preparation, measuring, pouring, wrapping and heating steps; see [the full115-sheet night audit](cooking-night-v24.md). Six new food-condition scenes preserve raw/scorched appearance in plating and onigiri wrapping without darkening cookware; see [condition-scene provenance](plating-v24.md). The other95 recipes' exact heat/save/service data paths were checked, with their existing imagery retained for the next approved rollout.
+
+Final validation:85 Node tests pass, including balanced menu distribution and100 recipes × four heat states through save/plating/completion/service/payment. Chromium320/393/430px verifies door open/close, compact checks/refill, real Next transitions, typography/whole-word names, compact service placement, brass HUD, raised actions/reduced motion, realistic knob keyboard on/off, and no runtime errors. First-five actual plating drags in15 recipe/state paths plus two onigiri wrap states retain appearance through delivery. A real pork-cut → short miso-scoop → dashi-measure → broth sequence uses night files and advances. Nine local clips decode; whisking follows movement and stops on pause/release, and final plating produces one acoustic furin then returns to silence without replaying on resume. Offline reload retains v11 cooking, all213 cached WebP assets and both fonts; MP4 Range requests still return206. No approved intro bytes were changed.

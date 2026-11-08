@@ -34,9 +34,31 @@
   const catalog=typeof module!=='undefined'?require('./catalog.js'):window.MidnightCatalog;
   const heated=Object.keys(catalog.recipes).filter(id=>family(id,catalog.recipes[id])!=='cold'&&id!=='shio_onigiri');
   const imagePilot=Object.freeze(['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);
+  // Plating must use the food's recorded heat state, never a filtered healthy meal.
+  // New scene artwork stays inside the five-dish review boundary.
+  function platingArt(id,appearance='good'){
+    const index=Object.keys(catalog.recipes).indexOf(id);if(index<0)return null;
+    const condition=appearance==='raw'?'raw':['dry','burnt'].includes(appearance)?'burnt':'good';
+    if(condition!=='good'&&imagePilot.includes(id))return id==='negi_omelette'
+      ?{file:`plating-negi-${condition}-v24`,cols:1,rows:1,col:0,row:0,className:'plating-frame'}
+      :{file:`plating-${condition}-v24`,cols:2,rows:2,col:index%2,row:Math.floor(index/2),className:'plating-frame'};
+    return {file:`plating-${Math.floor(index/4)+1}`,cols:2,rows:2,col:index%2,row:Math.floor(index%4/2),className:'plating-frame'};
+  }
+  function wrapArt(id,appearance='good'){
+    if(id!=='onigiri'||!imagePilot.includes(id))return null;
+    const condition=appearance==='raw'?'raw':['dry','burnt'].includes(appearance)?'burnt':null;
+    return condition?{file:`core-wrap-${condition}-v24`,cols:2,rows:2,className:'core-frame'}:null;
+  }
   // The user specifically requested nighttime for the pictured hiyayakko prep scene.
   // This narrow lighting correction does not expand the general cooking-image pilot.
   const nightPrepRecipes=Object.freeze([...imagePilot,'hiyayakko']);
   function prepImage(recipe,part){return `prep-${nightPrepRecipes.includes(recipe)&&['vegetables','scallion'].includes(part)?'night-v22':'hi'}-${part}`;}
-  const api={prepImage,nightPrepRecipes,imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
+  // Lighting-only replacements share the original atlas geometry and stay in the five-dish pilot.
+  const nightSceneFiles=Object.freeze({
+    'prep-hi-egg':'prep-night-v24-egg','prep-hi-nori':'prep-night-v24-nori','prep-hi-pork':'prep-night-v24-pork','prep-hi-rice':'prep-night-v24-rice','prep-hi-salmon':'prep-night-v24-salmon',
+    'core-beat':'core-beat-night-v24','core-lid':'core-lid-night-v24','core-pour':'core-pour-night-v24','core-broth':'core-broth-night-v24','core-wrap-v20':'core-wrap-v20-night-v24','measure-dashi':'measure-dashi-night-v24',
+    'heat-hi-2':'heat-hi-2-night-v24','heat-hi-3':'heat-hi-3-night-v24','heat-burnt-2':'heat-burnt-2-night-v24','heat-burnt-3':'heat-burnt-3-night-v24'
+  });
+  function nightImage(recipe,file){return imagePilot.includes(recipe)?nightSceneFiles[file]||file:file;}
+  const api={nightImage,nightSceneFiles,wrapArt,platingArt,prepImage,nightPrepRecipes,imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
 })();

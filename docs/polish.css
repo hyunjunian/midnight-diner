@@ -102,3 +102,99 @@
 .required-ingredient>b{font-size:14px}
 .required-ingredient>.ingredient-state{font-size:12px}
 .choice-arrow,.back-mark{display:none}
+/* Keep the refrigerator in view: one illustrated checklist, no repeated instructions. */
+#kitchen-footer.fridge-footer{max-height:36dvh;padding:8px 14px max(12px,env(safe-area-inset-bottom))}
+.fridge-footer .recipe-ingredients{margin:0 0 8px}
+.fridge-footer .recipe-ingredients>header{margin-bottom:5px}
+.fridge-footer .recipe-ingredients h3{font:400 13px/1.5 var(--reading-serif)}
+.fridge-footer #fridge-selection-status{font-size:12px}
+.fridge-footer .recipe-ingredient-cards{display:flex;flex-wrap:wrap;gap:5px}
+.fridge-footer .required-ingredient{flex:0 1 auto;flex-direction:row;gap:4px;min-height:36px;padding:3px 7px;border-width:1px;text-align:left}
+.fridge-footer .required-ingredient>.food-art{width:28px!important;height:28px;flex:0 0 28px}
+.fridge-footer .required-ingredient>b{display:flex;align-items:center;gap:3px;font:400 12px/1.5 var(--reading-serif)}
+.ingredient-check{width:16px;height:16px;fill:none;stroke:#3f6137;stroke-width:3.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.fridge-footer .required-ingredient.is-ready>b{font-weight:700}
+.fridge-footer .stock-inspector{margin-bottom:8px;padding-top:6px}
+/* Doors themselves are the controls; the open door edge remains a generous close target. */
+.fridge-view{padding-top:0;overflow:hidden}
+.fridge-cabinet{width:min(100%,calc((100dvh - 290px)*.563));min-width:280px}
+.fridge-door{pointer-events:none}
+.fridge-door-touch{position:absolute;left:9%;width:82%;z-index:4;padding:0;background:none;border:0;border-radius:0;box-shadow:none;min-height:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.touch-freezer{top:9.5%;height:28.5%}
+.touch-fridge{top:38.5%;height:53%}
+.freezer-open .touch-freezer,.fridge-open .touch-fridge{left:0;width:13%;min-width:44px}
+.fridge-door-touch:focus-visible{outline:2px solid #f0d28e;outline-offset:-2px}
+.door-handle-cue{position:absolute;left:9%;top:48%;width:27%;height:12%;max-height:24px;border-radius:40%;pointer-events:none}
+.touch-fridge .door-handle-cue{top:31%;height:7%}
+.door-needed[aria-expanded=false] .door-handle-cue{box-shadow:0 0 5px 2px #f2cd78,0 0 16px 6px #efc36b66;animation:handle-warmth 3s ease-in-out infinite}
+@keyframes handle-warmth{0%,70%,100%{opacity:.55}35%{opacity:1}}
+.fridge-door-touch[aria-expanded=true] .door-handle-cue{display:none}
+/* A raised wooden plaque lifts twice, then rests. The ink never flashes. */
+#kitchen-screen #kitchen-footer .primary:not(:disabled),#guest-dialog #talk-next:not(:disabled),.game-app #night-action:not(:disabled),#report-content #report-next:not(:disabled),#stock-prep .primary:not(:disabled),.game-app #resume-kitchen:not(:disabled){
+  --action-shadow:inset 0 2px 1px #fff1bf99,inset 2px 0 2px #e5bf7855,inset -2px -3px 3px #281508cc,0 6px 0 #372313,0 8px 0 1px #1f150ccc,0 12px 10px #100a0870,0 0 13px #e6b75555;
+  border:2px solid #e5c276;box-shadow:var(--action-shadow);transform-origin:center;animation:action-plaque-heartbeat 3.2s ease-in-out infinite;will-change:scale;transition:translate .1s,scale .1s,box-shadow .1s;
+}
+@keyframes action-plaque-heartbeat{0%,24%,49%,68%,100%{scale:1;translate:0 0;box-shadow:var(--action-shadow)}34%{scale:1.018;translate:0 -2px;box-shadow:var(--action-shadow),0 0 20px #efc46e88}58%{scale:1.009;translate:0 -1px;box-shadow:var(--action-shadow),0 0 16px #efc46e66}}
+#kitchen-screen #kitchen-footer .primary:not(:disabled):active,#guest-dialog #talk-next:not(:disabled):active,.game-app #night-action:not(:disabled):active,#report-content #report-next:not(:disabled):active,#stock-prep .primary:not(:disabled):active,.game-app #resume-kitchen:not(:disabled):active{animation:none;scale:.995;translate:0 4px;box-shadow:inset 0 2px 4px #211208aa,0 2px 0 #372313,0 4px 4px #100a0866}
+@media(prefers-reduced-motion:reduce){.door-needed[aria-expanded=false] .door-handle-cue,#kitchen-screen #kitchen-footer .primary:not(:disabled),#guest-dialog #talk-next:not(:disabled),.game-app #night-action:not(:disabled),#report-content #report-next:not(:disabled),#stock-prep .primary:not(:disabled),.game-app #resume-kitchen:not(:disabled){animation:none;will-change:auto}}
+/* A guest's name never spills into the next counter seat. */
+.customer .customer-name{max-width:96%;min-width:0;min-height:44px;padding:4px 5px;font:400 10px/1.5 var(--reading-serif);white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
+.customer .customer-name[hidden]{display:none}
+/* Printed hierarchy across reports, rewards, menus and kitchen headings. */
+#report-dialog .sheet-header h2{font-size:20px;line-height:1.5}
+#report-content .report-heading h3{font:400 22px/1.6 var(--reading-serif);margin:9px 0 4px}
+#report-content .report-heading{margin-bottom:15px}
+#report-content .report-heading p{font-size:12px}
+#report-content .night-stamp{font-size:11px;letter-spacing:2px;padding:4px 12px}
+#report-content .growth-banner{padding:13px 12px;gap:12px}
+#report-content .growth-banner h3{font:400 19px/1.6 var(--reading-serif);margin:3px 0}
+#report-content .growth-banner .level-tile{width:48px;height:60px;flex-basis:48px;font-size:10px}
+#report-content .growth-banner .level-tile b{font:400 27px/1.2 var(--reading-serif)}
+#report-content .score-delta{font:400 23px/1.4 var(--reading-serif)}
+#report-content .score-delta small{font-size:11px}
+#report-content .report-metric strong,#report-content .till-heading>strong{font:400 23px/1.5 var(--reading-serif)}
+#report-content h4,#report-content .upcoming-items>h3,#report-content .reward-heading h3{font:400 18px/1.6 var(--reading-serif);word-break:keep-all;overflow-wrap:normal}
+#report-content .reward-heading .level-tile{width:48px;height:60px;flex-basis:48px;font-size:10px}
+#report-content .reward-heading .level-tile b{font-size:27px}
+#report-content .reward-conditions,#report-content .next-item-note{font:400 12px/1.8 var(--reading-serif)}
+#report-content .next-goal{padding:14px 12px}
+#report-content .next-goal h4{font-size:17px;margin:0 0 12px}
+.level-growth{display:grid;grid-template-columns:1fr auto;gap:7px;font:400 13px/1.5 var(--reading-serif);margin-bottom:14px}
+.level-growth>b{font-weight:400;font-size:12px}
+.level-growth progress{grid-column:1/-1;width:100%;height:13px}
+#report-content .goal-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.goal-condition{min-width:0;font:400 12px/1.5 var(--reading-serif);color:#776646}
+.goal-condition header{display:flex;flex-direction:column;gap:3px;margin-bottom:6px}
+.goal-condition b{font-size:12px;font-weight:400}.goal-condition.met b{color:#42633c}
+.goal-condition progress{display:block;width:100%;height:7px;margin:0 0 5px}
+.goal-condition small{font-size:10px}
+.next-goal progress{appearance:none;border:0;background:#a8976f33;border-radius:1px;box-shadow:inset 0 1px 3px #65502f38;overflow:hidden}
+.next-goal progress::-webkit-progress-bar{background:#a8976f33;box-shadow:inset 0 1px 3px #65502f38}
+.next-goal progress::-webkit-progress-value{background:linear-gradient(#9aa46d,#687c49)}
+.next-goal progress::-moz-progress-bar{background:linear-gradient(#9aa46d,#687c49)}
+/* Keep Korean dish words whole, including 덮밥, across every illustrated menu. */
+.reward-foods small,.menu-card h3,.talk-order,.completed-dish strong,.unlock-item-grid h4,.next-dish{word-break:keep-all;overflow-wrap:normal;line-break:strict}
+#report-content .reward-foods small{font:400 12px/1.7 var(--reading-serif);display:block}
+#report-content .reward-foods>div{min-width:0;padding:8px 4px}
+.kitchen-screen .kitchen-header h2{font:400 20px/1.5 var(--reading-serif);word-break:keep-all}
+.kitchen-screen .process-heading h3,.kitchen-screen .completed-dish h3{font:400 23px/1.6 var(--reading-serif)}
+.kitchen-screen .completed-dish strong{font:400 20px/1.6 var(--reading-serif)}
+@media(max-width:359px){#report-content .report-heading h3{font-size:20px}#report-content .reward-heading h3{font-size:17px}#report-content .reward-foods small{font-size:11px}.kitchen-screen .kitchen-header h2{font-size:18px}}
+/* Quiet service notes sit together just above the dock, not as a second big button. */
+@media(orientation:portrait){.service-bar.is-serving{width:min(92vw,368px);max-width:none;bottom:calc(var(--safe-bottom) + 112px);gap:5px}.service-bar.is-serving #service-hint{font:400 11px/1.8 var(--reading-serif);text-align:center}.service-bar.is-serving .service-progress{order:-1;padding:0 5px 4px;background:none;box-shadow:none;border-bottom:1px solid #b99a6155;border-radius:0;font-size:10px;line-height:1.5;color:#c9b691}.service-bar.is-serving .service-progress b{font-size:11px;color:#efdbb6}.service-bar.is-serving .service-progress>i{height:10px;background:#c8aa6a55}}
+/* Growth is a brass inlay in a carved timber channel, never the native green bar. */
+.progress-hud progress{appearance:none;border:1px solid #2f1c0e;border-radius:1px;height:7px;background:#2f2116;box-shadow:inset 0 1px 3px #100a08,0 1px #c29a5b55;overflow:hidden}
+.progress-hud progress::-webkit-progress-bar{background:#2f2116;box-shadow:inset 0 1px 3px #100a08}
+.progress-hud progress::-webkit-progress-value{background:linear-gradient(#ecd29a,#b58a42 50%,#8b632b);box-shadow:inset 0 1px #fff0bd88}
+.progress-hud progress::-moz-progress-bar{background:linear-gradient(#ecd29a,#b58a42 50%,#8b632b);box-shadow:inset 0 1px #fff0bd88}
+.progress-hud .hud-atmosphere{color:#e7cca0}
+/* The same restrained scale applies beyond the report. */
+.stock-prep .stock-prep-heading h3{font:400 20px/1.6 var(--reading-serif)}
+.kitchen-screen .room-task b{font:400 21px/1.6 var(--reading-serif)}
+.kitchen-screen .heat-lesson h4{font:400 20px/1.6 var(--reading-serif)}
+.sheet .sheet-header h2{font-size:21px;line-height:1.5}
+.upcoming .reward-heading h3,.upcoming-items>h3{font:400 18px/1.6 var(--reading-serif);word-break:keep-all}
+/* A photographed Bakelite stove handle turns inside its fixed metal collar. */
+.kitchen-screen #gas-dial{border:3px solid #9e8b65;background:radial-gradient(circle at 35% 28%,#d3c4a0,#7b704f 62%,#30291d 66%);box-shadow:inset 0 1px 2px #fff0c1aa,inset 0 -2px 3px #251b10,0 4px 4px #140d0999;border-radius:50%}
+.kitchen-screen #gas-dial i{inset:-8%;background:url('./assets/gas-knob-v24.webp') center/100% 100% no-repeat;filter:drop-shadow(1px 3px 2px #110c0880)}
+.kitchen-screen #gas-dial i::after{display:none}

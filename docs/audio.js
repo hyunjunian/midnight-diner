@@ -3,9 +3,9 @@
 (function(root){'use strict';
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  function random(seed){let x=seed>>>0||1;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return(x>>>0)/4294967296}}
- const defaults={cut:.16,'paste-scoop':.55,'dry-measure':.55,'liquid-pour':1.1,'egg-pour':.9,'oil-pour':.6,'egg-whisk':.42,'egg-crack':.25,'rice-scoop':.45,'rice-shape':.3,nori:.32,'shell-peel':.3,peel:.35,wash:.32,flip:.45,lid:.3,door:.4,serve:.32,cash:.8,buy:.3,place:.45,report:.7,complete:1.25,open:.15,'arrival-step':.28,'sliding-door':1.1,utensil:.28,'dish-set':.4,eating:.4,traffic:4};
+ const defaults={cut:.16,'paste-scoop':.55,'dry-measure':.55,'liquid-pour':1.1,'egg-pour':.9,'oil-pour':.6,'egg-whisk':.65,'egg-crack':.25,'rice-scoop':.55,'rice-shape':.3,nori:.32,'shell-peel':.3,peel:.35,wash:.32,flip:.45,lid:.3,door:.4,serve:.32,cash:.8,buy:.3,place:.45,report:.7,complete:2.4,open:.15,'arrival-step':.28,'sliding-door':1.1,utensil:.28,'dish-set':.4,eating:.4,traffic:4};
  function normalized(kind){return({pour:'liquid-pour',whisk:'egg-whisk',scoop:'rice-scoop',shape:'rice-shape'})[kind]||kind}
- function flowKind(st){if(st?.mode==='measure')return st.part==='miso'?'paste':['flour','sugar','sesame'].includes(st.part)?'powder':'pour';return st?.id==='pour'&&/달걀|계란|egg|batter/.test(`${st.title||''} ${st.art||''}`)?'batter':st?.id==='oil'?'oil':'pour'}
+ function flowKind(st){if(st?.mode==='wash')return 'wash';if(st?.id==='beat')return 'whisk';if(st?.mode==='measure')return st.part==='miso'?'paste':['flour','sugar','sesame'].includes(st.part)?'powder':'pour';return st?.id==='pour'&&/달걀|계란|egg|batter/.test(`${st.title||''} ${st.art||''}`)?'batter':st?.id==='oil'?'oil':'pour'}
  function actionKind(st={}){return st.mode==='measure'?(st.part==='miso'?'paste-scoop':['flour','sugar','sesame'].includes(st.part)?'dry-measure':'liquid-pour'):st.mode==='cut'?'cut':st.mode==='wash'?'wash':st.mode==='peel'?(['shrimp','crab'].includes(st.part)?'shell-peel':'peel'):st.mode==='crack'?'egg-crack':st.mode==='fold'||st.id==='wrap'?'nori':st.id==='beat'?'egg-whisk':st.id==='portion'?'rice-scoop':st.id==='shape'?'rice-shape':['pour','broth'].includes(st.id)?(flowKind(st)==='batter'?'egg-pour':'liquid-pour'):st.id==='oil'?'oil-pour':st.id==='lid'?'lid':'serve'}
  function render(kind,seconds=defaults[normalized(kind)]||1,rate=44100,seed=Date.now(),looping=false){
   kind=normalized(kind);const rng=random(seed),out=new Float32Array(Math.ceil(rate*seconds));let low=0,body=0,smooth=0,slow=0;
@@ -61,7 +61,7 @@
  }
  const pure={render,flowKind,actionKind,defaults};if(typeof module!=='undefined'&&module.exports){module.exports=pure;return}
  let ctx,master,analyser,compressor,enabled=true,activated=false;const loops=new Map(),plays={},active=new Set(),cache=new Map();try{enabled=localStorage.getItem('midnight-diner-sfx')!=='off'}catch{}
- const sampleFiles={paste:'paste-v23.wav','paste-scoop':'paste-v23.wav',pour:'pour-v22.wav','liquid-pour':'pour-v22.wav',batter:'pour-v22.wav','egg-pour':'pour-v22.wav',oil:'pour-v22.wav','oil-pour':'pour-v22.wav',wash:'pour-v22.wav',boil:'boil-v22.wav'};
+ const sampleFiles={complete:'complete-furin-v24.wav',whisk:'whisk-v24.wav','egg-whisk':'whisk-v24.wav',sizzle:'fry-v24.wav',flip:'fry-v24.wav',cut:'cut-v24.wav','rice-scoop':'rice-utensil-v24.wav',paste:'paste-v23.wav','paste-scoop':'paste-v23.wav',pour:'pour-v22.wav','liquid-pour':'pour-v22.wav',batter:'pour-v22.wav','egg-pour':'pour-v22.wav',oil:'pour-v22.wav','oil-pour':'pour-v22.wav',wash:'wash-v24.wav',boil:'boil-v22.wav'};
  const encoded=new Map(),decoded=new Map(),decoding=new Set(),sampleErrors=[];
  const sampleRoot=new URL('./assets/sfx/',document.currentScript.src);
  function primeSamples(){if(!ctx)return;for(const [file,bytes]of encoded)if(!decoded.has(file)&&!decoding.has(file)){decoding.add(file);ctx.decodeAudioData(bytes.slice(0)).then(b=>decoded.set(file,b)).catch(()=>sampleErrors.push(file));}}
@@ -78,8 +78,8 @@
  function stopAmbient(){for(const node of [...active])if(node.ambient)node.stop();for(const key of [...loops.keys()])if(key.startsWith('ambient:'))loops.delete(key)}
  function stopAll(){for(const node of [...active])node.stop();loops.clear()}
  function heat(on,power,mode='sizzle'){const kind=mode==='boil'?'boil':'sizzle';loop(kind==='boil'?'sizzle':'boil',false);loop(kind,on,power)}
- function flow(st,on){const kind=flowKind(st);for(const other of ['paste','powder','pour','batter','oil'])loop(other,on&&other===kind)}
- function action(st){if(st?.mode==='measure'&&!['miso','flour','sugar','sesame'].includes(st.part)||['pour','broth'].includes(st?.id))return;play(actionKind(st))}
+ function flow(st,on){const kind=flowKind(st);for(const other of ['paste','powder','pour','batter','oil','whisk','wash'])loop(other,on&&other===kind)}
+ function action(st){if(st?.id==='beat'||st?.mode==='wash')return;if(st?.mode==='measure'&&!['miso','flour','sugar','sesame'].includes(st.part)||['pour','broth'].includes(st?.id))return;play(actionKind(st))}
  function setEnabled(value){enabled=!!value;try{localStorage.setItem('midnight-diner-sfx',enabled?'on':'off')}catch{}if(!enabled){stopAll();if(master)master.gain.value=0}else{unlock();if(master)master.gain.value=.55}root.dispatchEvent(new Event('midnight-audio-change'));return enabled}
  function status(){let rms=0;if(analyser){const a=new Float32Array(analyser.fftSize);analyser.getFloatTimeDomainData(a);rms=Math.sqrt(a.reduce((n,x)=>n+x*x,0)/a.length)}return{enabled,samples:[...decoded.keys()],sampleErrors:[...sampleErrors],activated,context:ctx?.state||'not-started',loops:[...loops.keys()],plays:{...plays},rms}}
  root.MidnightAudio={unlock,play,action,heat,flow,pour:on=>loop('pour',on),stopCooking,stopAll,stopAmbient,setEnabled,status,get enabled(){return enabled}};
