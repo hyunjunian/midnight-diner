@@ -4,7 +4,7 @@ test('the approved Lv.1–5 image scope has 15 recipes and condition-aware plati
  const early=Object.keys(E.recipes).filter(id=>E.recipes[id].level<=5);assert.deepEqual([...R.imagePilot],early);assert.equal(early.length,15);
  for(const id of Object.keys(E.recipes))for(const look of ['good','raw','dry','burnt']){
   const art=R.platingArt(id,look);assert.ok(fs.existsSync(path.join(__dirname,'../docs/assets',art.file+'.webp')),id+' '+look);assert.ok(art.col>=0&&art.col<art.cols&&art.row>=0&&art.row<art.rows);
-  if(early.includes(id)){assert.equal(art.file,'portrait-v28-plate-'+id);const n=look==='raw'?1:['dry','burnt'].includes(look)?2:0;assert.equal(art.col+art.row*2,n);}
+  if(early.includes(id)){assert.equal(art.file,id==='ochazuke'?'foreground-v47-plate-ochazuke':'portrait-v28-plate-'+id);const n=look==='raw'?1:['dry','burnt'].includes(look)?2:0;assert.equal(art.col+art.row*2,n);}
   else assert.ok(/^plating-\d+$/.test(art.file),'higher levels retain original sources');
  }
  assert.equal(R.platingArt('missing'),null);

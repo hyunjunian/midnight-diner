@@ -9,12 +9,14 @@ function frame(width,height,{portrait=true,focus=.58,focusX=.5,span=.68,start=fo
  return{width:artWidth,height:artHeight,left:width/2-artWidth*focusX,top:y,center,foodTop:y+artHeight*start,foodBottom:y+artHeight*end};
 }
 function source(file){
+ if(file==='foreground-v47-plate-ochazuke')return{ratio:393/852,scale:852/393,offset:0};
  const key=file.replace('foreground-v39-','');
  const extended=file.startsWith('foreground-v39-')&&['prep-rice','prep-egg','measure-miso','core-portion','core-shape','core-beat','core-broth','core-wrap','core-wrap-raw','core-wrap-burnt'].includes(key);
  const offsets={'prep-rice':.29,'prep-egg':.21,'measure-miso':.24,'core-portion':.4,'core-shape':.26,'core-beat':.25,'core-pour':.24,'core-broth':.24,'core-wrap':.28,'core-wrap-raw':.24,'core-wrap-burnt':.12};
  return extended?{ratio:.5,scale:2,offset:offsets[key]}:{ratio:2/3,scale:1.5,offset:.4};
 }
 function focus(file){
+ if(file==='foreground-v47-plate-ochazuke')return{focus:.5,span:.9,...source(file)};
  if(file.startsWith('foreground-v39-')){
   const key=file.replace('foreground-v39-','');if(key.startsWith('plate-'))return{focus:.50,span:.88,start:.06,end:.94,...source(file)};const spec={
    'measure-miso':[.37,.40,.17,.55],'measure-dashi':[.65,.52],

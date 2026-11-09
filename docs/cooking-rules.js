@@ -39,6 +39,7 @@
   const inImagePilot=id=>imagePilot.includes(id);
   function platingArt(id,appearance='good'){
     const index=Object.keys(catalog.recipes).indexOf(id);if(index<0)return null;
+    if(id==='ochazuke'){const n=appearance==='raw'?1:['dry','burnt'].includes(appearance)?2:0;return{file:'foreground-v47-plate-ochazuke',cols:2,rows:2,col:n%2,row:Math.floor(n/2),className:'plating-frame'};}
     if(inImagePilot(id)){const n=appearance==='raw'?1:['dry','burnt'].includes(appearance)?2:0;return{file:`portrait-v28-plate-${id}`,cols:2,rows:2,col:n%2,row:Math.floor(n/2),className:'plating-frame'};}
     return {file:`plating-${Math.floor(index/4)+1}`,cols:2,rows:2,col:index%2,row:Math.floor(index%4/2),className:'plating-frame'};
   }
@@ -70,7 +71,7 @@
   const sharedForeground=new Set(Object.values(foregroundFiles).filter(name=>!name.startsWith('plate-')));
   const alphaCommon=new Set([...['beef','butter','cheese','chicken','clam','crab','fish','mushroom','noodles','oyster','potato','scallops','shrimp','tuna'].map(x=>`prep-hi-${x}`),...['flour','milk','soy','sugar'].map(x=>`measure-${x}`),'core-drain']);
   function nightImage(recipe,file){if(alphaCommon.has(file))return file;const mapped=nightSceneFiles[file]||file,replacement=foregroundFiles[mapped];if(replacement&&sharedForeground.has(replacement))return `foreground-v39-${replacement}`;if(mapped==='portrait-v28-prep-tofu')return mapped;const original=inImagePilot(recipe)?mapped:file;return foregroundRecipes.includes(recipe)&&foregroundFiles[original]?`foreground-v39-${foregroundFiles[original]}`:original;}
-  function portraitImage(recipe,file){const result=nightImage(recipe,file);return sceneAssets.portrait(result)||result.startsWith('foreground-v39-');}
-  function transparentImage(recipe,file){const result=nightImage(recipe,file);return result.startsWith('foreground-v39-')||alphaCommon.has(result)||result==='portrait-v28-prep-tofu'||/^plating-\d+$|^portrait-v28-plate-/.test(result);}
+  function portraitImage(recipe,file){const result=nightImage(recipe,file);return sceneAssets.portrait(result)||/^foreground-v\d+-/.test(result);}
+  function transparentImage(recipe,file){const result=nightImage(recipe,file);return /^foreground-v\d+-/.test(result)||alphaCommon.has(result)||result==='portrait-v28-prep-tofu'||/^plating-\d+$|^portrait-v28-plate-/.test(result);}
   const api={heatLayout:sceneAssets.heatLayout,inImagePilot,heatArt,finalArt,portraitImage,transparentImage,nightImage,nightSceneFiles,wrapArt,platingArt,prepImage,nightPrepRecipes,imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
 })();

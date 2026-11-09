@@ -87,7 +87,7 @@
   }
   const measurements={soy:{amount:15,unit:'mL',vessel:'계량스푼'},dashi:{amount:150,unit:'mL',vessel:'계량컵'},milk:{amount:100,unit:'mL',vessel:'계량컵'},miso:{amount:1,unit:'스푼',vessel:'나무 스푼'},flour:{amount:30,unit:'g',vessel:'계량 그릇'},sugar:{amount:1,unit:'스푼',vessel:'계량스푼'}};
   function measureSpec(){return measurements[step()?.part]||measurements.soy;}
-  function gestureId(st){if(st.id==='prep'&&st.part==='miso')return 'paste';return st.id==='prep'?({cut:'cut',wash:'beat',peel:'peel',crack:'crack',fold:'fold',measure:'measure'}[st.mode]):st.id;}
+  function gestureId(st){if(st.id==='assemble'&&order().recipe==='ochazuke')return 'serve-ochazuke';if(st.id==='prep'&&st.part==='miso')return 'paste';return st.id==='prep'?({cut:'cut',wash:'beat',peel:'peel',crack:'crack',fold:'fold',measure:'measure'}[st.mode]):st.id;}
   function guideText(st){return local.done?'':'동그라미에서 시작해 점선 끝까지 움직여 주세요.';}
   function guideMarkup(st){
     if(local.done||st.id==='heat')return '';
@@ -152,6 +152,13 @@
     if(scene){
       if(scene.classList.contains('stove-unit')){const top=captionTop+104,width=Math.min(area.clientWidth,Math.max(1,safeBottom-top)/1.2);scene.style.cssText=`position:absolute;left:${(area.clientWidth-width)/2}px;top:${top}px;width:${width}px`;return;}
       const portrait=portraitStep(),art=visual(step()),file=R.nightImage(order().recipe,art.file),box=L.frame(area.clientWidth,area.clientHeight,{portrait,...L.focus(file),safeTop:placement.safeTop,safeBottom,center:placement.center});
+      if(file==='foreground-v47-plate-ochazuke'){
+        const scale=Math.min(area.clientWidth/393,innerHeight/852),width=393*scale,height=852*scale;
+        const headingBottom=workspace.querySelector('.process-heading').getBoundingClientRect().bottom;
+        const top=Math.max((innerHeight-height)/2,headingBottom+6-229*scale)-areaBox.top;
+        scene.style.cssText=`position:absolute;width:${width}px;height:${height}px;left:${(area.clientWidth-width)/2}px;top:${top}px`;
+        workspace.dataset.foodCenter=String(placement.center);workspace.dataset.sourceAspect=String(393/852);return;
+      }
       for(const name of ['width','height','left','top'])scene.style[name]=`${box[name]}px`;
       workspace.dataset.foodCenter=String(box.center);workspace.dataset.sourceAspect=String(portrait?L.source(file).ratio:1);
       paintRiceHand();

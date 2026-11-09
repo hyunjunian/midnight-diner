@@ -56,3 +56,7 @@ test('portrait fridge photo fills the scene while keeping every shelf row reacha
  for(const[w,h]of[[393,475],[393,550],[430,580],[320,500],[393,650]]){const b=L.cabinet(w,h);assert.ok(b.cover);assert.ok(b.width>=w-.001);assert.ok(Math.abs(b.width/b.height-941/1672)<.0001);assert.ok(b.top+b.height*.158>=5);assert.ok(b.top+b.height*.763+12<=h+.01);}
  for(const[w,h]of[[320,300],[852,393],[1280,450]]){const b=L.cabinet(w,h);assert.equal(b.cover,false);assert.ok(b.width<=w&&b.height<=h);}
 });
+
+test('approved serving art uses the same full portrait source for food, guide and input',()=>{
+ const source=L.source('foreground-v47-plate-ochazuke');assert.equal(source.ratio,393/852);assert.equal(source.scale,852/393);assert.equal(source.offset,0);
+});

@@ -21,3 +21,12 @@ test('paste accepts a short jar-to-bowl drag and rejects the old reverse path',(
  const reverse=G.begin('paste',.74,.68);G.move(reverse,.3,.4);assert.equal(G.valid(reverse),false);
  const tap=G.begin('paste',.3,.4);G.move(tap,.31,.4);assert.equal(G.valid(tap),false);
 });
+
+test('approved ochazuke transfer starts in its cooking vessel and ends inside the empty serving bowl',()=>{
+ const points=G.guide('serve-ochazuke')[0].points;
+ assert.ok(path('serve-ochazuke',points));
+ assert.equal(path('serve-ochazuke',[[.05,1],[.65,1.425]]),false,'background swipe');
+ assert.equal(path('serve-ochazuke',[[.387,1.014],[.65,1.05]]),false,'missed serving bowl');
+ assert.equal(path('serve-ochazuke',[[.65,1.425],[.387,1.014]]),false,'reverse transfer');
+ assert.equal(path('serve-ochazuke',[[.387,1.014],[.388,1.015]]),false,'tap');
+});
