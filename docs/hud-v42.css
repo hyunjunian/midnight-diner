@@ -18,3 +18,75 @@
 .hud-reputation-rules p{display:flex;justify-content:space-between;gap:14px;margin:8px 0}
 @media(max-width:700px){.night-hud #clock{width:40px;height:40px;margin-left:1px}.wallet-hud>button+button{margin-left:13px;padding-left:13px}}
 @media(max-width:359px){.night-hud #clock{width:36px;height:36px}.wallet-hud>button+button{margin-left:9px;padding-left:9px}}
+
+/* Side-view stock rests on the authored glass shelf, without icon cards. */
+#kitchen-screen .shelf-items .stored-ingredient{top:auto;bottom:calc(100% - var(--shelf-baseline));width:16%;height:9%;min-height:44px;justify-content:flex-end;border:0;border-radius:0;background:none;box-shadow:none;isolation:isolate}
+#kitchen-screen .stored-ingredient::before,#kitchen-screen .stored-ingredient::after{content:none}
+#kitchen-screen .stored-ingredient .fridge-side-art{display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 2px 1px #241a1344);pointer-events:none;transform:translateY(12%)}
+#kitchen-screen .stored-ingredient b{bottom:-12px;z-index:1;max-width:140%;font:400 8px/1.3 var(--reading-serif);padding:1px 3px;background:#eee7d4eb;color:#3d362a;border-radius:1px;box-shadow:0 1px 1px #25180d33;white-space:nowrap}
+#kitchen-screen .stored-ingredient small{top:8%;right:-1px;font:400 9px/1.3 sans-serif;border:1px solid #afa68c;background:#eee7d4f0;color:#493c2b;border-radius:2px;padding:1px 3px}
+#kitchen-screen .stored-ingredient.stock-required b{background:#f4e5b9;border-bottom:1px solid #96733b}
+#kitchen-screen .stored-ingredient.stock-selected b{background:#dce9d0;color:#30452c}
+#kitchen-screen .stored-ingredient.stock-selected .fridge-side-art{filter:drop-shadow(0 2px 1px #241a1344) drop-shadow(0 0 2px #b7d89a)}
+#kitchen-screen .stored-ingredient.empty-stock .fridge-side-art{opacity:.22;filter:grayscale(1)}
+.kitchen-window-weather{position:absolute;pointer-events:none;z-index:0;max-width:none}
+.kitchen-room-art>.room-task,.kitchen-room-art>.room-hotspot{z-index:1}
+/* The night plaque opens the paper calendar. */
+.night-hud #calendar-open{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:44px;padding:0;border:0;border-image:none;background:none;box-shadow:none;color:inherit;transform:none;animation:none;cursor:pointer;text-align:left;white-space:nowrap}
+.night-hud #calendar-open::before,.night-hud #calendar-open::after{content:none}
+#calendar-dialog{width:min(calc(100vw - 16px),580px)}
+#calendar-dialog .sheet-body{color:#493822;background:#eee1c4 url('./assets/ui-washi-v21.webp') center/480px;padding:10px 12px 20px}
+#calendar-dialog .sheet-header .round-button{position:static;flex:0 0 44px;height:44px;width:44px;padding:0;background:none;border:0;box-shadow:none;font:26px/1 var(--reading-serif);transform:none}
+#calendar-dialog .sheet-header .round-button::before,#calendar-dialog .sheet-header .round-button::after{content:none}
+.calendar-tabs{display:flex;gap:5px;margin-bottom:10px}
+#calendar-dialog .calendar-tabs button,#calendar-dialog .calendar-bottom button,#calendar-dialog .calendar-page-heading>button{min-height:44px;padding:7px 10px;color:#f7e4bd;background:var(--wood-raised);background-size:auto,420px;border:1px solid #9c7448;border-radius:2px;box-shadow:inset 0 1px #e7b77644,0 2px 2px #28170c44;font:400 12px/1.4 var(--reading-serif);transform:none;animation:none;text-shadow:none}
+.calendar-tabs button{flex:1;white-space:nowrap}
+#calendar-dialog button[aria-pressed=true]:not(.calendar-day){border-color:#dec28d;box-shadow:inset 0 0 0 1px #d4ae71}
+.paper-calendar{background:#f7ebce url('./assets/calendar-paper-v52.webp') center/100% 100% no-repeat;padding:clamp(32px,8vw,52px) 15px 24px;box-shadow:0 3px 6px #4b311c55}
+.calendar-page-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:center}
+.calendar-page-heading p{margin:0;font:400 13px/1.5 var(--reading-serif)}
+.calendar-page-heading h3{margin:2px 0 0;font:400 34px/1.2 var(--brush);color:#4b3524}
+.calendar-page-heading h3 small{display:block;font:400 10px/1.4 var(--reading-serif)}
+#calendar-dialog .calendar-page-heading>button{width:34px;min-width:34px;padding:0;font-size:25px}
+.calendar-basis{text-align:center;font:400 10px/1.6 var(--reading-serif);color:#78634a;margin:12px 0}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid #b6996c;border-left:1px solid #b6996c}
+#calendar-dialog .calendar-day{position:relative;min-width:0;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:3px 0;border:0;border-right:1px solid #b6996c66;border-bottom:1px solid #b6996c66;border-image:none;border-radius:0;background:linear-gradient(#563521e8,#342012eb),url('./assets/ui-walnut-v21.webp') center/300px;box-shadow:inset 0 1px #ceab6e33;color:#f5e2bb;transform:none;animation:none;text-shadow:none}
+#calendar-dialog .calendar-day::before,#calendar-dialog .calendar-day::after{content:none}
+.calendar-day b{font:400 19px/1.1 var(--reading-serif)}
+.calendar-day small{font:400 9px/1.2 var(--reading-serif);color:#ead0a5}
+#calendar-dialog .calendar-day.calendar-future{color:#c5b08b}
+#calendar-dialog .calendar-day[aria-pressed=true]{box-shadow:inset 0 0 0 2px #e0b967}
+#calendar-dialog .calendar-day.calendar-today b{border-bottom:1px solid #eab96b;color:#ffdf98}
+.calendar-legend{text-align:center;font:400 11px/1.5 var(--reading-serif);color:#735b3c;margin:12px 0 0}
+.calendar-bottom{display:flex;justify-content:flex-end;margin:12px 0}
+.calendar-entry{border-top:1px solid #ac8d6044;padding:8px 3px 0}
+#calendar-dialog .calendar-entry h3{font:400 25px/1.4 var(--brush);color:#573b27;margin:5px 0}
+.calendar-entry p{font:400 13px/1.8 var(--reading-serif);margin:6px 0}
+.calendar-metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.calendar-metrics>div{background:var(--wood-raised);background-size:auto,400px;padding:8px;color:#f4dfba;border:1px solid #926a42;box-shadow:inset 0 1px #ddb27133}
+.calendar-metrics dt{font-size:10px;color:#dfc79e}
+.calendar-metrics dd{margin:3px 0 0;font-size:14px}
+.calendar-event{border-top:1px solid #b39b7344;margin-top:14px;padding-top:10px}
+.calendar-event h4{font:400 16px/1.5 var(--reading-serif);color:#583c28;margin:5px 0}
+.calendar-stamp{display:inline-block;color:#f3dfb9;background:var(--wood-raised);background-size:auto,300px;padding:3px 6px;font-size:10px}
+/* Hearts use the saved 0–20 affinity, including partial hearts. */
+.talk-name-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px 12px;margin-bottom:4px}
+#guest-dialog .talk-name-row #talk-name{margin:0}
+.talk-affinity{display:inline-flex;gap:2px;line-height:1;vertical-align:middle}
+.affinity-heart{width:15px;height:16px;display:inline-block}
+.affinity-heart svg{display:block;width:100%;height:100%;overflow:visible}
+.heart-empty{fill:#d9c8b0;stroke:#9c7a5a;stroke-width:1.2}
+.heart-full{fill:#a9574d;stroke:#8e473f;stroke-width:1}
+/* A single small paper triangle replaces the rotated square sticking out. */
+#guest-dialog .talk-guest-copy .talk-speech::before{content:'';position:absolute;left:-8px;top:17px;width:8px;height:13px;transform:none;border:0;border-radius:0;clip-path:polygon(100% 0,0 50%,100% 100%);background:#f5e8cc url('./assets/ui-washi-v21.webp') center/440px;box-shadow:none}
+#guest-dialog .talk-guest-copy .talk-speech::after{content:none}
+@media(max-width:359px){.paper-calendar{padding-left:10px;padding-right:10px}.calendar-tabs{gap:3px}#calendar-dialog .calendar-tabs button{font-size:11px;padding-left:5px;padding-right:5px}.calendar-day b{font-size:16px}.affinity-heart{width:13px;height:14px}}
+/* Dates are printed ink on the physical calendar sheet; navigation stays wood. */
+#calendar-dialog .calendar-day{background:none;box-shadow:none;color:#493522;border-color:#ad93624d}
+#calendar-dialog .calendar-day b{font:400 25px/1.1 var(--brush)}
+#calendar-dialog .calendar-day small{color:#82633d}
+#calendar-dialog .calendar-day.calendar-future{color:#988266}
+#calendar-dialog .calendar-day[aria-pressed=true]{box-shadow:inset 0 0 0 1px #98744f;background:#ad8b4220}
+#calendar-dialog .calendar-day.calendar-today b{border-bottom:1px solid #a55346;color:#a55346}
+#calendar-dialog [data-calendar-kind=events] .calendar-day small{color:#8c4f43}
+#calendar-dialog [data-calendar-kind=records] .calendar-day small{color:#53694d}

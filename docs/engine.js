@@ -232,7 +232,7 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version:11,nightNewsRead:0,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,fridgeDoorHintSeen:false,kitchen:null,dialogueSerial:0,menuRotation:[],recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    version:11,calendarRecords:[],nightNewsRead:0,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,fridgeDoorHintSeen:false,kitchen:null,dialogueSerial:0,menuRotation:[],recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1,atmosphere:0 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
     totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:3,miso:3,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
     unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [],upgradeQty:{},equipped:{}, special: 'onigiri',
@@ -352,6 +352,7 @@
     const history=Array.isArray(v.menuRotation)?v.menuRotation:restored.recentOrders;
     restored.menuRotation=[];
     for(const id of history)if(Object.hasOwn(recipes,id))restored.menuRotation=[...restored.menuRotation.filter(x=>x!==id),id];
+    restored.calendarRecords=Array.isArray(v.calendarRecords)?v.calendarRecords.filter(r=>r&&Number.isSafeInteger(r.night)&&r.night>0&&['revenue','tips','expenses','purchases','money','net','reputation','average','served','level'].every(k=>Number.isFinite(r[k]))).slice(-1000).map(r=>Object.fromEntries(['night','revenue','tips','expenses','purchases','money','net','reputation','average','served','level'].map(k=>[k,r[k]]))):[];
     progress(restored);return restored;
 
 
@@ -524,10 +525,15 @@
     return false;
   }
   function canClose(s) { return s.phase === 'open' && s.arrived === s.target && s.nightScores.length === s.target && s.event !== 'pending'&&s.guests.every(g=>g.status==='left'); }
-  function close(s) { if (!canClose(s)) return false; s.nightCosts=Math.min(s.money,650+s.nightStart.level*250);s.money-=s.nightCosts;s.phase = 'end'; return true; }
+  function close(s) { if (!canClose(s)) return false; s.nightCosts=Math.min(s.money,650+s.nightStart.level*250);s.money-=s.nightCosts;s.phase = 'end';archiveNight(s); return true; }
+  function archiveNight(s){
+    const r=report(s),record={night:s.night,served:s.nightScores.length};
+    for(const key of ['revenue','tips','expenses','purchases','money','net','reputation','average','level'])record[key]=r[key];
+    s.calendarRecords=[...(s.calendarRecords||[]).filter(x=>x.night!==s.night),record].slice(-1000);
+  }
   function next(s) {
     if (s.phase !== 'end') return false;
-    s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
+    archiveNight(s);s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
   const api = { menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;

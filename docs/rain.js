@@ -9,7 +9,29 @@
     // The flower arrangement stands in front of the two rightmost lower panes.
     if(x>980&&y>369)continue;panes.push([x/1536,y/1024,(right-x)/1536,(bottom-y)/1024]);
   }
-  const api={spawn,spawnWindow,step,panes};if(typeof module!=='undefined'){module.exports=api;return;}window.MidnightRain=api;
+  // Source coordinates match the room photo; the cover crop projects this canvas
+  // with the same transform as appliance hit targets, leaving mullions indoors.
+  const kitchenPanes=[];
+  for(const [x,right]of [[489,521],[532,555],[564,588],[599,620],[631,654],[665,686],[707,735],[746,775],[785,813]]){
+    for(const [y,bottom]of [[437,493],[509,603],[617,682]]){if(x>700&&y>500)continue;kitchenPanes.push([x/941,y/1672,(right-x)/941,(bottom-y)/1672]);}
+    if(x>700)kitchenPanes.push([x/941,401/1672,(right-x)/941,25/1672]);
+  }
+  let kitchenCanvas,kitchenDrops=[],kitchenElapsed=0,kitchenFrames=0;
+  function kitchen(room,layout,state,dt=0){
+    if(!kitchenCanvas||kitchenCanvas.parentElement!==room){
+      kitchenCanvas=document.createElement('canvas');kitchenCanvas.className='kitchen-window-weather';kitchenCanvas.setAttribute('aria-hidden','true');kitchenCanvas.width=941;kitchenCanvas.height=1672;room.prepend(kitchenCanvas);
+      kitchenDrops=Array.from({length:90},()=>({...spawn(Math.random,true),x:.515+Math.random()*.35,y:.24+Math.random()*.18}));
+    }
+    for(const key of ['left','top','width','height'])kitchenCanvas.style[key]=`${layout[key]}px`;
+    kitchenElapsed+=dt;if(dt&&kitchenElapsed<33)return;const seconds=Math.min(.06,kitchenElapsed/1000);kitchenElapsed=0;
+    const c=kitchenCanvas.getContext('2d');if(!c)return;c.clearRect(0,0,941,1672);c.save();c.beginPath();for(const[x,y,w,h]of kitchenPanes)c.rect(x*941,y*1672,w*941,h*1672);c.clip();
+    const light=window.MidnightDaylight?.sample(window.MidnightDaylight.minutes(state));
+    if(light&&state.phase!=='prep'){c.fillStyle=`rgba(206,224,232,${light.dawn*.85})`;c.fillRect(0,0,941,1672);}
+    const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    for(let d of kitchenDrops){if(!still){d.x+=d.vx*seconds*.12;d.y+=d.vy*seconds*.14;if(d.y>.414){d.y=.235;d.x=.515+Math.random()*.35;}}c.strokeStyle=`rgba(201,225,234,${.25+d.depth*.28})`;c.lineWidth=.7+d.depth*.7;c.beginPath();c.moveTo(d.x*941,d.y*1672);c.lineTo((d.x-.0006)*941,(d.y-.003-d.depth*.004)*1672);c.stroke();}
+    c.restore();kitchenCanvas.dataset.frames=String(++kitchenFrames);kitchenCanvas.dataset.area='kitchen-window-panes';
+  }
+  const api={spawn,spawnWindow,step,panes,kitchenPanes,kitchen};if(typeof module!=='undefined'){module.exports=api;return;}window.MidnightRain=api;
   const canvas=document.getElementById('scene-rain'),world=document.getElementById('scene-world'),app=document.getElementById('app'),ctx=canvas?.getContext('2d');if(!ctx)return;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)'),drops=Array.from({length:110},()=>spawn(Math.random,true)),windowDrops=Array.from({length:48},()=>spawnWindow(Math.random,true));
   let last=0,lastDraw=0,w=0,h=0,frames=0;

@@ -111,6 +111,12 @@
     // Keep the live mesh and controls intact through HUD/inventory/timer updates.
     if($('guest-dialog').dataset.person!==String(g.person)){$('talk-portrait').innerHTML=portrait(p,g.person);$('guest-dialog').dataset.person=g.person;}
     $('talk-name').textContent=profile.name;
+    const affinity=Math.max(0,Math.min(20,state.customerBook[g.person]?.affinity||0));
+    $('talk-affinity').setAttribute('aria-label',`${profile.name} 님과의 친밀도 ${affinity} / 20`);
+    $('talk-affinity').title=`친밀도 ${affinity} / 20`;
+    const hearts=Array.from({length:5},(_,i)=>`<span class="affinity-heart" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="heart-empty" d="M12 21C9 18 2 13 2 7.5C2 1.5 9 1 12 6C15 1 22 1.5 22 7.5C22 13 15 18 12 21Z"/><path class="heart-full" style="clip-path:inset(0 ${100-Math.max(0,Math.min(1,(affinity-i*4)/4))*100}% 0 0)" d="M12 21C9 18 2 13 2 7.5C2 1.5 9 1 12 6C15 1 22 1.5 22 7.5C22 13 15 18 12 21Z"/></svg></span>`).join('');
+    if($('talk-affinity').dataset.value!==String(affinity)){$('talk-affinity').innerHTML=hearts;$('talk-affinity').dataset.value=affinity;}
+
     $('talk-profile').textContent=profile.role||'';$('talk-profile').hidden=!profile.role;
     window.MidnightDialogue.write($('talk-line'),`${g.id}-${view?.node||talkIndex}`,view?view.line:lines[Math.min(talkIndex,lines.length-1)]);
     $('talk-player-line').hidden=!view?.playerLine;$('talk-player-words').textContent=view?.playerLine||'';
@@ -169,7 +175,7 @@
     $('management-dialog').dataset.section=tab;
     const rescue = E.rescueNeeds(state) ? '<div class="rescue-box"><span>재료 살 돈이 부족한가요? 이웃 상인이 이번 주문에 필요한 재료를 나눠 줘요.</span><button data-rescue="true">도움받기 · 평판 −3</button></div>' : '';
     syncDockState();
-    $('management-title').textContent = { pantry: '냉장고', menu: '메뉴 수첩', shop: '가게 꾸미기' }[tab];
+    $('management-title').textContent = { pantry: '냉장고', menu: '메뉴 관리', shop: '가게 꾸미기' }[tab];
     if (tab === 'pantry') {
       $('management-content').innerHTML=`${rescue}<p class="management-note">수량을 정해 한 번에 채워 두세요.<span>재료 그림을 누르면 1개씩 바로 추가돼요.</span></p><div class="stock-grid">${Object.entries(E.ingredients).map(([id,item])=>{
         const open=E.ingredientAvailable(state,id),max=Math.max(0,Math.min(99,999-state.inventory[id],Math.floor(state.money/E.buyPrice(state,id)))),q=Math.max(1,Math.min(purchaseQuantities[id]||1,max||1));purchaseQuantities[id]=q;
@@ -299,9 +305,10 @@
     const button = event.target.closest('[data-choice]');
     if (button && E.resolveEvent(state, button.dataset.choice)) { render(); $('story-dialog').scrollTop=0; toast(state.event==='pending'?'그다음 이야기가 이어집니다.':'이 선택의 소식이 다음 밤에 도착해요.'); }
   });
-  const sheetIds = ['report-dialog', 'guest-dialog', 'management-dialog', 'story-dialog', 'settings-dialog', 'hud-detail-dialog'];
+  const sheetIds = ['report-dialog', 'guest-dialog', 'management-dialog', 'story-dialog', 'settings-dialog', 'hud-detail-dialog', 'calendar-dialog'];
   let hudDetail='funds';
   function syncDockState() {
+    $('calendar-open').setAttribute('aria-expanded',String($('calendar-dialog').open));
     for(const kind of ['funds','reputation'])$(kind+'-open').setAttribute('aria-expanded',String($('hud-detail-dialog').open&&hudDetail===kind));
     for (const button of document.querySelectorAll('.game-dock>button')) {
       const panel=button.id==='story-open'?'story-dialog':'management-dialog';
@@ -340,7 +347,10 @@
     const r=E.report(state),next=E.levels[state.level],line=(name,value)=>`<p><span>${name}</span><b>${value}</b></p>`;
     $('hud-detail-title').textContent=hudDetail==='funds'?'자금 상세':'평판 상세';
     if(hudDetail==='funds'){
-      const expected=650+state.nightStart.level*250;
+      const expected=650+(state.phase==='prep'?state.level:state.nightStart.level)*250;
+      if(state.phase==='prep'){
+        $('hud-detail-content').innerHTML=`<section class="till-summary"><div class="till-heading"><span>현재 보유 자금</span><strong>${yen(state.money)}</strong></div></section><p class="hud-detail-note">개점 전 재료·가게 구입 비용은 보유 자금에 바로 반영돼요. 음식 매출과 팁 등 이번 밤의 내역은 식당 불을 켠 뒤부터 새로 집계돼요.</p><p class="hud-detail-note">영업을 마치면 임대·가스·전기 비용 ${yen(expected)}이 보유 자금 한도에서 정산돼요.</p>`;return;
+      }
       $('hud-detail-content').innerHTML=`<section class="till-summary"><div class="till-heading"><span>현재 보유 자금</span><strong>${yen(state.money)}</strong></div><div class="till-lines">${line('이번 밤 시작 자금',yen(state.nightStart.money))}${line('음식 매출 · 팁 포함','+'+yen(r.revenue))}${line('매출에 포함된 팁',yen(r.tips))}${line('이야기의 답례','+'+yen(r.storyIncome))}${line('재료·가게 구입','−'+yen(r.purchases))}${line('이야기에 보탠 비용','−'+yen(r.storyCosts))}${line('정산된 영업비','−'+yen(r.expenses))}${line('시작 대비 증감',(r.net<0?'−':'+')+yen(Math.abs(r.net)))}</div></section><p class="hud-detail-note">${state.phase==='end'?'이번 밤 영업비 정산이 끝났어요.':`영업을 마치면 임대·가스·전기 비용 ${yen(expected)}이 보유 자금 한도에서 정산돼요.`} 음식 매출은 손님에게 음식값을 받았을 때 반영돼요.</p>`;
     }else{
       $('hud-detail-content').innerHTML=`<section class="report-metric"><h3>골목의 평판</h3><strong>${r.reputation}<small> / 100</small></strong>${delta(r.reputationDelta,'점')}<p>음식값을 받은 손님의 만족도에 따라 평판이 바뀌어요.</p><div class="hud-reputation-rules">${line('85점 이상','+4')}${line('65–84점','+2')}${line('40–64점','−1')}${line('40점 미만','−4')}</div><p>이야기의 선택, 가게 꾸미기, 손님 응대도 평판에 영향을 줘요.</p></section><section class="next-goal"><h4>${next?`레벨 ${next.level} 성장 조건`:'최고 레벨 달성'}</h4>${next?`<div class="hud-reputation-rules">${[[state.xp,next.xp,'성장 점수'],[state.reputation,next.reputation,'평판'],[E.satisfaction(state),next.satisfaction,'만족도'],[E.atmosphere(state),next.atmosphere,'분위기']].map(([v,t,n])=>line(n,`${v} / ${t}${v>=t?' · 달성':''}`)).join('')}</div><p>네 가지 조건을 모두 채우면 레벨이 올라요.</p>`:''}</section>`;
@@ -449,6 +459,7 @@
   });
   Kitchen.init({getState:()=>state,food,toast,openPantry:()=>{tab='pantry';renderManagement();openSheet('management-dialog');},clearToast:()=>{$('kitchen-inline-feedback')?.remove();clearTimeout(toastTimer);$('toast').classList.remove('visible');},changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
   render();
+  window.MidnightCalendar.init({getState:()=>state,open:()=>openSheet('calendar-dialog')});
   window.MidnightApp = { launch:startIntro,resumeAfterUpdate,save,saveForUpdate,canApplyUpdate:()=>!state.kitchen&&!anySheetOpen()&&!Scene.isPlacing()&&!cashAnimation&&performance.now()>=openingUntil,isCooking:()=>Boolean(state.kitchen) };
   if (saveMessage) toast(saveMessage);
   raf = requestAnimationFrame(frame);
