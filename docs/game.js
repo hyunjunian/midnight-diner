@@ -211,7 +211,7 @@
       const turned=Boolean($('day').dataset.night),digits=String(date.day).padStart(2,'0');
       for(const [part,value]of [['month',`${date.month}월`],['tens',digits[0]],['ones',digits[1]]]){
         const leaf=$('day').querySelector(`[data-date-part="${part}"]`),text=leaf.querySelector('span');
-        if(text.textContent!==value){text.textContent=value;if(turned&&!matchMedia('(prefers-reduced-motion: reduce)').matches)leaf.animate([{transform:'perspective(180px) rotateX(-55deg)',opacity:.5},{transform:'perspective(180px) rotateX(0deg)',opacity:1}],{duration:280,easing:'ease-out'});}
+        if(text.textContent!==value){if(part==='month'){const numeral=document.createElement('span'),unit=document.createElement('span');numeral.className='date-month-number';numeral.textContent=date.month;unit.className='date-month-unit';unit.textContent='월';text.replaceChildren(numeral,unit);}else text.textContent=value;if(turned&&!matchMedia('(prefers-reduced-motion: reduce)').matches)leaf.animate([{transform:'perspective(180px) rotateX(-55deg)',opacity:.5},{transform:'perspective(180px) rotateX(0deg)',opacity:1}],{duration:280,easing:'ease-out'});}
       }
       $('day').dataset.night=state.night;
     }
