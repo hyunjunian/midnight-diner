@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261109-v61-real-dates';
+const RELEASE = '20261109-v62-calendar-cutout';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -13,7 +13,7 @@ const FILES = [
   'assets/pour-right-hand-v48-approved-dc743754.webp',
 
   'calendar.js',
-  'assets/calendar-paper-v52.webp',
+  'assets/calendar-paper-alpha-v62.webp',
   'assets/fridge-side-rice-v51.webp',
   'assets/fridge-side-nori-v51.webp',
   'assets/fridge-side-egg-v51.webp',
@@ -427,8 +427,8 @@ const FILE_HASHES = {
   "assets/rice-hand-v45-approved-dc743754.webp": "e31e007468f5cd17e5bac4f8e15dd0c0e1b1c9b7099cb226864b33dee5895220",
   "assets/rice-right-hand-v48-approved-dc743754.webp": "adc1753e9d11f4c37b4702a445017dd3621e200757961a01d5759e9d745772a2",
   "assets/pour-right-hand-v48-approved-dc743754.webp": "62a2ff574c9a75fb7e028d569e764b661e7921a16d79064181b4fda535e992f4",
-  "calendar.js": "3b192f5b2e17267e25076aa9e9def3b33c2118c7b3f628724b19466fd3dede11",
-  "assets/calendar-paper-v52.webp": "51819ce392ccd205cb51353f0cad5fe345cbf4796f8924a1cc12646dc2ee04dc",
+  "calendar.js": "78a7ecc2461224c702b8ca26e547dc4ea3c9b295491e1adcafa8943ddd46e5bc",
+  "assets/calendar-paper-alpha-v62.webp": "b1e0cc3a9597f2d579075e4d32e32e5f9a862c04904ac356ac57b4fcf96e214d",
   "assets/fridge-side-rice-v51.webp": "a112baebb865a38656a51d2199c0a6a6fa97d13734fc70a707feb99c819b4a3e",
   "assets/fridge-side-nori-v51.webp": "29172b88f4ec4f2df3b885e3d8cd4daa3c3af0b186ab8c33bc0c012073fe291f",
   "assets/fridge-side-egg-v51.webp": "9cdd52a11d46222a0b601e07ed345ec3d3c40000452ee3e7f321154a4d431109",
@@ -456,7 +456,7 @@ const FILE_HASHES = {
   "assets/fridge-side-crab-v51.webp": "e46692ef496acddd8e100e081c3f5985dd5dcb2171711f248c6edd9c882f8397",
   "assets/fridge-side-sugar-v51.webp": "a617d95a2183b7454375535cd9466c0c512c83938a691cff5b20fe855cce7dc5",
   "assets/fridge-side-fish-v51.webp": "449595551a63621b67205228224ffefe614d6c62f3c77cdf57741ce21d0fbf15",
-  "hud-v42.css": "235ef5abf024efdcc62e393ba20bef164560658a58131c7ecddefcc54723c6b0",
+  "hud-v42.css": "ed7904883692bbf88c312cf7c40448ff2d9baa40a1c88af5e4b1e3676b3e0126",
   "assets/rice-right-hand-v48.webp": "adc1753e9d11f4c37b4702a445017dd3621e200757961a01d5759e9d745772a2",
   "assets/pour-right-hand-v48.webp": "62a2ff574c9a75fb7e028d569e764b661e7921a16d79064181b4fda535e992f4",
   "assets/potato-right-grip-v48.webp": "8bc6d63c54cab581563d966ce22339c90d219935d44b9e2af1d7c0b888ff12fd",
@@ -517,7 +517,7 @@ const FILE_HASHES = {
   "ui-fixes-v38.css": "e93c04f1b5943ea06e4bc6a7626deca9c114b88e7e433579657f626c1f6b3159",
   "cooking-layout.js": "36c9bd448be4ec6d88198334dd73759e3dab0ec39e4ec62abe94ae56f4212674",
   "dialogue-motion.js": "28bd7aba2c4a1d927236109b528d0148441977ccf017db84ddf4d94af9e2b1aa",
-  "index.html": "bd10780d76f42531724ae2cb80c420913407e42a8fcbfb4bfff5b46d0c817517",
+  "index.html": "f24aadf311a7e2e57e5ab7038aba9de2cdf60854f564eea6eaa3f4ff6d902bc3",
   "style.css": "5f447981dd9d0d91d1037c2b2c5b53a90cd79bbaf7f3c317f51b52b701a79e96",
   "customer.css": "3e2b3d4fc4781651d11c9c887d87ae45ea12fe01dec75cf591f9a99b1775d880",
   "motion.css": "b0b20530ae8929d2e91b2b109df20038484fb654fba3ed8be2c3c58d5046df75",

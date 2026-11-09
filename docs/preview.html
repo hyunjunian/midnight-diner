@@ -13,7 +13,7 @@
   <script>
     // Preview uses release-specific script URLs so a previously installed worker cannot serve an old game.
     (async () => {
-      const release = '20261109-v61-real-dates', root = new URL('./', location.href);
+      const release = '20261109-v62-calendar-cutout', root = new URL('./', location.href);
       const response = await fetch(new URL(`index.html?preview-release=${release}`, root), {cache:'no-store'});
       if (!response.ok) throw new Error('load');
       const doc = new DOMParser().parseFromString(await response.text(), 'text/html');

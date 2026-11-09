@@ -43,7 +43,7 @@
 #calendar-dialog .calendar-tabs button,#calendar-dialog .calendar-bottom button,#calendar-dialog .calendar-page-heading>button{min-height:44px;padding:7px 10px;color:#f7e4bd;background:var(--wood-raised);background-size:auto,420px;border:1px solid #9c7448;border-radius:2px;box-shadow:inset 0 1px #e7b77644,0 2px 2px #28170c44;font:400 12px/1.4 var(--reading-serif);transform:none;animation:none;text-shadow:none}
 .calendar-tabs button{flex:1;white-space:nowrap}
 #calendar-dialog button[aria-pressed=true]:not(.calendar-day){border-color:#dec28d;box-shadow:inset 0 0 0 1px #d4ae71}
-.paper-calendar{background:#f7ebce url('./assets/calendar-paper-v52.webp') center/100% 100% no-repeat;padding:clamp(32px,8vw,52px) 15px 24px;box-shadow:0 3px 6px #4b311c55}
+.paper-calendar{background:transparent url('./assets/calendar-paper-alpha-v62.webp') center/100% 100% no-repeat;padding:clamp(32px,8vw,52px) 15px 24px;box-shadow:none}
 .calendar-page-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:center}
 .calendar-page-heading p{margin:0;font:400 13px/1.5 var(--reading-serif)}
 .calendar-page-heading h3{margin:2px 0 0;font:400 34px/1.2 var(--brush);color:#4b3524}
