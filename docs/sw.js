@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261110-v67-navigation-recovery';
+const RELEASE = '20261110-v68-calendar-printed-stats';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -468,7 +468,7 @@ const FILE_HASHES = {
   "assets/fridge-side-crab-v51.webp": "e46692ef496acddd8e100e081c3f5985dd5dcb2171711f248c6edd9c882f8397",
   "assets/fridge-side-sugar-v51.webp": "a617d95a2183b7454375535cd9466c0c512c83938a691cff5b20fe855cce7dc5",
   "assets/fridge-side-fish-v51.webp": "449595551a63621b67205228224ffefe614d6c62f3c77cdf57741ce21d0fbf15",
-  "hud-v42.css": "a3a108e3366c9fea35e47351477e31d586f5219956af59f890299696df0b003f",
+  "hud-v42.css": "02875c6390ddc6f71bf1cbb5156457758e330c53e0129eb6b5e45a832a8867f1",
   "assets/rice-right-hand-v48.webp": "adc1753e9d11f4c37b4702a445017dd3621e200757961a01d5759e9d745772a2",
   "assets/pour-right-hand-v48.webp": "62a2ff574c9a75fb7e028d569e764b661e7921a16d79064181b4fda535e992f4",
   "assets/potato-right-grip-v48.webp": "8bc6d63c54cab581563d966ce22339c90d219935d44b9e2af1d7c0b888ff12fd",
@@ -529,7 +529,7 @@ const FILE_HASHES = {
   "ui-fixes-v38.css": "e93c04f1b5943ea06e4bc6a7626deca9c114b88e7e433579657f626c1f6b3159",
   "cooking-layout.js": "36c9bd448be4ec6d88198334dd73759e3dab0ec39e4ec62abe94ae56f4212674",
   "dialogue-motion.js": "28bd7aba2c4a1d927236109b528d0148441977ccf017db84ddf4d94af9e2b1aa",
-  "index.html": "dd301c3624ce9a97f22cbf6b85597ee31c507bc549aa90eff0c464d07ad05f47",
+  "index.html": "af2d22e6ea2415d8d42b81a86c4af5800c165aef469b1434bab42da4c2e79401",
   "style.css": "5f447981dd9d0d91d1037c2b2c5b53a90cd79bbaf7f3c317f51b52b701a79e96",
   "customer.css": "3e2b3d4fc4781651d11c9c887d87ae45ea12fe01dec75cf591f9a99b1775d880",
   "motion.css": "b0b20530ae8929d2e91b2b109df20038484fb654fba3ed8be2c3c58d5046df75",
