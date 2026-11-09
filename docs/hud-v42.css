@@ -111,3 +111,12 @@
 .night-hud #calendar-open #open-status{position:relative;font-size:9px;line-height:1.3;white-space:nowrap;color:#e0cba7}
 .night-hud #calendar-open:active #day{filter:brightness(.94)}
 @media(max-width:359px){.night-hud #calendar-open{min-width:50px}.night-hud #day{width:50px}.night-hud #day .night-date-number{font-size:23px}.night-hud #calendar-open #open-status{font-size:8px}}
+
+/* Compact brass-bound paper date, seated beside the clock on the wood plaque. */
+.night-hud #calendar-open{padding-top:5px;gap:0;min-height:44px}
+.night-hud #day{min-height:35px;padding:3px 5px 2px;border-color:#b39a70;background:#efe2c4 url('./assets/ui-washi-v21.webp') center/260px;color:#493622;box-shadow:inset 0 1px #fff6e2,0 2px 0 #c5b18b,0 3px 0 #f0e2c3,0 4px 1px #160b0877;transform-origin:center top}
+.night-hud #day::before{background:#b8a37b33;box-shadow:0 1px #fff7e366}
+.night-hud #day .night-date-number{font-size:23px;color:#493622;text-shadow:none}
+.night-hud #day .night-date-caption{font-size:8px;color:#695035}
+.night-hud .night-date-binding{top:0;height:11px}
+.night-date-binding i{height:10px}
