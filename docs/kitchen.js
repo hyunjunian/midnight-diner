@@ -143,18 +143,18 @@
       area.style.setProperty('--heat-caption-top',`${captionTop}px`);return;
     }
     const workspace=document.querySelector('.process-view'),scene=workspace?.querySelector('.prep-scene');
-    const areaBox=area.getBoundingClientRect(),navBox=$('location-nav').getBoundingClientRect(),captionTop=separateColumn?14:Math.max(navBox.bottom-areaBox.top+24,area.clientHeight*.28),safeBottom=footerTop-60;
+    const areaBox=area.getBoundingClientRect(),navBox=$('location-nav').getBoundingClientRect(),placement=L.workspace(area.clientWidth,area.clientHeight,{viewportHeight:innerHeight,areaTop:areaBox.top,navBottom:navBox.bottom,footerTop,separateColumn,step:scene?.classList.contains('assemble')?'assemble':scene?.classList.contains('pour')?'pour':undefined}),{captionTop,safeBottom}=placement;
     area.style.setProperty('--process-caption-top',`${captionTop}px`);
     if(scene){
       if(scene.classList.contains('stove-unit')){const top=captionTop+104,width=Math.min(area.clientWidth,Math.max(1,safeBottom-top)/1.2);scene.style.cssText=`position:absolute;left:${(area.clientWidth-width)/2}px;top:${top}px;width:${width}px`;return;}
-      const portrait=portraitStep(),art=visual(step()),file=R.nightImage(order().recipe,art.file),box=L.frame(area.clientWidth,area.clientHeight,{portrait,...L.focus(file),safeTop:captionTop+82,safeBottom,center:separateColumn?area.clientHeight*.53:area.clientHeight*.60});
+      const portrait=portraitStep(),art=visual(step()),file=R.nightImage(order().recipe,art.file),box=L.frame(area.clientWidth,area.clientHeight,{portrait,...L.focus(file),safeTop:placement.safeTop,safeBottom,center:placement.center});
       for(const name of ['width','height','left','top'])scene.style[name]=`${box[name]}px`;
       workspace.dataset.foodCenter=String(box.center);workspace.dataset.sourceAspect=String(portrait?L.source(file).ratio:1);
     }
     const completed=area.querySelector('.completed-dish');
     if(completed){
       const plate=completed.querySelector('.original-ready'),art=plate.querySelector('.food-art'),heading=completed.querySelector('h3');
-      const titleTop=separateColumn?14:Math.max(12,innerHeight*.28-areaRect.top);
+      const titleTop=placement.titleTop;
       heading.style.top=`${titleTop}px`;
       const ratioParts=getComputedStyle(art).getPropertyValue('--food-ratio').trim().split('/'),ratio=(Number(ratioParts[0])||1)/(Number(ratioParts[1])||1);
       const above=titleTop+heading.getBoundingClientRect().height+16,below=area.clientHeight-94;

@@ -22,13 +22,23 @@ test('room cover crop preserves the native photo and keeps appliance targets rea
 });
 
 test('food stays at the approved center while extended sleeves leave the viewport',()=>{
- for(const [width,height,footer]of[[320,568,490],[393,734,650],[393,852,750],[430,932,830]])for(const name of ['core-beat','core-pour','measure-miso','core-portion','core-broth']){
+ for(const [width,height,footer]of[[320,568,490],[393,734,650],[393,852,750],[430,932,830]])for(const name of ['core-beat','measure-miso','core-portion','core-broth']){
   const spec=L.focus('foreground-v39-'+name),top=Math.max(180,height*.245+66),box=L.frame(width,height,{portrait:true,...spec,safeTop:top,safeBottom:footer-60});
   assert.ok(Math.abs(box.center-height*.6)<.01,name+' fixed food anchor');
   assert.ok(box.foodTop>=top-.01&&box.foodBottom<=footer-60+.01,name+' clear of caption/footer');
   assert.ok(box.top+box.height>height,name+' sleeve exits viewport');
   assert.ok(Math.abs(box.width/box.height-.5)<.001);
  }
+});
+
+test('approved caption position is independent of food size and restores pouring aspect',()=>{
+ for(const [width,height]of [[320,568],[393,852],[430,932]]){
+  const a=L.workspace(width,height,{navBottom:105,footerTop:height-66,step:'beat'}),b=L.workspace(width,height,{navBottom:105,footerTop:height-66,step:'assemble'});
+  assert.equal(a.captionTop,b.captionTop);assert.equal(a.captionTop,Math.max(125,height*.20));
+  assert.equal(a.titleTop,a.captionTop+24.5);assert.ok(b.safeBottom>a.safeBottom);
+ }
+ const spec=L.focus('foreground-v39-core-pour');assert.equal(spec.ratio,2/3);assert.equal(spec.scale,1.5);
+ const b=L.frame(393,852,{...spec,safeTop:242,safeBottom:748});assert.ok(b.foodTop>=242-.01);assert.ok(b.foodBottom<=748+.01);
 });
 
 test('new foreground art applies only to the five approved dishes',()=>{

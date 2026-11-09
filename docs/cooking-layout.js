@@ -10,21 +10,27 @@ function frame(width,height,{portrait=true,focus=.58,span=.68,start=focus-span/2
 }
 function source(file){
  const key=file.replace('foreground-v39-','');
- const extended=file.startsWith('foreground-v39-')&&['prep-rice','prep-egg','measure-miso','core-portion','core-shape','core-beat','core-pour','core-broth','core-wrap','core-wrap-raw','core-wrap-burnt'].includes(key);
+ const extended=file.startsWith('foreground-v39-')&&['prep-rice','prep-egg','measure-miso','core-portion','core-shape','core-beat','core-broth','core-wrap','core-wrap-raw','core-wrap-burnt'].includes(key);
  const offsets={'prep-rice':.29,'prep-egg':.21,'measure-miso':.24,'core-portion':.4,'core-shape':.26,'core-beat':.25,'core-pour':.24,'core-broth':.24,'core-wrap':.28,'core-wrap-raw':.24,'core-wrap-burnt':.12};
  return extended?{ratio:.5,scale:2,offset:offsets[key]}:{ratio:2/3,scale:1.5,offset:.4};
 }
 function focus(file){
  if(file.startsWith('foreground-v39-')){
-  const key=file.replace('foreground-v39-','');if(key.startsWith('plate-'))return{focus:.55,span:.90,...source(file)};const spec={
+  const key=file.replace('foreground-v39-','');if(key.startsWith('plate-'))return{focus:.50,span:.88,start:.06,end:.94,...source(file)};const spec={
    'measure-miso':[.37,.40,.17,.55],'measure-dashi':[.65,.52],
    'core-portion':[.45,.62,.14,.665],'core-shape':[.38,.42,.22,.54],'core-beat':[.375,.45,.15,.59],
-   'core-pour':[.37,.68,.03,.54],'core-broth':[.36,.68,.015,.545],'core-wrap':[.39,.43,.25,.56],'core-wrap-raw':[.35,.4,.20,.56],'core-wrap-burnt':[.32,.4,.15,.58],
+   'core-pour':[.52,.90,.07,.97],'core-broth':[.36,.68,.015,.545],'core-wrap':[.39,.43,.25,.56],'core-wrap-raw':[.35,.4,.20,.56],'core-wrap-burnt':[.32,.4,.15,.58],
    'prep-rice':[.395,.49,.16,.62],'prep-egg':[.36,.50,.16,.62],'prep-nori':[.55,.55],
    'prep-pork':[.56,.56],'prep-salmon':[.60,.48],'prep-vegetables':[.62,.57],'prep-scallion':[.61,.62]
   }[key];return{focus:spec[0],span:spec[1],...(spec.length>2?{start:spec[2],end:spec[3]}:{}),...source(file)};
  }
  if(file.includes('measure'))return{focus:.65,span:.56};if(file.includes('portion'))return{focus:.59,span:.76};if(file.includes('broth'))return{focus:.59,span:.71};return{focus:.59,span:.7};
+}
+// Approved v42 composition: phase at 20% of viewport, title directly below it.
+// Keep caption placement separate from food fitting; never lower it to fit sleeves.
+function workspace(width,height,{viewportHeight=height,areaTop=0,navBottom=0,footerTop=height,separateColumn=false,step}={}){
+ const captionTop=separateColumn?14:Math.max(navBottom-areaTop+20,viewportHeight*.20-areaTop);
+ return{captionTop,safeTop:captionTop+72,safeBottom:footerTop-(['assemble','pour'].includes(step)?36:60),center:height*(separateColumn?.53:step==='assemble'?.58:.60),titleTop:captionTop+24.5};
 }
 function room(width,height){
  const scale=Math.max(width/941,height/1672),artWidth=941*scale,artHeight=1672*scale,left=(width-artWidth)/2,top=(height-artHeight)/2;
@@ -41,5 +47,5 @@ function cabinet(width,height){
  const lower=Math.max(0,h*.763+12-height),upper=Math.max(0,h*.158-6),crop=cover?Math.min(upper,Math.max(lower,(h-height)/2)):0;
  return{width:w,height:h,top:-crop,cover};
 }
-const api={frame,focus,source,room,cabinet};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingLayout=api;
+const api={frame,focus,source,workspace,room,cabinet};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingLayout=api;
 })();
