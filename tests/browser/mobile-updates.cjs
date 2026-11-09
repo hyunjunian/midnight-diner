@@ -105,6 +105,8 @@ async function controllerIs(page,release){
       userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'});
     page=await context.newPage();
     page.on('pageerror',error=>failures.push(error.message));
+    const mainWorkerDebug=await context.newCDPSession(page);await mainWorkerDebug.send('ServiceWorker.enable');mainWorkerDebug.on('ServiceWorker.workerErrorReported',event=>console.error('Worker error',JSON.stringify(event)));
+    page.on('console',msg=>{if(msg.type()==='error')console.error('Browser error',msg.text())});
     await page.addInitScript(saved=>{
       const match=window.matchMedia.bind(window);
       window.matchMedia=query=>query==='(display-mode: standalone)'?{matches:true,addEventListener(){},removeEventListener(){}}:match(query);
@@ -127,9 +129,7 @@ async function controllerIs(page,release){
     pass('standalone cold launch and gameplay start immediately while the version request is held');
 
     async function scoop(){
-      const rect=await page.locator('#cook-object').boundingBox();
-      const start={x:rect.x+rect.width*.3,y:rect.y+rect.height*(.35+.4)/1.5};
-      const end={x:rect.x+rect.width*.72,y:rect.y+rect.height*(.7+.4)/1.5};
+      const [start,end]=await page.locator('.motion-guide').evaluate(svg=>[[.3,.35],[.72,.7]].map(([x,y])=>{const p=new DOMPoint(x*100,y*100).matrixTransform(svg.getScreenCTM());return{x:p.x,y:p.y}}));
       await page.mouse.move(start.x,start.y);await page.mouse.down();
       await page.mouse.move(end.x,end.y,{steps:12});await page.mouse.up();
     }
@@ -228,6 +228,7 @@ async function controllerIs(page,release){
     assert.ok(markers.every(r=>r.url.includes('?')),'version marker must bypass stale HTTP caches');
     fs.writeFileSync(path.join(output,'mobile-updates.json'),JSON.stringify({current,releases,passes,requests,failures,environment:'Chromium 393×852 touch/standalone emulation with synthetic visibility and persisted pageshow; no physical iPhone'},null,2));
   }catch(error){
+    if(page)console.error('Diagnostics',JSON.stringify(await page.evaluate(async()=>({storage:await navigator.storage.estimate(),workers:(await navigator.serviceWorker.getRegistrations()).map(r=>({scope:r.scope,active:r.active?.scriptURL,installing:r.installing?.state,waiting:r.waiting?.state})),caches:await caches.keys()})).catch(()=>null)));
     if(page)await page.screenshot({path:path.join(output,'mobile-update-failure.png')}).catch(()=>{});
     fs.writeFileSync(path.join(output,'mobile-updates-failure.json'),JSON.stringify({error:error.stack,passes,requests,failures},null,2));
     throw error;

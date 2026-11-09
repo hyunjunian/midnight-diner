@@ -35,13 +35,14 @@ test('the pilot onigiri wrap preserves raw/scorched rice in every action frame w
  }
  for(const id of R.imagePilot){const p=R.plan(id,E.recipes[id]),at=p.findIndex(x=>x.id==='heat');if(at>=0)assert.deepEqual(p.slice(at+1).map(x=>x.id),id==='onigiri'?['wrap','assemble']:['soba','udon'].includes(id)?['drain','assemble']:['assemble']);}
 });
-test('only the approved fifteen recipes route to the new portrait workbench sources',()=>{
+test('historical portrait routing remains intact with foreground replacements scoped to five dishes',()=>{
  for(const id of Object.keys(E.recipes))for(const [source,target]of Object.entries(R.nightSceneFiles)){
   assert.ok(fs.existsSync(path.join(__dirname,'../docs/assets',target+'.webp')),target);
-  assert.equal(R.nightImage(id,source),E.recipes[id].level<=5?target:source,id+' '+source);
+  const foreground=target.replace(/^portrait-v\d+-/,'foreground-v39-'),approved=['onigiri','tamago','tonjiru','ochazuke','negi_omelette'].includes(id),replacement=approved&&fs.existsSync(path.join(__dirname,'../docs/assets',foreground+'.webp'));
+  assert.equal(R.nightImage(id,source),replacement?foreground:E.recipes[id].level<=5?target:source,id+' '+source);
  }
  assert.equal(R.nightImage('hiyayakko',R.prepImage('hiyayakko','scallion')),'portrait-v28-prep-scallion');
- assert.equal(R.nightImage('onigiri','core-portion-v19'),'portrait-v28-core-portion');
+ assert.equal(R.nightImage('onigiri','core-portion-v19'),'foreground-v39-core-portion');
  assert.equal(R.portraitImage('tamago','core-pour'),true,'new-version portrait art keeps guide/input coordinates aligned');
  for(const id of Object.keys(E.recipes)){
   const art=R.heatArt(id,3),expected=E.recipes[id].level<=5&&R.heated.includes(id);assert.equal(!!art,expected,id);

@@ -185,3 +185,27 @@ test('rice recipes skip the lid and migrate active old steps, quality and comple
  for(const [id,r]of Object.entries(E.recipes))assert.equal(E.Cooking.plan(id,r).some(st=>st.id==='lid'),false,id);
  for(const id of ['onigiri','ochazuke','butadon']){for(const offset of [0,1,2,99]){const s=E.fresh();s.level=34;s.money=100000;E.progress(s);E.open(s);const g=E.arrive(s);g.recipe=id;s.nightOrders[0]=id;E.acceptOrder(s,g.id);E.beginCooking(s,g.id);const old=E.Cooking.plan(id,E.recipes[id],true),lid=old.findIndex(st=>st.id==='lid'),step=Math.min(old.length,lid+offset);assert.ok(lid>=0);s.kitchen={guest:g.id,stage:step===old.length?'complete':'process',selected:[...E.recipes[id].ingredients],step,marks:Array.from({length:step},(_,i)=>.8+i*.001),heatValue:.68};const before=structuredClone(s),v=E.restore(JSON.stringify(s)),shift=step>lid?1:0;assert.equal(v.kitchen.step,step-shift);assert.deepEqual(v.kitchen.marks,before.kitchen.marks.filter((_,i)=>i!==lid));assert.equal(v.kitchen.heatValue,.68);assert.equal(v.money,before.money);assert.deepEqual(v.inventory,before.inventory);assert.equal(v.kitchen.stage,before.kitchen.stage);assert.equal(v.kitchen.sequenceVersion,2);assert.deepEqual(E.restore(JSON.stringify(v)).kitchen,v.kitchen,'migration happens once');}}
 });
+
+
+test('orders rotate through every unlocked dish across nights and reloads before repeating',()=>{
+ for(const level of [1,5,20,34]){
+  let s=E.fresh();s.level=level;E.progress(s);const size=s.unlocked.length,orders=[];
+  while(orders.length<size*2){
+   if(s.phase!=='open'||s.arrived===9){s.phase='prep';s.night++;E.open(s);}
+   const before=structuredClone(s),forecast=E.stockPlan(s,3);assert.deepEqual(s,before);
+   for(let i=0;i<3&&orders.length<size*2;i++){
+    const g=E.arrive(s);assert.ok(g);assert.equal(g.recipe,forecast.orders[i]);orders.push(g.recipe);g.status='left';
+    s=E.restore(JSON.stringify(s));
+   }
+  }
+  assert.equal(new Set(orders.slice(0,size)).size,size);
+  assert.equal(new Set(orders.slice(size,size*2)).size,size);
+  assert.equal(s.menuRotation.length,size);
+ }
+});
+test('newly unlocked dishes precede repeat orders and old saves inherit their recent rotation',()=>{
+ const original=E.fresh();original.recentOrders=['tamago','onigiri','tamago','tonjiru'];delete original.menuRotation;
+ let s=E.restore(JSON.stringify(original));assert.deepEqual(s.menuRotation,['onigiri','tamago','tonjiru']);
+ s.level=2;E.progress(s);const newly=s.unlocked.filter(id=>E.recipes[id].level===2);E.open(s);
+ const orders=Array.from({length:3},()=>E.arrive(s).recipe);assert.deepEqual(new Set(orders),new Set(newly));
+});

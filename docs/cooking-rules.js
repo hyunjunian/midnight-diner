@@ -55,7 +55,17 @@
   const nightPrepRecipes=imagePilot;
   function prepImage(recipe,part){return `prep-hi-${part}`;}
   const nightSceneFiles=sceneAssets.files;
-  function nightImage(recipe,file){return inImagePilot(recipe)?nightSceneFiles[file]||file:file;}
-  function portraitImage(recipe,file){return sceneAssets.portrait(nightImage(recipe,file));}
+  const foregroundRecipes=Object.freeze(['onigiri','tamago','tonjiru','ochazuke','negi_omelette']);
+  const foregroundFiles={
+    'portrait-v28-measure-dashi':'measure-dashi','portrait-v28-measure-miso':'measure-miso',
+    'portrait-v28-core-portion':'core-portion','portrait-v28-core-shape':'core-shape',
+    'portrait-v28-core-beat':'core-beat','portrait-v29-core-pour':'core-pour',
+    'portrait-v28-core-broth':'core-broth','portrait-v28-core-wrap':'core-wrap',
+    'portrait-v28-core-wrap-raw':'core-wrap-raw','portrait-v28-core-wrap-burnt':'core-wrap-burnt',
+    ...Object.fromEntries(foregroundRecipes.map(id=>[`portrait-v28-plate-${id}`,`plate-${id}`])),
+    ...Object.fromEntries(['rice','nori','egg','pork','salmon','vegetables','scallion'].map(id=>[`portrait-v28-prep-${id}`,`prep-${id}`]))
+  };
+  function nightImage(recipe,file){const original=inImagePilot(recipe)?nightSceneFiles[file]||file:file;return foregroundRecipes.includes(recipe)&&foregroundFiles[original]?`foreground-v39-${foregroundFiles[original]}`:original;}
+  function portraitImage(recipe,file){const result=nightImage(recipe,file);return sceneAssets.portrait(result)||result.startsWith('foreground-v39-');}
   const api={heatLayout:sceneAssets.heatLayout,inImagePilot,heatArt,finalArt,portraitImage,nightImage,nightSceneFiles,wrapArt,platingArt,prepImage,nightPrepRecipes,imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
 })();

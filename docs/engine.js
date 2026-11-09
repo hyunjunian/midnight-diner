@@ -201,9 +201,14 @@
     const ids=s.unlocked.filter(id=>recipes[id].level<=menuLevel),cycle=s.nightOrders.slice(Math.floor(s.arrived/3)*3);
     // A wave is booked as a group of three: no shared dish within that wave.
     const unique=ids.filter(id=>!cycle.includes(id));
-    const counts=id=>s.nightOrders.filter(x=>x===id).length;
-    const floor=Math.min(...unique.map(counts));let pool=unique.filter(id=>counts(id)===floor);
-    const recent=s.recentOrders.slice(-2),fresh=pool.filter(id=>!recent.includes(id));if(fresh.length)pool=fresh;
+    // Keep a persistent least-recently-ordered rotation across nights and reloads.
+    // Newly unlocked dishes join the unseen pool before any repeat is considered.
+    const rotation=s.menuRotation||s.recentOrders;
+    let pool=unique.filter(id=>!rotation.includes(id));
+    if(!pool.length){
+      const oldest=Math.min(...unique.map(id=>rotation.lastIndexOf(id)));
+      pool=unique.filter(id=>rotation.lastIndexOf(id)===oldest);
+    }
     if(omakase&&pool.includes(s.special))return s.special;
     return pool[(s.dialogueSerial+s.night-1)%pool.length];
   }
@@ -227,7 +232,7 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version:11,nightNewsRead:0,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,fridgeDoorHintSeen:false,kitchen:null,dialogueSerial:0,recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    version:11,nightNewsRead:0,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,fridgeDoorHintSeen:false,kitchen:null,dialogueSerial:0,menuRotation:[],recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1,atmosphere:0 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
     totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:3,miso:3,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
     unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [],upgradeQty:{},equipped:{}, special: 'onigiri',
@@ -344,6 +349,9 @@
       if(g.chat&&guestNodes.includes(g.chat.node))g.chat={node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
       else delete g.chat;
     }
+    const history=Array.isArray(v.menuRotation)?v.menuRotation:restored.recentOrders;
+    restored.menuRotation=[];
+    for(const id of history)if(Object.hasOwn(recipes,id))restored.menuRotation=[...restored.menuRotation.filter(x=>x!==id),id];
     progress(restored);return restored;
 
 
@@ -370,7 +378,7 @@
     else {while(!freshFace(s.nextVisitor))s.nextVisitor++;visitor=s.nextVisitor++;}
     const p=person(visitor);
     const omakase=(visitor+s.night+s.arrived)%3===0,recipe=chooseRecipe(s,omakase);
-    const lineKey=s.dialogueSerial++;s.nightOrders.push(recipe);s.recentOrders=[...s.recentOrders,recipe].slice(-36);
+    const lineKey=s.dialogueSerial++;s.menuRotation=[...(s.menuRotation||s.recentOrders).filter(id=>id!==recipe),recipe];s.nightOrders.push(recipe);s.recentOrders=[...s.recentOrders,recipe].slice(-36);
     const g = { id: ++s.arrived, person: visitor, seat, recipe, omakase,lineKey,status:'seated',menuReadyAt:(s.nightElapsedMs||0)+[0,8000,15000][seat],score:0,waitMs:0,eatMs:0,bill:null,paid:false };
     const memory = s.customerBook[visitor] || {visits:0,lastScore:0,lastVisitNight:0,dueNight:0,dueLevel:0,known:[]};
     if (memory.lastVisitNight !== s.night) memory.visits++;

@@ -21,10 +21,24 @@ test('room cover crop preserves the native photo and keeps appliance targets rea
  }
 });
 
-test('portrait scenes extend solid wrists and tool handles beneath the fixed footer',()=>{
- for(const [width,height,footer]of[[320,568,490],[393,734,650],[393,852,750],[430,932,830]]){
-  const box=L.frame(width,height,{portrait:true,...L.focus('portrait-v28-core-beat'),safeTop:230,safeBottom:footer-60,edgeBottom:footer+8});
-  assert.equal(box.width,width);assert.ok(box.top+box.height>=footer+8-.001);assert.ok(Math.abs(box.center-(box.top+box.height*.59))<.001);
+test('food stays at the approved center while extended sleeves leave the viewport',()=>{
+ for(const [width,height,footer]of[[320,568,490],[393,734,650],[393,852,750],[430,932,830]])for(const name of ['core-beat','core-pour','measure-miso','core-portion','core-broth']){
+  const spec=L.focus('foreground-v39-'+name),top=Math.max(180,height*.245+66),box=L.frame(width,height,{portrait:true,...spec,safeTop:top,safeBottom:footer-60});
+  assert.ok(Math.abs(box.center-height*.6)<.01,name+' fixed food anchor');
+  assert.ok(box.foodTop>=top-.01&&box.foodBottom<=footer-60+.01,name+' clear of caption/footer');
+  assert.ok(box.top+box.height>height,name+' sleeve exits viewport');
+  assert.ok(Math.abs(box.width/box.height-.5)<.001);
+ }
+});
+
+test('new foreground art applies only to the five approved dishes',()=>{
+ const R=require('../docs/cooking-rules');
+ for(const id of Object.keys(require('../docs/catalog').recipes)){
+  const expected=['onigiri','tamago','tonjiru','ochazuke','negi_omelette'].includes(id);
+  assert.equal(R.nightImage(id,'core-beat').startsWith('foreground-v39-'),expected,id);
+ }
+ for(const name of ['prep-rice','prep-egg','measure-miso','core-portion','core-shape','core-beat','core-pour','core-broth','core-wrap']){
+  const src=L.source('foreground-v39-'+name);for(const y of [.22,.5,.78])assert.ok(Math.abs(((y+src.offset)/src.scale)*src.scale-src.offset-y)<1e-9);
  }
 });
 

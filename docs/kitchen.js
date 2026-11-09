@@ -39,7 +39,7 @@
   }
   function open(){if(!bridge)return false;show();return true;}
   function hide(){$('kitchen-screen').classList.remove('immersive-heat');FX?.stopCooking();down=null;local.motion=0;visible=false;$('kitchen-screen').hidden=true;$('app').classList.remove('in-kitchen');bridge?.save();document.dispatchEvent(new Event('midnight:kitchen'));}
-  function header(){const k=state().kitchen,g=order();if(!k||!g){$('kitchen-guest').textContent='내 가게 · 준비와 점검';$('kitchen-order').textContent='부엌 둘러보기';$('kitchen-step-count').textContent='';return;}$('kitchen-guest').textContent=`${E.person(g.person).name} 님의 주문 · COUNTER 0${g.seat+1}`;$('kitchen-order').textContent=recipe().name;$('kitchen-step-count').textContent=k.stage==='complete'?'완성':`${k.step+1} / ${plan().length}`;}
+  function header(){const k=state().kitchen,g=order();if(!k||!g){$('kitchen-guest').textContent='내 가게 · 준비와 점검';$('kitchen-order').textContent='부엌 둘러보기';$('kitchen-step-count').textContent='';return;}$('kitchen-guest').textContent='';$('kitchen-order').textContent=recipe().name;$('kitchen-step-count').textContent=k.stage==='complete'?'완성':`${k.step+1} / ${plan().length}`;}
   function footer(html){$('kitchen-footer').classList.toggle('fridge-footer',view==='fridge');$('kitchen-footer').innerHTML=html;}
   function room(){setStage('room');const k=state().kitchen,names={fridge:'냉장고',rice:'밥솥',stove:'화구',board:'작업대'};
     if(!k){$('kitchen-content').innerHTML=`<div class="kitchen-room-art empty-kitchen ${E.hasUpgrade(state(),'fridge')?'renovated':''}"><p class="room-task"><b>다음 한 끼를 준비하는 곳</b><span>냉장고를 채워 두고 조리 도구를 둘러보세요.</span></p>${['fridge','stove','rice','board'].map(id=>`<button data-station="${id}" class="room-hotspot hotspot-${id} ${id==='fridge'?'station-next':''}" aria-label="${names[id]} 둘러보기"><span>${names[id]}</span></button>`).join('')}</div>`;footer('<p id="empty-kitchen-note" role="status">손님에게 주문을 받으면 이곳에서 요리를 시작해요.</p><button type="button" data-browse-pantry class="primary">냉장고 미리 채우기</button>');fitWorkspace();requestAnimationFrame(fitWorkspace);return;}
@@ -92,13 +92,14 @@
   function guideMarkup(st){
     if(local.done||st.id==='heat')return '';
     const paths=G.guide(gestureId(st),{cuts:local.cutSlots}),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-    return `<svg class="motion-guide" viewBox="${portraitStep()?'0 -40 100 150':'0 0 100 100'}" aria-hidden="true"><defs><marker id="cook-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#fff0b3" stroke-width="2"/></marker></defs>${paths.map((g,i)=>{const d=g.points.map(([x,y],j)=>`${j?'L':'M'}${x*100},${y*100}`).join(' '),[x,y]=g.points[0];return `<g class="guide-path" data-cut="${gestureId(st)==='cut'?Math.round((x-.35)/.15):''}"><path d="${d}" class="guide-shadow"/><path d="${d}" class="guide-line" marker-end="url(#cook-arrow)"/><circle cx="${x*100}" cy="${y*100}" r="4.2" class="guide-start"/><text x="${x*100}" y="${y*100+1.5}" text-anchor="middle">${gestureId(st)==='cut'?Math.round((x-.35)/.15)+1:'●'}</text>${reduce?'':`<circle r="2.5" class="guide-finger"><animateMotion dur="2.2s" repeatCount="indefinite" path="${d}"/></circle>`}</g>`;}).join('')}</svg>`;
+    return `<svg class="motion-guide" viewBox="${portraitStep()?`0 ${-sourceSpace().offset*100} 100 ${sourceSpace().scale*100}`:'0 0 100 100'}" aria-hidden="true"><defs><marker id="cook-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#fff0b3" stroke-width="2"/></marker></defs>${paths.map((g,i)=>{const d=g.points.map(([x,y],j)=>`${j?'L':'M'}${x*100},${y*100}`).join(' '),[x,y]=g.points[0];return `<g class="guide-path" data-cut="${gestureId(st)==='cut'?Math.round((x-.35)/.15):''}"><path d="${d}" class="guide-shadow"/><path d="${d}" class="guide-line" marker-end="url(#cook-arrow)"/><circle cx="${x*100}" cy="${y*100}" r="4.2" class="guide-start"/><text x="${x*100}" y="${y*100+1.5}" text-anchor="middle">${gestureId(st)==='cut'?Math.round((x-.35)/.15)+1:'●'}</text>${reduce?'':`<circle r="2.5" class="guide-finger"><animateMotion dur="2.2s" repeatCount="indefinite" path="${d}"/></circle>`}</g>`;}).join('')}</svg>`;
   }
   function refreshGuides(){const el=$('motion-guides');if(el)el.innerHTML=guideMarkup(step());}
   function measureDisplay(){const m=measureSpec(),name=R.prepNames[step().part];return `<div class="measure-status" role="meter" aria-label="${name} 계량" aria-valuemin="0" aria-valuemax="${m.amount}" aria-valuenow="${Math.round(local.fill*m.amount)}"><span id="measure-value">${Math.round(local.fill*m.amount)} / ${m.amount}${m.unit}</span><div class="measure-progress"><i id="measure-fill" style="width:${local.fill*100}%"></i></div></div>`;}
   function portraitStep(){return !!state().kitchen&&step()?.id!=='heat'&&R.portraitImage(order().recipe,visual(step()).file);}
-  const displayY=y=>portraitStep()?(y+.4)/1.5:y;
-  const inputY=y=>portraitStep()?y*1.5-.4:y;
+  const sourceSpace=()=>L.source(R.nightImage(order().recipe,visual(step()).file));
+  const displayY=y=>portraitStep()?(y+sourceSpace().offset)/sourceSpace().scale:y;
+  const inputY=y=>portraitStep()?y*sourceSpace().scale-sourceSpace().offset:y;
   function knifeAngle(x,y){return Math.atan2(1.16-y,.86-x)*180/Math.PI-48;}
   function cookingMode(){return R.heatMode(order().recipe,recipe());}
   function cookingMotion(){return `<svg class="cooking-surface" viewBox="0 0 100 100" aria-hidden="true">${Array.from({length:20},(_,i)=>`<circle class="cooking-bubble" cx="${25+(i*17)%52}" cy="${35+(i*11)%30}" r="${1.2+(i%4)*.6}" style="animation-delay:${-i*.17}s"/>`).join('')}<path class="surface-ripple" d="M20 50 Q35 44 50 50 T80 50 M25 60 Q40 54 55 60 T75 60"/></svg><svg class="cooking-steam" viewBox="0 0 100 100" aria-hidden="true">${[35,50,65].map((x,i)=>`<path d="M${x} 65 Q${x-8} 45 ${x} 28 T${x} 5" style="animation-delay:${-i*.6}s"/>`).join('')}</svg>`;}
@@ -124,7 +125,7 @@
     $('kitchen-screen').classList.toggle('is-heating',isHeat);
     if(isHeat&&!state().stoveTutorialDone){state().stoveTutorialDone=true;bridge.save();}
     const scene=isHeat?`${heatControls(st,spec)}${stoveUnit(st)}`:`<div class="prep-scene ${st.id} ${local.done?'action-done':''}"><button id="cook-object" class="cook-object" aria-label="${st.title} 조작">${objectContent(st)}</button><div class="action-spark" aria-hidden="true"></div></div>${st.id==='prep'&&st.mode==='measure'?measureDisplay():''}<div class="action-counter" aria-live="polite">${st.id==='prep'&&st.mode==='measure'?'':st.id==='portion'?`그릇에 밥 ${local.count}주걱 / 3주걱`:local.done?'':`${Math.min(local.count,st.goal)} / ${st.goal}`}</div>`;
-    $('kitchen-content').innerHTML=`<div class="process-view station-${st.station} ${isHeat?'':R.inImagePilot(order().recipe)?'photo-workspace':'legacy-workspace'}"><div class="process-heading"><span>${names[st.station]} · ${state().kitchen.step+1}단계</span><h3>${st.title}</h3></div>${scene}</div>`;
+    $('kitchen-content').innerHTML=`<div class="process-view ${R.nightImage(order().recipe,visual(st).file).startsWith('foreground-v39-')?'foreground-workspace':''} station-${st.station} ${isHeat?'':R.inImagePilot(order().recipe)?'photo-workspace':'legacy-workspace'}"><div class="process-heading"><span>${names[st.station]} · ${state().kitchen.step+1}단계</span><h3>${st.title}</h3></div>${scene}</div>`;
     processFooter();fitWorkspace();requestAnimationFrame(fitWorkspace);if(isHeat)updateHeat();else FX?.heat(false,0);
   }
   function fitWorkspace(){
@@ -142,13 +143,13 @@
       area.style.setProperty('--heat-caption-top',`${captionTop}px`);return;
     }
     const workspace=document.querySelector('.process-view'),scene=workspace?.querySelector('.prep-scene');
-    const areaBox=area.getBoundingClientRect(),navBox=$('location-nav').getBoundingClientRect(),captionTop=separateColumn?14:navBox.bottom-areaBox.top+24,safeBottom=footerTop-60;
+    const areaBox=area.getBoundingClientRect(),navBox=$('location-nav').getBoundingClientRect(),captionTop=separateColumn?14:Math.max(navBox.bottom-areaBox.top+24,area.clientHeight*.245),safeBottom=footerTop-60;
     area.style.setProperty('--process-caption-top',`${captionTop}px`);
     if(scene){
       if(scene.classList.contains('stove-unit')){const top=captionTop+104,width=Math.min(area.clientWidth,Math.max(1,safeBottom-top)/1.2);scene.style.cssText=`position:absolute;left:${(area.clientWidth-width)/2}px;top:${top}px;width:${width}px`;return;}
-      const portrait=portraitStep(),art=visual(step()),file=R.nightImage(order().recipe,art.file),box=L.frame(area.clientWidth,area.clientHeight,{portrait,...L.focus(file),safeTop:captionTop+66,safeBottom,edgeBottom:step().id==='prep'&&step().mode==='measure'?undefined:footerTop+8});
+      const portrait=portraitStep(),art=visual(step()),file=R.nightImage(order().recipe,art.file),box=L.frame(area.clientWidth,area.clientHeight,{portrait,...L.focus(file),safeTop:captionTop+66,safeBottom,center:separateColumn?area.clientHeight*.53:area.clientHeight*.60});
       for(const name of ['width','height','left','top'])scene.style[name]=`${box[name]}px`;
-      workspace.dataset.foodCenter=String(box.center);workspace.dataset.sourceAspect=String(portrait?2/3:1);
+      workspace.dataset.foodCenter=String(box.center);workspace.dataset.sourceAspect=String(portrait?L.source(file).ratio:1);
     }
     const completed=area.querySelector('.completed-dish');
     if(completed){const plate=completed.querySelector('.original-ready'),art=plate.querySelector('.food-art'),other=[...completed.children].filter(el=>el!==plate).reduce((n,el)=>n+el.getBoundingClientRect().height+8,0),ratioParts=getComputedStyle(art).getPropertyValue('--food-ratio').trim().split('/'),ratio=(Number(ratioParts[0])||1)/(Number(ratioParts[1])||1),height=Math.max(20,area.clientHeight-other-32),width=Math.min(area.clientWidth*.84,height*ratio,370);art.style.width=`${width}px`;art.style.height=`${width/ratio}px`;}

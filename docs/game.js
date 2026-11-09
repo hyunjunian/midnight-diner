@@ -118,7 +118,7 @@
     window.MidnightDialogue.write($('talk-line'),`${g.id}-${view?.node||talkIndex}`,view?view.line:lines[Math.min(talkIndex,lines.length-1)]);
     $('talk-player-line').hidden=!view?.playerLine;$('talk-player-words').textContent=view?.playerLine||'';
     const choicesKey=JSON.stringify([g.id,view?.node,view?.choices.map(x=>[x.id,x.label])]);
-    if($('talk-choices').dataset.key!==choicesKey){$('talk-choices').dataset.key=choicesKey;$('talk-choices').replaceChildren(...(view?.choices||[]).map((choice,i)=>{const button=document.createElement('button'),number=document.createElement('span'),words=document.createElement('span');button.type='button';button.dataset.guestReply=choice.id;button.setAttribute('aria-label',choice.label);number.className='talk-choice-number';number.setAttribute('aria-hidden','true');number.textContent=String(i+1);words.textContent=choice.label;button.append(number,words);return button;}));}
+    if($('talk-choices').dataset.key!==choicesKey){$('talk-choices').dataset.key=choicesKey;$('talk-choices').replaceChildren(...(view?.choices||[]).map((choice,i)=>{const button=document.createElement('button'),number=document.createElement('span'),words=document.createElement('span');button.type='button';button.dataset.guestReply=choice.id;button.setAttribute('aria-label',choice.label);number.className='talk-choice-number';number.setAttribute('aria-hidden','true');number.textContent=String(i+1);words.textContent=choice.label;if(view.choices.length>1)button.append(number);button.append(words);return button;}));}
     $('talk-choices').classList.toggle('optional',!!view?.orderReady);
     $('talk-choice-title').hidden=!view?.choices?.length;$('talk-choice-title').textContent=view?.orderReady?'더 나눌 이야기':'내가 할 말';
     $('talk-next').hidden=!!view&&!view.orderReady;$('talk-next').textContent=action;$('talk-next').disabled=!!view&&last&&!!other;
@@ -155,7 +155,7 @@
     }).join('')}</div>`;
     const prompt=(n,title)=>`<div class="story-choice-heading"><span>${n} / 2 · 당신의 선택</span><h3>${title}</h3><p>마음이 가는 행동 하나를 골라 주세요.</p></div>`;
     if(run.step===0){
-      $('story-content').innerHTML=followups+faces+`<div class="story-scene"><span>오늘 밤, 카운터에서</span><p>${definition.intro}</p></div>`+dialogue+`<button class="story-answer-jump" data-story-jump>내가 할 일 고르기 · ${definition.choices.length}가지 선택 </button><section id="story-decision">`+prompt(1,'주인장인 당신은 어떻게 할까요?')+`<div class="story-choices">${definition.choices.map((c,i)=>{
+      $('story-content').innerHTML=followups+faces+`<div class="story-scene"><span>오늘 밤, 카운터에서</span><p>${definition.intro}</p></div>`+dialogue+`<section id="story-decision">`+prompt(1,'주인장인 당신은 어떻게 할까요?')+`<div class="story-choices">${definition.choices.map((c,i)=>{
         const available=E.canChoose(state,c),cost=[c.money<0?`${yen(-c.money)} 사용`:'',...Object.entries(c.ingredients||{}).map(([id,n])=>`${E.ingredients[id].name} ${n}개`)].filter(Boolean).join(' · ');
         return `<button class="story-choice-card" data-choice="${c.id}" ${available?'':'disabled'}><span class="choice-number">${available?String(i+1):'잠김'}</span><span class="choice-copy"><b>${c.label}</b><small>${available?cost||'부담 없이 이야기를 나눠요':`${cost} 필요 · 냉장고에서 준비해 주세요`}</small></span><span class="choice-arrow" aria-hidden="true">${available?'':'◇'}</span></button>`;
       }).join('')}</div></section>`;return;
@@ -213,7 +213,7 @@
     $('night-action').classList.toggle('close-ready',canClose);
     const nextLevel=E.levels.find(l=>l.level>state.level);
     const remaining=nextLevel?Math.max(0,nextLevel.xp-state.xp):0,conditions=nextLevel?[[state.reputation,nextLevel.reputation,'평판'],[E.satisfaction(state),nextLevel.satisfaction,'만족도'],[E.atmosphere(state),nextLevel.atmosphere,'분위기']]:[];
-    $('progress-hud').innerHTML=`<b class="hud-level"><small>레벨</small><strong>${state.level}</strong></b><div class="hud-growth"><span>${nextLevel?`레벨 ${nextLevel.level}까지 <strong>${remaining?remaining.toLocaleString()+'점 더':'성장 달성'}</strong>`:'최고 레벨 달성'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}" aria-label="${nextLevel?'다음 레벨까지 '+remaining+'점':'최고 레벨'}"></progress></div><div class="hud-conditions">${conditions.map(([v,t,label])=>`<span class="${v>=t?'met':''}" title="${label} ${v} / ${t}" aria-label="${label} ${v}점, 목표 ${t}점${v>=t?', 달성':''}">${label} <b>${v>=t?'✓':(t-v)+'점 더'}</b></span>`).join('')}</div>`;
+    $('progress-hud').innerHTML=`<b class="hud-level" aria-label="레벨 ${state.level}"><strong>${state.level}</strong></b><div class="hud-growth"><span>${nextLevel?`레벨 ${nextLevel.level}까지 <strong>${remaining?remaining.toLocaleString()+'점 더':'성장 달성'}</strong>`:'최고 레벨 달성'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}" aria-label="${nextLevel?'다음 레벨까지 '+remaining+'점':'최고 레벨'}"></progress></div><div class="hud-conditions">${conditions.map(([v,t,label])=>`<span class="${v>=t?'met':''}" title="${label} ${v} / ${t}" aria-label="${label} ${v}점, 목표 ${t}점${v>=t?', 달성':''}">${label} <b>${v>=t?'✓':(t-v)+'점 더'}</b></span>`).join('')}</div>`;
     renderStockPrep();renderScene();renderTalk();renderStory();renderManagement();save();
     const storyAttention=E.storyNeedsAttention(state);
     $('story-badge').hidden=!storyAttention;
@@ -295,7 +295,6 @@
   $('management-content').addEventListener('change',event=>{const id=event.target.dataset.purchaseQty;if(id)event.target.value=String(purchaseQuantities[id]||1);});
   $('management-content').addEventListener('input',event=>{if(event.target.matches('[data-purchase-qty]')){const id=event.target.dataset.purchaseQty,max=Math.max(1,Math.min(99,999-state.inventory[id],Math.floor(state.money/E.buyPrice(state,id))));purchaseQuantities[id]=Math.max(1,Math.min(max,Math.floor(Number(event.target.value)||1)));event.target.closest('article').querySelector('[data-buy]').textContent=`${purchaseQuantities[id]}개 채우기 · ${yen(purchaseQuantities[id]*E.buyPrice(state,id))}`;return;}if(event.target.id!=='menu-search')return;const pos=event.target.selectionStart;menuQuery=event.target.value;renderManagement();const input=$('menu-search');input.focus({preventScroll:true});input.setSelectionRange(pos,pos);});
   $('story-content').addEventListener('click', event => {
-    if(event.target.closest('[data-story-jump]')){$('story-decision')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
     const button = event.target.closest('[data-choice]');
     if (button && E.resolveEvent(state, button.dataset.choice)) { render(); $('story-dialog').scrollTop=0; toast(state.event==='pending'?'그다음 이야기가 이어집니다.':'이 선택의 소식이 다음 밤에 도착해요.'); }
   });
