@@ -188,7 +188,11 @@
   }
   function renderClock(){
     const minutes=Math.floor(window.MidnightDaylight?.minutes(state)??(state.phase==='prep'?1430:state.phase==='end'?420:30));
-    $('clock').textContent=`${String(Math.floor(minutes/60)).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`;
+    const label=`${String(Math.floor(minutes/60)).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`;
+    $('clock').setAttribute('aria-label',`게임 시간 ${Math.floor(minutes/60)}시 ${minutes%60}분`);
+    $('clock').title=label;
+    $('clock-hour').setAttribute('transform',`rotate(${(minutes%720)*.5} 50 50)`);
+    $('clock-minute').setAttribute('transform',`rotate(${(minutes%60)*6} 50 50)`);
     window.MidnightDaylight?.update(state);
   }
   function render() {
@@ -197,6 +201,7 @@
     $('day').textContent = `${state.night}번째 밤`;
     $('open-status').textContent = state.phase === 'prep' ? '영업 준비' : state.phase === 'end' ? '오늘 영업 끝' : '영업 중';
     renderClock();
+    if($('hud-detail-dialog').open)renderHudDetail();
     const canClose = E.canClose(state);
     const serving=state.phase==='open'&&!canClose;
     $('night-action').hidden=serving;
@@ -294,8 +299,10 @@
     const button = event.target.closest('[data-choice]');
     if (button && E.resolveEvent(state, button.dataset.choice)) { render(); $('story-dialog').scrollTop=0; toast(state.event==='pending'?'그다음 이야기가 이어집니다.':'이 선택의 소식이 다음 밤에 도착해요.'); }
   });
-  const sheetIds = ['report-dialog', 'guest-dialog', 'management-dialog', 'story-dialog', 'settings-dialog'];
+  const sheetIds = ['report-dialog', 'guest-dialog', 'management-dialog', 'story-dialog', 'settings-dialog', 'hud-detail-dialog'];
+  let hudDetail='funds';
   function syncDockState() {
+    for(const kind of ['funds','reputation'])$(kind+'-open').setAttribute('aria-expanded',String($('hud-detail-dialog').open&&hudDetail===kind));
     for (const button of document.querySelectorAll('.game-dock>button')) {
       const panel=button.id==='story-open'?'story-dialog':'management-dialog';
       const expanded=$(panel).open&&(panel==='story-dialog'||button.dataset.tab===tab);
@@ -329,6 +336,17 @@
   $('story-open').addEventListener('click',()=>{E.markStoryRead(state);storyRenderKey='';render();openSheet('story-dialog');});
   function soundLabel(){if(FX){$('sound-effects').textContent=FX.enabled?'조리·게임 효과음 · 켜짐':'조리·게임 효과음 · 꺼짐';$('sound-effects').setAttribute('aria-pressed',String(FX.enabled));}}
   $('sound-effects').addEventListener('click',()=>{FX?.setEnabled(!FX.enabled);soundLabel();});soundLabel();
+  function renderHudDetail(){
+    const r=E.report(state),next=E.levels[state.level],line=(name,value)=>`<p><span>${name}</span><b>${value}</b></p>`;
+    $('hud-detail-title').textContent=hudDetail==='funds'?'자금 상세':'평판 상세';
+    if(hudDetail==='funds'){
+      const expected=650+state.nightStart.level*250;
+      $('hud-detail-content').innerHTML=`<section class="till-summary"><div class="till-heading"><span>현재 보유 자금</span><strong>${yen(state.money)}</strong></div><div class="till-lines">${line('이번 밤 시작 자금',yen(state.nightStart.money))}${line('음식 매출 · 팁 포함','+'+yen(r.revenue))}${line('매출에 포함된 팁',yen(r.tips))}${line('이야기의 답례','+'+yen(r.storyIncome))}${line('재료·가게 구입','−'+yen(r.purchases))}${line('이야기에 보탠 비용','−'+yen(r.storyCosts))}${line('정산된 영업비','−'+yen(r.expenses))}${line('시작 대비 증감',(r.net<0?'−':'+')+yen(Math.abs(r.net)))}</div></section><p class="hud-detail-note">${state.phase==='end'?'이번 밤 영업비 정산이 끝났어요.':`영업을 마치면 임대·가스·전기 비용 ${yen(expected)}이 보유 자금 한도에서 정산돼요.`} 음식 매출은 손님에게 음식값을 받았을 때 반영돼요.</p>`;
+    }else{
+      $('hud-detail-content').innerHTML=`<section class="report-metric"><h3>골목의 평판</h3><strong>${r.reputation}<small> / 100</small></strong>${delta(r.reputationDelta,'점')}<p>음식값을 받은 손님의 만족도에 따라 평판이 바뀌어요.</p><div class="hud-reputation-rules">${line('85점 이상','+4')}${line('65–84점','+2')}${line('40–64점','−1')}${line('40점 미만','−4')}</div><p>이야기의 선택, 가게 꾸미기, 손님 응대도 평판에 영향을 줘요.</p></section><section class="next-goal"><h4>${next?`레벨 ${next.level} 성장 조건`:'최고 레벨 달성'}</h4>${next?`<div class="hud-reputation-rules">${[[state.xp,next.xp,'성장 점수'],[state.reputation,next.reputation,'평판'],[E.satisfaction(state),next.satisfaction,'만족도'],[E.atmosphere(state),next.atmosphere,'분위기']].map(([v,t,n])=>line(n,`${v} / ${t}${v>=t?' · 달성':''}`)).join('')}</div><p>네 가지 조건을 모두 채우면 레벨이 올라요.</p>`:''}</section>`;
+    }
+  }
+  for(const kind of ['funds','reputation'])$(kind+'-open').addEventListener('click',()=>{hudDetail=kind;renderHudDetail();openSheet('hud-detail-dialog');});
   $('settings-open').addEventListener('click', () => openSheet('settings-dialog'));
   $('fullscreen').addEventListener('click', async () => {
     if (document.fullscreenElement) return;
