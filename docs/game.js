@@ -103,7 +103,6 @@
     if(g.status==='paying')return['잘 먹었습니다. 계산 부탁드릴게요.',`음식값과 팁을 합쳐 ${yen(g.bill.total)}이네요. 감사합니다.`];
     return ['따뜻할 때 천천히 먹고 갈게요. 잠깐만 기다려 주세요.'];
   }
-  const factLabels={name:'이름',role:'하는 일',age:'나이',style:'차림새',bio:'기억해 둘 이야기'};
   function renderTalk(){
     if(!$('guest-dialog').open)return;const g=state.guests.find(g=>g.id===selectedGuest&&g.status!=='left');if(!g){$('guest-dialog').close();return;}
     const p=E.person(g.person),profile=E.guestProfile(state,g.person),view=E.guestConversation(state,g.id),lines=view?null:talkLines(g),last=view?view.orderReady:talkIndex>=lines.length-1,other=state.kitchen&&state.kitchen.guest!==g.id;
@@ -113,14 +112,11 @@
     if($('guest-dialog').dataset.person!==String(g.person)){$('talk-portrait').innerHTML=portrait(p,g.person);$('guest-dialog').dataset.person=g.person;}
     $('talk-name').textContent=profile.name;
     $('talk-profile').textContent=profile.role||'';$('talk-profile').hidden=!profile.role;
-    const fields=['role','age','style'],factsKey=JSON.stringify(fields.map(id=>profile[id]));
-    if($('talk-known-fields').dataset.key!==factsKey){$('talk-known-fields').dataset.key=factsKey;$('talk-known-fields').replaceChildren(...fields.map(id=>{const item=document.createElement('div'),label=document.createElement('dt'),value=document.createElement('dd');label.textContent=factLabels[id];value.textContent=profile[id]||'아직 몰라요';item.className=profile[id]?'known':'unknown';label.append(document.createTextNode(profile[id]?' ✓':''));item.append(label,value);return item;}));}
     window.MidnightDialogue.write($('talk-line'),`${g.id}-${view?.node||talkIndex}`,view?view.line:lines[Math.min(talkIndex,lines.length-1)]);
     $('talk-player-line').hidden=!view?.playerLine;$('talk-player-words').textContent=view?.playerLine||'';
     const choicesKey=JSON.stringify([g.id,view?.node,view?.choices.map(x=>[x.id,x.label])]);
     if($('talk-choices').dataset.key!==choicesKey){$('talk-choices').dataset.key=choicesKey;$('talk-choices').replaceChildren(...(view?.choices||[]).map((choice,i)=>{const button=document.createElement('button'),number=document.createElement('span'),words=document.createElement('span');button.type='button';button.dataset.guestReply=choice.id;button.setAttribute('aria-label',choice.label);number.className='talk-choice-number';number.setAttribute('aria-hidden','true');number.textContent=String(i+1);words.textContent=choice.label;if(view.choices.length>1)button.append(number);button.append(words);return button;}));}
     $('talk-choices').classList.toggle('optional',!!view?.orderReady);
-    $('talk-choice-title').hidden=!view?.choices?.length;$('talk-choice-title').textContent=view?.orderReady?'더 나눌 이야기':'내가 할 말';
     $('talk-next').hidden=!!view&&!view.orderReady;$('talk-next').textContent=action;$('talk-next').disabled=!!view&&last&&!!other;
     $('talk-order').hidden=!view?.orderReady;$('talk-order').innerHTML=`${food(g.recipe)}<span>${E.recipes[g.recipe].name}<small>${E.recipes[g.recipe].ingredients.map(id=>E.ingredients[id].name).join(' · ')}</small></span>`;
     $('talk-gift').hidden=!E.regular(state,g.person)||!view?.orderReady;$('talk-gift').disabled=g.gifted||!state.inventory.egg;$('talk-gift').textContent=g.gifted?'✓ 달걀 곁들임을 서비스했어요':'단골 서비스 · 달걀 곁들임 1개';

@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261109-v39-centered-cooking';
+const RELEASE = '20261109-v40-clean-conversation';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -424,10 +424,10 @@ const FILE_HASHES = {
   "mobile-layout-v33.css": "c808030031cac6ded8b228f2a88ae5b765985f9660a9322d9c80e148b46ceafc",
   "wood-ui-v35.css": "b28857aba88423d31a8704f76c2b43b6ff1dc48bcd9d8ea378aa69b8b1323e5d",
   "materials-v37.css": "67c3cd9e4cd1cfdeb9cdc37557c6746b9df302318c2239c51aa1bf5ee7d9512f",
-  "ui-fixes-v38.css": "2f1ef63b5cc98d7425dc0dcf67261cab9e6ad1d91ed56abcff4acdf6b271d901",
+  "ui-fixes-v38.css": "836590f80b420252b9b096f59956443a7985ee58ef47b5a4d1179429c0554b56",
   "cooking-layout.js": "2b21779bd5327ad82d4b453134a7c5cc397168fbb0f41ace9d0929cee87cee8f",
   "dialogue-motion.js": "28bd7aba2c4a1d927236109b528d0148441977ccf017db84ddf4d94af9e2b1aa",
-  "index.html": "880c48c6275ad69b83e879bb8b5101f7b0278bbe655959a6444c512e5a131812",
+  "index.html": "6332733da1b85f9e8bd4303d8e94b1d0a1de55745986004ddb425b6058d672af",
   "style.css": "5f447981dd9d0d91d1037c2b2c5b53a90cd79bbaf7f3c317f51b52b701a79e96",
   "customer.css": "3e2b3d4fc4781651d11c9c887d87ae45ea12fe01dec75cf591f9a99b1775d880",
   "motion.css": "b0b20530ae8929d2e91b2b109df20038484fb654fba3ed8be2c3c58d5046df75",
@@ -475,7 +475,7 @@ const FILE_HASHES = {
   "catalog.js": "fa5f93ed52cd38482aed7a7188fa12c63e6f304cb59813fa24a615d2a8f56af6",
   "stories.js": "000415984d1c791dc184bba686bd97d124031614dda6a0f6c6636df7a0c6ab0c",
   "engine.js": "d55626b91e3be298c7b3f5df618623c8f7b4295b574bf2a7f7ce0b3941f1838e",
-  "game.js": "08d11bca608c2a09720280e5e91b835161b7c24425ff81a3d9b733534626944a",
+  "game.js": "ab995bd139bff57f8844d79a26c4b69f1624338f92dfbf0b5434ab72287e5ed5",
   "scene.js": "de2fd0d34a821918e9a1db4cfb72b9a8191daf0a4230c57986bf9dcbb0b902c4",
   "rain.js": "62e228a7a79c5c36537ef2b94d8805be363aa62af90bd849becebc83b9dc6731",
   "morph.js": "3717749af5436dda9d7398e2d08f1c84f6b17846c6c09e676536b6751efb20ef",

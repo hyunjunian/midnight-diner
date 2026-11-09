@@ -1,12 +1,4 @@
 /* Screenshot corrections: compact ink labels, readable paper choices and quiet dismissal. */
-#guest-dialog .talk-notes {margin:10px 0 8px;border-bottom:1px solid #a98a5b38;padding-bottom:7px}
-#guest-dialog .talk-notes summary {display:flex;align-items:center;justify-content:space-between;min-height:32px;list-style:none;font:400 12px/1.5 var(--reading-serif);color:#775b37}
-#guest-dialog .talk-notes summary::-webkit-details-marker{display:none}
-#guest-dialog .talk-notes-toggle {font-size:10px;color:#8d7351}
-#guest-dialog .talk-notes[open] .talk-notes-toggle {font-size:0}
-#guest-dialog .talk-notes[open] .talk-notes-toggle::after{content:'접기';font-size:10px}
-#guest-dialog .talk-choice-title {display:flex;align-items:center;gap:10px;font:400 13px/1.5 var(--reading-serif);color:#704923;margin:13px 0 8px}
-#guest-dialog .talk-choice-title::after {content:'';height:1px;background:#a98a5b44;flex:1}
 #guest-dialog #talk-choices {margin-top:0;gap:8px}
 #guest-dialog #talk-choices>button {display:grid;grid-template-columns:16px minmax(0,1fr);gap:9px;align-items:start;min-height:44px;padding:12px 14px;font:400 14px/1.65 var(--reading-serif);color:#493824}
 #guest-dialog #talk-choices>button::before {background-image:linear-gradient(#fff5db5c,#ead3a343),url('./assets/ui-washi-v21.webp');box-shadow:inset 0 1px #fffae8,0 2px 3px #72502a25}
