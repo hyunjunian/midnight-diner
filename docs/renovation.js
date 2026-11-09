@@ -25,7 +25,7 @@
   const credit=Math.min(u.cost,s.renovation?.[area+'Credit']||0),cash=u.cost-credit,result={upgrade:u,credit,cash};
   if(expected!==undefined&&u.level!==expected)return {...result,ok:false,reason:'이전 개선부터 진행해 주세요'};
   if(!Number.isSafeInteger(s.level)||s.level<u.level)return {...result,ok:false,reason:`레벨 ${u.level}에 개선 가능`};
-  if(!integer(s.money)||s.money<cash)return {...result,ok:false,reason:'캐쉬 부족'};
+  if(!integer(s.money)||s.money<cash)return {...result,ok:false,reason:'자금 부족'};
   return {...result,ok:true};
  }
  function install(s,area,expected){

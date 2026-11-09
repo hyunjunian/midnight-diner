@@ -10,7 +10,7 @@
   catch { state = E.fresh(); saveMessage = '저장 정보를 읽지 못해 새 식당을 준비했습니다.'; }
   let selectedGuest=null,tab='pantry',talkIndex=0,cashAnimation=null;
   const Kitchen=window.MidnightKitchen,FX=window.MidnightAudio;
-  const purchaseQuantities={};let prepExpanded=false,renovationPlan='next',renovationBusy=false;
+  const purchaseQuantities={};let prepExpanded=false,renovationBusy=false;
   let menuFilter='all',menuQuery='',storyRenderKey='';
   const seenCustomers = new Set();
   let toastTimer, feedbackTimer, raf, lastFrame = 0, openingUntil=0, lastClock=0;
@@ -132,7 +132,7 @@
   function upcoming(){
     if(state.level>=50)return '<p class="management-note">50레벨의 심야식당이 되었어요. 남은 내부·외부 개선을 완성해 보세요.</p>';
     const next=state.level+1,menus=Object.values(E.recipes).some(r=>r.level===next);
-    return `<section class="upcoming"><div class="reward-heading"><span class="level-tile"><small>레벨</small><b>${next}</b></span><div><small>다음 레벨</small><h3>${menus?'다음 레벨의 새로운 한 끼':'더 깊어지는 심야식당'}</h3></div></div><p class="reward-conditions">${requirements(next)}</p>${menus?rewardGallery(next):''}</section><section class="upcoming-items"><h3>다음 레벨의 분위기 및 환경 개선</h3><div class="renovation-rewards">${['inside','outside'].map(area=>{const u=E.R.catalog[area][next-1];return `<article><img src="${E.R.image(area,next)}" alt="레벨 ${next} ${area==='inside'?'내부':'외부'} 개선" loading="lazy"><h4>${area==='inside'?'내부':'외부'} · ${u.zone}</h4><small>${u.cost.toLocaleString()} 캐쉬 · 분위기 +${u.atmosphere} · 환경 +${u.environment}</small></article>`;}).join('')}</div></section>`;
+    return `<section class="upcoming"><div class="reward-heading"><span class="level-tile"><small>레벨</small><b>${next}</b></span><div><small>다음 레벨</small><h3>${menus?'다음 레벨의 새로운 한 끼':'더 깊어지는 심야식당'}</h3></div></div><p class="reward-conditions">${requirements(next)}</p>${menus?rewardGallery(next):''}</section><section class="upcoming-items"><h3>다음 레벨의 분위기 및 환경 개선</h3><div class="renovation-rewards">${['inside','outside'].map(area=>{const u=E.R.catalog[area][next-1];return `<article><img src="${E.R.image(area,next)}" alt="레벨 ${next} ${area==='inside'?'내부':'외부'} 개선" loading="lazy"><h4>${area==='inside'?'내부':'외부'} · ${u.zone}</h4><small>${yen(u.cost)} · 분위기 +${u.atmosphere} · 환경 +${u.environment}</small></article>`;}).join('')}</div></section>`;
   }
   function renderStory(){
     const view=E.story(state),news=E.news(state),history=state.storyMemory.slice(-5).reverse(),key=JSON.stringify([view?.run,news,state.storyMemory.length,view?.run.cast.map(id=>E.guestProfile(state,id).known)]);
@@ -162,12 +162,12 @@
 
   function renderShop(){
     const R=E.R,r=state.renovation;
-    $('management-content').innerHTML=`<section class="renovation-summary"><h3>가게가 한 단계씩 달라져요</h3><p>레벨 조건과 캐쉬로 내부·외부를 각각 개선해요.</p><div class="renovation-metrics"><span>분위기 <b>${E.atmosphere(state)}</b></span><span>환경 <b>${E.environment(state)}</b></span><span>보유 캐쉬 <b>${state.money.toLocaleString()}</b></span></div><p class="renovation-progress">내부 ${r.inside}/50단계 · 외부 ${r.outside}/50단계</p>${r.insideCredit||r.outsideCredit?`<small>이전 구매 반영 크레딧 · 내부 ${r.insideCredit.toLocaleString()} / 외부 ${r.outsideCredit.toLocaleString()}<br>개선 비용에서 먼저 사용되며, 남은 비용만 캐쉬로 차감돼요.</small>`:''}${state.upgrades.length?'<small>이전 꾸미기 구매 내역과 혜택은 그대로 유지돼요.</small>':''}</section><label class="renovation-level-select">레벨별 개선 보기 <select id="renovation-plan" ${renovationBusy?'disabled':''}><option value="next">다음 개선</option>${Array.from({length:50},(_,i)=>`<option value="${i+1}" ${renovationPlan===String(i+1)?'selected':''}>레벨 ${i+1}</option>`).join('')}</select></label><div class="renovation-grid">${['inside','outside'].map(area=>{
-      const label=area==='inside'?'내부':'외부',u=renovationPlan==='next'?R.next(state,area):R.catalog[area][Number(renovationPlan)-1];
+    $('management-content').innerHTML=`<section class="renovation-summary"><h3>매장 개선 현황</h3><p>필요 레벨과 자금을 확인한 뒤, 내부 또는 외부를 개선하세요.</p><div class="renovation-metrics"><span class="renovation-funds">보유 자금 <b>${yen(state.money)}</b></span><span>분위기 점수 <b>${E.atmosphere(state)}</b></span><span>환경 점수 <b>${E.environment(state)}</b></span></div><p class="renovation-progress">개선 완료 · 내부 ${r.inside}/50 · 외부 ${r.outside}/50</p>${r.insideCredit||r.outsideCredit?`<small>이전 구매 반영 금액 · 내부 ${yen(r.insideCredit)} / 외부 ${yen(r.outsideCredit)}<br>개선 비용에서 먼저 사용하고, 남은 금액만 보유 자금에서 차감해요.</small>`:''}${state.upgrades.length?'<small>이전 꾸미기 구매 내역과 혜택은 그대로 유지돼요.</small>':''}</section><div class="renovation-grid">${['inside','outside'].map(area=>{
+      const label=area==='inside'?'내부':'외부',u=R.next(state,area);
       if(!u)return `<article class="renovation-card"><h3>${label} 개선 완료</h3><img class="renovation-finished" src="${R.image(area,50)}" alt="50단계 개선을 마친 ${label}"><p>50/50단계 · 모든 개선을 마쳤어요.</p><button disabled>개선 완료</button></article>`;
-      const done=r[area]>=u.level,q=R.quote(state,area,u.level),prior=r[area]<u.previous,reason=done?'이미 개선 완료':prior?`${label} ${u.previous}단계 먼저 개선`:!q.ok?q.reason:renovationBusy?'개선 준비 중…':`${label} 개선 · ${q.cash.toLocaleString()} 캐쉬`;
-      return `<article class="renovation-card" data-renovation-card="${area}"><span class="renovation-required">필요 레벨 ${u.level} · ${label} ${u.level}단계</span><h3>${label} 개선 · ${u.zone}</h3><p>${u.name}</p><div class="renovation-comparison"><figure><img src="${R.image(area,r[area])}" alt="현재 ${label} ${r[area]}단계" loading="lazy"><figcaption>현재 · ${r[area]}단계</figcaption></figure><figure><img src="${R.image(area,u.level)}" alt="${label} ${u.level}단계 개선 시안" loading="lazy"><figcaption>개선 후 미리보기</figcaption></figure></div><p class="renovation-cost">${u.cost.toLocaleString()} 캐쉬${!done&&!prior&&q.credit?`<small>이전 구매 크레딧 ${q.credit.toLocaleString()} 사용 · 실제 차감 ${q.cash.toLocaleString()}</small>`:''}</p><p class="renovation-reward">분위기 +${u.atmosphere} · 환경 +${u.environment}</p><button data-renovate="${area}" data-renovation-level="${u.level}" ${done||prior||!q.ok||renovationBusy?'disabled':''}>${reason}</button></article>`;
-    }).join('')}</div><p class="management-note">내부·외부는 각각 앞 단계부터 개선해요. 완료한 단계는 다시 구매하지 않아요.</p>`;
+      const done=r[area]>=u.level,q=R.quote(state,area,u.level),prior=r[area]<u.previous,reason=done?'이미 개선 완료':prior?`${label} ${u.previous}단계 먼저 개선`:!q.ok?q.reason:renovationBusy?'개선 준비 중…':yen(q.cash);
+      return `<article class="renovation-card" data-renovation-card="${area}"><span class="renovation-required">필요 레벨 ${u.level} · ${label} ${u.level}단계</span><h3>${label} 개선 · ${u.zone}</h3><p>${u.name}</p><div class="renovation-comparison"><figure><img src="${R.image(area,r[area])}" alt="현재 ${label} ${r[area]}단계" loading="lazy"><figcaption>현재 · ${r[area]}단계</figcaption></figure><figure><img src="${R.image(area,u.level)}" alt="${label} ${u.level}단계 개선 시안" loading="lazy"><figcaption>개선 후 미리보기</figcaption></figure></div><p class="renovation-cost">${yen(u.cost)}${!done&&!prior&&q.credit?`<small>이전 구매 반영 ${yen(q.credit)} · 차감 자금 ${yen(q.cash)}</small>`:''}</p><p class="renovation-reward">분위기 +${u.atmosphere} · 환경 +${u.environment}</p><button data-renovate="${area}" data-renovation-level="${u.level}" ${done||prior||!q.ok||renovationBusy?'disabled':''}>${reason}</button></article>`;
+    }).join('')}</div>`;
   }
   async function buyRenovation(area,expected){
     if(renovationBusy||Scene.isPlacing()||!E.R.quote(state,area,expected).ok)return;
@@ -176,7 +176,7 @@
       await Promise.all([Scene.preloadRenovation(area,expected),Scene.preloadRenovation(area,state.renovation[area])]);
       const before=structuredClone(state),previous=E.R.image(area,state.renovation[area]),result=E.renovate(state,area,expected);
       if(!result){toast(E.R.quote(state,area,expected).reason);return;}
-      if(!save()){state=before;save();toast('저장하지 못해 개선과 캐쉬 차감을 취소했어요.');return;}
+      if(!save()){state=before;save();toast('저장하지 못해 개선과 자금 차감을 취소했어요.');return;}
       cashAnimation=null;clearTimeout(toastTimer);$('toast').classList.remove('visible');render();$('management-dialog').close();
       await Scene.showRenovation(area,previous,result);
     }catch(error){toast(error.message||'개선을 준비하지 못했어요. 다시 시도해 주세요.');}
@@ -316,7 +316,6 @@
     const selector = button.dataset.rescue ? '[data-tab="pantry"]' : button.dataset.buy ? `[data-buy="${button.dataset.buy}"]` : button.dataset.special ? `[data-special="${button.dataset.special}"]` : button.dataset.unlock ? `[data-unlock="${button.dataset.unlock}"]` : `[data-upgrade="${button.dataset.upgrade}"]`;
     render(); document.querySelector(selector)?.focus({ preventScroll: true });
   });
-  $('management-content').addEventListener('change',event=>{if(event.target.id==='renovation-plan'&&!renovationBusy){renovationPlan=event.target.value;renderShop();}});
   $('management-content').addEventListener('change',event=>{const id=event.target.dataset.purchaseQty;if(id)event.target.value=String(purchaseQuantities[id]||1);});
   $('management-content').addEventListener('input',event=>{if(event.target.matches('[data-purchase-qty]')){const id=event.target.dataset.purchaseQty,max=Math.max(1,Math.min(99,999-state.inventory[id],Math.floor(state.money/E.buyPrice(state,id))));purchaseQuantities[id]=Math.max(1,Math.min(max,Math.floor(Number(event.target.value)||1)));event.target.closest('article').querySelector('[data-buy]').textContent=`${purchaseQuantities[id]}개 채우기 · ${yen(purchaseQuantities[id]*E.buyPrice(state,id))}`;return;}if(event.target.id!=='menu-search')return;const pos=event.target.selectionStart;menuQuery=event.target.value;renderManagement();const input=$('menu-search');input.focus({preventScroll:true});input.setSelectionRange(pos,pos);});
   $('story-content').addEventListener('click', event => {

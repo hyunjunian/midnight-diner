@@ -58,12 +58,12 @@
   $('customers').hidden=area==='outside';$('scene-world').classList.toggle('exterior-world',area==='outside');$('scene').classList.remove('has-lantern');$('scene').style.setProperty('--lamp-ambient','1');syncNavigation();placePan();
  }
  const renovationImages=new Map();
- function preloadRenovation(nextArea,level){const url=E.R.image(nextArea,level);if(!renovationImages.has(url))renovationImages.set(url,new Promise((resolve,reject)=>{const image=new Image(),timer=setTimeout(()=>{renovationImages.delete(url);reject(Error('이미지를 불러오지 못했습니다. 캐쉬는 차감되지 않았어요.'));},15000);image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);renovationImages.delete(url);reject(Error('이미지를 불러오지 못했습니다. 캐쉬는 차감되지 않았어요.'))};image.src=url;}));return renovationImages.get(url);}
+ function preloadRenovation(nextArea,level){const url=E.R.image(nextArea,level);if(!renovationImages.has(url))renovationImages.set(url,new Promise((resolve,reject)=>{const image=new Image(),timer=setTimeout(()=>{renovationImages.delete(url);reject(Error('이미지를 불러오지 못했습니다. 자금는 차감되지 않았어요.'));},15000);image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);renovationImages.delete(url);reject(Error('이미지를 불러오지 못했습니다. 자금는 차감되지 않았어요.'))};image.src=url;}));return renovationImages.get(url);}
  function setRenovationLoading(on){placingUntil=on?performance.now()+17000:0;}
  async function showRenovation(nextArea,previous,result){
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,world=$('scene-world'),scene=$('scene'),banner=$('placement-banner'),u=result.upgrade,serial=++placementSerial;
   pending=null;scene.classList.add('installation-focus','installation-overview','renovation-running');showArea(nextArea);pan=0;placePan();placingUntil=performance.now()+5000;
-  banner.innerHTML=`<b>${nextArea==='inside'?'내부':'외부'} 개선 · ${u.zone}</b><span>${u.name} · ${result.cash.toLocaleString()} 캐쉬${result.credit?' + 이전 구매 크레딧':''}</span>`;banner.hidden=false;
+  banner.innerHTML=`<b>${nextArea==='inside'?'내부':'외부'} 개선 · ${u.zone}</b><span>${u.name} · 사용 자금 ¥${result.cash.toLocaleString()}${result.credit?' + 이전 구매 반영':''}</span>`;banner.hidden=false;
   const before=document.createElement('img');before.className='renovation-before';before.alt='';before.src=previous;world.append(before);
   const sweep=document.createElement('div');sweep.className='renovation-sweep';world.append(sweep);window.MidnightAudio?.play('renovation-sweep');
   try{
@@ -91,7 +91,9 @@
   const host=document.querySelector('.scene-controls');if(!host)return;
   const safe=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
   const night=document.querySelector('.night-hud'),wallet=document.querySelector('.wallet-hud'),settings=$('settings-open'),growth=$('progress-hud');
-  const n=night.getBoundingClientRect(),w=wallet.getBoundingClientRect(),key=settings.getBoundingClientRect(),g=growth.getBoundingClientRect(),hud=document.querySelector('.game-hud').getBoundingClientRect();
+  const n=night.getBoundingClientRect(),w=wallet.getBoundingClientRect();
+  document.querySelector('.game-hud').style.setProperty('--settings-hud-size',`${Math.max(44,w.height)}px`);
+  const key=settings.getBoundingClientRect(),g=growth.getBoundingClientRect(),hud=document.querySelector('.game-hud').getBoundingClientRect();
   const left=n.right+8,right=w.left-8,inline=g.width>0&&right-left>=g.width;
   const hudBottom=Math.max(n.bottom,w.bottom,key.bottom);
   if(inline){

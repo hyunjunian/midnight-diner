@@ -2,11 +2,10 @@
 #management-dialog[data-section="shop"] .renovation-summary{padding:16px;margin-bottom:16px;border-bottom:1px solid #b79a6744}
 #management-dialog[data-section="shop"] .renovation-summary h3{font-size:18px;font-weight:400;margin:0 0 10px}
 #management-dialog[data-section="shop"] .renovation-summary p{font-size:13px;line-height:1.7}
-.renovation-metrics{display:flex;flex-wrap:wrap;gap:12px 20px;font:13px/1.8 var(--sans)}
+.renovation-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;font:13px/1.8 var(--sans)}
+.renovation-funds{grid-column:1/-1}
 .renovation-metrics b{font-weight:400;color:#f0d49a;margin-left:5px}
 .renovation-summary small{display:block;font:12px/1.8 var(--sans);opacity:.85;margin-top:10px}
-.renovation-level-select{display:flex;gap:12px;align-items:center;margin:12px 0 20px;font:13px var(--sans)}
-.renovation-level-select select{width:auto;min-width:120px;min-height:44px;background:#392719;color:#f1dfbb;border:1px solid #ac8e5e;padding:8px 12px;font:13px var(--sans)}
 .renovation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .renovation-card{display:flex;flex-direction:column;min-width:0;padding:16px;border:1px solid #b1956344;background:#23190f33}
 .renovation-card h3{font-size:17px;font-weight:400;margin:12px 0 6px;word-break:keep-all}
@@ -18,7 +17,7 @@
 .renovation-comparison img{display:block;width:100%;height:auto;object-fit:contain}
 .renovation-comparison figcaption{font:11px/1.7 var(--sans);padding-top:5px;text-align:center}
 .renovation-card .renovation-cost{margin-bottom:2px}
-.renovation-card .renovation-reward{color:#eed09a;font-size:13px}
+.renovation-card .renovation-reward{color:#eed09a;font-size:13px;margin-bottom:20px}
 .renovation-card button{margin-top:auto;min-height:46px;font-size:13px;line-height:1.6;white-space:normal}
 .renovation-finished{width:100%;height:auto}
 .renovation-rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
