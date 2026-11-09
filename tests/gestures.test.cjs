@@ -4,6 +4,12 @@ test('clicks and short swipes cannot complete cutting, mixing or plating',()=>{f
 test('cutting needs a downward stroke; serving needs source to destination',()=>{assert.ok(path('cut',[[.4,.2],[.4,.45],[.4,.8]]));assert.equal(path('cut',[[.2,.5],[.5,.5],[.8,.5]]),false);assert.ok(path('assemble',[[.3,.35],[.5,.5],[.72,.7]]));assert.equal(path('assemble',[[.8,.6],[.5,.5],[.2,.5]]),false);});
 test('beating eggs requires a circular path, not straight travel',()=>{const points=Array.from({length:33},(_,i)=>[.5+.25*Math.cos(i/32*2*Math.PI),.5+.25*Math.sin(i/32*2*Math.PI)]);assert.ok(path('beat',points));assert.equal(path('beat',[[.2,.4],[.5,.4],[.8,.4]]),false);});
 test('dial is continuous and bounded',()=>{assert.equal(G.power(-1,1),0);assert.equal(G.power(1,1),1.6);assert.ok(G.power(0,-1)>0&&G.power(0,-1)<1.6);});
+test('nori folds once from its left edge to center and rejects reverse/background swipes',()=>{
+ const points=G.guide('fold')[0].points;assert.ok(path('fold',points));
+ assert.equal(path('fold',[...points].reverse()),false);assert.equal(path('fold',[[.7,.5],[.5,.5]]),false);assert.equal(path('fold',[[.13,.05],[.5,.05]]),false);
+ const E=require('../docs/engine'),nori=E.Cooking.plan('onigiri',E.recipes.onigiri).find(s=>s.part==='nori');assert.equal(nori.goal,1);
+ assert.ok(path('portion',G.guide('portion',{lowerBowl:true})[0].points));
+});
 test('knife paths outside the ingredient do not count as cuts',()=>{for(const x of [.05,.2,.85,.95])assert.equal(path('cut',[[x,.2],[x,.5],[x,.85]]),false);for(const x of [.35,.5,.65])assert.ok(path('cut',[[x,.2],[x,.5],[x,.85]]));});
 
 test('every displayed guide path satisfies the same gesture recognizer',()=>{for(const id of ['cut','beat','lid','shape','portion','assemble','measure','pour','broth','crack','peel','wrap','drain','heat'])for(const g of G.guide(id)){assert.ok(path(id,g.points.length===2?[g.points[0],[(g.points[0][0]+g.points[1][0])/2,(g.points[0][1]+g.points[1][1])/2],g.points[1]]:g.points),id);}});

@@ -71,7 +71,7 @@
     if(st.id==='prep'&&st.mode==='measure'){const n=st.part==='miso'?(local.done?3:down?.paste?(local.fill>.6?2:1):0):Math.min(3,Math.floor(local.fill*3));return {file:st.part==='miso'&&R.imagePilot.includes(order().recipe)?'measure-miso-v23':`measure-${st.part}`,cols:2,rows:2,col:n%2,row:Math.floor(n/2),className:'measure-frame'};}
     if(st.id==='heat'&&R.heatArt(order().recipe)){const spec=E.cookSpec(state(),order().recipe),look=E.heatLook(state(),order().recipe,local.heat),phase=look==='raw'?(local.heat<spec.ideal*.4?0:1):look==='good'?2:3;return R.heatArt(order().recipe,phase);}
     if(st.id==='heat'){const n=R.heated.indexOf(order().recipe),spec=E.cookSpec(state(),order().recipe),phase=local.heat<spec.ideal*.4?0:local.heat<spec.ideal*.86?1:2;return {file:`heat-hi-${Math.floor(n/2)+1}`,cols:2,rows:3,col:n%2,row:phase,className:'heat-frame'};}
-    const n=st.id==='portion'?Math.min(3,local.count):st.id==='lid'?(local.done?3:(local.motion||0)>.2?2:0):Math.min(3,Math.floor(count/st.goal*3));
+    const n=st.id==='portion'?Math.min(3,local.count):st.mode==='fold'?(local.done?2:Math.min(1,Math.floor((local.motion||0)*2))):st.id==='lid'?(local.done?3:(local.motion||0)>.2?2:0):Math.min(3,Math.floor(count/st.goal*3));
     if(st.id==='wrap'){const art=R.wrapArt(order().recipe,E.kitchenLook(state()));if(art)return {...art,col:n%2,row:Math.floor(n/2)};}
     return {file:st.id==='prep'?R.prepImage(order().recipe,st.part):(st.id==='portion'?'core-portion-v19':st.id==='wrap'?'core-wrap-v20':`core-${st.id}`),cols:2,rows:2,col:n%2,row:Math.floor(n/2),className:st.id==='prep'?'prep-frame':'core-frame'};
   }
@@ -87,11 +87,11 @@
   }
   const measurements={soy:{amount:15,unit:'mL',vessel:'계량스푼'},dashi:{amount:150,unit:'mL',vessel:'계량컵'},milk:{amount:100,unit:'mL',vessel:'계량컵'},miso:{amount:1,unit:'스푼',vessel:'나무 스푼'},flour:{amount:30,unit:'g',vessel:'계량 그릇'},sugar:{amount:1,unit:'스푼',vessel:'계량스푼'}};
   function measureSpec(){return measurements[step()?.part]||measurements.soy;}
-  function gestureId(st){if(st.id==='prep'&&st.part==='miso')return 'paste';return st.id==='prep'?({cut:'cut',wash:'beat',peel:'peel',crack:'crack',fold:'shape',measure:'measure'}[st.mode]):st.id;}
+  function gestureId(st){if(st.id==='prep'&&st.part==='miso')return 'paste';return st.id==='prep'?({cut:'cut',wash:'beat',peel:'peel',crack:'crack',fold:'fold',measure:'measure'}[st.mode]):st.id;}
   function guideText(st){return local.done?'':'동그라미에서 시작해 점선 끝까지 움직여 주세요.';}
   function guideMarkup(st){
     if(local.done||st.id==='heat')return '';
-    const paths=G.guide(gestureId(st),{cuts:local.cutSlots}),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const paths=G.guide(gestureId(st),{cuts:local.cutSlots,lowerBowl:st.id==='portion'&&R.nightImage(order().recipe,visual(st).file)==='foreground-v39-core-portion'}),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
     return `<svg class="motion-guide" viewBox="${portraitStep()?`0 ${-sourceSpace().offset*100} 100 ${sourceSpace().scale*100}`:'0 0 100 100'}" aria-hidden="true"><defs><marker id="cook-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#fff0b3" stroke-width="2"/></marker></defs>${paths.map((g,i)=>{const d=g.points.map(([x,y],j)=>`${j?'L':'M'}${x*100},${y*100}`).join(' '),[x,y]=g.points[0];return `<g class="guide-path" data-cut="${gestureId(st)==='cut'?Math.round((x-.35)/.15):''}"><path d="${d}" class="guide-shadow"/><path d="${d}" class="guide-line" marker-end="url(#cook-arrow)"/><circle cx="${x*100}" cy="${y*100}" r="4.2" class="guide-start"/><text x="${x*100}" y="${y*100+1.5}" text-anchor="middle">${gestureId(st)==='cut'?Math.round((x-.35)/.15)+1:'●'}</text>${reduce?'':`<circle r="2.5" class="guide-finger"><animateMotion dur="2.2s" repeatCount="indefinite" path="${d}"/></circle>`}</g>`;}).join('')}</svg>`;
   }
   function refreshGuides(){const el=$('motion-guides');if(el)el.innerHTML=guideMarkup(step());}
@@ -157,9 +157,9 @@
       const titleTop=placement.titleTop;
       heading.style.top=`${titleTop}px`;
       const ratioParts=getComputedStyle(art).getPropertyValue('--food-ratio').trim().split('/'),ratio=(Number(ratioParts[0])||1)/(Number(ratioParts[1])||1);
-      const above=titleTop+heading.getBoundingClientRect().height+16,below=area.clientHeight-94;
+      const above=titleTop+heading.getBoundingClientRect().height+16,below=area.clientHeight-118;
       const span=.8,height=Math.max(20,(below-above)/span),width=Math.min(area.clientWidth*.84,height*ratio,370),half=width/ratio*span/2;
-      const center=Math.max(above+half,Math.min(below-half,(separateColumn?area.clientHeight*.53:innerHeight*.60-areaRect.top)));
+      const center=Math.max(above+half,Math.min(below-half,(separateColumn?area.clientHeight*.49:innerHeight*.56-areaRect.top)));
       art.style.width=`${width}px`;art.style.height=`${width/ratio}px`;plate.style.top=`${center}px`;
     }
     const cabinet=area.querySelector('.fridge-cabinet');if(cabinet){const pages=area.querySelector('.fridge-pages'),height=Math.max(1,area.clientHeight-(pages?.getBoundingClientRect().height||0)),box=L.cabinet(area.clientWidth,height);cabinet.dataset.fit=box.cover?'cover':'contain';cabinet.style.cssText=`flex:0 0 auto;width:${box.width}px;height:${box.height}px;position:${box.cover?'absolute':'relative'};left:${box.cover?'50%':'auto'};top:${box.top}px;transform:${box.cover?'translateX(-50%)':'none'}`;pages.style.cssText=box.cover?'position:absolute;left:0;right:0;bottom:0;z-index:4;justify-content:center':'';}

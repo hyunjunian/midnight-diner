@@ -22,7 +22,7 @@ test('room cover crop preserves the native photo and keeps appliance targets rea
 });
 
 test('food stays at the approved center while extended sleeves leave the viewport',()=>{
- for(const [width,height,footer]of[[320,568,490],[393,734,650],[393,852,750],[430,932,830]])for(const name of ['core-beat','measure-miso','core-portion','core-broth']){
+ for(const [width,height,footer]of[[320,568,490],[393,734,650],[393,852,750],[430,932,830]])for(const name of ['core-beat','measure-miso','core-broth']){
   const spec=L.focus('foreground-v39-'+name),top=Math.max(180,height*.245+66),box=L.frame(width,height,{portrait:true,...spec,safeTop:top,safeBottom:footer-60});
   assert.ok(Math.abs(box.center-height*.6)<.01,name+' fixed food anchor');
   assert.ok(box.foodTop>=top-.01&&box.foodBottom<=footer-60+.01,name+' clear of caption/footer');

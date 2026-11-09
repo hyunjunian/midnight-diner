@@ -3,38 +3,40 @@
 :root{--action-gold:#ffdb79;--action-gold-glow:0 0 5px 1px #fff0b8,0 0 12px 4px #ffc95ea6,0 0 23px 6px #eaa83a55}
 :is(#app #night-action,#guest-dialog #talk-next,#report-content #report-next,#kitchen-screen #kitchen-footer .primary,#stock-prep .primary,#app #resume-kitchen):not(:disabled),
 #app .customer .customer-name.order-ready,
-#app .needs-payment .customer-payment,
 #kitchen-screen .kitchen-room-art .room-hotspot.station-next span{
  overflow:visible!important;border:3px solid #3b2414!important;border-image:none!important;
  box-shadow:inset 0 -2px #160c0880,0 3px 0 #24150b!important;
  animation:none!important;scale:none!important;translate:none!important;filter:none!important;text-shadow:none!important;
 }
 :is(#app #night-action,#guest-dialog #talk-next,#report-content #report-next,#kitchen-screen #kitchen-footer .primary,#stock-prep .primary,#app #resume-kitchen):not(:disabled)::after,
-#app .customer .customer-name.order-ready::after,
-#app .needs-payment .customer-payment::after,
+#app .customer .customer-name.order-ready::before,
 #kitchen-screen .kitchen-room-art .room-hotspot.station-next span::after,
 #kitchen-screen .door-needed[aria-expanded=false] .door-handle-cue::after{
  content:''!important;display:block!important;position:absolute;inset:-9px;
+ width:auto;height:auto;min-width:0;min-height:0;max-width:none;max-height:none;
+ margin:0;padding:0;transform:none;
  border:4px solid var(--action-gold);border-radius:7px;background:none!important;
  box-shadow:var(--action-gold-glow)!important;pointer-events:none;animation:none!important;
  clip-path:none!important;mask:none!important;-webkit-mask:none!important;opacity:1;z-index:3;
 }
 /* Remove superseded internal tracing, including the whole-fridge outline. */
-#app .customer-name.order-ready::before,#kitchen-screen .fridge-door-touch.first-door-hint::before{content:none!important}
+#kitchen-screen .fridge-door-touch.first-door-hint::before{content:none!important}
 #kitchen-screen .fridge-door-touch.first-door-hint{box-shadow:none}
 #kitchen-screen .door-needed[aria-expanded=false] .door-handle-cue{animation:none;box-shadow:none}
 #kitchen-screen .door-needed[aria-expanded=false] .door-handle-cue::after{border-radius:40%}
 #kitchen-screen .room-hotspot.station-next{overflow:visible;animation:none}
-#app .needs-payment .customer-payment::after{animation:outer-payment-light 2.4s ease-in-out infinite!important}
-@keyframes outer-payment-light{50%{opacity:.72}}
-@media(prefers-reduced-motion:reduce){#app .needs-payment .customer-payment::after{animation:none!important}}
 /* Leave space for the external ring instead of clipping it at fixed footers. */
 #kitchen-screen #kitchen-footer{overflow:visible;padding:12px 18px calc(var(--safe-bottom) + 16px)}
 #guest-dialog .talk-card{overflow:visible}
 #kitchen-screen #kitchen-content .process-view .process-heading{gap:5px}
 /* Captions fit a single line even on the narrowest supported phone. */
 #kitchen-screen #kitchen-content .process-view .process-heading h3{font-size:clamp(23px,6vw,28px)}
+/* Explicit v43 request: lift only completed food and its lower caption pair. */
+#kitchen-screen #kitchen-content .completed-dish>strong{bottom:67px}
+#kitchen-screen #kitchen-content .completed-dish>p{bottom:38px}
 @media(orientation:landscape) and (max-height:550px){
  #kitchen-screen #kitchen-footer{padding:12px 16px calc(var(--safe-bottom) + 12px)}
  #kitchen-screen #kitchen-content .process-view .process-heading h3{font-size:21px}
+ #kitchen-screen #kitchen-content .completed-dish>strong{bottom:50px}
+ #kitchen-screen #kitchen-content .completed-dish>p{bottom:24px}
 }
