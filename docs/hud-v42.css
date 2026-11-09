@@ -1,10 +1,11 @@
 /* White enamel clock seated in a shallow routed opening in the walnut HUD. */
-.night-hud #clock{display:block;position:relative;flex:0 0 auto;width:48px;height:48px;box-sizing:border-box;margin:0 0 0 3px;padding:2px;border:3px solid #382216;border-radius:50%;background:#fff;box-shadow:0 1px 0 #d4ad7666,0 -1px 1px #150c09,inset 0 2px 4px #26150e55;color:#171717;letter-spacing:0}
-#clock svg{display:block;width:100%;height:100%;overflow:visible}
-.clock-ticks{fill:none;stroke:#262626;stroke-width:1.7}
-.clock-numbers{fill:#222;font:12px Arial,sans-serif;text-anchor:middle}
-.clock-hand{fill:none;stroke:#171717;stroke-width:4;stroke-linecap:round}
-.clock-minute{stroke-width:2.6}
+.night-hud #clock{display:block;position:relative;flex:0 0 auto;width:48px;height:48px;box-sizing:border-box;margin:0 0 0 3px;padding:0;border:3px solid #382216;border-radius:50%;background:radial-gradient(ellipse at 23% 77%,#b18a3d26 0%,#bf984414 17%,transparent 35%),radial-gradient(ellipse at 79% 22%,#ae86412a 0%,#c7a45816 15%,transparent 33%),radial-gradient(ellipse at 83% 83%,#a9873b1c 0%,transparent 24%),radial-gradient(circle at 45% 39%,#fffdf3 0%,#f6efd9 64%,#e1cf9e 100%);box-shadow:0 1px 0 #d4ad7666,0 -1px 1px #150c09,inset 0 2px 4px #26150e55;color:#171717;letter-spacing:0}
+#clock svg{position:relative;z-index:1;display:block;width:100%;height:100%;overflow:visible}
+.clock-minute-ticks{fill:none;stroke:#746445;stroke-width:.85;opacity:.7}
+.clock-ticks{fill:none;stroke:#242219;stroke-width:2.3}
+.clock-numbers{fill:#29261e;font:500 14px Arial,sans-serif;text-anchor:middle}
+.clock-hand{fill:none;stroke:#11110f;stroke-width:5.3;stroke-linecap:round;filter:drop-shadow(0 .6px .4px #36281155)}
+.clock-minute{stroke-width:3.6}
 .wallet-hud{gap:0;padding-top:0;padding-bottom:0}
 .wallet-hud>button{appearance:none;min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;margin:0;padding:4px 0;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;cursor:pointer;text-align:left;line-height:1.3;transform:none;animation:none}
 .wallet-hud>button+button{margin-left:24px;padding-left:24px;border-left:1px solid var(--line)}
@@ -94,3 +95,6 @@
 #calendar-dialog .sheet-body{background-color:#3b2417;background-image:var(--wood-face);background-size:auto,620px;background-position:center,center top;color:var(--wood-ink)}
 #calendar-dialog .calendar-entry{margin-top:6px;padding:12px 14px 16px;border:1px solid #b79b6b;background:#f1e2bf url('./assets/ui-washi-v21.webp') center/480px;color:#493822;box-shadow:inset 0 1px #fff6dd88,0 2px 4px #160b0844}
 #calendar-dialog .paper-calendar{color:#493822}
+
+/* Fine matte enamel grain stays below the ink and raised black hands. */
+.night-hud #clock::before{content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:.11;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23765e35' filter='url(%23g)' opacity='.6' d='M0 0h128v128H0z'/%3E%3C/svg%3E");background-size:64px 64px;mix-blend-mode:multiply}
