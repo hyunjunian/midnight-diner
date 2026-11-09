@@ -77,13 +77,12 @@
    growth.style.left=`${Math.round(Math.max(left,Math.min((innerWidth-g.width)/2,right-g.width)))}px`;
    growth.style.top=`${Math.round(hud.top+(hud.height-g.height)/2)}px`;
   }else{
-   growth.style.removeProperty('left');
+   growth.style.left=`${Math.round((innerWidth-g.width)/2)}px`;
    growth.style.top=`${Math.ceil(Math.max(safe+83,hudBottom+8))}px`;
   }
   growth.dataset.hudLayout=inline?'inline':'below';
   const compactLandscape=innerWidth>innerHeight&&innerHeight<=550;
-  let bottom=hudBottom;
-  if(!compactLandscape||inline)bottom=Math.max(bottom,growth.getBoundingClientRect().bottom);
+  const bottom=Math.max(hudBottom,growth.getBoundingClientRect().bottom);
   host.style.setProperty('--location-nav-top',`${Math.ceil(Math.max((compactLandscape?68:130)+safe,bottom+8))}px`);
  }
  function navigate(location){

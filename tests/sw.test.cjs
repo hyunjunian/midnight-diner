@@ -170,3 +170,13 @@ test('incorrect downloaded bytes cannot activate or damage the previous offline 
   assert.ok(!w.stores.has(w.version));
   assert.equal(await previous.get(ROOT+'game.js').clone().text(),'previous release code');
 });
+test('Cloudflare redirected responses become direct body responses without changing bytes or content type',async()=>{
+  const w=worker(),source=new Response('<main>redirected shell</main>',{headers:{'Content-Type':'text/html; charset=utf-8','Content-Encoding':'gzip','Content-Length':'10','Cache-Control':'no-cache'}});
+  Object.defineProperty(source,'redirected',{value:true});
+  const result=w.context.withoutRedirect(source);
+  assert.equal(result.redirected,false);assert.equal(result.headers.get('content-type'),'text/html; charset=utf-8');assert.equal(result.headers.get('cache-control'),'no-cache');assert.equal(result.headers.get('content-encoding'),null);assert.equal(result.headers.get('content-length'),null);assert.equal(await result.text(),'<main>redirected shell</main>');
+});
+test('fresh canonical HTML responses are safe for browser navigation without erasing redirects needed by the network',async()=>{
+  const w=worker({fetch:async()=>{const response=new Response('<main>fresh canonical shell</main>',{headers:{'Content-Type':'text/html'}});Object.defineProperty(response,'redirected',{value:true});return response;}});
+  const result=await w.request('/midnight-diner/',null,'navigate');assert.equal(result.redirected,false);assert.equal(await result.text(),'<main>fresh canonical shell</main>');
+});
