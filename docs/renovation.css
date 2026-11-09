@@ -1,0 +1,48 @@
+/* Renovation section and scene-only reveal. Existing cooking/UI materials remain unchanged. */
+#management-dialog[data-section="shop"] .renovation-summary{padding:16px;margin-bottom:16px;border-bottom:1px solid #b79a6744}
+#management-dialog[data-section="shop"] .renovation-summary h3{font-size:18px;font-weight:400;margin:0 0 10px}
+#management-dialog[data-section="shop"] .renovation-summary p{font-size:13px;line-height:1.7}
+.renovation-metrics{display:flex;flex-wrap:wrap;gap:12px 20px;font:13px/1.8 var(--sans)}
+.renovation-metrics b{font-weight:400;color:#f0d49a;margin-left:5px}
+.renovation-summary small{display:block;font:12px/1.8 var(--sans);opacity:.85;margin-top:10px}
+.renovation-level-select{display:flex;gap:12px;align-items:center;margin:12px 0 20px;font:13px var(--sans)}
+.renovation-level-select select{width:auto;min-width:120px;min-height:44px;background:#392719;color:#f1dfbb;border:1px solid #ac8e5e;padding:8px 12px;font:13px var(--sans)}
+.renovation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.renovation-card{display:flex;flex-direction:column;min-width:0;padding:16px;border:1px solid #b1956344;background:#23190f33}
+.renovation-card h3{font-size:17px;font-weight:400;margin:12px 0 6px;word-break:keep-all}
+.renovation-card p,.renovation-card small{font:13px/1.7 var(--sans)}
+.renovation-card small{display:block;font-size:11px;margin-top:4px}
+.renovation-required{font:12px/1.6 var(--sans);opacity:.8}
+.renovation-comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.renovation-comparison figure{margin:0;min-width:0}
+.renovation-comparison img{display:block;width:100%;height:auto;object-fit:contain}
+.renovation-comparison figcaption{font:11px/1.7 var(--sans);padding-top:5px;text-align:center}
+.renovation-card .renovation-cost{margin-bottom:2px}
+.renovation-card .renovation-reward{color:#eed09a;font-size:13px}
+.renovation-card button{margin-top:auto;min-height:46px;font-size:13px;line-height:1.6;white-space:normal}
+.renovation-finished{width:100%;height:auto}
+.renovation-rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.renovation-rewards img{display:block;width:100%;max-height:180px;object-fit:contain}
+.renovation-rewards h4{font-size:14px;font-weight:400}
+.renovation-rewards small{font:11px/1.8 var(--sans)}
+.scene.renovated-inside .interior-closed{filter:brightness(.34) saturate(.72)}
+.scene.renovated-outside .exterior-art::after{filter:brightness(.42) saturate(.72)}
+.scene.renovated-outside .daylight-street-off{filter:brightness(.4) saturate(.6)}
+.scene.renovated-inside.is-prep .scene-backfill{filter:brightness(.34) saturate(.72)}
+.renovation-before{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:200}
+.exterior-world .renovation-before{object-fit:fill}
+.scene.is-prep .renovation-before{filter:none}
+.scene.renovation-running .interior-closed,.scene.renovation-running .exterior-art::after{opacity:0}
+.scene.renovation-running .counter-front{opacity:1}
+.scene.renovation-running .scene-backfill{filter:none}
+.renovation-sweep{position:absolute;inset:0;pointer-events:none;z-index:201;background:linear-gradient(100deg,transparent 35%,#fff1be55 49%,transparent 65%);animation:renovation-sweep 1.25s ease-out both}
+.renovation-sparkles{position:absolute;inset:0;pointer-events:none;z-index:202}
+.renovation-sparkles i{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffedba;box-shadow:0 0 10px #ffdf85;animation:renovation-sparkle 1.5s var(--delay) ease-out both}
+.renovation-sparkles i::after{content:'';position:absolute;inset:-4px 2px;background:#fff0bb;transform:rotate(45deg)}
+.scene.renovation-running{pointer-events:none}
+body:has(.scene.renovation-running) .scene-controls,body:has(.scene.renovation-running) .game-dock,body:has(.scene.renovation-running) .service-bar{pointer-events:none}
+.placement-banner.renovation-complete b{font-size:18px}.placement-banner.renovation-complete span{font-size:15px;color:#583e25}
+@keyframes renovation-sweep{0%{opacity:0;transform:translateX(-110%)}20%,80%{opacity:1}100%{opacity:0;transform:translateX(110%)}}
+@keyframes renovation-sparkle{0%{opacity:0}15%,30%{opacity:1}100%{opacity:0;transform:translateY(-50px) scale(.1)}}
+@media(max-width:680px){.renovation-grid{grid-template-columns:1fr}.renovation-card{padding:14px}.renovation-rewards{gap:10px}}
+@media(prefers-reduced-motion:reduce){.renovation-sweep,.renovation-sparkles{display:none}.scene.renovation-running .world{transition:none}}

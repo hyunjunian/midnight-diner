@@ -1,0 +1,54 @@
+{
+  "release": "20261110-v69-store-renovation",
+  "unitTests": {
+    "passed": 159,
+    "failed": 0
+  },
+  "browserChecks": [
+    "actual live game inside/outside purchases",
+    "cash and two rewards once",
+    "all-level requirements and terminal level50",
+    "offline level50 purchases and reload",
+    "legacy credit and entitlement preservation",
+    "failed image load no debit",
+    "failed save rollback",
+    "master mute",
+    "reduced motion",
+    "320/393/430/1280 viewport layouts",
+    "Cloudflare canonical redirects",
+    "offline navigation and MP4 byte ranges"
+  ],
+  "unchanged": [
+    "all existing docs/assets files",
+    "approved store preview image bytes",
+    "kitchen.js",
+    "kitchen.css",
+    "cooking-rules.js",
+    "cooking-layout.js",
+    "gestures.js",
+    "existing main body/buttons HTML"
+  ],
+  "cookingScreenComparisons": [
+    {
+      "id": "tamago",
+      "step": "pour",
+      "artDifferentBytes": 0,
+      "fullScreenDifferentBytes": 0,
+      "maxChannelDifference": 0
+    },
+    {
+      "id": "salmonbowl",
+      "step": "portion",
+      "artDifferentBytes": 0,
+      "fullScreenDifferentBytes": 91,
+      "maxChannelDifference": 2
+    },
+    {
+      "id": "tonjiru",
+      "step": "heat",
+      "artDifferentBytes": 0,
+      "fullScreenDifferentBytes": 0,
+      "maxChannelDifference": 0
+    }
+  ]
+}
