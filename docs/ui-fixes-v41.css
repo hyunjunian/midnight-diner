@@ -1,0 +1,30 @@
+/* Keep the physical sleeve outside the source tile; only the viewport clips it. */
+#kitchen-screen #kitchen-content .prep-scene:not(.stove-unit) .cook-object{overflow:visible}
+/* Larger, lower captions without moving the food anchor. */
+#kitchen-screen #kitchen-content .process-view .process-heading{gap:7px}
+#kitchen-screen #kitchen-content .process-view .process-heading>span{font:400 13px/1.5 var(--reading-serif)}
+#kitchen-screen #kitchen-content .process-view .process-heading h3{font:400 clamp(23px,6vw,28px)/1.4 var(--reading-serif)}
+#kitchen-screen #kitchen-content .completed-dish{position:relative}
+#kitchen-screen #kitchen-content .completed-dish h3{position:absolute;left:12px;right:12px;font:400 clamp(23px,6vw,28px)/1.4 var(--reading-serif);margin:0}
+#kitchen-screen #kitchen-content .completed-dish .original-ready{position:absolute;flex:none;left:50%;transform:translate(-50%,-50%);width:auto;height:auto}
+#kitchen-screen #kitchen-content .completed-dish>strong{position:absolute;left:12px;right:12px;bottom:43px;font:400 21px/1.4 var(--reading-serif)}
+#kitchen-screen #kitchen-content .completed-dish>p{position:absolute;left:12px;right:12px;bottom:14px;margin:0;font:400 14px/1.5 var(--reading-serif)}
+/* Printed ink stays stationary and single-edged on all game controls. */
+:is(.game-app,.sheet,.guest-dialog){font-synthesis:none}
+:is(.game-app,.sheet,.guest-dialog) button{font-synthesis:none;font-weight:400;text-shadow:none!important;-webkit-text-stroke:0;filter:none!important}
+:is(#night-action,#talk-next,#report-next,#kitchen-footer .primary,#stock-prep .primary,#resume-kitchen){
+ border:1px solid #b48d58!important;border-image:none!important;
+ box-shadow:inset 0 1px #ead0a44d,inset 0 -1px #20100888,0 3px 0 #2d1b10!important;
+ animation:none!important;scale:none!important;translate:none!important;transform:none!important;filter:none!important;will-change:auto!important;
+ font-family:var(--reading-serif);font-weight:400;text-shadow:none!important;letter-spacing:0;
+ transition:background-color .12s,border-color .12s;
+}
+:is(#night-action,#talk-next,#report-next,#kitchen-footer .primary,#stock-prep .primary,#resume-kitchen):disabled{border-color:#775b3b!important;box-shadow:inset 0 1px #b8956b26!important}
+#stock-prep .stock-bulk-small,#stock-prep .change-prep-plan{font:400 15px/1.5 var(--reading-serif);text-shadow:none;transform:none;scale:none;translate:none;filter:none;letter-spacing:0}
+@media(orientation:landscape) and (max-height:550px){
+ #kitchen-screen #kitchen-content .process-view .process-heading>span{font-size:12px}
+ #kitchen-screen #kitchen-content .process-view .process-heading h3,#kitchen-screen #kitchen-content .completed-dish h3{font-size:21px}
+ #kitchen-screen #kitchen-content .completed-dish>strong{font-size:18px;bottom:38px}
+ #kitchen-screen #kitchen-content .completed-dish>p{font-size:12px}
+}
+.game-app #resume-kitchen{transform:translateX(-50%)!important}
