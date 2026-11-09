@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261109-v45-clear-glass-rice';
+const RELEASE = '20261109-v46-rice-glass-only';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -397,7 +397,7 @@ const FILE_HASHES = {
   "assets/foreground-v39-prep-pork.webp": "9c423be7cddc63ee1b02801ebed8dbd00e0b9735b4d67ae55c2aa8da2210fb91",
   "assets/foreground-v39-prep-nori.webp": "22770850e6bf8683037e3703a9fbd2566e0a2db5788432d2e4b7a7ec9d605b07",
   "assets/foreground-v39-prep-egg.webp": "b083f97a7197e8fde55f37575dd83732456efd63869e9e81a37a98569765d0cf",
-  "assets/foreground-v39-prep-rice.webp": "d6b58bc84f9e6237e66740a598269f280e22808b28fb13f859b1d5482004e6e1",
+  "assets/foreground-v39-prep-rice.webp": "33e90fbe54efb9a11add6c8083522add6ea6e5624780611ff57ad6ec467e4935",
   "assets/foreground-v39-prep-salmon.webp": "d7986006fc004eb6eaaea43c836a6d2dac54e07b06827c0f4e175566582a3edb",
   "assets/foreground-v39-prep-vegetables.webp": "87357074ac6393e8f2da603fb86ccc271ad30da2223feef115a8f02412f9a921",
   "assets/foreground-v39-prep-scallion.webp": "1f950820eead6b96e73027ded0e8a6426881f02192cd77d488aaf62d86c22580",
@@ -435,7 +435,7 @@ const FILE_HASHES = {
   "ui-fixes-v38.css": "e93c04f1b5943ea06e4bc6a7626deca9c114b88e7e433579657f626c1f6b3159",
   "cooking-layout.js": "a78cbaa455f1af965d97ffac233f9309519ec7ebbdb2cebfa9c3aa09a7b3a807",
   "dialogue-motion.js": "28bd7aba2c4a1d927236109b528d0148441977ccf017db84ddf4d94af9e2b1aa",
-  "index.html": "3fd3655f78404590686246a13d8d85aa69570b4e9072a535fe6f3254c77e7bb0",
+  "index.html": "84b1f78201cad95613c7e06e54fefbbf869e60c531b5dcf531d29beef3001f97",
   "style.css": "5f447981dd9d0d91d1037c2b2c5b53a90cd79bbaf7f3c317f51b52b701a79e96",
   "customer.css": "3e2b3d4fc4781651d11c9c887d87ae45ea12fe01dec75cf591f9a99b1775d880",
   "motion.css": "b0b20530ae8929d2e91b2b109df20038484fb654fba3ed8be2c3c58d5046df75",
