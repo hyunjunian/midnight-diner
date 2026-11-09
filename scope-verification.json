@@ -1,0 +1,16 @@
+{
+  "inside-2": {
+    "protectedKitchenChangedPixels": 0,
+    "lamps": 1
+  },
+  "inside-3": {
+    "protectedKitchenChangedPixels": 0,
+    "lamps": 3
+  },
+  "outside-2": {
+    "outsideDecorRegionsChangedPixels": 0
+  },
+  "outside-3": {
+    "outsideDecorRegionsChangedPixels": 0
+  }
+}

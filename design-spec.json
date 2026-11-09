@@ -1,0 +1,143 @@
+{
+  "status": "design-preview-only",
+  "repository": "hyunjunian/midnight-diner",
+  "scope": {
+    "editable": [
+      "store-interior-decoration",
+      "store-exterior-decoration"
+    ],
+    "frozen": [
+      "cooking-artwork",
+      "kitchen-scenes",
+      "kitchen-area-in-interior",
+      "all-existing-buttons",
+      "navigation",
+      "HUD",
+      "saved-game"
+    ]
+  },
+  "interior": {
+    "zones": [
+      "ceiling-lighting",
+      "front-counter-finish",
+      "customer-facing-display-niche"
+    ],
+    "examples": [
+      {
+        "stage": 1,
+        "name": "현재",
+        "items": []
+      },
+      {
+        "stage": 2,
+        "name": "첫 꾸미기",
+        "items": [
+          "호박빛 등 1개",
+          "따뜻한 밤나무 카운터 전면",
+          "찻잔 1개를 둔 작은 진열칸"
+        ]
+      },
+      {
+        "stage": 3,
+        "name": "취향 완성",
+        "items": [
+          "작은 등 3개",
+          "호두나무 패널과 절제된 황동 이음",
+          "도자기 진열칸의 은은한 조명"
+        ]
+      }
+    ],
+    "kitchenPixelProtection": {
+      "rectangle": [
+        0,
+        210,
+        1536,
+        600
+      ],
+      "hoodTop": [
+        300,
+        125,
+        505,
+        210
+      ],
+      "foregroundWorktopUnchanged": true
+    }
+  },
+  "exterior": {
+    "zones": [
+      "noren-and-sign",
+      "planters",
+      "entrance-andon"
+    ],
+    "examples": [
+      {
+        "stage": 1,
+        "name": "현재",
+        "items": []
+      },
+      {
+        "stage": 2,
+        "name": "첫 꾸미기",
+        "items": [
+          "무지 쪽빛 노렌",
+          "소박한 나무 간판",
+          "작은 화분",
+          "안돈 1개"
+        ]
+      },
+      {
+        "stage": 3,
+        "name": "취향 완성",
+        "items": [
+          "직조무늬 쪽빛 노렌",
+          "다듬은 호두나무 간판",
+          "계절 식물을 담은 도자기 화분",
+          "나무와 한지의 안돈 1개"
+        ]
+      }
+    ],
+    "architectureAndRain": "retain original outside designated decor regions"
+  },
+  "purchaseDesign": {
+    "visibleAfterEverySingleItem": true,
+    "allItemsRequiredForVisualChange": false,
+    "renderModel": "one original base plus one active layer per decoration zone; never overlay a completed-room photo with the same individual items",
+    "existingButtons": "retain their appearance and position; use existing purchase/equip/close actions",
+    "ownedItems": "retain ownership and allow free re-equipping",
+    "currency": "base improvements purchasable with earned game currency",
+    "futurePremium": "optional coherent visual themes and individual decorative variants; no real-money payment wired in this design",
+    "saveRequirement": "account-backed entitlement and purchase restoration before real-money launch"
+  },
+  "migration": {
+    "preserveAllExistingOwnedIds": true,
+    "preserveMoneyAndInventory": true,
+    "noSaveReset": true
+  },
+  "notImplemented": [
+    "live rendering changes",
+    "shop interaction changes",
+    "real-money checkout"
+  ],
+  "verification": {
+    "inside-2": {
+      "protectedKitchenChangedPixels": 0,
+      "lamps": 1
+    },
+    "inside-3": {
+      "protectedKitchenChangedPixels": 0,
+      "lamps": 3
+    },
+    "outside-2": {
+      "outsideDecorRegionsChangedPixels": 0
+    },
+    "outside-3": {
+      "outsideDecorRegionsChangedPixels": 0
+    }
+  },
+  "delivery": {
+    "branch": "preview/decor-3-stages",
+    "liveGameChanged": false,
+    "originalKitchenChangedPixels": 0,
+    "existingButtonsChanged": false
+  }
+}
