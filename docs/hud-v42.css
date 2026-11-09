@@ -93,3 +93,4 @@
 /* The physical paper calendar rests on walnut, continuous with its image edge. */
 #calendar-dialog .sheet-body{background-color:#3b2417;background-image:var(--wood-face);background-size:auto,620px;background-position:center,center top;color:var(--wood-ink)}
 #calendar-dialog .calendar-entry{margin-top:6px;padding:12px 14px 16px;border:1px solid #b79b6b;background:#f1e2bf url('./assets/ui-washi-v21.webp') center/480px;color:#493822;box-shadow:inset 0 1px #fff6dd88,0 2px 4px #160b0844}
+#calendar-dialog .paper-calendar{color:#493822}
