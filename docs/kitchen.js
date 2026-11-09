@@ -114,6 +114,8 @@
   }
   function nativeMask(){
     const id=order().recipe,mount=(R.heatLayout[id]?.y||.845)*100;
+    // Only the reported teriyaki scene: mask physical objects, never a second steel surround.
+    if(id==='salmon_teriyaki')return 'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 836" preserveAspectRatio="none"><g fill="white"><path d="M55 204 H414 Q437 204 439 228 L454 510 Q455 536 432 538 H37 Q13 537 17 511 L32 228 Q34 206 55 204Z"/><ellipse cx="235" cy="345" rx="178" ry="166"/><path d="M271 495 Q300 490 323 477 L347 526 L412 645 Q424 665 403 673 Q385 680 375 659 L310 546 L290 523 L271 516Z"/><ellipse cx="235" cy="${mount*8.36}" rx="48" ry="47"/></g></svg>`);
     const handles={butadon:[64,62,83,79],cabbage_stir:[64,62,84,80],midnight:[64,62,83,80],misoshiru:[50,67,50,81],negi_omelette:[64,62,82,79],ochazuke:[62,65,76,80],onigiri:[67,65,85,81],potato_soup:[52,64,56,80],salmon_teriyaki:[63,64,81,81],soba:[64,63,79,81],tamago:[50,64,50,78],tonjiru:[62,64,73,83],udon:[64,62,80,81]};
     const pan=id==='tamago'?'<rect x="19" y="18" width="62" height="44" rx="4"/>':'<ellipse cx="50" cy="41" rx="45" ry="21"/>';
     const h=handles[id],handle=h?`<path transform="scale(.17777778 .1)" d="M${h[0]*5.625} ${h[1]*10} L${h[2]*5.625} ${h[3]*10}" fill="none" stroke="white" stroke-width="${id==='onigiri'?50:45}" stroke-linecap="round"/>`:'';
