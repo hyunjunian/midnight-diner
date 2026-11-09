@@ -1,0 +1,61 @@
+{
+  "purpose": "store renovation design preview only",
+  "baseImages": [
+    "../assets/room-bare-v19.webp",
+    "../assets/exterior-bare-v19.webp"
+  ],
+  "generatedMilestones": [
+    {
+      "id": "inside-10",
+      "tool": "image_gen",
+      "generatedFile": "exec-df6f042b-dcfc-4282-8099-7cb7e9767808.png"
+    },
+    {
+      "id": "inside-50",
+      "tool": "image_gen",
+      "generatedFile": "exec-8e550e45-c0f7-4b80-88ca-9836f651ac61.png"
+    },
+    {
+      "id": "outside-10",
+      "tool": "image_gen",
+      "generatedFile": "exec-f7b3a6b0-07db-4384-857d-6047035c00bf.png"
+    },
+    {
+      "id": "outside-50",
+      "tool": "image_gen",
+      "generatedFile": "exec-5a85af91-9f21-4bbb-b812-d27430afdef5.png"
+    },
+    {
+      "id": "inside-20",
+      "tool": "image_gen",
+      "generatedFile": "exec-412397f9-b574-4f33-97ac-f8caf0927340.png"
+    },
+    {
+      "id": "inside-30",
+      "tool": "image_gen",
+      "generatedFile": "exec-28782a5f-dc83-4cea-8f29-2eb3e86afe82.png"
+    },
+    {
+      "id": "inside-40",
+      "tool": "image_gen",
+      "generatedFile": "exec-68852c9f-fce9-49be-9566-e4de1b3e0e23.png"
+    },
+    {
+      "id": "outside-20",
+      "tool": "image_gen",
+      "generatedFile": "exec-807ca018-d725-41c6-805c-49f51f65f64e.png"
+    },
+    {
+      "id": "outside-30",
+      "tool": "image_gen",
+      "generatedFile": "exec-9c014e4f-cdb7-4045-9aa3-843d611d41e1.png"
+    },
+    {
+      "id": "outside-40",
+      "tool": "image_gen",
+      "generatedFile": "exec-11b9fdab-1bea-4424-bcb2-66bb3de407f2.png"
+    }
+  ],
+  "intermediateLevels": "Exclusive architectural region compositions of adjacent milestone frames. Not 100 separately generated photos.",
+  "frozen": "All existing tracked game files unchanged; separate new preview folder only."
+}
