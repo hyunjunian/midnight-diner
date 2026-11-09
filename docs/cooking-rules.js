@@ -65,7 +65,12 @@
     ...Object.fromEntries(foregroundRecipes.map(id=>[`portrait-v28-plate-${id}`,`plate-${id}`])),
     ...Object.fromEntries(['rice','nori','egg','pork','salmon','vegetables','scallion'].map(id=>[`portrait-v28-prep-${id}`,`prep-${id}`]))
   };
-  function nightImage(recipe,file){const original=inImagePilot(recipe)?nightSceneFiles[file]||file:file;return foregroundRecipes.includes(recipe)&&foregroundFiles[original]?`foreground-v39-${foregroundFiles[original]}`:original;}
+  // Ingredient preparation and appliance actions are shared, not recipe photos.
+  // Never route a different dish back to the baked-board version of the SAME action.
+  const sharedForeground=new Set(Object.values(foregroundFiles).filter(name=>!name.startsWith('plate-')));
+  const alphaCommon=new Set([...['beef','butter','cheese','chicken','clam','crab','fish','mushroom','noodles','oyster','potato','scallops','shrimp','tuna'].map(x=>`prep-hi-${x}`),...['flour','milk','soy','sugar'].map(x=>`measure-${x}`),'core-drain']);
+  function nightImage(recipe,file){if(alphaCommon.has(file))return file;const mapped=nightSceneFiles[file]||file,replacement=foregroundFiles[mapped];if(replacement&&sharedForeground.has(replacement))return `foreground-v39-${replacement}`;if(mapped==='portrait-v28-prep-tofu')return mapped;const original=inImagePilot(recipe)?mapped:file;return foregroundRecipes.includes(recipe)&&foregroundFiles[original]?`foreground-v39-${foregroundFiles[original]}`:original;}
   function portraitImage(recipe,file){const result=nightImage(recipe,file);return sceneAssets.portrait(result)||result.startsWith('foreground-v39-');}
-  const api={heatLayout:sceneAssets.heatLayout,inImagePilot,heatArt,finalArt,portraitImage,nightImage,nightSceneFiles,wrapArt,platingArt,prepImage,nightPrepRecipes,imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
+  function transparentImage(recipe,file){const result=nightImage(recipe,file);return result.startsWith('foreground-v39-')||alphaCommon.has(result)||result==='portrait-v28-prep-tofu'||/^plating-\d+$|^portrait-v28-plate-/.test(result);}
+  const api={heatLayout:sceneAssets.heatLayout,inImagePilot,heatArt,finalArt,portraitImage,transparentImage,nightImage,nightSceneFiles,wrapArt,platingArt,prepImage,nightPrepRecipes,imagePilot,heated,family,heatMode,plan,preparations,prepMode,prepOrder,prepNames:names};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingRules=api;
 })();

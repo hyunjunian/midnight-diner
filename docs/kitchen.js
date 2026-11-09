@@ -125,7 +125,7 @@
     $('kitchen-screen').classList.toggle('is-heating',isHeat);
     if(isHeat&&!state().stoveTutorialDone){state().stoveTutorialDone=true;bridge.save();}
     const scene=isHeat?`${heatControls(st,spec)}${stoveUnit(st)}`:`<div class="prep-scene ${st.id} ${local.done?'action-done':''}"><button id="cook-object" class="cook-object" aria-label="${st.title} 조작">${objectContent(st)}</button><div class="action-spark" aria-hidden="true"></div></div>${st.id==='prep'&&st.mode==='measure'?measureDisplay():''}<div class="action-counter" aria-live="polite">${st.id==='prep'&&st.mode==='measure'?'':st.id==='portion'?`그릇에 밥 ${local.count}주걱 / 3주걱`:local.done?'':`${Math.min(local.count,st.goal)} / ${st.goal}`}</div>`;
-    $('kitchen-content').innerHTML=`<div class="process-view ${R.nightImage(order().recipe,visual(st).file).startsWith('foreground-v39-')?'foreground-workspace':''} station-${st.station} ${isHeat?'':R.inImagePilot(order().recipe)?'photo-workspace':'legacy-workspace'}"><div class="process-heading"><span>${names[st.station]} · ${state().kitchen.step+1}단계</span><h3>${st.title}</h3></div>${scene}</div>`;
+    $('kitchen-content').innerHTML=`<div class="process-view ${R.transparentImage(order().recipe,visual(st).file)?'foreground-workspace':''} station-${st.station} ${isHeat?'':R.inImagePilot(order().recipe)?'photo-workspace':'legacy-workspace'}"><div class="process-heading"><span>${names[st.station]} · ${state().kitchen.step+1}단계</span><h3>${st.title}</h3></div>${scene}</div>`;
     processFooter();fitWorkspace();requestAnimationFrame(fitWorkspace);if(isHeat)updateHeat();else FX?.heat(false,0);
   }
   function fitWorkspace(){

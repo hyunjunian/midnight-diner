@@ -41,10 +41,10 @@ test('approved caption position is independent of food size and restores pouring
  const b=L.frame(393,852,{...spec,safeTop:242,safeBottom:748});assert.ok(b.foodTop>=242-.01);assert.ok(b.foodBottom<=748+.01);
 });
 
-test('new foreground art applies only to the five approved dishes',()=>{
+test('shared preparation has the same transparent source for every recipe',()=>{
  const R=require('../docs/cooking-rules');
  for(const id of Object.keys(require('../docs/catalog').recipes)){
-  const expected=['onigiri','tamago','tonjiru','ochazuke','negi_omelette'].includes(id);
+  const expected=true;
   assert.equal(R.nightImage(id,'core-beat').startsWith('foreground-v39-'),expected,id);
  }
  for(const name of ['prep-rice','prep-egg','measure-miso','core-portion','core-shape','core-beat','core-pour','core-broth','core-wrap']){

@@ -30,7 +30,7 @@
 #kitchen-screen .kitchen-header h2{margin:0;line-height:1.35}
 #kitchen-screen .kitchen-header>#kitchen-step-count{align-self:center;line-height:1.35}
 #kitchen-screen #kitchen-content .foreground-workspace .recipe-frame{clip-path:none;border-radius:0;mask:none;-webkit-mask:none;background-repeat:no-repeat;transition:none;animation:none;filter:none}
-#kitchen-screen #kitchen-content .foreground-workspace .held-knife{background-image:url('./assets/foreground-v39-knife.webp');width:84%;aspect-ratio:1/2;transform:translate(-5%,-4.5%) rotate(var(--knife-angle,14deg));transform-origin:5% 4.5%}
+#kitchen-screen #kitchen-content .prep-scene .held-knife{background-image:url('./assets/foreground-v39-knife.webp');width:84%;aspect-ratio:1/2;transform:translate(-5%,-4.5%) rotate(var(--knife-angle,14deg));transform-origin:5% 4.5%}
 #kitchen-screen #kitchen-content .foreground-workspace .cook-object{animation:none;transition:none}
 #kitchen-screen .kitchen-header{margin-top:var(--safe-top);padding:14px 13px;min-height:64px;box-sizing:border-box}
 #kitchen-screen .kitchen-header>#kitchen-step-count{font-size:12px}
