@@ -70,7 +70,10 @@
   const images={};for(const [key,file] of Object.entries({a:'visitors-a.webp',b:'visitors-b.webp'})){const image=new Image();image.src=new URL(`./assets/${file}`,document.currentScript.src).href;images[key]=image;}
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   const records=new Map();let gl,program,vertex,index,textures={},locations={},ready=false,last=0,frameCount=0,failures=0;
-  const surface=document.createElement('canvas');surface.width=240;surface.height=320;
+  // Transfer a GPU-backed bitmap instead of reading WebGL pixels into a 2D
+  // canvas for every portrait. Older browsers retain the existing 2D path.
+  const bitmapTransfer=typeof OffscreenCanvas!=='undefined'&&typeof OffscreenCanvas.prototype.transferToImageBitmap==='function'&&!!document.createElement('canvas').getContext('bitmaprenderer');
+  const surface=bitmapTransfer?new OffscreenCanvas(240,320):document.createElement('canvas');surface.width=240;surface.height=320;
   function shader(type,source){const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;}
   function init(){
     gl=surface.getContext('webgl',{alpha:true,premultipliedAlpha:false,antialias:true,preserveDrawingBuffer:true});if(!gl)return;
@@ -91,7 +94,7 @@
   const uniform=name=>locations[name];
   function attach(){for(const el of document.querySelectorAll('.actor[data-person]'))if(!records.has(el)){
     const canvas=el.querySelector('.actor-morph');if(!canvas)continue;canvas.width=240;canvas.height=320;
-    const ctx=canvas.getContext('2d');if(!ctx)continue;const m=mesh(Number(el.dataset.person));
+    const ctx=canvas.getContext(bitmapTransfer?'bitmaprenderer':'2d');if(!ctx)continue;const m=mesh(Number(el.dataset.person));
     records.set(el,{el,canvas,ctx,m,vertices:new Float32Array(m.points.length*4),walk:0,cook:0,eat:0,seed:m.person*.79+Math.random()*1000});
   }}
   let dirty=true;new MutationObserver(()=>dirty=true).observe(document.documentElement,{childList:true,subtree:true});
@@ -116,7 +119,7 @@
       const art=portrait(r.m.person);gl.bindTexture(gl.TEXTURE_2D,textures[art.sheet]);gl.uniform2f(uniform('tile'),art.tile%4,Math.floor(art.tile/4));gl.uniform1f(uniform('rows'),art.rows);
       gl.clear(gl.COLOR_BUFFER_BIT);gl.drawElements(gl.TRIANGLES,r.m.indices.length,gl.UNSIGNED_SHORT,0);
       if(gl.isContextLost())throw new Error('context lost');
-      r.ctx.clearRect(0,0,240,320);r.ctx.drawImage(surface,0,0);el.classList.add('morph-ready');r.canvas.dataset.motion=r.walk>.1?'walk':r.cook>.1?'cook':r.eat>.1?'eat':'idle';
+      if(bitmapTransfer)r.ctx.transferFromImageBitmap(surface.transferToImageBitmap());else{r.ctx.clearRect(0,0,240,320);r.ctx.drawImage(surface,0,0);}el.classList.add('morph-ready');r.canvas.dataset.motion=r.walk>.1?'walk':r.cook>.1?'cook':r.eat>.1?'eat':'idle';
     }frameCount++;}catch{failures++;ready=false;for(const el of records.keys())el.classList.remove('morph-ready');}
   }
   api.status=()=>({ready,frames:frameCount,failures,actors:records.size});

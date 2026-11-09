@@ -56,6 +56,7 @@
     });
   }
   async function latestRelease(){
+    if(navigator.onLine===false)return '';
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),4000);
     try{
       const url=new URL('./version.json',appURL);url.searchParams.set('check',Date.now()+'-'+Math.random().toString(36).slice(2));
