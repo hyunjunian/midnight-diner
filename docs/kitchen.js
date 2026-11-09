@@ -6,7 +6,7 @@
   const setStage=name=>{$('kitchen-screen').dataset.stage=name;};
   let completedKitchen=null,retainedKitchen=null;
   const CHECKPOINT='midnight-diner-cooking-checkpoint-v1';
-  let bridge,view='room',visible=false,stepKey='',local={},doors={fridge:false,freezer:false},pages={fridge:0,freezer:0},down=null,skipClick=0;
+  let bridge,view='room',visible=false,stepKey='',local={},doors={fridge:false,freezer:false},pages={fridge:0,freezer:0},down=null,skipClick=0,ricePointer=null;
   const state=()=>bridge.getState(),order=()=>state().guests.find(g=>g.id===state().kitchen?.guest),recipe=()=>E.recipes[order()?.recipe],plan=()=>R.plan(order().recipe,recipe()),step=()=>plan()[state().kitchen.step];
   function resetStep(){const key=`${state().night}-${order().id}-${state().kitchen.step}`;if(stepKey===key)return;stepKey=key;local={count:0,done:false,quality:1,heat:0,power:0,started:false,flipped:false,flipQuality:1,oil:null,knife:true,cutSlots:[],tutorial:0,toolX:.35,toolY:.22,fill:0,motion:0,practiceScore:0,practiceGood:false,demoUntil:0};restoreCheckpoint();}
   function checkpointKey(){const k=state().kitchen;return k?`${state().night}-${k.guest}-${order()?.recipe}-${k.stage}-${k.step}`:null;}
@@ -38,7 +38,7 @@
     resetStep();render();document.dispatchEvent(new Event('midnight:kitchen'));
   }
   function open(){if(!bridge)return false;show();return true;}
-  function hide(){$('kitchen-screen').classList.remove('immersive-heat');FX?.stopCooking();down=null;local.motion=0;visible=false;$('kitchen-screen').hidden=true;$('app').classList.remove('in-kitchen');bridge?.save();document.dispatchEvent(new Event('midnight:kitchen'));}
+  function hide(){ricePointer=null;$('kitchen-screen').classList.remove('immersive-heat');FX?.stopCooking();down=null;local.motion=0;visible=false;$('kitchen-screen').hidden=true;$('app').classList.remove('in-kitchen');bridge?.save();document.dispatchEvent(new Event('midnight:kitchen'));}
   function header(){const k=state().kitchen,g=order();if(!k||!g){$('kitchen-guest').textContent='내 가게 · 준비와 점검';$('kitchen-order').textContent='부엌 둘러보기';$('kitchen-step-count').textContent='';return;}$('kitchen-guest').textContent='';$('kitchen-order').textContent=recipe().name;$('kitchen-step-count').textContent=k.stage==='complete'?'완성':`${k.step+1} / ${plan().length}`;}
   function footer(html){$('kitchen-footer').classList.toggle('fridge-footer',view==='fridge');$('kitchen-footer').innerHTML=html;}
   function room(){setStage('room');const k=state().kitchen,names={fridge:'냉장고',rice:'밥솥',stove:'화구',board:'작업대'};
@@ -100,10 +100,14 @@
   const sourceSpace=()=>L.source(R.nightImage(order().recipe,visual(step()).file));
   const displayY=y=>portraitStep()?(y+sourceSpace().offset)/sourceSpace().scale:y;
   const inputY=y=>portraitStep()?y*sourceSpace().scale-sourceSpace().offset:y;
+  function paintRiceHand(){const el=document.querySelector('.rice-hand');if(!el)return;const object=$('cook-object'),x=ricePointer?.x??.70,y=ricePointer?.y??.88;
+    el.style.left=`${x*100}%`;el.style.top=`${displayY(y)*100}%`;el.style.width=`${Math.min(180,Math.max(130,object.clientWidth*.46))}px`;
+    el.classList.toggle('is-loaded',!!ricePointer);el.dataset.tipX=String(x);el.dataset.tipY=String(y);
+  }
   function knifeAngle(x,y){return Math.atan2(1.16-y,.86-x)*180/Math.PI-48;}
   function cookingMode(){return R.heatMode(order().recipe,recipe());}
   function cookingMotion(){return `<svg class="cooking-surface" viewBox="0 0 100 100" aria-hidden="true">${Array.from({length:20},(_,i)=>`<circle class="cooking-bubble" cx="${25+(i*17)%52}" cy="${35+(i*11)%30}" r="${1.2+(i%4)*.6}" style="animation-delay:${-i*.17}s"/>`).join('')}<path class="surface-ripple" d="M20 50 Q35 44 50 50 T80 50 M25 60 Q40 54 55 60 T75 60"/></svg><svg class="cooking-steam" viewBox="0 0 100 100" aria-hidden="true">${[35,50,65].map((x,i)=>`<path d="M${x} 65 Q${x-8} 45 ${x} 28 T${x} 5" style="animation-delay:${-i*.6}s"/>`).join('')}</svg>`;}
-  function objectContent(st){return sceneFrame()+(st.id==='heat'?(R.imagePilot.includes(order().recipe)&&!R.heatArt(order().recipe)?cookingMotion():''):st.id==='prep'&&st.mode==='cut'&&local.knife?`<span class="held-knife" style="left:${local.toolX*100}%;top:${displayY(local.toolY)*100}%;--knife-angle:${knifeAngle(local.toolX,local.toolY)}deg"></span>`:'')+`<span id="motion-guides">${guideMarkup(st)}</span>`;}
+  function objectContent(st){return sceneFrame()+(st.id==='portion'?'<span class="rice-hand" aria-hidden="true"></span>':'')+(st.id==='heat'?(R.imagePilot.includes(order().recipe)&&!R.heatArt(order().recipe)?cookingMotion():''):st.id==='prep'&&st.mode==='cut'&&local.knife?`<span class="held-knife" style="left:${local.toolX*100}%;top:${displayY(local.toolY)*100}%;--knife-angle:${knifeAngle(local.toolX,local.toolY)}deg"></span>`:'')+`<span id="motion-guides">${guideMarkup(st)}</span>`;}
   function lesson(){
     const phase=local.tutorial||0,spec=E.cookSpec(state(),order().recipe);
     return `<aside id="heat-lesson" class="heat-lesson"><small>재료가 줄지 않는 불 조절 연습</small><h4>${phase===2?(local.practiceGood?'알맞게 멈췄어요!':'이번엔 조금 달랐어요'):phase===0?'손잡이를 잡고 시계 방향으로 돌려 보세요.':'익힘 막대를 보고 초록 구간에서 불을 꺼 보세요.'}</h4><p>${phase===2?`이번 연습 익힘 점수 <b>${local.practiceScore} / 100</b>. ${local.practiceGood?'이 타이밍이면 만족도와 팁을 높이기 좋아요.':'너무 덜 익거나 지나치게 익으면 만족도와 팁이 줄어요.'}`:`알맞음은 ${Math.round((spec.ideal-spec.band/2)*100)}–${Math.round((spec.ideal+spec.band/2)*100)}%. 다이얼을 0으로 돌리거나 ‘불 끄고 마무리’를 눌러요. 알맞게 익힐수록 높은 만족도와 팁을 기대할 수 있어요.`}</p>${phase===2?'<div class="practice-actions"><button data-work="practice-retry">다시 연습</button><button data-work="tutorial-done">이제 직접 요리하기 </button></div>':'<span id="practice-live">아래 익힘 막대가 실제처럼 움직여요.</span>'}</aside>`;
@@ -150,6 +154,7 @@
       const portrait=portraitStep(),art=visual(step()),file=R.nightImage(order().recipe,art.file),box=L.frame(area.clientWidth,area.clientHeight,{portrait,...L.focus(file),safeTop:placement.safeTop,safeBottom,center:placement.center});
       for(const name of ['width','height','left','top'])scene.style[name]=`${box[name]}px`;
       workspace.dataset.foodCenter=String(box.center);workspace.dataset.sourceAspect=String(portrait?L.source(file).ratio:1);
+      paintRiceHand();
     }
     const completed=area.querySelector('.completed-dish');
     if(completed){
@@ -235,15 +240,17 @@
     root.addEventListener('pointerdown',event=>{
       const dial=event.target.closest('#gas-dial'),object=event.target.closest('#cook-object');if(!dial&&!object||local.done)return;
       const box=(dial||object).getBoundingClientRect(),x=(event.clientX-box.x)/box.width,y=dial?(event.clientY-box.y)/box.height:inputY((event.clientY-box.y)/box.height),st=step(),id=gestureId(st);
-      if(!dial&&['measure','assemble','paste'].includes(id)&&!(x>=.12&&x<=.48&&y>=.15&&y<=.6)){bridge.toast('점선이 시작되는 왼쪽 동그라미를 잡아 주세요.');refreshGuides();return;}
+      if(!dial&&['measure','assemble','paste','portion'].includes(id)&&!(x>=.12&&x<=.48&&y>=.15&&y<=.6)){bridge.toast('점선이 시작되는 왼쪽 동그라미를 잡아 주세요.');refreshGuides();return;}
       if(!dial&&id==='heat')return;local.motion=0;bridge.clearToast?.();down={gesture:G.begin(id,x,y),box,dial:!!dial,id:event.pointerId,el:dial||object,measure:id==='measure',paste:id==='paste',overTarget:false};
       down.el.setPointerCapture(event.pointerId);document.querySelector('.prep-scene')?.classList.add('is-dragging');event.preventDefault();
+      if(id==='portion'){ricePointer={x,y};paintRiceHand();}
     });
     root.addEventListener('pointermove',event=>{
       if(!down||down.id!==event.pointerId)return;const x=(event.clientX-down.box.x)/down.box.width,y=down.dial?(event.clientY-down.box.y)/down.box.height:inputY((event.clientY-down.box.y)/down.box.height);
       if(down.dial){setPower(G.power(x-.5,y-.5));return;}
       if(step().id==='prep'&&step().mode==='cut'&&down.strokeDone&&y<.32){down.gesture=G.begin('cut',x,y);down.strokeDone=false;}
       G.move(down.gesture,x,y);if(gestureId(step())==='beat'&&down.gesture.distance>.04&&Math.abs(down.gesture.angle)>.08){FX?.flow(step(),true);down.soundAt=performance.now();}if(['pour','broth'].includes(step().id)&&down.gesture.distance>.12)FX?.flow(step(),true);
+      if(step().id==='portion'){ricePointer={x,y};paintRiceHand();}
       if(down.paste){local.fill=Math.max(0,Math.min(.99,(x-.3)/.44));FX?.flow(step(),down.gesture.distance>.05);paintFrame();return;}
       if(down.measure){down.overTarget=x>=.58&&x<=.92&&y>=.4&&y<=.85;FX?.flow(step(),down.overTarget&&local.fill<1);document.querySelector('.prep-scene')?.classList.toggle('is-pouring',down.overTarget);return;}
       if(step().id==='prep'&&step().mode==='cut'&&local.knife&&!local.done&&!down.strokeDone&&G.valid(down.gesture)){
@@ -259,8 +266,8 @@
       const knife=document.querySelector('.held-knife');if(knife){local.toolX=x;local.toolY=y;knife.style.left=`${x*100}%`;knife.style.top=`${displayY(y)*100}%`;knife.style.setProperty('--knife-angle',`${knifeAngle(x,y)}deg`);}
       if(step().id==='assemble'){const progress=Math.max(0,Math.min(1,(x-.3)/.42));document.querySelector('.prep-scene')?.style.setProperty('--transfer',progress);}
     });
-    root.addEventListener('pointerup',event=>{if(!down||down.id!==event.pointerId)return;const current=down;if(current.paste)G.move(current.gesture,(event.clientX-current.box.x)/current.box.width,inputY((event.clientY-current.box.y)/current.box.height));FX?.flow(step(),false);down=null;local.motion=0;document.querySelector('.prep-scene')?.classList.remove('is-dragging','is-pouring');if(!current.dial){if(current.cutsCommitted)process();else commitDrag(current.gesture);}});
-    root.addEventListener('pointercancel',()=>{if(!state().kitchen){down=null;return;}FX?.flow(step(),false);down=null;local.motion=0;paintFrame();document.querySelector('.prep-scene')?.classList.remove('is-dragging','is-pouring');});
+    root.addEventListener('pointerup',event=>{if(!down||down.id!==event.pointerId)return;const current=down;if(current.paste)G.move(current.gesture,(event.clientX-current.box.x)/current.box.width,inputY((event.clientY-current.box.y)/current.box.height));FX?.flow(step(),false);down=null;ricePointer=null;paintRiceHand();local.motion=0;document.querySelector('.prep-scene')?.classList.remove('is-dragging','is-pouring');if(!current.dial){if(current.cutsCommitted)process();else commitDrag(current.gesture);}});
+    root.addEventListener('pointercancel',()=>{if(!state().kitchen){down=null;return;}FX?.flow(step(),false);down=null;ricePointer=null;paintRiceHand();local.motion=0;paintFrame();document.querySelector('.prep-scene')?.classList.remove('is-dragging','is-pouring');});
     root.addEventListener('keydown',event=>{if(event.target.id==='gas-dial'&&['ArrowLeft','ArrowRight','ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();setPower(Math.max(0,Math.min(1.6,local.power+(['ArrowRight','ArrowUp'].includes(event.key)?.1:-.1))));}});
   }
 
