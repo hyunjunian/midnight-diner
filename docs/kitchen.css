@@ -145,7 +145,7 @@
 .measure-status {width:88%;max-width:400px;margin:10px auto 0;padding:11px 15px;background:#f8edcf;color:#334b41;border:1px solid #d9bc83;border-radius:13px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:7px;}
 .measure-status b,.measure-status>span {font-size:12px;}.measure-status small{font-size:11px;width:100%;color:#64745b;}
 .measure-progress{width:100%;height:12px;border-radius:9px;background:#d9d2b3;overflow:hidden;}.measure-progress i{display:block;height:100%;background:linear-gradient(90deg,#ad8047,#6c914f);border-radius:9px;}
-.is-pouring {outline:2px solid #e8c879;outline-offset:2px;}.original-ready {width:88%;max-width:310px;margin:8px 0 4px;min-height:260px;display:grid;place-items:center;}.original-ready>.food-art{width:100%;max-height:390px;animation:finished-food .5s ease-out both;}
+.is-pouring {outline:0;}.original-ready {width:88%;max-width:310px;margin:8px 0 4px;min-height:260px;display:grid;place-items:center;}.original-ready>.food-art{width:100%;max-height:390px;animation:finished-food .5s ease-out both;}
 @keyframes finished-food {from{opacity:.1;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
 .eaten-dish{display:none;position:absolute;inset:0;}.eaten-dish>.food-art{width:100%;height:auto;}.finished-meal .empty-plate {display:none;}.finished-meal .eaten-dish{display:block;}
 @media(max-height:760px){.process-view{padding-top:9px}.prep-scene{width:min(80%,290px)}.prep-scene.assemble{width:min(86%,330px)}.process-heading h3{font-size:23px}.process-heading p{font-size:12px}.prep-queue{margin-top:5px}.measure-status{margin-top:5px;padding:8px 12px}.guide-replay{margin:5px auto}}

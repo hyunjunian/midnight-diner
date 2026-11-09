@@ -113,7 +113,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #kitchen-screen[data-stage=process] #kitchen-content .process-view .process-heading{top:var(--process-caption-top,140px)}
 #kitchen-screen[data-stage=process].immersive-heat #kitchen-content .process-heading{top:var(--heat-caption-top)}
 #kitchen-screen:not(.immersive-heat) #kitchen-content .stove-controls{position:absolute;left:8%;right:8%;top:calc(var(--process-caption-top,140px) + 50px);padding:0;z-index:3}
-#kitchen-screen #kitchen-content .prep-scene:not(.stove-unit) .recipe-frame{mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent),linear-gradient(transparent,#000 17%,#000 88%,transparent);mask-composite:intersect;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent),linear-gradient(transparent,#000 17%,#000 88%,transparent);-webkit-mask-composite:source-in}
+#kitchen-screen #kitchen-content .prep-scene:not(.stove-unit) .recipe-frame{mask-image:none;-webkit-mask-image:none}
 
 #kitchen-screen[data-stage=process] #kitchen-content .action-counter,#kitchen-screen[data-stage=process] #kitchen-content .measure-status{bottom:var(--work-bottom,86px)}
 #kitchen-screen.immersive-heat #kitchen-content .process-heading{display:none}
@@ -126,7 +126,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #story-content .story-choice-card .choice-number{min-width:28px;width:28px}
 #toast .toast-close{width:44px;min-width:44px}
 
-#kitchen-screen.immersive-heat #kitchen-content .native-stove .recipe-frame{mask-image:var(--native-mask);-webkit-mask-image:var(--native-mask);mask-composite:add;-webkit-mask-composite:source-over}
+#kitchen-screen.immersive-heat #kitchen-content .native-stove .recipe-frame{mask-image:var(--native-mask);-webkit-mask-image:var(--native-mask);mask-size:100% 100%;-webkit-mask-size:100% 100%;mask-position:center;-webkit-mask-position:center;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat;mask-composite:add;-webkit-mask-composite:source-over}
 #story-dialog #story-content .story-choice-card{transform:none!important;border:0!important;box-shadow:none!important;filter:none!important}
 #story-dialog #story-content .story-choice-card .choice-number{transform:none!important;border:0!important;box-shadow:none!important}
 

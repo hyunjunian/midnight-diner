@@ -121,6 +121,7 @@
   function process(){
     setStage('process');resetStep();const st=step(),spec=E.cookSpec(state(),order().recipe),isHeat=st.id==='heat',names={rice:'밥솥',stove:'화구',board:'작업대'};
     $('kitchen-screen').classList.toggle('immersive-heat',isHeat&&!!R.heatArt(order().recipe));
+    $('kitchen-screen').classList.toggle('is-heating',isHeat);
     if(isHeat&&!state().stoveTutorialDone){state().stoveTutorialDone=true;bridge.save();}
     const scene=isHeat?`${heatControls(st,spec)}${stoveUnit(st)}`:`<div class="prep-scene ${st.id} ${local.done?'action-done':''}"><button id="cook-object" class="cook-object" aria-label="${st.title} 조작">${objectContent(st)}</button><div class="action-spark" aria-hidden="true"></div></div>${st.id==='prep'&&st.mode==='measure'?measureDisplay():''}<div class="action-counter" aria-live="polite">${st.id==='prep'&&st.mode==='measure'?'':st.id==='portion'?`그릇에 밥 ${local.count}주걱 / 3주걱`:local.done?'':`${Math.min(local.count,st.goal)} / ${st.goal}`}</div>`;
     $('kitchen-content').innerHTML=`<div class="process-view station-${st.station} ${isHeat?'':R.inImagePilot(order().recipe)?'photo-workspace':'legacy-workspace'}"><div class="process-heading"><span>${names[st.station]} · ${state().kitchen.step+1}단계</span><h3>${st.title}</h3></div>${scene}</div>`;
@@ -141,17 +142,17 @@
       area.style.setProperty('--heat-caption-top',`${captionTop}px`);return;
     }
     const workspace=document.querySelector('.process-view'),scene=workspace?.querySelector('.prep-scene');
-    const areaBox=area.getBoundingClientRect(),navBox=$('location-nav').getBoundingClientRect(),captionTop=separateColumn?14:navBox.bottom-areaBox.top+12,safeBottom=footerTop-60;
+    const areaBox=area.getBoundingClientRect(),navBox=$('location-nav').getBoundingClientRect(),captionTop=separateColumn?14:navBox.bottom-areaBox.top+24,safeBottom=footerTop-60;
     area.style.setProperty('--process-caption-top',`${captionTop}px`);
     if(scene){
       if(scene.classList.contains('stove-unit')){const top=captionTop+104,width=Math.min(area.clientWidth,Math.max(1,safeBottom-top)/1.2);scene.style.cssText=`position:absolute;left:${(area.clientWidth-width)/2}px;top:${top}px;width:${width}px`;return;}
-      const portrait=portraitStep(),art=visual(step()),file=R.nightImage(order().recipe,art.file),box=L.frame(area.clientWidth,area.clientHeight,{portrait,...L.focus(file),safeTop:captionTop+66,safeBottom});
+      const portrait=portraitStep(),art=visual(step()),file=R.nightImage(order().recipe,art.file),box=L.frame(area.clientWidth,area.clientHeight,{portrait,...L.focus(file),safeTop:captionTop+66,safeBottom,edgeBottom:step().id==='prep'&&step().mode==='measure'?undefined:footerTop+8});
       for(const name of ['width','height','left','top'])scene.style[name]=`${box[name]}px`;
       workspace.dataset.foodCenter=String(box.center);workspace.dataset.sourceAspect=String(portrait?2/3:1);
     }
     const completed=area.querySelector('.completed-dish');
     if(completed){const plate=completed.querySelector('.original-ready'),art=plate.querySelector('.food-art'),other=[...completed.children].filter(el=>el!==plate).reduce((n,el)=>n+el.getBoundingClientRect().height+8,0),ratioParts=getComputedStyle(art).getPropertyValue('--food-ratio').trim().split('/'),ratio=(Number(ratioParts[0])||1)/(Number(ratioParts[1])||1),height=Math.max(20,area.clientHeight-other-32),width=Math.min(area.clientWidth*.84,height*ratio,370);art.style.width=`${width}px`;art.style.height=`${width/ratio}px`;}
-    const cabinet=area.querySelector('.fridge-cabinet');if(cabinet){const pages=area.querySelector('.fridge-pages'),ratio=941/1672,height=Math.max(1,Math.min(area.clientHeight-(pages?.getBoundingClientRect().height||0),area.clientWidth/ratio));cabinet.style.flex='0 0 auto';cabinet.style.height=`${height}px`;cabinet.style.width=`${height*ratio}px`;}
+    const cabinet=area.querySelector('.fridge-cabinet');if(cabinet){const pages=area.querySelector('.fridge-pages'),height=Math.max(1,area.clientHeight-(pages?.getBoundingClientRect().height||0)),box=L.cabinet(area.clientWidth,height);cabinet.dataset.fit=box.cover?'cover':'contain';cabinet.style.cssText=`flex:0 0 auto;width:${box.width}px;height:${box.height}px;position:${box.cover?'absolute':'relative'};left:${box.cover?'50%':'auto'};top:${box.top}px;transform:${box.cover?'translateX(-50%)':'none'}`;pages.style.cssText=box.cover?'position:absolute;left:0;right:0;bottom:0;z-index:4;justify-content:center':'';}
   }
 
   new ResizeObserver(fitWorkspace).observe($('kitchen-content'));

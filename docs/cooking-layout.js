@@ -1,10 +1,10 @@
 /* One source-space transform for the art, visible guides and pointer coordinates. */
 (()=>{'use strict';
-function frame(width,height,{portrait=true,focus=.58,span=.68,safeTop,safeBottom}={}){
+function frame(width,height,{portrait=true,focus=.58,span=.68,safeTop,safeBottom,edgeBottom}={}){
  const top=safeTop??Math.min(94,height*.24),bottom=Math.max(top+12,safeBottom??height-54),ratio=portrait?2/3:1;
  const fullWidth=portrait&&height>width*1.15;
  const artHeight=Math.max(1,fullWidth?width/ratio:Math.min(width/ratio,(bottom-top)/span)),artWidth=artHeight*ratio;
- const center=(top+bottom)/2,y=center-artHeight*focus;
+ const y=Math.max((top+bottom)/2-artHeight*focus,fullWidth&&Number.isFinite(edgeBottom)?edgeBottom-artHeight:-Infinity),center=y+artHeight*focus;
  return{width:artWidth,height:artHeight,left:(width-artWidth)/2,top:y,center,foodTop:center-artHeight*span/2,foodBottom:center+artHeight*span/2};
 }
 function focus(file){if(file.includes('measure'))return{focus:.65,span:.56};if(file.includes('portion'))return{focus:.59,span:.76};if(file.includes('broth'))return{focus:.59,span:.71};return{focus:.59,span:.7};}
@@ -17,5 +17,11 @@ function room(width,height){
  }
  return{width:artWidth,height:artHeight,left,top,hotspots};
 }
-const api={frame,focus,room};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingLayout=api;
+function cabinet(width,height){
+ const ratio=941/1672,cover=width/height<.9&&height>=width/ratio*.65;
+ const h=cover?Math.max(height,width/ratio):Math.min(height,width/ratio),w=h*ratio;
+ const lower=Math.max(0,h*.763+12-height),upper=Math.max(0,h*.158-6),crop=cover?Math.min(upper,Math.max(lower,(h-height)/2)):0;
+ return{width:w,height:h,top:-crop,cover};
+}
+const api={frame,focus,room,cabinet};if(typeof module!=='undefined')module.exports=api;else window.MidnightCookingLayout=api;
 })();

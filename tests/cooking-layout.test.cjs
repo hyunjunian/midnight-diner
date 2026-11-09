@@ -20,3 +20,15 @@ test('room cover crop preserves the native photo and keeps appliance targets rea
   for(const [id,b]of Object.entries(r.hotspots)){assert.ok(b.width>0&&b.height>0,id+' reachable');assert.ok(b.left>=0&&b.top>=0&&b.left+b.width<=w+.01&&b.top+b.height<=h+.01,id+' stays inside cropped room');}
  }
 });
+
+test('portrait scenes extend solid wrists and tool handles beneath the fixed footer',()=>{
+ for(const [width,height,footer]of[[320,568,490],[393,734,650],[393,852,750],[430,932,830]]){
+  const box=L.frame(width,height,{portrait:true,...L.focus('portrait-v28-core-beat'),safeTop:230,safeBottom:footer-60,edgeBottom:footer+8});
+  assert.equal(box.width,width);assert.ok(box.top+box.height>=footer+8-.001);assert.ok(Math.abs(box.center-(box.top+box.height*.59))<.001);
+ }
+});
+
+test('portrait fridge photo fills the scene while keeping every shelf row reachable',()=>{
+ for(const[w,h]of[[393,475],[393,550],[430,580],[320,500],[393,650]]){const b=L.cabinet(w,h);assert.ok(b.cover);assert.ok(b.width>=w-.001);assert.ok(Math.abs(b.width/b.height-941/1672)<.0001);assert.ok(b.top+b.height*.158>=5);assert.ok(b.top+b.height*.763+12<=h+.01);}
+ for(const[w,h]of[[320,300],[852,393],[1280,450]]){const b=L.cabinet(w,h);assert.equal(b.cover,false);assert.ok(b.width<=w&&b.height<=h);}
+});
