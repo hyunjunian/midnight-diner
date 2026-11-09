@@ -1,0 +1,32 @@
+{
+  "browser": "Chromium",
+  "desktop": "1440x1100",
+  "mobile": "393x852",
+  "catalogRows": 50,
+  "checks": [
+    "cash deduction once",
+    "duplicate click blocked",
+    "area independence",
+    "level gating",
+    "insufficient cash",
+    "all 50 levels selectable",
+    "terminal Lv50",
+    "failed image no debit",
+    "no horizontal mobile overflow",
+    "reduced motion"
+  ],
+  "errors": [],
+  "failed": [],
+  "unitTests": {
+    "passed": 149,
+    "failed": 0
+  },
+  "existingTrackedGameFilesChanged": [],
+  "approvedCookingImageHashes": [
+    "8c40bc68471d3b7bdec9011fbe3f2d57d3b6c37e1f8e7d60af829a09d2c3db11  docs/assets/foreground-v39-core-pour-approved-dc743754.webp",
+    "0dd49c2a4bddb5e51719aead75bd6d0b24aa3e531e30970275269f9cfe950aa5  docs/assets/foreground-v39-core-portion-approved-dc743754.webp",
+    "62a2ff574c9a75fb7e028d569e764b661e7921a16d79064181b4fda535e992f4  docs/assets/pour-right-hand-v48-approved-dc743754.webp",
+    "e31e007468f5cd17e5bac4f8e15dd0c0e1b1c9b7099cb226864b33dee5895220  docs/assets/rice-hand-v45-approved-dc743754.webp",
+    "adc1753e9d11f4c37b4702a445017dd3621e200757961a01d5759e9d745772a2  docs/assets/rice-right-hand-v48-approved-dc743754.webp"
+  ]
+}
