@@ -67,8 +67,10 @@
  function queueNavigationPlacement(){if(!navigationFrame)navigationFrame=requestAnimationFrame(()=>{navigationFrame=0;placeNavigation();});}
  function placeNavigation(){
   const host=document.querySelector('.scene-controls');if(!host)return;
-  if(innerWidth>innerHeight&&innerHeight<=550){host.style.removeProperty('--location-nav-top');return;}
+  if(innerWidth>innerHeight&&innerHeight<=550){host.style.removeProperty('--location-nav-top');$('progress-hud').style.removeProperty('top');return;}
   const safe=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
+  const hudBottom=Math.max(...[...document.querySelectorAll('.night-hud,.wallet-hud')].map(el=>el.getClientRects().length?el.getBoundingClientRect().bottom:0));
+  $('progress-hud').style.top=`${Math.ceil(Math.max(safe+83,hudBottom+8))}px`;
   const growth=$('progress-hud').getBoundingClientRect(),settings=$('settings-open');settings.style.top=`${Math.round(growth.top+(growth.height-44)/2)}px`;
   let bottom=0;for(const el of document.querySelectorAll('#progress-hud,.night-hud,.wallet-hud,#settings-open'))if(el.getClientRects().length)bottom=Math.max(bottom,el.getBoundingClientRect().bottom);
   host.style.setProperty('--location-nav-top',`${Math.ceil(Math.max(130+safe,bottom+8))}px`);

@@ -204,7 +204,17 @@
   function render() {
     $('money').textContent=yen(cashAnimation?Math.round(cashAnimation.from):state.money);
     $('reputation').innerHTML = `${state.reputation} <small>/ 100</small>`;
-    $('day').textContent = `${state.night}번째 밤`;
+    const nightLabel=`${state.night}번째 밤`;
+    $('day').setAttribute('aria-label',nightLabel);
+    $('calendar-open').setAttribute('aria-label',`${nightLabel} · 영업 달력 열기`);
+    if($('day').dataset.night!==String(state.night)){
+      const number=document.createElement('span'),caption=document.createElement('span');
+      number.className='night-date-number';number.textContent=state.night;
+      caption.className='night-date-caption';caption.textContent='번째 밤';
+      const turned=Boolean($('day').dataset.night);
+      $('day').replaceChildren(number,caption);$('day').dataset.night=state.night;
+      if(turned&&!matchMedia('(prefers-reduced-motion: reduce)').matches)$('day').animate([{transform:'perspective(180px) rotateX(-55deg)',opacity:.5},{transform:'perspective(180px) rotateX(0deg)',opacity:1}],{duration:280,easing:'ease-out'});
+    }
     $('open-status').textContent = state.phase === 'prep' ? '영업 준비' : state.phase === 'end' ? '오늘 영업 끝' : '영업 중';
     renderClock();
     if($('hud-detail-dialog').open)renderHudDetail();

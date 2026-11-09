@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261109-v57-aged-clock';
+const RELEASE = '20261109-v58-wood-date-calendar';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -443,7 +443,7 @@ const FILE_HASHES = {
   "assets/fridge-side-crab-v51.webp": "e46692ef496acddd8e100e081c3f5985dd5dcb2171711f248c6edd9c882f8397",
   "assets/fridge-side-sugar-v51.webp": "a617d95a2183b7454375535cd9466c0c512c83938a691cff5b20fe855cce7dc5",
   "assets/fridge-side-fish-v51.webp": "449595551a63621b67205228224ffefe614d6c62f3c77cdf57741ce21d0fbf15",
-  "hud-v42.css": "148eb5b00649fa00bf1595aad11bf733c7c8074ba793f18117c5b058971977e7",
+  "hud-v42.css": "cfff8f598ac4c5ee2d56805190eb34271e699e5851c52d2bcccd3c7119300d93",
   "assets/rice-right-hand-v48.webp": "adc1753e9d11f4c37b4702a445017dd3621e200757961a01d5759e9d745772a2",
   "assets/pour-right-hand-v48.webp": "62a2ff574c9a75fb7e028d569e764b661e7921a16d79064181b4fda535e992f4",
   "assets/potato-right-grip-v48.webp": "8bc6d63c54cab581563d966ce22339c90d219935d44b9e2af1d7c0b888ff12fd",
@@ -504,7 +504,7 @@ const FILE_HASHES = {
   "ui-fixes-v38.css": "e93c04f1b5943ea06e4bc6a7626deca9c114b88e7e433579657f626c1f6b3159",
   "cooking-layout.js": "36c9bd448be4ec6d88198334dd73759e3dab0ec39e4ec62abe94ae56f4212674",
   "dialogue-motion.js": "28bd7aba2c4a1d927236109b528d0148441977ccf017db84ddf4d94af9e2b1aa",
-  "index.html": "af619fe3b27366392764ee84ddc21fa6d0a856d100a6fa5fa2fa235e01c73e23",
+  "index.html": "9118cb2b0e07ba5cad91319b740932aa7e980e44a3e2203828e2814ddf84ae95",
   "style.css": "5f447981dd9d0d91d1037c2b2c5b53a90cd79bbaf7f3c317f51b52b701a79e96",
   "customer.css": "3e2b3d4fc4781651d11c9c887d87ae45ea12fe01dec75cf591f9a99b1775d880",
   "motion.css": "b0b20530ae8929d2e91b2b109df20038484fb654fba3ed8be2c3c58d5046df75",
@@ -552,8 +552,8 @@ const FILE_HASHES = {
   "catalog.js": "fa5f93ed52cd38482aed7a7188fa12c63e6f304cb59813fa24a615d2a8f56af6",
   "stories.js": "000415984d1c791dc184bba686bd97d124031614dda6a0f6c6636df7a0c6ab0c",
   "engine.js": "7fd7dfe447226f24c9c84ec42db1c3420017c1a5ff5e27fb3a531216eba383b2",
-  "game.js": "ba88c158223d3c44302c6ef74dfd40152522b73184bae0844600232d7ef2e1ec",
-  "scene.js": "de2fd0d34a821918e9a1db4cfb72b9a8191daf0a4230c57986bf9dcbb0b902c4",
+  "game.js": "c973d4098995c019d312a9ffac9407f621912c201cc613873d9a706875394fd0",
+  "scene.js": "a8f6f88daad9c870a5fdbcb98672ab6b65a1ad5b4bb87b57bb185a9a2edea39d",
   "rain.js": "32e5a58bd452b6eefb384fe8953c2f5eff7de1e2c74edd8a6928cea463ea4372",
   "morph.js": "3717749af5436dda9d7398e2d08f1c84f6b17846c6c09e676536b6751efb20ef",
   "pwa.js": "3efce6d2019db2ef09c238d002c2f05b3233fc51de9278804428c4535c941f8c",
