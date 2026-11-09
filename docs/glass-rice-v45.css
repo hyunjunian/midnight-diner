@@ -1,7 +1,8 @@
 /* One author-rendered bowl/cooker layer; the actual paddle follows the gesture. */
-#kitchen-screen #kitchen-content .rice-hand{display:block;position:absolute;width:150px;aspect-ratio:1/4;background:url('./assets/rice-hand-v45.webp') 0 0/200% 100% no-repeat;transform:translate(-20%,-8%);transform-origin:20% 8%;pointer-events:none;z-index:5;animation:none;filter:none;mask:none;-webkit-mask:none}
+#kitchen-screen #kitchen-content .rice-hand{display:block;position:absolute;width:150px;aspect-ratio:1/4;background:none;transform:translate(-7.84%,-2.52%);transform-origin:7.84% 2.52%;pointer-events:none;z-index:5;animation:none;filter:none;mask:none;-webkit-mask:none}
 /* Keep the exact same hand/cuff pose; only the paddle head receives the scoop. */
-#kitchen-screen #kitchen-content .rice-hand.is-loaded::before{content:'';position:absolute;inset:0;background:url('./assets/rice-hand-v45.webp') 100% 0/200% 100% no-repeat;clip-path:inset(0 0 81% 0);pointer-events:none}
+#kitchen-screen #kitchen-content .rice-hand .rice-paddle{position:absolute;left:-50%;top:-20.2931%;width:200%;height:120.2931%;background:url('./assets/rice-hand-v45.webp') 0 0/200% 100% no-repeat;pointer-events:none}
+#kitchen-screen #kitchen-content .rice-hand.is-loaded .rice-paddle{background-position:100% 0}
 #stock-prep .change-prep-plan{text-decoration:none!important}
 /* Only the hand/forearm grows; the existing paddle and its pointer anchor stay fixed. */
 #kitchen-screen #kitchen-content .rice-hand .rice-grip{position:absolute;left:-50%;top:0;width:200%;height:135.2875%;background:url('./assets/rice-right-hand-v48.webp') 0 0/100% 100% no-repeat;pointer-events:none}
