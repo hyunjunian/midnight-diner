@@ -99,24 +99,19 @@
 /* Fine matte enamel grain stays below the ink and raised black hands. */
 .night-hud #clock::before{content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:.11;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23765e35' filter='url(%23g)' opacity='.6' d='M0 0h128v128H0z'/%3E%3C/svg%3E");background-size:64px 64px;mix-blend-mode:multiply}
 
-/* A small walnut day-flip calendar, bound with aged yellow brass loops. */
-.night-hud #calendar-open{position:relative;align-items:center;gap:4px;min-width:56px;padding:7px 0 0;isolation:isolate}
-.night-hud #day{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;box-sizing:border-box;width:56px;min-height:41px;padding:4px 5px 3px;border:1px solid #a37b4c;border-radius:2px;background:linear-gradient(100deg,#71462744,#2e180d55),url('./assets/ui-walnut-v21.webp') center/240px;color:#f6e3bd;box-shadow:inset 0 1px #e5bc7655,inset 0 -2px #1e0d09aa,0 2px 0 #9b7141,0 3px 0 #25130c,0 4px 0 #805a35,0 5px 2px #170b0888;font-weight:400;line-height:1}
-.night-hud #day::before{content:'';position:absolute;left:0;right:0;top:48%;height:1px;background:#1c100b66;box-shadow:0 1px #cba16b1a;pointer-events:none}
-.night-hud #day .night-date-number{position:relative;font:400 25px/.94 var(--reading-serif);font-variant-numeric:tabular-nums;letter-spacing:.4px;color:#fff0cf;text-shadow:0 1px 1px #170c0888}
-.night-hud #day .night-date-caption{position:relative;font:400 8px/1.3 var(--reading-serif);margin-top:2px;color:#e5cca3}
-.night-hud .night-date-binding{position:absolute;z-index:2;left:5px;right:5px;top:1px;height:13px;display:flex;justify-content:space-around;pointer-events:none}
-.night-date-binding i{position:relative;display:block;width:4px;height:12px;box-sizing:border-box;border:1px solid #654519;border-radius:50% 50% 38% 38%;background:linear-gradient(90deg,#70501f 0%,#b79548 24%,#e5d092 43%,#a6843c 65%,#6d4c1c 100%);box-shadow:1px 1px 1px #160c08aa,inset 1px 0 #f7e0a077;transform:rotate(-7deg)}
-.night-date-binding i::after{content:'';position:absolute;width:5px;height:3px;left:-1.5px;bottom:-2px;z-index:-1;border-radius:50%;background:#160c09;box-shadow:0 1px #ba925744}
-.night-hud #calendar-open #open-status{position:relative;font-size:9px;line-height:1.3;white-space:nowrap;color:#e0cba7}
-.night-hud #calendar-open:active #day{filter:brightness(.94)}
-@media(max-width:359px){.night-hud #calendar-open{min-width:50px}.night-hud #day{width:50px}.night-hud #day .night-date-number{font-size:23px}.night-hud #calendar-open #open-status{font-size:8px}}
-
-/* Compact brass-bound paper date, seated beside the clock on the wood plaque. */
-.night-hud #calendar-open{padding-top:5px;gap:0;min-height:44px}
-.night-hud #day{min-height:35px;padding:3px 5px 2px;border-color:#b39a70;background:#efe2c4 url('./assets/ui-washi-v21.webp') center/260px;color:#493622;box-shadow:inset 0 1px #fff6e2,0 2px 0 #c5b18b,0 3px 0 #f0e2c3,0 4px 1px #160b0877;transform-origin:center top}
-.night-hud #day::before{background:#b8a37b33;box-shadow:0 1px #fff7e366}
-.night-hud #day .night-date-number{font-size:23px;color:#493622;text-shadow:none}
-.night-hud #day .night-date-caption{font-size:8px;color:#695035}
-.night-hud .night-date-binding{top:0;height:11px}
-.night-date-binding i{height:10px}
+/* Month and two date digits hang independently from one brass loop each. */
+.night-hud{padding:2px 6px;gap:7px}
+.night-hud #calendar-open{position:relative;align-items:center;justify-content:center;gap:0;min-width:0;min-height:44px;padding:5px 0 2px;isolation:isolate}
+.night-hud #day{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:3px;width:auto;min-height:0;margin:0;padding:0;border:0;background:none;box-shadow:none;font-weight:400;line-height:1}
+.night-hud #day::before,.night-hud #day::after{content:none}
+.night-hud .date-leaf{position:relative;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:21px;height:35px;padding:3px 0 0;border:1px solid #c1ab81;border-radius:1px;background:#f1e4c8 url('./assets/ui-washi-v21.webp') center/260px;color:#493622;box-shadow:inset 0 1px #fff8e7,0 1px 0 #c0ab85,0 2px 0 #f0e2c2,0 3px 1px #160b0877;transform-origin:center top}
+.night-hud .date-leaf>span{position:relative;z-index:1;font:400 23px/1 var(--reading-serif);font-variant-numeric:tabular-nums;letter-spacing:0;color:#493622;text-shadow:none}
+.night-hud .date-month>span{writing-mode:vertical-rl;text-orientation:upright;font:400 11px/1 var(--reading-serif);letter-spacing:-1px}
+.night-hud .date-leaf::before{content:'';position:absolute;z-index:3;left:calc(50% - 2px);top:-6px;width:4px;height:11px;box-sizing:border-box;border:1px solid #735322;border-radius:50% 50% 38% 38%;background:linear-gradient(90deg,#765321 0%,#b8954b 23%,#e5cf8d 45%,#aa883f 67%,#70501f 100%);box-shadow:1px 1px 1px #160c0888,inset 1px 0 #f4dfa077;transform:rotate(-5deg)}
+.night-hud .date-leaf::after{content:'';position:absolute;z-index:2;left:calc(50% - 3px);top:2px;width:6px;height:3px;border-radius:50%;background:#3e2d1b;box-shadow:0 1px #fff3cf77}
+.night-hud #calendar-open:active .date-leaf{filter:brightness(.96)}
+/* Real calendar rows retain the physical paper sheet and wood navigation. */
+.calendar-weekday{display:flex;align-items:center;justify-content:center;min-height:22px;border-right:1px solid #b6996c66;border-bottom:1px solid #b6996c66;font:400 10px/1.4 var(--reading-serif);color:#806747}
+.calendar-weekday:first-child{color:#9b5449}
+.calendar-empty{border-right:1px solid #b6996c33;border-bottom:1px solid #b6996c33;min-height:44px}
+#calendar-dialog .calendar-day{min-height:44px}
