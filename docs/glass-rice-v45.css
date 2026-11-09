@@ -1,0 +1,11 @@
+/* One author-rendered bowl/cooker layer; the actual paddle follows the gesture. */
+#kitchen-screen #kitchen-content .rice-hand{display:block;position:absolute;width:150px;aspect-ratio:1/4;background:url('./assets/rice-hand-v45.webp') 0 0/200% 100% no-repeat;transform:translate(-20%,-8%);transform-origin:20% 8%;pointer-events:none;z-index:5;animation:none;filter:none;mask:none;-webkit-mask:none}
+/* Keep the exact same hand/cuff pose; only the paddle head receives the scoop. */
+#kitchen-screen #kitchen-content .rice-hand.is-loaded::before{content:'';position:absolute;inset:0;background:url('./assets/rice-hand-v45.webp') 100% 0/200% 100% no-repeat;clip-path:inset(0 0 81% 0);pointer-events:none}
+#stock-prep .change-prep-plan{text-decoration:none!important}
+/* Only the hand/forearm grows; the existing paddle and its pointer anchor stay fixed. */
+#kitchen-screen #kitchen-content .rice-hand .rice-grip{position:absolute;left:-50%;top:0;width:200%;height:135.2875%;background:url('./assets/rice-right-hand-v48.webp') 0 0/100% 100% no-repeat;pointer-events:none}
+/* Extra transparent margins let the complete rigid grip and sleeve leave the viewport. */
+#kitchen-screen #kitchen-content .right-grip-layer{position:absolute;left:-25%;top:0;width:150%;height:133.333333%;background-size:100% 100%;background-repeat:no-repeat;pointer-events:none;z-index:4;mask:none;-webkit-mask:none;filter:none}
+#kitchen-screen #kitchen-content .pour-right-grip{background-image:url('./assets/pour-right-hand-v48.webp')}
+#kitchen-screen #kitchen-content .potato-right-grip{background-image:url('./assets/potato-right-grip-v48.webp')}

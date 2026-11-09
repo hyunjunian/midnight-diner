@@ -22,7 +22,7 @@ test('room cover crop preserves the native photo and keeps appliance targets rea
 });
 
 test('food stays at the approved center while extended sleeves leave the viewport',()=>{
- for(const [width,height,footer]of[[320,568,490],[393,734,650],[393,852,750],[430,932,830]])for(const name of ['core-beat','core-pour','measure-miso','core-portion','core-broth']){
+ for(const [width,height,footer]of[[320,568,490],[393,734,650],[393,852,750],[430,932,830]])for(const name of ['core-beat','measure-miso','core-broth']){
   const spec=L.focus('foreground-v39-'+name),top=Math.max(180,height*.245+66),box=L.frame(width,height,{portrait:true,...spec,safeTop:top,safeBottom:footer-60});
   assert.ok(Math.abs(box.center-height*.6)<.01,name+' fixed food anchor');
   assert.ok(box.foodTop>=top-.01&&box.foodBottom<=footer-60+.01,name+' clear of caption/footer');
@@ -31,10 +31,20 @@ test('food stays at the approved center while extended sleeves leave the viewpor
  }
 });
 
-test('new foreground art applies only to the five approved dishes',()=>{
+test('approved caption position is independent of food size and restores pouring aspect',()=>{
+ for(const [width,height]of [[320,568],[393,852],[430,932]]){
+  const a=L.workspace(width,height,{navBottom:105,footerTop:height-66,step:'beat'}),b=L.workspace(width,height,{navBottom:105,footerTop:height-66,step:'assemble'});
+  assert.equal(a.captionTop,b.captionTop);assert.equal(a.captionTop,Math.max(125,height*.20));
+  assert.equal(a.titleTop,a.captionTop+24.5);assert.ok(b.safeBottom>a.safeBottom);
+ }
+ const spec=L.focus('foreground-v39-core-pour');assert.equal(spec.ratio,2/3);assert.equal(spec.scale,1.5);
+ const b=L.frame(393,852,{...spec,safeTop:242,safeBottom:748});assert.ok(b.foodTop>=242-.01);assert.ok(b.foodBottom<=748+.01);
+});
+
+test('shared preparation has the same transparent source for every recipe',()=>{
  const R=require('../docs/cooking-rules');
  for(const id of Object.keys(require('../docs/catalog').recipes)){
-  const expected=['onigiri','tamago','tonjiru','ochazuke','negi_omelette'].includes(id);
+  const expected=true;
   assert.equal(R.nightImage(id,'core-beat').startsWith('foreground-v39-'),expected,id);
  }
  for(const name of ['prep-rice','prep-egg','measure-miso','core-portion','core-shape','core-beat','core-pour','core-broth','core-wrap']){
@@ -45,4 +55,8 @@ test('new foreground art applies only to the five approved dishes',()=>{
 test('portrait fridge photo fills the scene while keeping every shelf row reachable',()=>{
  for(const[w,h]of[[393,475],[393,550],[430,580],[320,500],[393,650]]){const b=L.cabinet(w,h);assert.ok(b.cover);assert.ok(b.width>=w-.001);assert.ok(Math.abs(b.width/b.height-941/1672)<.0001);assert.ok(b.top+b.height*.158>=5);assert.ok(b.top+b.height*.763+12<=h+.01);}
  for(const[w,h]of[[320,300],[852,393],[1280,450]]){const b=L.cabinet(w,h);assert.equal(b.cover,false);assert.ok(b.width<=w&&b.height<=h);}
+});
+
+test('approved serving art uses the same full portrait source for food, guide and input',()=>{
+ const source=L.source('foreground-v47-plate-ochazuke');assert.equal(source.ratio,393/852);assert.equal(source.scale,852/393);assert.equal(source.offset,0);
 });

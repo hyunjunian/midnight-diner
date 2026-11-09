@@ -1,0 +1,818 @@
+{
+  "tool": "OpenAI image_gen",
+  "source_commit": "c147b4c",
+  "scope": "Existing atlas background removal, no new menu identities",
+  "encoding": "WebP quality 97 with preserved alpha",
+  "files": [
+    {
+      "file": "docs/assets/prep-hi-butter.webp",
+      "generated_source": "exec-856e1a02-3d07-431b-8a7b-dbcc91dc4d9e.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "9452e197127430797bc9fab431816d03e9205e9c6563e776f65b8f820fd75250"
+    },
+    {
+      "file": "docs/assets/prep-hi-cheese.webp",
+      "generated_source": "exec-52a67937-8e9d-43f1-bad6-876011d2bcfa.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "1db62f7ea7c4d6bcfa4d9d3e5c12013ec02ea5aedbc866c3e97b111c5599490e"
+    },
+    {
+      "file": "docs/assets/prep-hi-clam.webp",
+      "generated_source": "exec-08039889-03d2-426c-8fbf-0825e8b78813.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "20d8dc6b4261b3310deaecedc38232b4878f502bad2b51d4b943676928f1d4e0"
+    },
+    {
+      "file": "docs/assets/prep-hi-chicken.webp",
+      "generated_source": "exec-6ccfccaa-e85f-4c6b-8ee6-3e0adc39ee8a.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "f29683d8a7b0bf17175b3a7b7dd8b4585cc7ef9695708042989bc4ce71490729"
+    },
+    {
+      "file": "docs/assets/prep-hi-fish.webp",
+      "generated_source": "exec-a22ca2d9-a082-4b1f-a463-97287780d6ea.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "72bfa8c52cbe58d299c50b95308bd7d7ba30f267ee29510ce03cde6b96810ed1"
+    },
+    {
+      "file": "docs/assets/prep-hi-crab.webp",
+      "generated_source": "exec-6b0d2bf1-6dbb-462d-9d94-d08057d45225.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "dd679deff11455a299cb6e80995d419bb0880862967c17c25a96f1a4d15b088c"
+    },
+    {
+      "file": "docs/assets/prep-hi-mushroom.webp",
+      "generated_source": "exec-1fa281c7-7f01-4275-9940-3530e204223c.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "26c716fa86ea6d44acc1dbf5d82f081661abbc5253af31b4b7f7a0f304268cf0"
+    },
+    {
+      "file": "docs/assets/prep-hi-beef.webp",
+      "generated_source": "exec-d97ced13-a8b1-456b-8369-5628472c2ec9.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "sha256": "a33c4c6a5fa2e2b3b9436b7fbad40cb54037c8cb6dc1943c8eaab3201bdbb41a"
+    },
+    {
+      "file": "docs/assets/prep-hi-noodles.webp",
+      "generated_source": "exec-60560c41-a280-4729-9481-10c04d2a1e21.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "8f1e43d71825f8f00a580616f37e713ba3277ccde4a6cb901d0bfa4625ce1424"
+    },
+    {
+      "file": "docs/assets/prep-hi-potato.webp",
+      "generated_source": "exec-d99ccc76-d5e5-47dd-8a90-d5e0038fe120.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "0842409298707403c4054b8f56c9df68f71475bee8f42c6020280c637c8cbe32"
+    },
+    {
+      "file": "docs/assets/prep-hi-oyster.webp",
+      "generated_source": "exec-3ef60299-b2fe-4329-9833-a1e0349637b6.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "abcece4f77cc20ee0de7d5040d1ba3ea6e7cfbbc8939060978fbd7bedf4ed904"
+    },
+    {
+      "file": "docs/assets/prep-hi-scallops.webp",
+      "generated_source": "exec-8f039df6-91d4-45bf-8d25-a2748fccc7cc.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "d9da6268b1804e2884cc066b15ad5f4033c7662df846f863d2f663fcf04d1981"
+    },
+    {
+      "file": "docs/assets/prep-hi-tuna.webp",
+      "generated_source": "exec-92c6f269-47ad-4f89-b62f-eb59a48e7e8d.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "821227300386e7bfe3f27c46f960fe9b9a12f3d93ad83aa91ffa8e3730644b4d"
+    },
+    {
+      "file": "docs/assets/prep-hi-shrimp.webp",
+      "generated_source": "exec-d4904903-35af-4ff5-9379-1be7863ddd97.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "c7d8aacdbecdd853a92742e50a9f0f77931a35fd80c89f61681bdbe8f9e95abe"
+    },
+    {
+      "file": "docs/assets/measure-flour.webp",
+      "generated_source": "exec-ac4c26e3-c7c6-4c57-ad7d-856ffb56eab9.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "30886fcd34ae597d73961ba23ec47a268a0a8eb15003795961a8080920d5d819"
+    },
+    {
+      "file": "docs/assets/measure-sugar.webp",
+      "generated_source": "exec-8bf062e8-ac40-4e43-b938-9a5c17fa5aba.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "0799eb0b7068d6681481626ebd2ea9e5d40ab0db4451e16308b609e74f04336c"
+    },
+    {
+      "file": "docs/assets/measure-milk.webp",
+      "generated_source": "exec-40a2b249-f54e-4196-b5c6-4d11d3a9c297.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "017f2fb30723ea2e4d1e1fe384e208629016386d048d91785dca3fddd34c3691"
+    },
+    {
+      "file": "docs/assets/core-drain.webp",
+      "generated_source": "exec-0c943108-7bd0-44bc-b7e5-b9937fb3b437.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ed772353d7e001f2e451cfb27eefba59f54f7212f0f9e3a9d0a4bae5dca32ebe"
+    },
+    {
+      "file": "docs/assets/measure-soy.webp",
+      "generated_source": "exec-c8a311ee-50f3-4feb-96dc-19e9a9c4676b.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "0f7dad7cbce5a40961211c93166668fb4819242f7d0df87624cdefd3a8b31a9e"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-hiyayakko.webp",
+      "generated_source": "exec-c1f55811-bd45-4701-93f8-fa9a95893411.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "14fd9f6f324090c1892e3959078a1c2be10387618d61351886b5616894074a33"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-misoshiru.webp",
+      "generated_source": "exec-7dba5a79-0eba-479d-a246-b4bde00b8c1a.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "dbdc086e7f9e6e11bf970316ba89f9778d390ed6c4b6f25e422de31200b29258"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-salmonbowl.webp",
+      "generated_source": "exec-2a1f965d-0710-412c-b3b2-62b3b0f1c464.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "6df6e3373c34a3558605dc33f09b764e880fc09dd2148c1524754f3f2c63e600"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-butadon.webp",
+      "generated_source": "exec-de3e5f5a-b12d-4365-a589-45440406a000.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "cd33d3cf403726a3f43de90c6d48e39deaf57c08c85bcca7268f7cb23a2b9f4d"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-cabbage_stir.webp",
+      "generated_source": "exec-f21c805f-430e-461a-8ea2-730fbc5aa8ec.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "191cfe21d16768a4d5ffcd9d6f045f9eb23f30d7660d91aec8bcef9916c2697f"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-potato_soup.webp",
+      "generated_source": "exec-b39d8f1b-3dd9-467c-b725-78637925d25a.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "122eb7801be47280c79077083e0c5d50cca8466ffc3aa9d9e8788f93a0472694"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-salmon_teriyaki.webp",
+      "generated_source": "exec-26c35b76-25e4-449b-be51-fc0f0a3c45de.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "9f901b3f50c43df19ddaadda3df6bf070c2a434719ce1990d849164c0981dc55"
+    },
+    {
+      "file": "docs/assets/plating-1.webp",
+      "generated_source": "exec-1deb4eeb-9002-4cad-807d-2bbc7bae90ce.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "3ffb707a2ddb5703900799aca7d5d32b78f9d9b4c6cbf3ab4ab43ab63b3c8c65"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-midnight.webp",
+      "generated_source": "exec-e41c43d8-f895-4cb0-9da3-d5e9ba07085c.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "6fa0f935743ddee4c3088283743c0641f1a8d7781a925ca370c3b979b0af4b21"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-soba.webp",
+      "generated_source": "exec-ad59bacd-b6f2-4d48-a078-096b0f928c71.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ff44486592b6a2ebbd7239e958aa1071570da83d6da1c99267547abf47856958"
+    },
+    {
+      "file": "docs/assets/plating-2.webp",
+      "generated_source": "exec-234f21ce-0639-4e1f-8998-0debbfd514fb.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "786fe6a0364904e4e65b12a3a93c95ff320b9afb44b5ac4cfdebb8f9f2da34ac"
+    },
+    {
+      "file": "docs/assets/plating-3.webp",
+      "generated_source": "exec-05cf5b89-26ad-4c03-aad1-311fd02c1f72.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "97194179c4b0ec938f3fbc735ad5299f77ff80eb7222c1c029a2f1b4655ca0b3"
+    },
+    {
+      "file": "docs/assets/portrait-v28-plate-udon.webp",
+      "generated_source": "exec-4688b692-442d-48b3-898a-b1ed7e72a93a.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "d3f81086bc3505ee0e80ff924f20c635f42937abe98a94ae736011f56e19f280"
+    },
+    {
+      "file": "docs/assets/plating-4.webp",
+      "generated_source": "exec-52d3aa15-db5e-4a52-b2f2-76a33c855815.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "402ca3044fa69f49e9198071b4aa7cb3f9c3d57ed6277a18d2cfeb1111f7992b"
+    },
+    {
+      "file": "docs/assets/plating-5.webp",
+      "generated_source": "exec-1b1a2ef7-ea31-4029-9517-bb64dc038283.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "c9397e2ae80156e3ef0665f35c3b1384308da829865a56394b8cbcec3596dd04"
+    },
+    {
+      "file": "docs/assets/plating-6.webp",
+      "generated_source": "exec-1cca5a26-13d5-41ca-9f28-2078b86dca2d.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "d12504e964ee1bdc1c06d5f68ab19a22fe873dab2eb30761438f89737166d11e"
+    },
+    {
+      "file": "docs/assets/plating-9.webp",
+      "generated_source": "exec-4340d190-f798-42cb-ad35-723b17a8b95d.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "f8451a296d27c586176fda6deb125f48b894f44c79e032be856f984f93f2f447"
+    },
+    {
+      "file": "docs/assets/plating-10.webp",
+      "generated_source": "exec-fd329f8b-6bb2-4fe0-ba77-d15eecc91940.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "f4b5c8150a617807114cee60610b5deaabc0f3daea9da0b5acc440852a999e64"
+    },
+    {
+      "file": "docs/assets/plating-7.webp",
+      "generated_source": "exec-0f1bf5fb-0f0f-479b-adde-c12b866f12a3.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "fe44f3a138a4999f6b228128780d8072ef37c145d95d26677ac2198489e287a4"
+    },
+    {
+      "file": "docs/assets/plating-11.webp",
+      "generated_source": "exec-591c56ba-9481-40a5-8446-0965a8b9e32b.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "f01e6304cf035c4a91f1bf79cb1816d8d4a1c087d60f7001b91672f6b10fcb33"
+    },
+    {
+      "file": "docs/assets/plating-12.webp",
+      "generated_source": "exec-f3e2b230-f010-45a8-956d-d7651023c147.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "61ec0090bb8bbc84ff91010dcbe7dc03c44c71cdedb125f3071ccaa35b4112e9"
+    },
+    {
+      "file": "docs/assets/plating-8.webp",
+      "generated_source": "exec-6d5160c9-e743-4564-ab11-a4c9eb6de6b3.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "b37d1a637b5d2460b37b31b1bdb24e0dc44ffc17407fec42d03d482dfe5be1b3"
+    },
+    {
+      "file": "docs/assets/plating-13.webp",
+      "generated_source": "exec-5937e071-f3e8-4fde-95ce-7bbc9fdd533a.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "710b0efc4f47f207479d08be390f2b5fd1d5ae9e1c14f880a01f6230330f41fb"
+    },
+    {
+      "file": "docs/assets/plating-16.webp",
+      "generated_source": "exec-538f061a-84f3-402d-8173-7623077ea7d3.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "fcc36c86b3b70ee5369e4f07e091843a50b36179aeb47ae4fd300a1bf0ffff48"
+    },
+    {
+      "file": "docs/assets/plating-14.webp",
+      "generated_source": "exec-9c765bec-e216-4e61-967e-a031b7f3393e.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "175f7b25f40a30391749c61e0da438c827fafd9f9c6a7679345a5518283cfff5"
+    },
+    {
+      "file": "docs/assets/plating-17.webp",
+      "generated_source": "exec-31da3891-6baf-442a-b07c-f5c04e985eca.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "1952cb9dc996c191942e29355b2391a683425ae99d012f1814ed63da936a4312"
+    },
+    {
+      "file": "docs/assets/plating-19.webp",
+      "generated_source": "exec-76428591-d617-4f42-81f5-62eeb08e9904.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "4fb99af32f28606e9a05bc4d73f3241716f8720ec62ca2ac4441cd9de73f7e1b"
+    },
+    {
+      "file": "docs/assets/plating-15.webp",
+      "generated_source": "exec-488bad52-e36b-447c-b89e-3c775e1609fa.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "fa7022b8c5824bf24da1b3e88231907a76ca1d824b3ea7c35e19b21f81704ed5"
+    },
+    {
+      "file": "docs/assets/plating-18.webp",
+      "generated_source": "exec-24559f22-9b37-4d93-8f1a-9efcae824d92.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "d43275c22d5fc990ac3ed729bc2b4d22bc9a000f7c42d9053eb57e436e52645a"
+    },
+    {
+      "file": "docs/assets/plating-20.webp",
+      "generated_source": "exec-6dcf8782-9205-4abc-9ecb-ee1ea04c47d1.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "9c463a5154add03befe049e15ba2629e3b0b9d0f08bb72dca0a84010be7c2493"
+    },
+    {
+      "file": "docs/assets/plating-21.webp",
+      "generated_source": "exec-a9848082-0929-4d3d-8364-dd14fbb559c2.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "3f0312a30b18aaa4f8d0cde263f4cf754ccfd106795446c0f29f351b7e4d6869"
+    },
+    {
+      "file": "docs/assets/plating-22.webp",
+      "generated_source": "exec-b4620a75-4be4-4a8f-8233-6ae0b90b8ee1.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "ec81f5812d2577afb8a7fedb1e61afd4b90c68b165c63bea8978dde1cbb22a17"
+    },
+    {
+      "file": "docs/assets/plating-23.webp",
+      "generated_source": "exec-d1aa9a02-6f00-4a14-898c-693d0a740837.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "21b047233b6e08d3dc82505d7c312060d7e09e7cad7bd2857da8eb10e3060f37"
+    },
+    {
+      "file": "docs/assets/plating-24.webp",
+      "generated_source": "exec-e7c7bfc2-7846-4347-936f-8c8a1e255d23.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "e67c4a03d2aeb80001e2ad89daa932fc4e22a16ed1bff300bd2af67e7ae728c5"
+    },
+    {
+      "file": "docs/assets/plating-25.webp",
+      "generated_source": "exec-7c36d114-b612-4a80-937e-47655f9ca803.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "tile_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sha256": "67b050abeb899f0805260b1665ba44b2521754842f40c130b026906f05c171d9"
+    }
+  ]
+}
