@@ -76,7 +76,7 @@
     return {file:st.id==='prep'?R.prepImage(order().recipe,st.part):(st.id==='portion'?'core-portion-v19':st.id==='wrap'?'core-wrap-v20':`core-${st.id}`),cols:2,rows:2,col:n%2,row:Math.floor(n/2),className:st.id==='prep'?'prep-frame':'core-frame'};
   }
   function burnAmount(){const spec=E.cookSpec(state(),order().recipe);return Math.max(0,Math.min(1,(local.heat-spec.ideal-spec.band/2)/(1-spec.ideal-spec.band/2)));}
-  function frameStyle(v){const file=R.nightImage(order().recipe,v.file),position=(n,total)=>total>1?n*100/(total-1):0;return `background-image:url('./assets/${file}.webp');background-size:${v.cols*100}% ${v.rows*100}%;background-position:${position(v.col,v.cols)}% ${position(v.row,v.rows)}%`;}
+  function frameStyle(v){const logical=R.nightImage(order().recipe,v.file),file=['foreground-v39-core-pour','foreground-v39-core-portion'].includes(logical)?logical+'-approved-dc743754':logical,position=(n,total)=>total>1?n*100/(total-1):0;return `background-image:url('./assets/${file}.webp');background-size:${v.cols*100}% ${v.rows*100}%;background-position:${position(v.col,v.cols)}% ${position(v.row,v.rows)}%`;}
   function sceneFrame(){
     const st=step(),v=visual(st),pilot=R.imagePilot.includes(order().recipe),heat=st.id==='heat',n=heat?R.heated.indexOf(order().recipe):-1,look=heat?E.heatLook(state(),order().recipe,local.heat):E.kitchenLook(state());
     // Every approved post-heat action uses real state-specific food artwork.

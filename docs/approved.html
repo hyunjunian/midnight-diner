@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <script>history.replaceState(null,'',new URL('./',location.href));</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111d20">
+  <meta name="description" content="골목 끝, 당신의 작은 심야식당. 브라우저에서 바로 즐기는 식당 운영 게임.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="심야식당">
+  <title>심야식당</title>
+  <meta name="app-release" content="20261109-v60-approved-art-delivery">
+  <!-- Hide inactive stages before any external stylesheet or script loads. -->
+  <style>[hidden]{display:none!important}html,body{background:#1f160f}dialog:not([open]){display:none}</style>
+  <link rel="manifest" href="./manifest.webmanifest?release=20261109-v60-approved-art-delivery">
+  <link rel="icon" href="./assets/icon-diner-v31-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./assets/apple-touch-icon-v31.png">
+  <link rel="preload" as="image" href="./assets/visitors-a.webp">
+  <link rel="preload" as="image" href="./assets/visitors-b.webp">
+  <link rel="stylesheet" href="./style.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./kitchen.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./customer.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./motion.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./analog.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./frames.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./tactile-controls.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./physical-icons.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./polish.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./analog-feedback-v25.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./location-nav-v25.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./mobile-layout-v33.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./wood-ui-v35.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./materials-v37.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./ui-fixes-v38.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./ui-fixes-v41.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./ui-fixes-v42.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./glass-rice-v45.css?release=20261109-v60-approved-art-delivery">
+  <link rel="stylesheet" href="./hud-v42.css?release=20261109-v60-approved-art-delivery">
+  <script src="./catalog.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./stories.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./scene-assets-v28.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./cooking-rules.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./furnishings.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./engine.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./morph.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./rain.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./scene.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./atmosphere.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./daylight.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./gestures.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./audio.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./music.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./cooking-layout.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./dialogue-motion.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./kitchen.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./calendar.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./game.js?release=20261109-v60-approved-art-delivery" defer></script>
+  <script src="./pwa.js?release=20261109-v60-approved-art-delivery" defer></script>
+</head>
+<body>
+  <main id="app" class="game-app" hidden aria-label="심야식당 게임">
+    <section class="restaurant" aria-label="식당과 손님">
+      <div id="scene" class="scene">
+        <div class="scene-backfill" aria-hidden="true"><div class="ceiling-extension"></div><div class="floor-extension"></div></div>
+        <div id="scene-world" class="world">
+          <img class="interior-art" src="./assets/room-bare-v19.webp" alt="플레이어가 바 안쪽에서 손님을 마주 보는 심야식당">
+          <img class="interior-closed" src="./assets/room-closed-v19.webp" alt="불을 켜기 전의 조용한 식당" aria-hidden="true"><div class="exterior-art"></div><canvas id="scene-rain" aria-hidden="true"></canvas><div id="decorations"></div><img class="counter-front" src="./assets/room-bare-v19.webp" alt="" aria-hidden="true">
+          <div class="steam steam-one"></div><div class="steam steam-two"></div>
+          <div id="customers" class="customers"></div>
+        </div>
+      </div>
+      <div class="scene-controls"><nav id="location-nav" class="location-nav" aria-label="가게 안팎 이동"><button type="button" data-location="counter" aria-pressed="true">카운터</button><button type="button" data-location="kitchen" aria-pressed="false">부엌<small class="nav-cooking-note" hidden>조리 중</small></button><button type="button" id="area-toggle" data-location="outside" aria-pressed="false">가게 밖</button></nav><span id="pan-hint"> 좌우로 밀어 가게를 둘러보세요 </span><div class="pan-controls" hidden aria-hidden="true"><button id="pan-left" aria-label="가게 왼쪽 보기"></button><span id="pan-position">카운터</span><button id="pan-right" aria-label="가게 오른쪽 보기"></button></div></div>
+      <div id="placement-banner" class="placement-banner" role="status" hidden></div>
+      <header class="game-hud">
+        <div class="night-hud"><button id="calendar-open" type="button" aria-label="영업 달력 열기" aria-haspopup="dialog" aria-controls="calendar-dialog" aria-expanded="false"><span class="night-date-binding" aria-hidden="true"><i></i><i></i><i></i><i></i></span><b id="day" aria-label="1번째 밤"><span class="night-date-number">1</span><span class="night-date-caption">번째 밤</span></b><span id="open-status" hidden>영업 준비</span></button><span id="clock" role="img" aria-label="게임 시간 23시 50분" title="23:50"><svg viewBox="0 0 100 100" aria-hidden="true"><g class="clock-minute-ticks"><path d="M50 5 V7" transform="rotate(6 50 50)"/><path d="M50 5 V7" transform="rotate(12 50 50)"/><path d="M50 5 V7" transform="rotate(18 50 50)"/><path d="M50 5 V7" transform="rotate(24 50 50)"/><path d="M50 5 V7" transform="rotate(36 50 50)"/><path d="M50 5 V7" transform="rotate(42 50 50)"/><path d="M50 5 V7" transform="rotate(48 50 50)"/><path d="M50 5 V7" transform="rotate(54 50 50)"/><path d="M50 5 V7" transform="rotate(66 50 50)"/><path d="M50 5 V7" transform="rotate(72 50 50)"/><path d="M50 5 V7" transform="rotate(78 50 50)"/><path d="M50 5 V7" transform="rotate(84 50 50)"/><path d="M50 5 V7" transform="rotate(96 50 50)"/><path d="M50 5 V7" transform="rotate(102 50 50)"/><path d="M50 5 V7" transform="rotate(108 50 50)"/><path d="M50 5 V7" transform="rotate(114 50 50)"/><path d="M50 5 V7" transform="rotate(126 50 50)"/><path d="M50 5 V7" transform="rotate(132 50 50)"/><path d="M50 5 V7" transform="rotate(138 50 50)"/><path d="M50 5 V7" transform="rotate(144 50 50)"/><path d="M50 5 V7" transform="rotate(156 50 50)"/><path d="M50 5 V7" transform="rotate(162 50 50)"/><path d="M50 5 V7" transform="rotate(168 50 50)"/><path d="M50 5 V7" transform="rotate(174 50 50)"/><path d="M50 5 V7" transform="rotate(186 50 50)"/><path d="M50 5 V7" transform="rotate(192 50 50)"/><path d="M50 5 V7" transform="rotate(198 50 50)"/><path d="M50 5 V7" transform="rotate(204 50 50)"/><path d="M50 5 V7" transform="rotate(216 50 50)"/><path d="M50 5 V7" transform="rotate(222 50 50)"/><path d="M50 5 V7" transform="rotate(228 50 50)"/><path d="M50 5 V7" transform="rotate(234 50 50)"/><path d="M50 5 V7" transform="rotate(246 50 50)"/><path d="M50 5 V7" transform="rotate(252 50 50)"/><path d="M50 5 V7" transform="rotate(258 50 50)"/><path d="M50 5 V7" transform="rotate(264 50 50)"/><path d="M50 5 V7" transform="rotate(276 50 50)"/><path d="M50 5 V7" transform="rotate(282 50 50)"/><path d="M50 5 V7" transform="rotate(288 50 50)"/><path d="M50 5 V7" transform="rotate(294 50 50)"/><path d="M50 5 V7" transform="rotate(306 50 50)"/><path d="M50 5 V7" transform="rotate(312 50 50)"/><path d="M50 5 V7" transform="rotate(318 50 50)"/><path d="M50 5 V7" transform="rotate(324 50 50)"/><path d="M50 5 V7" transform="rotate(336 50 50)"/><path d="M50 5 V7" transform="rotate(342 50 50)"/><path d="M50 5 V7" transform="rotate(348 50 50)"/><path d="M50 5 V7" transform="rotate(354 50 50)"/></g><g class="clock-ticks"><path d="M50 4 V12" transform="rotate(0 50 50)"/><path d="M50 4 V10" transform="rotate(30 50 50)"/><path d="M50 4 V10" transform="rotate(60 50 50)"/><path d="M50 4 V12" transform="rotate(90 50 50)"/><path d="M50 4 V10" transform="rotate(120 50 50)"/><path d="M50 4 V10" transform="rotate(150 50 50)"/><path d="M50 4 V12" transform="rotate(180 50 50)"/><path d="M50 4 V10" transform="rotate(210 50 50)"/><path d="M50 4 V10" transform="rotate(240 50 50)"/><path d="M50 4 V12" transform="rotate(270 50 50)"/><path d="M50 4 V10" transform="rotate(300 50 50)"/><path d="M50 4 V10" transform="rotate(330 50 50)"/></g><g class="clock-numbers"><text x="50" y="26">12</text><text x="79" y="55">3</text><text x="50" y="84">6</text><text x="21" y="55">9</text></g><path id="clock-hour" class="clock-hand" d="M50 56 V27" transform="rotate(355 50 50)"/><path id="clock-minute" class="clock-hand clock-minute" d="M50 58 V13" transform="rotate(300 50 50)"/><circle cx="50" cy="50" r="4" fill="#11110f"/></svg></span></div>
+        <div class="wallet-hud"><button id="funds-open" type="button" aria-haspopup="dialog" aria-controls="hud-detail-dialog" aria-expanded="false"><span>자금</span><strong id="money">¥3,200</strong></button><button id="reputation-open" type="button" aria-haspopup="dialog" aria-controls="hud-detail-dialog" aria-expanded="false"><span>평판</span><strong id="reputation">12</strong></button></div>
+        <button id="settings-open" class="round-button" aria-label="설정 열기">⚙</button>
+      </header>
+      <div id="progress-hud" class="progress-hud"></div><button id="resume-kitchen" class="resume-kitchen" hidden>진행 중인 요리로 돌아가기 </button>
+      <section id="stock-prep" class="stock-prep" aria-label="영업 전 재료 준비" hidden></section>
+      <div class="service-bar"><p id="service-hint"></p><output id="service-progress" class="service-progress" aria-label="오늘의 영업 진행" hidden></output><button id="night-action" class="primary">식당 불 켜기 <span></span></button></div>
+      <nav class="game-dock" aria-label="식당 도구">
+        <button data-tab="pantry" aria-controls="management-dialog" aria-expanded="false" aria-haspopup="dialog" aria-label="냉장고 열기"><span>▤</span><b>냉장고</b></button>
+        <button data-tab="menu" aria-controls="management-dialog" aria-expanded="false" aria-haspopup="dialog" aria-label="메뉴 관리 열기"><span>▧</span><b>메뉴 관리</b></button>
+        <button data-tab="shop" aria-controls="management-dialog" aria-expanded="false" aria-haspopup="dialog" aria-label="가게 꾸미기 열기"><span aria-hidden="true"></span><b>가게 꾸미기</b></button>
+        <button id="story-open" aria-controls="story-dialog" aria-expanded="false" aria-haspopup="dialog" aria-label="손님 이야기 열기"><span>☷</span><b>이야기</b><i id="story-badge" hidden></i></button>
+      </nav>
+    </section>
+    <section id="kitchen-screen" class="kitchen-screen" hidden aria-label="조리 부엌"><header class="kitchen-header"><button id="kitchen-back" hidden aria-label="손님이 있는 카운터로 돌아가기"><span class="back-label">카운터로</span></button><div><span id="kitchen-guest"></span><h2 id="kitchen-order"></h2></div><span id="kitchen-step-count"></span></header><div id="kitchen-content"></div><footer id="kitchen-footer"></footer></section>
+  </main>
+
+  <dialog id="guest-dialog" class="guest-dialog" aria-labelledby="talk-name">
+    <div class="talk-card">
+      <div id="talk-player-line" class="talk-player-line" hidden><strong class="talk-owner-label">주인장</strong><p id="talk-player-words"></p></div>
+      <div class="talk-guest-message"><div id="talk-portrait" class="talk-portrait" aria-hidden="true"></div><div class="talk-guest-copy"><div class="talk-name-row"><h2 id="talk-name"></h2><span id="talk-affinity" class="talk-affinity" role="img"></span></div><p id="talk-profile"></p><div class="talk-speech" tabindex="0" role="button" aria-label="대사 전체 보기" aria-describedby="talk-line"><p id="talk-line" aria-live="polite"></p></div></div></div>
+      <div id="talk-order" class="talk-order" hidden></div>
+      <div id="talk-choices" class="talk-choices" role="group" aria-label="대화 선택지"></div>
+      <button id="talk-gift" hidden></button><button id="talk-next" class="primary" hidden>주문 받고 부엌으로 </button>
+    </div>
+  </dialog>
+  <dialog id="calendar-dialog" class="sheet calendar-sheet" aria-labelledby="calendar-title"><header class="sheet-header"><h2 id="calendar-title">가게의 달력</h2><button type="button" data-close="calendar-dialog" class="round-button" aria-label="달력 닫기">×</button></header><div id="calendar-content" class="sheet-body"></div></dialog>
+  <dialog id="hud-detail-dialog" class="sheet hud-detail" aria-labelledby="hud-detail-title"><header class="sheet-header"><h2 id="hud-detail-title">자금 상세</h2><button type="button" data-close="hud-detail-dialog" class="round-button" aria-label="상세 정보 닫기">×</button></header><div id="hud-detail-content" class="sheet-body"></div></dialog>
+  <dialog id="report-dialog" class="sheet report" aria-labelledby="report-title"><header class="sheet-header"><div><span class="eyebrow">NIGHTLY REPORT</span><h2 id="report-title">오늘의 영업보고</h2></div><button data-close="report-dialog" class="round-button" aria-label="영업보고 닫기">×</button></header><div id="report-content" class="sheet-body"></div></dialog>
+  <dialog id="management-dialog" class="sheet management" aria-labelledby="management-title">
+    <header class="sheet-header"><div><span class="eyebrow">MY LITTLE DINER</span><h2 id="management-title">냉장고</h2></div><button data-close="management-dialog" class="round-button" aria-label="가게 관리 닫기">×</button></header>
+    <div id="management-content" class="sheet-body"></div>
+  </dialog>
+  <dialog id="story-dialog" class="sheet story" aria-labelledby="story-title">
+    <header class="sheet-header"><div><span id="story-tag" class="eyebrow">골목의 작은 일들</span><h2 id="story-title">카운터 너머의 이야기</h2></div><button data-close="story-dialog" class="round-button" aria-label="이야기 닫기">×</button></header>
+    <div id="story-content" class="sheet-body"></div>
+  </dialog>
+  <dialog id="settings-dialog" class="sheet settings" aria-labelledby="settings-title">
+    <header class="sheet-header"><h2 id="settings-title">잠시 쉬어 가기</h2><button data-close="settings-dialog" class="round-button" aria-label="설정 닫기">×</button></header>
+    <div class="sheet-body settings-list">
+      <button id="replay">인트로 다시 보기 <span>▶</span></button>
+      <button id="sound-effects" aria-pressed="true">게임 소리 · 켜짐</button>
+      <section class="music-settings" aria-label="배경음악 설정"><div><span>배경음악</span><button id="music-toggle" type="button" aria-pressed="true">켜짐</button></div><label for="music-volume">음량 <output id="music-volume-value">25%</output></label><input id="music-volume" type="range" min="0" max="100" value="25" aria-label="배경음악 음량"><small class="music-credit">음악: <a href="https://peritune.com/blog/2016/06/12/minamo/" target="_blank" rel="noopener">Minamo · PeriTune</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><br>음량 조정·MP3 재인코딩</small></section>
+      <button id="install-app">홈 화면에 설치하기 <span></span></button>
+      <p id="install-hint">설치는 선택 사항이에요. 홈 화면에서도 식당을 열 수 있어요.</p>
+      <div id="install-guide" hidden></div><p id="install-status" role="status"></p>
+      <button id="fullscreen">전체 화면 <span>⛶</span></button>
+      <button id="reset">처음부터 시작 <span></span></button>
+      <button id="update-app" hidden>새 버전으로 다시 열기 <span></span></button>
+      <p id="save-status"></p><p id="offline-status" role="status">오프라인 실행 준비 중…</p>
+    </div>
+  </dialog>
+  <dialog id="reset-dialog" class="sheet confirm-dialog" aria-labelledby="reset-title">
+    <div class="sheet-body"><h2 id="reset-title">첫날부터 다시 시작할까요?</h2><p>저장된 자금, 재료, 평판과 진행 상황이 초기화됩니다.</p><form method="dialog"><button value="cancel">돌아가기</button><button value="reset" class="primary">새로 시작</button></form></div>
+  </dialog>
+
+  <dialog id="intro" class="cinema" aria-label="심야식당 인트로 영상">
+    <video id="opening-video" src="./assets/opening-visible-rain.mp4" poster="./assets/opening-portrait-poster.jpg" playsinline preload="auto" disablepictureinpicture aria-label="34초 세로형 시네마틱 인트로. 새로 제작한 실사풍 여성 주인장 장면, 한국어 자막, 일본어 여성 합성 내레이션과 직접 만든 음악·환경음이 포함되어 있습니다."></video>
+    <div class="cinema-actions"><button id="sound-intro" aria-label="인트로 소리 켜기">소리 켜기 ♫</button><button id="skip-intro">건너뛰기 </button></div>
+    <button id="play-intro" class="cinema-play" hidden>터치해서 시작 <span>▶</span></button>
+    <button id="pause-intro" class="cinema-pause" aria-label="인트로 일시정지">Ⅱ</button>
+    <p id="video-status" role="status"></p>
+    <div class="cinema-progress" aria-hidden="true"><span id="intro-progress"></span></div>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

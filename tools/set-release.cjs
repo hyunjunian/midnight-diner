@@ -6,6 +6,7 @@ const files=['docs/sw.js','docs/index.html','docs/preview.html'],[sw,index,previ
 const previous=sw.match(/const RELEASE = '([^']+)'/)[1];
 const next=[sw.replace(`const RELEASE = '${previous}'`,`const RELEASE = '${release}'`),index.replaceAll(previous,release),preview.replace(/const release = '[^']+'/g,`const release = '${release}'`)];
 files.forEach((f,i)=>fs.writeFileSync(f,next[i]));
+if(fs.existsSync('docs/approved.html'))fs.writeFileSync('docs/approved.html',fs.readFileSync('docs/approved.html','utf8').replaceAll(previous,release));
 fs.writeFileSync('docs/version.json',JSON.stringify({release})+'\n');
 const paths=[...next[0].match(/const FILES = \[([\s\S]*?)\]\.map/)[1].matchAll(/'([^']+)'/g)].map(x=>x[1]);
 const hashes=Object.fromEntries(paths.map(file=>[file,crypto.createHash('sha256').update(fs.readFileSync(path.join('docs',file))).digest('hex')]));
