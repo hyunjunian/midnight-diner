@@ -67,13 +67,24 @@
  function queueNavigationPlacement(){if(!navigationFrame)navigationFrame=requestAnimationFrame(()=>{navigationFrame=0;placeNavigation();});}
  function placeNavigation(){
   const host=document.querySelector('.scene-controls');if(!host)return;
-  if(innerWidth>innerHeight&&innerHeight<=550){host.style.removeProperty('--location-nav-top');$('progress-hud').style.removeProperty('top');return;}
   const safe=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
-  const hudBottom=Math.max(...[...document.querySelectorAll('.night-hud,.wallet-hud')].map(el=>el.getClientRects().length?el.getBoundingClientRect().bottom:0));
-  $('progress-hud').style.top=`${Math.ceil(Math.max(safe+83,hudBottom+8))}px`;
-  const growth=$('progress-hud').getBoundingClientRect(),settings=$('settings-open');settings.style.top=`${Math.round(growth.top+(growth.height-44)/2)}px`;
-  let bottom=0;for(const el of document.querySelectorAll('#progress-hud,.night-hud,.wallet-hud,#settings-open'))if(el.getClientRects().length)bottom=Math.max(bottom,el.getBoundingClientRect().bottom);
-  host.style.setProperty('--location-nav-top',`${Math.ceil(Math.max(130+safe,bottom+8))}px`);
+  const night=document.querySelector('.night-hud'),wallet=document.querySelector('.wallet-hud'),settings=$('settings-open'),growth=$('progress-hud');
+  const n=night.getBoundingClientRect(),w=wallet.getBoundingClientRect(),key=settings.getBoundingClientRect(),g=growth.getBoundingClientRect(),hud=document.querySelector('.game-hud').getBoundingClientRect();
+  const left=n.right+8,right=w.left-8,inline=g.width>0&&right-left>=g.width;
+  const hudBottom=Math.max(n.bottom,w.bottom,key.bottom);
+  if(inline){
+   // Prefer the screen's center, then keep the whole panel inside the actual gap.
+   growth.style.left=`${Math.round(Math.max(left,Math.min((innerWidth-g.width)/2,right-g.width)))}px`;
+   growth.style.top=`${Math.round(hud.top+(hud.height-g.height)/2)}px`;
+  }else{
+   growth.style.removeProperty('left');
+   growth.style.top=`${Math.ceil(Math.max(safe+83,hudBottom+8))}px`;
+  }
+  growth.dataset.hudLayout=inline?'inline':'below';
+  const compactLandscape=innerWidth>innerHeight&&innerHeight<=550;
+  let bottom=hudBottom;
+  if(!compactLandscape||inline)bottom=Math.max(bottom,growth.getBoundingClientRect().bottom);
+  host.style.setProperty('--location-nav-top',`${Math.ceil(Math.max((compactLandscape?68:130)+safe,bottom+8))}px`);
  }
  function navigate(location){
   if(!['counter','kitchen','outside'].includes(location))return false;

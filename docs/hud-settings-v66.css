@@ -1,0 +1,20 @@
+/* Settings is real walnut furniture on the same top rail as the two HUD plaques. */
+.game-hud{--night-hud-width:149px;flex-wrap:nowrap}
+.game-hud>.night-hud{flex:0 0 auto}
+.game-hud>.wallet-hud{flex:0 1 auto;min-width:0;max-width:calc(100% - var(--night-hud-width) - 72px)}
+.wallet-hud>button{min-width:44px;min-height:44px;flex-shrink:1}
+.wallet-hud>button+button{flex-shrink:0}
+.wallet-hud strong{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.game-hud #settings-open{position:static;inset:auto;flex:0 0 44px;box-sizing:border-box;width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:3px;border:4px solid #63412b;border-image:var(--walnut-frame) 10.2% / 1 / 0 stretch;border-radius:0;background-color:#382115;background-image:url('./assets/settings-brass-gear-v66.webp'),var(--wood-face);background-size:30px 30px,auto,240px;background-position:center;background-repeat:no-repeat,repeat,repeat;background-clip:padding-box;color:transparent;font-size:0;box-shadow:0 2px 2px #160b08aa,0 3px 7px #160b0844,inset 0 1px 2px #e0b57933;transform:none;animation:none}
+.game-hud #settings-open::before,.game-hud #settings-open::after{content:none!important}
+.game-hud #settings-open:active{transform:none;filter:brightness(.92)}
+@media(max-width:700px){
+ .game-hud{--night-hud-width:139px}
+ .game-hud>.wallet-hud{max-width:calc(100% - var(--night-hud-width) - 60px)}
+}
+@media(max-width:359px){
+ .game-hud{--night-hud-width:133px;left:calc(var(--safe-left) + 6px);right:calc(var(--safe-right) + 6px);gap:4px}
+ .game-hud>.wallet-hud{padding-left:7px;padding-right:7px;max-width:calc(100% - var(--night-hud-width) - 52px)}
+ .wallet-hud>button+button{margin-left:4px;padding-left:5px}
+ #progress-hud.progress-hud{left:calc(var(--safe-left) + 6px)}
+}

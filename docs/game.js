@@ -111,12 +111,6 @@
     // Keep the live mesh and controls intact through HUD/inventory/timer updates.
     if($('guest-dialog').dataset.person!==String(g.person)){$('talk-portrait').innerHTML=portrait(p,g.person);$('guest-dialog').dataset.person=g.person;}
     $('talk-name').textContent=profile.name;
-    const affinity=Math.max(0,Math.min(20,state.customerBook[g.person]?.affinity||0));
-    $('talk-affinity').setAttribute('aria-label',`${profile.name} 님과의 친밀도 ${affinity} / 20`);
-    $('talk-affinity').title=`친밀도 ${affinity} / 20`;
-    const hearts=Array.from({length:5},(_,i)=>`<span class="affinity-heart" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="heart-empty" d="M12 21C9 18 2 13 2 7.5C2 1.5 9 1 12 6C15 1 22 1.5 22 7.5C22 13 15 18 12 21Z"/><path class="heart-full" style="clip-path:inset(0 ${100-Math.max(0,Math.min(1,(affinity-i*4)/4))*100}% 0 0)" d="M12 21C9 18 2 13 2 7.5C2 1.5 9 1 12 6C15 1 22 1.5 22 7.5C22 13 15 18 12 21Z"/></svg></span>`).join('');
-    if($('talk-affinity').dataset.value!==String(affinity)){$('talk-affinity').innerHTML=hearts;$('talk-affinity').dataset.value=affinity;}
-
     $('talk-profile').textContent=profile.role||'';$('talk-profile').hidden=!profile.role;
     window.MidnightDialogue.write($('talk-line'),`${g.id}-${view?.node||talkIndex}`,view?view.line:lines[Math.min(talkIndex,lines.length-1)]);
     $('talk-player-line').hidden=!view?.playerLine;$('talk-player-words').textContent=view?.playerLine||'';
@@ -369,12 +363,7 @@
   for(const kind of ['funds','reputation'])$(kind+'-open').addEventListener('click',()=>{hudDetail=kind;renderHudDetail();openSheet('hud-detail-dialog');});
   $('settings-open').addEventListener('click', () => openSheet('settings-dialog'));
   $('fullscreen').addEventListener('click', async () => {
-    if (document.fullscreenElement) return;
-    try {
-      if (!document.documentElement.requestFullscreen) return toast('현재 기기에서는 설치한 앱 화면으로 실행돼요.');
-      await document.documentElement.requestFullscreen();
-      try { await screen.orientation.lock('portrait'); } catch {}
-    } catch { toast('전체 화면을 사용할 수 없는 기기입니다.'); }
+    if(!await window.MidnightDisplay.enterFullscreen())toast('이 기기에서는 전체 화면을 지원하지 않을 수 있어요. 홈 화면에 설치해 실행해 주세요.');
   });
   // A new portrait cinematic with baked-in captions; media duration drives progress.
   const video = $('opening-video');
@@ -416,7 +405,7 @@
     $('intro-progress').style.width = '0%'; $('video-status').textContent = '';
     $('play-intro').textContent = '터치해서 시작 ▶'; $('play-intro').hidden = true;
     $('intro').showModal();
-    try { screen.orientation?.lock?.('portrait')?.catch(() => {}); } catch {}
+    window.MidnightDisplay.refresh();
     playVideo(true);
   }
   video.addEventListener('ended', finishIntro);
