@@ -6,6 +6,12 @@
 - Keep the prototype small until game design is agreed. Temporary guests and dialogue are original placeholders.
 - Never commit credentials, local saves, or .DS_Store.
 
+# Approved store renovations (v69)
+
+- The user approved the 50-level inside/outside design at `8d264d3` and requested applying it. This supersedes the earlier Lv34 cap and individual-item buying/placement workflow: player progression ends at Lv50, with one internal and one external improvement at every level. Keep the existing 100-recipe unlock schedule through Lv34 and every cooking/kitchen image, gesture, button and layout unchanged.
+- Use the byte-identical approved images in `docs/renovation-preview/assets/inside-01..50.webp` and `outside-01..50.webp`. Render one complete scene source per area, without old individual furniture overlays. `renovation.js` and the approved preview model own requirements, prices, two stat rewards and save migration. Never redraw these approved store designs during unrelated work.
+- Keep the v11 save key, current funds, inventory, meals and partial cooking. Retain all historical item IDs, quantities, equipped benefits and convert their paid amounts once into matching-area improvement progress plus remaining renovation credit. New item buying/equipping is disabled. Each new renovation requires its previous area stage, player level and cash; preload its image, commit/save once, then reveal it with a short sweep, sparkles and atmosphere/environment gains. Failed image loads or failed saves must not debit funds. Respect master sound mute, reduced motion and offline play.
+
 # Cooking-image approval gate
 
 - The user clarified that photo work must start with **exactly FIVE dishes**, not five levels: `onigiri` (구운 주먹밥), `tamago` (다시 달걀말이), `tonjiru` (돼지고기 된장국), `ochazuke` (연어 오차즈케), and `negi_omelette` (파 달걀부침). Generate/revise/composite only these five first, show their results, then obtain explicit approval before expanding to any other dish. Recipe-specific masks/composition count as photo work. Requests to review all UI screens do not expand this gate.

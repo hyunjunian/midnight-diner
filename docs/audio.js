@@ -1,4 +1,4 @@
-/* Material foley: stochastic filtered excitation, no musical UI oscillator tones.
+/* Material foley with an approved store-renovation sweep and completion chime.
    Pure render/flowKind exports also support deterministic offline audio checks. */
 (function(root){'use strict';
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -16,7 +16,8 @@
    const n=rng()*2-1,t=i/rate;low+=.009*(n-low);body+=.12*(n-body);smooth+=.4*(n-smooth);slow+=.0005*(n-slow);
    if(--driftCountdown<=0){driftTarget=.6+rng()*.8;driftCountdown=rate*(.04+rng()*.18)}drift+=(driftTarget-drift)*.001;
    const hi=n-smooth;let v=0;
-   if(is('rain'))v=(smooth*.32+body*.17+hi*.075)*drift;
+   if(is('renovation-sweep')){const u=Math.min(1,t/1.2);v=(body*(1-u)+hi*u*.18)*Math.sin(Math.PI*u)**.7;}
+   else if(is('rain'))v=(smooth*.32+body*.17+hi*.075)*drift;
    else if(is('room'))v=(low*.38+body*.014)*(.8+Math.abs(slow)*4);
    else if(is('traffic'))v=(low*.7+body*.045)*Math.sin(Math.PI*t/seconds)**2;
    else if(is('sizzle','flip'))v=(hi*.035+body*.05)*drift;
@@ -53,6 +54,7 @@
   else if(is('eating')){grains(3,.04,.045,550);burst(.23,.05,.022,1800,.15)}
   else if(is('buy','place','report')){burst(.03,.1,.19,280);burst(.1,.12,.10,650);if(kind==='report')burst(.3,.12,.14,180)}
   if(kind==='complete'){for(const [start,freq,level]of [[0,784,.18],[.13,988,.15],[.27,1174.66,.14],[.44,1568,.1]])for(let j=0;j<rate*.72&&Math.floor(start*rate)+j<out.length;j++){const t=j/rate,env=(1-Math.exp(-t*180))*Math.exp(-t*7);out[Math.floor(start*rate)+j]+=level*env*(Math.sin(2*Math.PI*freq*t)+.17*Math.sin(2*Math.PI*freq*2*t));}}
+  if(kind==='renovation-complete'){for(const [i,freq]of [659.25,830.61,987.77,1318.51].entries()){const start=Math.round(i*.085*rate);for(let j=0;j<rate*.65&&start+j<out.length;j++){const t=j/rate;out[start+j]+=.16*(1-Math.exp(-t*180))*Math.exp(-t*8)*Math.sin(2*Math.PI*freq*t);}}}
   const fade=Math.min(Math.floor(rate*(looping?.03:.016)),Math.floor(out.length/2));let peak=0;
   for(let i=0;i<out.length;i++){if(i<fade)out[i]*=i/fade;if(i>=out.length-fade)out[i]*=(out.length-i-1)/fade;if(!looping&&!continuous)out[i]*=Math.min(1,(out.length-i)/(rate*.05));peak=Math.max(peak,Math.abs(out[i]))}
   // Conservatively cap peaks before the master bus; never normalize tiny ambience to full scale.
@@ -66,6 +68,7 @@
  }
  function balancedSamples(channels,rate=44100){const gain=volumeGain(channels,rate);return channels.map(a=>Float32Array.from(a,x=>{const v=x*gain,n=Math.abs(v);return n<=.4?v:Math.sign(v)*(.4+.25*Math.tanh((n-.4)/.25));}));}
  function balanceBuffer(b){const channels=Array.from({length:b.numberOfChannels},(_,i)=>b.getChannelData(i));balancedSamples(channels,b.sampleRate).forEach((a,i)=>b.copyToChannel(a,i));return b;}
+ Object.assign(defaults,{'renovation-sweep':1.2,'renovation-complete':1.1});
  const pure={render,flowKind,actionKind,defaults,volumeGain,balancedSamples};if(typeof module!=='undefined'&&module.exports){module.exports=pure;return}
  let ctx,master,analyser,compressor,enabled=true,activated=false;const loops=new Map(),plays={},active=new Set(),cache=new Map();try{enabled=localStorage.getItem('midnight-diner-sfx')!=='off'}catch{}
  const sampleFiles={whisk:'whisk-v24.wav','egg-whisk':'whisk-v24.wav',sizzle:'fry-v24.wav',flip:'fry-v24.wav',cut:'cut-v24.wav','rice-scoop':'rice-utensil-v24.wav',paste:'paste-v23.wav','paste-scoop':'paste-v23.wav',pour:'pour-v22.wav','liquid-pour':'pour-v22.wav',batter:'pour-v22.wav','egg-pour':'pour-v22.wav',oil:'pour-v22.wav','oil-pour':'pour-v22.wav',wash:'wash-v24.wav',boil:'boil-v22.wav'};

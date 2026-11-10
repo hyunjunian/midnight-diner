@@ -21,6 +21,8 @@
     $('scene').style.setProperty('--scene-art-pan',`${pan}px`);placeServiceNote();
     $('pan-position').textContent = area==='inside' ? (pan > 60 ? '부엌 쪽' : pan < -60 ? '찻장 쪽' : '카운터') : '골목 입구';
   }
+  // The renovation overview changes width over 650ms. Keep ceiling/floor joins on its live edges.
+  const roomBoundsObserver=new ResizeObserver(placePan);roomBoundsObserver.observe($('scene-world'));
   function showArea(next) {
     area = next; pan = 0;
     $('scene').classList.toggle('outside',area==='outside');
@@ -45,15 +47,35 @@
   setTimeout(()=>{if(serial!==placementSerial)return;pending=null;render(current,selected,cookingNow);banner.innerHTML=`<b>${u.name} · 분위기 ${pendingGain>=0?'+':''}${pendingGain}점</b><span>${F.benefitText(id)}</span>`},total);
   setTimeout(()=>{if(serial!==placementSerial)return;document.querySelectorAll('.placement-shining').forEach(el=>el.classList.remove('placement-shining'));$('scene').classList.remove('installation-focus','installation-overview');placePan();banner.hidden=true},until);
  }
- function render(s,guest,cook){current=s;selected=guest;cookingNow=cook;const active=F.activeItems(s),ids=active.filter(id=>E.upgrades[id].area===area),entries=ids.flatMap(id=>Array.from({length:F.count(s,id)},(_,n)=>({id,n,key:id+'--'+n}))),root=$('decorations');
-  for(const el of [...root.children])if(!entries.some(e=>e.key===el.dataset.decorationKey))el.remove();
-  for(const {id,n,key}of entries){const u=E.upgrades[id],r=rectOf(id,n),[x,y,w,h]=r;let el=root.querySelector(`[data-decoration-key="${key}"]`);if(!el){el=document.createElement('div');el.dataset.decorationKey=key;el.dataset.decoration=id;el.className=`placed-decoration decor-${id} slot-${u.slot}${pending===id&&n>=pendingFrom?' placement-pending':''}`;el.innerHTML=decoration(id,n)+'<span class="placement-gain" role="status"></span>';root.append(el)}Object.assign(el.style,{left:x+'%',top:y+'%',width:w+'%',height:h+'%',zIndex:u.slot==='barfront'?'5':area==='outside'?String(Math.round(y+h)):'2'});}
-  const inside=active.filter(id=>E.upgrades[id].area==='inside'),outside=active.filter(id=>E.upgrades[id].area==='outside'),same=list=>list.length&&list.every(id=>E.upgrades[id].theme===E.upgrades[list[0]].theme),lamp=F.activeId(s,'lantern'),fullInside=!pending&&inside.length===9&&same(inside)&&F.count(s,lamp)===3,theme=fullInside?E.upgrades[inside[0]].theme:null,fullOutside=!pending&&outside.length===6&&same(outside),outTheme=fullOutside?E.upgrades[outside[0]].theme:null;
-  const source=theme===null?'room-bare-v19':`room-collection-${theme}`,closed=theme===null?'room-closed-v19':`room-collection-${theme}-closed`;
-  for(const el of document.querySelectorAll('.interior-art,.counter-front'))if(!el.src.endsWith(source+'.webp'))el.src='./assets/'+source+'.webp';if(!$('scene-world').querySelector('.interior-closed').src.endsWith(closed+'.webp'))$('scene-world').querySelector('.interior-closed').src='./assets/'+closed+'.webp';
-  $('scene').style.setProperty('--scene-room-image',`url('./assets/${s.phase==='prep'?closed:source}.webp')`);
-  const ext=$('scene-world').querySelector('.exterior-art');ext.style.backgroundImage=`url('./assets/${outTheme===null?'exterior-bare-v19':outTheme===0?'exterior-furnished-v19':`exterior-collection-${outTheme}`}.webp')`;ext.style.setProperty('--exterior-closed-image',`url('./assets/${outTheme===null?'exterior-closed-v19':outTheme===0?'exterior-furnished-closed-v19':`exterior-collection-${outTheme}-closed`}.webp')`);
-  $('customers').hidden=area==='outside';$('scene-world').classList.toggle('exterior-world',area==='outside');$('scene').classList.toggle('has-lantern',!!lamp&&pending!==lamp);$('scene').style.setProperty('--lamp-ambient',String(1+(lamp?F.count(s,lamp):0)*.018));syncNavigation();placePan();
+ function render(s,guest,cook){current=s;selected=guest;cookingNow=cook;const R=E.R,r=s.renovation||R.initial(),source=R.image('inside',r.inside),out=R.image('outside',r.outside),closed=r.inside?source:'./assets/room-closed-v19.webp',outClosed=r.outside?out:'./assets/exterior-closed-v19.webp';
+  // One approved complete background, never a completed photo plus individual furniture patches.
+  $('decorations').replaceChildren();
+  for(const el of document.querySelectorAll('.interior-art,.counter-front'))if(el.getAttribute('src')!==source)el.src=source;
+  const unlit=$('scene-world').querySelector('.interior-closed');if(unlit.getAttribute('src')!==closed)unlit.src=closed;
+  $('scene').style.setProperty('--scene-room-image',`url('${s.phase==='prep'?closed:source}')`);
+  const ext=$('scene-world').querySelector('.exterior-art');ext.style.backgroundImage=`url('${out}')`;ext.style.setProperty('--exterior-closed-image',`url('${outClosed}')`);
+  $('scene').classList.toggle('renovated-inside',r.inside>0);$('scene').classList.toggle('renovated-outside',r.outside>0);$('scene').dataset.insideLevel=r.inside;$('scene').dataset.outsideLevel=r.outside;
+  $('customers').hidden=area==='outside';$('scene-world').classList.toggle('exterior-world',area==='outside');$('scene').classList.remove('has-lantern');$('scene').style.setProperty('--lamp-ambient','1');syncNavigation();placePan();
+ }
+ const renovationImages=new Map();
+ function preloadRenovation(nextArea,level){const url=E.R.image(nextArea,level);if(!renovationImages.has(url))renovationImages.set(url,new Promise((resolve,reject)=>{const image=new Image(),timer=setTimeout(()=>{renovationImages.delete(url);reject(Error('이미지를 불러오지 못했습니다. 자금는 차감되지 않았어요.'));},15000);image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);renovationImages.delete(url);reject(Error('이미지를 불러오지 못했습니다. 자금는 차감되지 않았어요.'))};image.src=url;}));return renovationImages.get(url);}
+ function setRenovationLoading(on){placingUntil=on?performance.now()+17000:0;}
+ async function showRenovation(nextArea,previous,result){
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,world=$('scene-world'),scene=$('scene'),banner=$('placement-banner'),u=result.upgrade,serial=++placementSerial;
+  pending=null;scene.classList.add('installation-focus','installation-overview','renovation-running');showArea(nextArea);pan=0;placePan();placingUntil=performance.now()+5000;
+  banner.innerHTML=`<b>${nextArea==='inside'?'내부':'외부'} 개선 · ${u.zone}</b><span>${u.name} · 사용 자금 ¥${result.cash.toLocaleString()}${result.credit?' + 이전 구매 반영':''}</span>`;banner.hidden=false;
+  const before=document.createElement('img');before.className='renovation-before';before.alt='';before.src=previous;world.append(before);
+  const sweep=document.createElement('div');sweep.className='renovation-sweep';world.append(sweep);window.MidnightAudio?.play('renovation-sweep');
+  try{
+   await before.decode().catch(()=>{});
+   await before.animate(reduced?[{opacity:1},{opacity:0}]:[{clipPath:'inset(0 0 0 0)'},{clipPath:'inset(0 0 0 100%)'}],{duration:reduced?120:1250,easing:'cubic-bezier(.2,.65,.2,1)',fill:'forwards'}).finished.catch(()=>{});
+   before.remove();sweep.remove();if(serial!==placementSerial)return;
+   const sparkles=document.createElement('div');sparkles.className='renovation-sparkles';world.append(sparkles);
+   if(!reduced)for(let i=0;i<26;i++){const dot=document.createElement('i');dot.style.cssText=`left:${8+Math.random()*84}%;top:${12+Math.random()*72}%;--delay:${Math.random()*.45}s`;sparkles.append(dot);}
+   window.MidnightAudio?.play('renovation-complete');
+   banner.innerHTML=`<b>${nextArea==='inside'?'내부':'외부'} Lv${u.level} 개선 완료</b><span>분위기 +${u.atmosphere} · 환경 +${u.environment}</span>`;banner.classList.add('renovation-complete');
+   await new Promise(resolve=>setTimeout(resolve,reduced?1600:2400));sparkles.remove();
+  }finally{before.remove();sweep.remove();if(serial===placementSerial){banner.hidden=true;banner.classList.remove('renovation-complete');scene.classList.remove('installation-focus','installation-overview','renovation-running');placingUntil=0;placePan();}}
  }
  function placeServiceNote(){const bar=document.querySelector('.service-bar'),dock=document.querySelector('.game-dock');if(!bar||!dock)return;if(!bar.classList.contains('is-serving')||innerWidth>innerHeight){bar.style.removeProperty('top');bar.style.removeProperty('bottom');return;}const world=$('scene-world').getBoundingClientRect(),br=bar.getBoundingClientRect(),dr=dock.getBoundingClientRect();const plaques=[...document.querySelectorAll('.customer .customer-name')].filter(e=>e.offsetParent).map(e=>e.getBoundingClientRect().bottom),clearance=plaques.length?Math.max(...plaques)+14:0,desired=Math.min(world.bottom+14,innerHeight*.715,dr.top-br.height-50);bar.style.top=`${Math.round(Math.max(clearance,desired,0))}px`;bar.style.bottom='auto';}
  const serviceObserver=new ResizeObserver(()=>requestAnimationFrame(placeServiceNote));for(const el of document.querySelectorAll('.service-bar,.game-dock'))serviceObserver.observe(el);
@@ -69,7 +91,9 @@
   const host=document.querySelector('.scene-controls');if(!host)return;
   const safe=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
   const night=document.querySelector('.night-hud'),wallet=document.querySelector('.wallet-hud'),settings=$('settings-open'),growth=$('progress-hud');
-  const n=night.getBoundingClientRect(),w=wallet.getBoundingClientRect(),key=settings.getBoundingClientRect(),g=growth.getBoundingClientRect(),hud=document.querySelector('.game-hud').getBoundingClientRect();
+  const n=night.getBoundingClientRect(),w=wallet.getBoundingClientRect();
+  document.querySelector('.game-hud').style.setProperty('--settings-hud-size',`${Math.max(44,w.height)}px`);
+  const key=settings.getBoundingClientRect(),g=growth.getBoundingClientRect(),hud=document.querySelector('.game-hud').getBoundingClientRect();
   const left=n.right+8,right=w.left-8,inline=g.width>0&&right-left>=g.width;
   const hudBottom=Math.max(n.bottom,w.bottom,key.bottom);
   if(inline){
@@ -95,5 +119,5 @@
  document.addEventListener('midnight:kitchen',syncNavigation);
  const navigationObserver=new ResizeObserver(queueNavigationPlacement);for(const el of document.querySelectorAll('#progress-hud,.game-hud,.night-hud,.wallet-hud,#settings-open'))navigationObserver.observe(el);window.addEventListener('resize',queueNavigationPlacement);
  $('pan-left').addEventListener('click',()=>{pan+=180;placePan()});$('pan-right').addEventListener('click',()=>{pan-=180;placePan()});$('scene').addEventListener('pointerdown',e=>{if(performance.now()<placingUntil||e.target.closest('button'))return;dragging=true;startX=e.clientX;startPan=pan});window.addEventListener('pointermove',e=>{if(!dragging)return;pan=startPan+e.clientX-startX;placePan()});window.addEventListener('pointerup',()=>dragging=false);window.addEventListener('pointercancel',()=>dragging=false);window.addEventListener('resize',placePan);
- window.MidnightScene={navigate,syncNavigation,character,itemArt,decoration,preview:itemArt,slots,render,showArea,showItem,preparePlacement,isPlacing:()=>performance.now()<placingUntil};
+ window.MidnightScene={navigate,syncNavigation,character,itemArt,decoration,preview:itemArt,slots,render,showArea,showItem,preparePlacement,preloadRenovation,setRenovationLoading,showRenovation,isPlacing:()=>performance.now()<placingUntil};
 })();

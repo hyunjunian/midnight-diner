@@ -59,6 +59,7 @@
     return {...base,name:`${familyNames[Math.floor(id/people.length)%familyNames.length]} ${base.name}`,bio:base.bio};
   }
   const F=typeof module!=='undefined'?require('./furnishings.js'):window.MidnightFurnishings,upgrades=F.upgrades;
+  const R=typeof module!=='undefined'?require('./renovation.js'):window.MidnightRenovation;
   const levels=[
     {level:1,xp:0,reputation:0,satisfaction:0,name:'골목의 작은 불빛'},
     {level:2,xp:450,reputation:25,satisfaction:65,name:'다시 찾는 한 끼'},
@@ -71,10 +72,10 @@
     {level:9,xp:20500,reputation:90,satisfaction:86,name:'밤을 잇는 식탁'},
     {level:10,xp:26000,reputation:95,satisfaction:88,name:'손맛이 깊어지는 식당'}
   ];
-  for(let level=11;level<=34;level++)levels.push({level,xp:26000+(level-10)*4200+(level-10)**2*180,reputation:Math.min(100,95+Math.floor((level-10)/2)),satisfaction:Math.min(94,88+Math.floor((level-10)/4)),name:level===34?'백 가지 밤의 주인장':level===20?'골목을 지키는 오래된 부엌':`깊어지는 밤의 부엌 ${level-10}`});
-  const atmosphereTargets=[0,0,4,10,18,24,32,40,48,56];
-  for(const l of levels)l.atmosphere=atmosphereTargets[l.level-1]??Math.min(100,56+(l.level-10)*3);
-  function atmosphere(s){return F.activeItems(s).reduce((n,id)=>n+upgrades[id].atmosphere*F.count(s,id),0);}
+  for(let level=11;level<=50;level++)levels.push({level,xp:26000+(level-10)*4200+(level-10)**2*180,reputation:Math.min(100,95+Math.floor((level-10)/2)),satisfaction:Math.min(94,88+Math.floor((level-10)/4)),name:level===50?'골목에 오래 남을 심야식당':level===34?'백 가지 밤의 주인장':level===20?'골목을 지키는 오래된 부엌':`깊어지는 밤의 부엌 ${level-10}`});
+  for(const l of levels)l.atmosphere=R.atmosphereTarget(l.level);
+  function atmosphere(s){return R.totals(s).atmosphere;}
+  function environment(s){return R.totals(s).environment;}
   const hasUpgrade=(s,slot)=>!!F.activeId(s,slot);
   function heatLook(s,id,value){if(!Cooking.heated.includes(id))return 'good';const spec=cookSpec(s,id);return value<spec.ideal-spec.band/2?'raw':value>Math.min(.94,spec.ideal+spec.band*2)?'burnt':value>spec.ideal+spec.band/2?'dry':'good';}
   function kitchenLook(s){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest);if(!g||!k)return 'good';const hi=Cooking.plan(g.recipe,recipes[g.recipe]).findIndex(st=>st.id==='heat');return hi>=0&&k.step>hi?heatLook(s,g.recipe,k.heatValue??cookSpec(s,g.recipe).ideal+(1-k.marks[hi])*cookSpec(s,g.recipe).tolerance):'good';}
@@ -235,7 +236,7 @@
     version:11,calendarRecords:[],nightNewsRead:0,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,fridgeDoorHintSeen:false,kitchen:null,dialogueSerial:0,menuRotation:[],recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1,atmosphere:0 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
     totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:3,miso:3,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
-    unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [],upgradeQty:{},equipped:{}, special: 'onigiri',
+    unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [],upgradeQty:{},equipped:{},renovation:R.initial(), special: 'onigiri',
     guests: [], arrived: 0, target: 9, nightRevenue: 0, nightTips: 0, nightCosts: 0, nightScores: [],
     event: 'none', eventChoice: null, nightStartRep: 12, lastResult: null,
   });
@@ -287,15 +288,15 @@
       // Continue old three-guest saves instead of silently ending their night.
       if (v.phase === 'end') restored.phase = 'prep';
       restored.nightStart = { money: Math.max(0, v.money - v.nightRevenue), reputation: v.nightStartRep, satisfaction: 70, xp: restored.xp, level: 1 };
-    } else if (!integer(v.xp) || !integer(v.level,1,34) || !integer(v.satisfactionTotal) || v.satisfactionTotal > v.totalServed * 100 ||
-      !v.nightStart || !integer(v.nightStart.money) || !integer(v.nightStart.reputation,0,100) || !integer(v.nightStart.satisfaction,0,100) || !integer(v.nightStart.xp) || !integer(v.nightStart.level,1,34) ||
+    } else if (!integer(v.xp) || !integer(v.level,1,50) || !integer(v.satisfactionTotal) || v.satisfactionTotal > v.totalServed * 100 ||
+      !v.nightStart || !integer(v.nightStart.money) || !integer(v.nightStart.reputation,0,100) || !integer(v.nightStart.satisfaction,0,100) || !integer(v.nightStart.xp) || !integer(v.nightStart.level,1,50) ||
       !v.customerBook || Array.isArray(v.customerBook) || !Object.entries(v.customerBook).every(([id,c]) => /^\d+$/.test(id) && Number(id) <= 1000000 && c && integer(c.visits) && integer(c.lastScore,0,100) && integer(c.lastVisitNight) && integer(c.dueNight)&&(c.affinity===undefined||integer(c.affinity,0,20)))) throw new Error('Invalid progress');
     for (const g of restored.guests) if (!restored.customerBook[g.person]) restored.customerBook[g.person] = {visits:1,lastScore:g.score,lastVisitNight:restored.night,dueNight:restored.night+2};
     if(v.version<4){
       restored.nextVisitor=Math.max(6,...Object.keys(restored.customerBook).map(id=>Number(id)+1));
       restored.nightVisitors=Object.entries(restored.customerBook).filter(([,c])=>c.lastVisitNight===restored.night).map(([id])=>Number(id));
       for(const c of Object.values(restored.customerBook))c.dueLevel=c.lastScore>=90?restored.level+2:0;
-    }else if(!integer(v.nextVisitor,0,1000001)||!Array.isArray(v.nightVisitors)||v.nightVisitors.length>9||new Set(v.nightVisitors).size!==v.nightVisitors.length||!v.nightVisitors.every(id=>integer(id,0,1000000))||!Object.values(v.customerBook).every(c=>integer(c.dueLevel,0,36)))throw new Error('Invalid visitor schedule');
+    }else if(!integer(v.nextVisitor,0,1000001)||!Array.isArray(v.nightVisitors)||v.nightVisitors.length>9||new Set(v.nightVisitors).size!==v.nightVisitors.length||!v.nightVisitors.every(id=>integer(id,0,1000000))||!Object.values(v.customerBook).every(c=>integer(c.dueLevel,0,52)))throw new Error('Invalid visitor schedule');
     restored.nextVisitor=Math.max(restored.nextVisitor,...Object.keys(restored.customerBook).map(id=>Number(id)+1));
     if(v.version<5){
       restored.dialogueSerial=restored.totalServed+restored.arrived;restored.recentOrders=restored.guests.map(g=>g.recipe);restored.nightOrders=Array.from({length:restored.arrived},(_,i)=>restored.guests.find(g=>g.id===i+1)?.recipe||['onigiri','tamago','tonjiru'][i%3]);
@@ -337,6 +338,7 @@
     }
     if(v.prepChoice!==undefined&&![null,3,9].includes(v.prepChoice))throw new Error('Invalid preparation choice');
     restored.prepChoice=v.prepChoice??null;
+    restored.renovation=R.restore(v.renovation,restored);
     restored.nightStart={...restored.nightStart,atmosphere:integer(v.nightStart?.atmosphere)?v.nightStart.atmosphere:atmosphere(restored)};
     if(v.nightReviews!==undefined&&(!Array.isArray(v.nightReviews)||v.nightReviews.length>v.nightScores.length||v.nightReviews.length>9||!v.nightReviews.every(x=>x&&typeof x.guest==='string'&&x.guest.length<=50&&typeof x.dish==='string'&&x.dish.length<=100&&typeof x.text==='string'&&x.text.length<=180&&integer(x.score,0,100)&&(x.person===null||integer(x.person,0,1000000)))))throw new Error('Invalid nightly reviews');
     restored.nightReviews=v.nightReviews??v.nightScores.slice(-4).map((score,i)=>({guest:'오늘의 손님',person:null,dish:'오늘의 한 끼',score,text:reviewText({score,heat:100,waitPenalty:0},i)}));
@@ -418,13 +420,10 @@
     if (!r || s.unlocked.includes(id) || s.money < r.unlock || s.level < r.level) return false;
     s.money -= r.unlock; s.unlocked.push(id); return true;
   }
-  function equip(s,id){if(!s.upgrades.includes(id)||!upgrades[id])return false;s.equipped??={};s.equipped[upgrades[id].slot]=id;progress(s);return true;}
-  function upgrade(s,id,quantity=1){
-    const u=Object.hasOwn(upgrades,id)?upgrades[id]:null,owned=u?F.count(s,id):0;
-    if(!u||!Number.isSafeInteger(quantity)||quantity<1||owned+quantity>u.max||s.money<u.price*quantity||s.level<u.level)return false;
-    const cost=u.price*quantity;s.money-=cost;if(s.phase!=='prep')s.nightPurchases=(s.nightPurchases||0)+cost;
-    if(!owned)s.upgrades.push(id);s.upgradeQty??={};s.upgradeQty[id]=owned+quantity;equip(s,id);return true;
-  }
+  // Historical items remain owned with their benefits, but cannot be bought or placed anymore.
+  function equip(){return false;}
+  function upgrade(){return false;}
+  function renovate(s,area,expected){const result=R.install(s,area,expected);if(result)progress(s);return result;}
   function serve(s, guestId, selected, timing, preparation=1,heatOverride) {
     const g = s.guests.find(g => g.id === guestId && g.status === 'waiting');
     if (s.phase !== 'open' || !g || !Array.isArray(selected) || !Number.isFinite(timing) || !Number.isFinite(preparation) ||
@@ -535,7 +534,7 @@
     if (s.phase !== 'end') return false;
     archiveNight(s);s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();
