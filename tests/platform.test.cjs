@@ -56,7 +56,7 @@ test('native web bundle omits the worker and review-only pages',()=>{
 const CURRENT='20261110-v81-capacitor-shell',NEXT='20261111-v82-next',H=c=>c.repeat(64);
 function native(options={}){
   const calls=[],store=new Map(options.resume?[['midnight-diner-native-update',options.resume]]:[]);
-  const latest=options.latest||{version:NEXT,minNative:'1.0',files:{'index.html':H('a'),'assets/x.webp':H('b')}};
+  const latest=options.latest||{version:NEXT,minNative:'1.0',files:{'index.html':H('a'),'assets/x y.webp':H('b')}};
   const window={Capacitor:{isNativePlatform:()=>true,nativePromise:async(plugin,method,data)=>{
     calls.push({plugin,method,data});
     if(plugin==='CapacitorHttp'){if(options.offline)throw new Error('offline');return{status:200,data:options.text?JSON.stringify(latest):latest};}
@@ -88,8 +88,8 @@ test('newer release downloads only by per-file hashes and waits for apply()',asy
   const sent=of('download')[0].data;
   assert.equal(sent.version,NEXT);
   assert.deepEqual(JSON.parse(JSON.stringify(sent.manifest)),[
-    {file_name:'index.html',file_hash:H('a'),download_url:'https://updates.example.com/files/'+H('a')},
-    {file_name:'assets/x.webp',file_hash:H('b'),download_url:'https://updates.example.com/files/'+H('b')}]);
+    {file_name:'index.html',file_hash:H('a'),download_url:'https://updates.example.com/index.html'},
+    {file_name:'assets/x y.webp',file_hash:H('b'),download_url:'https://updates.example.com/assets/x%20y.webp'}]);
   assert.equal(of('set').length,0);assert.equal(u.hasReady(),true);
   assert.equal((await u.check()).status,'ready');assert.equal(of('download').length,1);
   assert.equal((await u.apply()).applied,true);
@@ -147,4 +147,10 @@ test('native shell saves, then applies a ready update only in the background and
   for(const options of [{ready:false},{saveOk:false},{appHidden:true}]){
     const r=run(options);r.document.hidden=true;r.document.dispatchEvent(new Event('visibilitychange'));assert.ok(!r.log.includes('apply'));
   }
+});
+test('update site route matches the address the app reads, and serves files at exact paths',()=>{
+  const base=fs.readFileSync('docs/src/platform/config.js','utf8').match(/updateBaseUrl:\s*'https:\/\/([^'/]+)'/)[1];
+  const config=fs.readFileSync('wrangler.updates.jsonc','utf8');
+  assert.ok(config.includes(`"pattern": "${base}"`));assert.match(config,/"html_handling": "none"/);
+  assert.doesNotMatch(fs.readFileSync('wrangler.jsonc','utf8'),/live-update/);
 });

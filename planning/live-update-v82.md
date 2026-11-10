@@ -1,7 +1,7 @@
 # v82 네이티브 라이브 업데이트 (2단계)
 
 스토어 심사 없이 웹 번들(게임 화면·코드·그림)을 교체한다. `@capgo/capacitor-updater` 8.54를 **수동 모드**로 쓰고,
-업데이트 파일은 우리 Cloudflare R2 버킷에만 둔다. Capgo 관리형 서비스에는 아무 요청도 보내지 않는다
+업데이트 파일은 우리 Cloudflare 계정의 전용 Worker에만 둔다. Capgo 관리형 서비스에는 아무 요청도 보내지 않는다
 (`autoUpdate:false`, `updateUrl`/`statsUrl`/`channelUrl` 모두 빈 값).
 
 ## 동작
@@ -17,28 +17,33 @@
 ## latest.json
 
 ```json
-{ "version": "20261110-v82-native-live-update",
+{ "version": "20261110-v84-update-worker",
   "minNative": "1.0",
-  "files": { "index.html": "<sha256>", "assets/…": "<sha256>" },
-  "zip": { "url": "https://…/bundles/<version>.zip", "checksum": "<sha256>" } }
+  "files": { "index.html": "<sha256>", "assets/…": "<sha256>" } }
 ```
 
-- `files`: 번들의 모든 파일과 SHA-256. 기기는 앱에 이미 든 파일·이전에 받은 파일과 해시가 같으면 재사용하고 **바뀐 파일만** `<updateBaseUrl>/files/<sha256>`에서 받는다.
-- `zip`: 선택 사항(`--zip`). `files`가 없을 때만 쓰는 전체 번들 대체 경로다. 번들이 약 205MB라 기본으로는 만들지 않는다.
+- `files`: 번들의 모든 파일과 SHA-256. 기기는 앱에 이미 든 파일·이전에 받은 파일과 해시가 같으면 재사용하고 **바뀐 파일만** `<updateBaseUrl>/<파일 경로>`에서 받는다. 받은 파일은 해시를 검증한다.
 - `minNative`: 이 번들을 실행할 수 있는 가장 낮은 스토어 앱 버전. 새 네이티브 플러그인이 필요한 릴리스(3·4단계)를 낼 때 `package.json`의 `liveUpdate.minNative`를 올린다. 낮은 앱은 내려받지 않는다.
+- 앱은 `files`가 없을 때 `zip: {url, checksum}`도 받아들이지만 배포 도구는 만들지 않는다(Workers 정적 자산은 파일당 25MiB 제한).
+
+## 호스팅 (v84: 전용 Worker)
+
+v82–v83은 R2 버킷에 올렸으나, v84부터 **업데이트 전용 Worker**(`wrangler.updates.jsonc`, 이름 `midnight-diner-updates`)의 정적 자산으로 서빙한다.
+Workers 정적 자산은 요청·저장 모두 무료라 사용자 수가 늘어도 비용이 없다. R2 버킷과 캐시 규칙은 필요 없다.
+
+- 주소: `https://midnight-update.couprice.com` (`docs/src/platform/config.js`의 `updateBaseUrl`과 `wrangler.updates.jsonc`의 route가 같아야 한다).
+- `html_handling: "none"`: `/index.html`을 `/`로 리디렉션하지 않고 모든 파일을 정확한 경로로 내준다.
+- 브라우저 테스트 사이트(`wrangler.jsonc`, `docs/`)와 분리돼 있어, 테스트 배포가 출시된 앱에 나가지 않는다.
 
 ## 배포
 
 ```sh
 node tools/set-release.cjs YYYYMMDD-vNN-description   # 릴리스 태그를 올려야 새 버전으로 인식한다
-node tools/publish-update.cjs                          # 미리 보기: dist/live-update/latest.json만 만든다
-node tools/publish-update.cjs --upload --bucket <버킷 이름>
+node tools/publish-update.cjs                          # 미리 보기: dist/live-update/site만 만든다
+node tools/publish-update.cjs --deploy                 # wrangler deploy -c wrangler.updates.jsonc
 ```
 
-업로드는 `npx wrangler r2 object put … --remote`를 쓴다(`npx wrangler login` 필요). 버킷에 이미 있는 해시는 건너뛰고,
-`latest.json`은 모든 파일이 올라간 뒤 마지막에 올린다. 첫 배포는 543개 파일(약 205MB)을 올리므로 오래 걸린다.
-
-버킷 공개 주소는 `docs/src/platform/config.js`의 `updateBaseUrl` 한 곳에 적는다. 앱과 배포 도구가 같은 값을 읽는다. 비어 있으면 업데이트 확인을 하지 않는다.
+`npx wrangler login`이 필요하다. wrangler가 바뀐 파일만 올리고 새 버전으로 한 번에 전환한다. 배포 뒤 도구가 `latest.json`을 다시 읽어 버전을 확인한다.
 
 ## 코드
 
@@ -49,6 +54,6 @@ node tools/publish-update.cjs --upload --bucket <버킷 이름>
 ## 검증과 한계
 
 - `tests/platform.test.cjs`: 새 릴리스 다운로드, 동시 확인 1회 처리, 같은/낮은 릴리스·오프라인·잘못된 데이터·경로 이탈 차단, `minNative`, zip 대체, 받은 번들 재사용, 이어하기 표시, 백그라운드 저장 후 적용.
-- 배포 도구는 가짜 업로더와 로컬 서버로 리허설했다(첫 실행 543개 업로드, 재실행 0개).
-- 이 작업 환경에는 Xcode·Android SDK·R2 버킷이 없어 **실제 기기에서 다운로드·교체·되돌리기는 확인하지 못했다.** 첫 기기 테스트에서 확인이 필요하다.
+- 업데이트 사이트는 로컬 `wrangler dev`로 띄워 `latest.json` 헤더, `/index.html` 200, 550개 파일 전체의 경로·해시 일치를 확인했다.
+- 이 작업 환경에는 Xcode·Android SDK·Cloudflare 계정 접근이 없어 **실제 기기에서 다운로드·교체·되돌리기는 확인하지 못했다.** 첫 기기 테스트에서 확인이 필요하다.
 - 업데이트를 받은 기기는 번들 사본을 하나 더 저장하므로 앱 저장 공간이 최대 약 2배가 된다. 이전 번들은 플러그인이 자동 삭제한다.

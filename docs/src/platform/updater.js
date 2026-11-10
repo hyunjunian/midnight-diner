@@ -3,12 +3,15 @@
 
    Browser: always skipped. The site updates through the service worker (pwa.js).
    Native: @capgo/capacitor-updater in manual mode. Nothing is sent to a managed
-   service; the app reads <updateBaseUrl>/latest.json from our own R2 bucket:
+   service; the app reads <updateBaseUrl>/latest.json from our own update site
+   (a Workers static-assets deployment of the bundle, tools/publish-update.cjs):
 
      { "version": "20261110-v82-example",        release tag of the web bundle
        "minNative": "1.0",                       oldest app-store version that may run it
-       "files": { "index.html": "<sha256>" },    every bundle file; only changed ones download
-       "zip": { "url": "...", "checksum": "<sha256>" } }   optional whole-bundle fallback
+       "files": { "index.html": "<sha256>" } }   every bundle file, served at <updateBaseUrl>/<path>
+
+   Only files whose hash differs from what the device already has are downloaded.
+   An optional "zip": {url, checksum} whole-bundle fallback is accepted when "files" is absent.
 
    A newer bundle is downloaded while the game runs, then applied with apply()
    once the caller has saved (pwa.js does this when the app goes to the background). */
@@ -47,7 +50,7 @@
     const entries=[];
     for(const [name,hash] of Object.entries(files)){
       if(!HASH.test(hash)||name.startsWith('/')||name.split('/').includes('..'))return null;
-      entries.push({file_name:name,file_hash:hash,download_url:baseUrl()+'/files/'+hash});
+      entries.push({file_name:name,file_hash:hash,download_url:baseUrl()+'/'+name.split('/').map(encodeURIComponent).join('/')});
     }
     return entries;
   }
