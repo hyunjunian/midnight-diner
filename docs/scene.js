@@ -91,11 +91,14 @@
   const host=document.querySelector('.scene-controls');if(!host)return;
   const safe=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
   const night=document.querySelector('.night-hud'),wallet=document.querySelector('.wallet-hud'),settings=$('settings-open'),growth=$('progress-hud');
-  const rail=document.querySelector('.game-hud');rail.classList.remove('wallet-reflow');
-  const natural=wallet.getBoundingClientRect(),nightWidth=night.getBoundingClientRect().width,gap=parseFloat(getComputedStyle(rail).columnGap)||0;
-  const settingsSize=Math.max(44,natural.height);rail.style.setProperty('--settings-hud-size',`${settingsSize}px`);
-  const wrapped=nightWidth+natural.width+settingsSize+gap*2>rail.clientWidth+.5;
-  rail.classList.toggle('wallet-reflow',wrapped);$('app').classList.toggle('wallet-hud-wrapped',wrapped);
+  const rail=document.querySelector('.game-hud'),gap=parseFloat(getComputedStyle(rail).columnGap)||0;
+  rail.classList.remove('wallet-reflow');$('app').classList.remove('wallet-hud-wrapped');
+  const settingsSize=innerWidth<360?44:innerWidth<=700?52:62;
+  rail.style.setProperty('--settings-hud-size',`${settingsSize}px`);
+  rail.style.setProperty('--wallet-room',`${Math.max(90,Math.floor(rail.clientWidth-night.getBoundingClientRect().width-settingsSize-gap*2))}px`);
+  const amount=$('money');amount.style.removeProperty('font-size');
+  const available=amount.clientWidth,natural=amount.scrollWidth,baseSize=parseFloat(getComputedStyle(amount).fontSize);
+  if(available&&natural>available)amount.style.fontSize=`${Math.max(12,Math.floor(baseSize*available/natural*10)/10)}px`;
   const n=night.getBoundingClientRect(),w=wallet.getBoundingClientRect();
   const key=settings.getBoundingClientRect(),g=growth.getBoundingClientRect(),hud=rail.getBoundingClientRect();
   const left=n.right+8,right=w.left-8,inline=g.width>0&&right-left>=g.width;
@@ -112,7 +115,14 @@
   const compactLandscape=innerWidth>innerHeight&&innerHeight<=550;
   const bottom=Math.max(hudBottom,growth.getBoundingClientRect().bottom);
   host.style.setProperty('--location-nav-top',`${Math.ceil(Math.max((compactLandscape?68:130)+safe,bottom+8))}px`);
-  $('app').style.setProperty('--hud-nav-bottom',`${Math.ceil(host.getBoundingClientRect().bottom)}px`);
+  const navBottom=host.getBoundingClientRect().bottom;
+  $('app').style.setProperty('--hud-nav-bottom',`${Math.ceil(navBottom)}px`);
+  const prep=$('stock-prep');
+  if(prep&&!prep.hidden&&prep.getClientRects().length){
+   prep.style.removeProperty('max-height');
+   const cap=Math.min(innerHeight*(innerHeight<=720?.41:.45),prep.getBoundingClientRect().bottom-navBottom-8);
+   prep.style.maxHeight=`${Math.max(48,cap)}px`;
+  }
  }
  function navigate(location){
   if(!['counter','kitchen','outside'].includes(location))return false;

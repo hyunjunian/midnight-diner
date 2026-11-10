@@ -1,15 +1,13 @@
-/* Values are never clipped or abbreviated; the HUD reflows when they need room. */
-.game-hud>.wallet-hud{flex:0 0 auto;max-width:none}
-.wallet-hud>button{flex-shrink:0}
-.wallet-hud strong{overflow:visible;text-overflow:clip;white-space:nowrap;overflow-wrap:normal}
+/* Two complete ledger lines keep values readable without moving the plaque. */
+.game-hud{align-items:flex-start}
+.game-hud>.night-hud{padding-left:3px;padding-right:3px}
+.game-hud>.wallet-hud{display:flex;flex-direction:column;align-items:stretch;flex:0 1 auto;min-width:0;width:max-content;max-width:var(--wallet-room,none);padding-left:10px;padding-right:10px}
+.wallet-hud>button{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;flex-shrink:0;min-width:0;width:100%;min-height:44px;padding:4px 0}
+.wallet-hud>button+button{margin-left:0;padding-left:0;border-left:0;border-top:1px solid var(--line)}
+.wallet-hud strong{display:block;max-width:100%;min-width:0;overflow:visible;text-overflow:clip;white-space:nowrap;overflow-wrap:normal;text-align:right}
+.wallet-hud>button>span{white-space:nowrap}
 @media(max-width:700px){
- .game-hud>.wallet-hud{padding-left:4px;padding-right:4px;max-width:none}
- .wallet-hud>button+button{margin-left:2px;padding-left:3px}
+ .game-hud>.wallet-hud{padding-left:8px;padding-right:8px}
+ .wallet-hud>button{gap:4px}
+ .wallet-hud>button+button{margin-left:0;padding-left:0}
 }
-.game-hud.wallet-reflow{display:grid;grid-template-columns:minmax(0,1fr) var(--settings-hud-size,54px);column-gap:6px;row-gap:6px}
-.game-hud.wallet-reflow>.night-hud{grid-column:1;grid-row:1;justify-self:start}
-.game-hud.wallet-reflow>.wallet-hud{grid-column:1;grid-row:2;justify-self:stretch;margin:0;width:100%;min-width:0;max-width:none}
-.game-hud.wallet-reflow #settings-open{grid-column:2;grid-row:2}
-.game-hud.wallet-reflow #funds-open{flex:1 1 auto}
-@media(max-width:700px){.game-hud.wallet-reflow #money{font-size:clamp(12px,3.5vw,15px)}}
-#app.wallet-hud-wrapped #stock-prep{top:calc(var(--hud-nav-bottom,230px) + 8px);bottom:auto;max-height:max(68px,calc(100dvh - var(--hud-nav-bottom,230px) - var(--safe-bottom) - 145px))}
