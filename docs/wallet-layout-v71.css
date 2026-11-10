@@ -4,13 +4,13 @@
 .game-hud>.wallet-hud{display:flex;flex-direction:column;align-items:stretch;flex:0 1 auto;min-width:0;width:max-content;max-width:var(--wallet-room,none);height:var(--top-hud-height,58px);box-sizing:border-box;padding-left:10px;padding-right:10px}
 .wallet-hud>button{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;flex:1 1 0;min-width:0;width:100%;min-height:0;padding:1px 0;line-height:1.1}
 .wallet-hud>button+button{margin-left:0;padding-left:0;border-left:0;border-top:1px solid var(--line)}
-.wallet-hud strong{display:block;max-width:100%;min-width:0;overflow:visible;text-overflow:clip;white-space:nowrap;overflow-wrap:normal;text-align:right;font-size:16px;line-height:1.1}
+.wallet-hud strong{display:block;max-width:100%;min-width:0;overflow:visible;text-overflow:clip;white-space:nowrap;overflow-wrap:normal;text-align:right;font-size:15px;line-height:1.1}
 .wallet-hud>button>span{white-space:nowrap}
 @media(max-width:700px){
  .game-hud>.wallet-hud{padding-left:8px;padding-right:8px}
  .wallet-hud>button{gap:4px}
- .wallet-hud strong{font-size:14px}
+ .wallet-hud strong{font-size:13px}
  .wallet-hud>button+button{margin-left:0;padding-left:0}
 }
 
-@media(max-width:359px){.wallet-hud strong{font-size:13px}}
+@media(max-width:359px){.wallet-hud strong{font-size:12px}}
