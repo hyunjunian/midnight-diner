@@ -152,5 +152,28 @@ test('update site route matches the address the app reads, and serves files at e
   const base=fs.readFileSync('docs/src/platform/config.js','utf8').match(/updateBaseUrl:\s*'https:\/\/([^'/]+)'/)[1];
   const config=fs.readFileSync('wrangler.updates.jsonc','utf8');
   assert.ok(config.includes(`"pattern": "${base}"`));assert.match(config,/"html_handling": "none"/);
-  assert.doesNotMatch(fs.readFileSync('wrangler.jsonc','utf8'),/live-update/);
+  assert.doesNotMatch(fs.readFileSync('wrangler.jsonc','utf8'),/live-update\/site/);
+});
+
+// ---- Automatic release tags ----
+test('builds tag their own output from the commit, leaving docs/ untouched',()=>{
+  const os=require('node:os'),path=require('node:path'),{autoTag,stamp,FORMAT}=require('../tools/set-release.cjs');
+  const tag=autoTag();
+  assert.match(tag,FORMAT);assert.match(tag,/^\d{8}-v\d{6}-[0-9a-f]{7,}$/);assert.equal(autoTag(),tag,'one tag per commit');
+  const newer=(a,b)=>a.localeCompare(b,'en',{numeric:true})>0;
+  assert.ok(newer('20261110-v142355-a1b2c3d','20261110-v85-capacitor-merge'));
+  assert.ok(newer('20261111-v000005-a1b2c3d','20261110-v235959-ffffffe'));
+  assert.ok(newer('20261111-v000100-a1b2c3d','20261111-v000059-ffffffe'));
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'stamp-'));
+  try{
+    for(const name of ['index.html','approved.html','preview.html','version.json'])fs.copyFileSync('docs/'+name,path.join(dir,name));
+    const before=fs.readFileSync('docs/index.html','utf8'),result=stamp(dir,'20991231-v235959-abcdef0');
+    const html=fs.readFileSync(path.join(dir,'index.html'),'utf8');
+    assert.ok(html.includes('name="app-release" content="20991231-v235959-abcdef0"'));assert.ok(!html.includes(result.previous));
+    assert.equal(JSON.parse(fs.readFileSync(path.join(dir,'version.json'),'utf8')).release,'20991231-v235959-abcdef0');
+    assert.match(fs.readFileSync(path.join(dir,'preview.html'),'utf8'),/const release = '20991231-v235959-abcdef0'/);
+    assert.equal(fs.readFileSync('docs/index.html','utf8'),before);
+    assert.throws(()=>stamp(dir,'v1'));
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+  assert.match(fs.readFileSync('wrangler.jsonc','utf8'),/"directory": "\.\/dist\/web"/);
 });

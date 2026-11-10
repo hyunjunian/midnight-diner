@@ -1,7 +1,8 @@
+// Browser test site. Build first: node tools/build-web.cjs (copies docs/ and tags the release).
 {
   "name": "midnight-diner",
   "compatibility_date": "2026-11-04",
   "assets": {
-    "directory": "./docs"
+    "directory": "./dist/web"
   }
 }

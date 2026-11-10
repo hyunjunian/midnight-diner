@@ -35,15 +35,18 @@ Workers 정적 자산은 요청·저장 모두 무료라 사용자 수가 늘어
 - `html_handling: "none"`: `/index.html`을 `/`로 리디렉션하지 않고 모든 파일을 정확한 경로로 내준다.
 - 브라우저 테스트 사이트(`wrangler.jsonc`, `docs/`)와 분리돼 있어, 테스트 배포가 출시된 앱에 나가지 않는다.
 
-## 배포
+## 배포 (v86: 자동 태그)
+
+`release` 브랜치에 푸시하면 Cloudflare Workers Builds가 `node tools/publish-update.cjs --deploy`를 실행한다.
+릴리스 태그는 빌드가 커밋 시각(UTC)과 해시로 붙인다(`YYYYMMDD-vHHMMSS-<sha7>`). 같은 커밋으로 만든 스토어 앱과 업데이트 사이트는 같은 태그가 된다.
 
 ```sh
-node tools/set-release.cjs YYYYMMDD-vNN-description   # 릴리스 태그를 올려야 새 버전으로 인식한다
-node tools/publish-update.cjs                          # 미리 보기: dist/live-update/site만 만든다
-node tools/publish-update.cjs --deploy                 # wrangler deploy -c wrangler.updates.jsonc
+node tools/publish-update.cjs            # 미리 보기: dist/live-update/site만 만든다
+node tools/publish-update.cjs --deploy   # 수동 배포가 필요할 때 (npx wrangler login 필요)
 ```
 
-`npx wrangler login`이 필요하다. wrangler가 바뀐 파일만 올리고 새 버전으로 한 번에 전환한다. 배포 뒤 도구가 `latest.json`을 다시 읽어 버전을 확인한다.
+wrangler가 바뀐 파일만 올리고 새 버전으로 한 번에 전환한다. 배포 뒤 도구가 `latest.json`을 다시 읽어 버전을 확인한다.
+앱은 더 늦은 커밋만 새 버전으로 본다. 이전 상태로 되돌리려면 되돌리는 커밋을 새로 만들어 배포한다.
 
 ## 코드
 

@@ -11,7 +11,10 @@
     "sync:android": "node tools/build-native.cjs && cap sync android",
     "open:ios": "cap open ios",
     "open:android": "cap open android",
-    "publish:update": "node tools/publish-update.cjs"
+    "pretest": "node tools/set-release.cjs",
+    "build:web": "node tools/build-web.cjs",
+    "deploy:web": "node tools/build-web.cjs && wrangler deploy",
+    "deploy:update": "node tools/publish-update.cjs --deploy"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.0",

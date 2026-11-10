@@ -1,6 +1,6 @@
 // Copy the playable site (docs/) into www/ for Capacitor: node tools/build-native.cjs
 // The Workers/Pages site keeps serving docs/ directly; www/ is generated and untracked.
-const fs=require('node:fs'),path=require('node:path');
+const fs=require('node:fs'),path=require('node:path'),{autoTag,stamp}=require('./set-release.cjs');
 const root=path.join(__dirname,'..'),from=path.join(root,'docs'),to=path.join(root,'www');
 // Not needed inside a store bundle: design mockups, the browser-only worker and
 // preview/approval entries, and the renovation review pages (the game itself
@@ -16,4 +16,6 @@ fs.cpSync(from,to,{recursive:true,filter(source){
   return true;
 }});
 if(!fs.existsSync(path.join(to,'index.html')))throw new Error('www/index.html missing');
-console.log(`www/ ready: ${files} files, ${(bytes/1048576).toFixed(1)} MB`);
+// Tag the bundle with this commit, the same tag the update site gets for it.
+const {release}=stamp(to,process.env.RELEASE_TAG||autoTag(root));
+console.log(`www/ ready: ${release}, ${files} files, ${(bytes/1048576).toFixed(1)} MB`);

@@ -10,9 +10,9 @@ v42는 승인된 시안에 맞춰 금빛 안내를 갈색 테두리 바깥의 �
 
 메인 주소에서 설치 없이 바로 실행하는 전체 화면 식당 운영 게임입니다. 브라우저와 설치한 앱 모두 **세로형 인트로 → 전체 화면 식당** 순서로 실행됩니다. 설치는 설정에서 선택할 수 있습니다.
 
-**게임 시작:** https://rosagkim.github.io/midnight-diner/
+**게임 시작:** https://hyunjunian.github.io/midnight-diner/
 
-**보조 미리보기:** https://rosagkim.github.io/midnight-diner/preview.html
+**보조 미리보기:** https://hyunjunian.github.io/midnight-diner/preview.html
 
 ## 실행과 설치
 
@@ -67,6 +67,17 @@ v42는 승인된 시안에 맞춰 금빛 안내를 갈색 테두리 바깥의 �
 
 온라인 실행·일반 새로고침은 서버의 최신 화면을 확인합니다. 코드와 스타일은 릴리스별 캐시를 사용하며, 오프라인에서는 함께 저장한 화면으로 실행합니다. 새 파일 저장이 끝나면 자동으로 갱신하고, 조리·대화 중에는 진행을 유지한 뒤 안전한 시점에 저장하고 전환합니다. 강한 새로고침이나 업데이트 버튼은 필요하지 않습니다.
 
+## 배포
+
+배포는 Cloudflare Workers가 GitHub 저장소를 받아 자동으로 합니다. 릴리스 태그는 빌드가 커밋 시각과 해시로 자동으로 붙이므로(`20261110-v144735-717169f` 형식) 푸시 전에 따로 올릴 필요가 없습니다.
+
+| 대상 | 브랜치 | 빌드·배포 명령 |
+| --- | --- | --- |
+| 브라우저 사이트 (`midnight-diner`) | `main` | `node tools/build-web.cjs` 후 `npx wrangler deploy` |
+| 앱 라이브 업데이트 (`midnight-diner-updates`) | `release` | `node tools/publish-update.cjs --deploy` |
+
+GitHub Pages는 더 이상 배포 경로로 쓰지 않습니다. `docs/`의 태그는 로컬 실행·테스트용 자리표시자입니다.
+
 ## iOS/안드로이드 앱 (Capacitor)
 
 같은 게임 파일을 Capacitor 8 앱 "심야식탁"으로 번들합니다. `npm install` 뒤 `npm run sync`로 `docs/`를 네이티브 프로젝트에 반영하고, `npm run open:ios` 또는 `npm run open:android`로 엽니다. [구조와 명령](planning/capacitor-v81.md).
@@ -106,7 +117,7 @@ node --check docs/sw.js
 
 규칙·모핑 연속성·오프라인 영상 응답 테스트 총 26개를 실행합니다. 브라우저에서는 설치 진입 화면, 앱 표시 모드에서의 실행, 실사 재생·종료 전환, 주문·조리·구매, 세로·가로 화면, 오프라인 재실행과 저장 재개를 검사합니다.
 
-항상 같은 메인 주소 **https://rosagkim.github.io/midnight-diner/** 에 업데이트를 적용합니다. 버전별 별도 주소를 만들지 않습니다. 설치 없는 미리보기도 고정 주소 `preview.html`을 사용합니다. GitHub Pages는 `main`의 `/docs`를 제공합니다. 검증 후 `main`에 푸시합니다. 앱 파일 변경 시 `docs/sw.js`의 `VERSION`도 바꿔 기존 설치 앱에 업데이트를 전달해야 합니다. 모든 자산 경로와 PWA 범위는 저장소 하위 경로를 지원합니다.
+항상 같은 메인 주소 **https://hyunjunian.github.io/midnight-diner/** 에 업데이트를 적용합니다. 버전별 별도 주소를 만들지 않습니다. 설치 없는 미리보기도 고정 주소 `preview.html`을 사용합니다. GitHub Pages는 `main`의 `/docs`를 제공합니다. 검증 후 `main`에 푸시합니다. 앱 파일 변경 시 `docs/sw.js`의 `VERSION`도 바꿔 기존 설치 앱에 업데이트를 전달해야 합니다. 모든 자산 경로와 PWA 범위는 저장소 하위 경로를 지원합니다.
 
 [기획 문서 목록](planning/README.md) · [원작 조사](planning/research/original-work.md)
 

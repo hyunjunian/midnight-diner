@@ -1,7 +1,7 @@
 # Approved cooking repairs — v50
 
 The user approved the final preview with “이렇게해.” The exact approved screenshots are immutable at:
-https://raw.githubusercontent.com/rosagkim/midnight-diner/dc743754a1ee2f27b2bc0cbcbe98e86653b11155/cooking-preview.png
+https://raw.githubusercontent.com/hyunjunian/midnight-diner/dc743754a1ee2f27b2bc0cbcbe98e86653b11155/cooking-preview.png
 
 Final scope:
 - Freeze the repaired receiving bowl and cooker atlas; remove the old bowl rim from the cooker layer. The user explicitly approved this bowl and prohibited further edits.

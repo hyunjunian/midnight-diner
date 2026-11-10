@@ -33,7 +33,7 @@ npm run open:ios       # Xcode 열기 (Mac)
 npm run open:android   # Android Studio 열기
 ```
 
-`docs/`를 고친 뒤에는 항상 `npm run sync`를 다시 실행한다. 릴리스 태그는 기존대로 `node tools/set-release.cjs`를 쓴다.
+`docs/`를 고친 뒤에는 항상 `npm run sync`를 다시 실행한다. 릴리스 태그는 빌드가 커밋에서 자동으로 붙인다(v86).
 
 ## 검증
 
