@@ -5,7 +5,9 @@ const source=new Map(),read=f=>{if(!source.has(f))source.set(f,fs.readFileSync(p
 const current=read('sw.js').toString().match(/const RELEASE = '([^']+)'/)[1];
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 (async()=>{
-  const old=new Map(['index.html','pwa.js','game.js','sw.js'].map(f=>[f,execFileSync('git',['show',`e053970:docs/${f}`],{cwd:repo})]));
+  // Phase 0 is the complete v34 release as shipped: mixing its entry files with
+  // today's engine and catalogue no longer boots. Files that v34 lacked fall through.
+  const shipped=new Map(),old={has:f=>old.get(f)!==null,get(f){if(!shipped.has(f)){try{shipped.set(f,execFileSync('git',['show',`e053970:docs/${f}`],{cwd:repo,stdio:['ignore','pipe','ignore'],maxBuffer:64e6}))}catch{shipped.set(f,null)}}return shipped.get(f)}};
   let phase=0;
   function bodyFor(file){
     let body=phase===0&&old.has(file)?old.get(file):read(file);
