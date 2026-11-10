@@ -1,0 +1,9 @@
+{
+  "appId": "com.couprice.midnight",
+  "appName": "심야식탁",
+  "webDir": "www",
+  "backgroundColor": "#1f160f",
+  "ios": {
+    "contentInset": "never"
+  }
+}

@@ -1,6 +1,16 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
+  // Capacitor apps ship every file inside the bundle: no service worker, no
+  // install prompt and no web update checks. Updates go through src/platform/updater.js.
+  if (window.Capacitor?.isNativePlatform?.() === true) {
+    for (const id of ['install-app','install-hint','install-guide','install-status','update-app','offline-status','fullscreen']) { const el = $(id); if (el) el.hidden = true; }
+    let nativeStarted = false;
+    const start = () => { if (!nativeStarted) { nativeStarted = true; window.MidnightApp.launch(); } };
+    window.MidnightPWA = { start };
+    if (document.documentElement.dataset.preview !== 'embedded') start();
+    return;
+  }
   let installPrompt = null, registration = null;
   const watched=new WeakSet();
   function installGuide() {

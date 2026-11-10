@@ -1,2 +1,5 @@
 .DS_Store
 node_modules/
+
+# Capacitor: generated web bundle (node tools/build-native.cjs)
+www/

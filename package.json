@@ -1,0 +1,23 @@
+{
+  "name": "midnight-diner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "심야식탁: 정적 웹 게임(docs/)과 Capacitor iOS/Android 앱",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "build:native": "node tools/build-native.cjs",
+    "sync": "node tools/build-native.cjs && cap sync",
+    "sync:ios": "node tools/build-native.cjs && cap sync ios",
+    "sync:android": "node tools/build-native.cjs && cap sync android",
+    "open:ios": "cap open ios",
+    "open:android": "cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/ios": "^8.6.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0"
+  }
+}
