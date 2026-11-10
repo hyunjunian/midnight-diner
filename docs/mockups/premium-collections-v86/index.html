@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#21160f">
+  <meta name="robots" content="noindex">
+  <title>레벨별 매장 디자인 시안 | 심야식당</title>
+  <link rel="stylesheet" href="./gallery.css">
+  <script src="./gallery.js" defer></script>
+</head>
+<body>
+  <header class="page-heading">
+    <p class="eyebrow">심야식당 · 디자인 검토</p>
+    <h1>내 취향의 가게</h1>
+    <p class="counts">내부 25개 <span>|</span> 외부 25개 <span>|</span> 총 50개</p>
+    <p class="intro">2레벨부터 50레벨까지, 두 레벨마다 새로운 내부·외부 디자인</p>
+    <p class="notice">그림을 누르면 확대할 수 있어요 · 실제 게임에 적용하지 않은 시안입니다</p>
+  </header>
+  <nav class="toolbar" aria-label="시안 탐색">
+    <div class="filters" aria-label="영역 선택">
+      <button type="button" data-area="all" aria-pressed="true">전체 <small>50</small></button>
+      <button type="button" data-area="inside" aria-pressed="false">내부 <small>25</small></button>
+      <button type="button" data-area="outside" aria-pressed="false">외부 <small>25</small></button>
+    </div>
+    <label class="jump">레벨 이동 <select id="level-jump" aria-label="확인할 레벨 선택"><option value="">선택</option></select></label>
+  </nav>
+  <main id="gallery" aria-busy="true"><p class="loading" role="status">시안을 불러오고 있어요</p></main>
+  <footer class="page-footer"><p>레벨 2는 승인된 상품 화면, 레벨 4~50은 새로 제작한 디자인 시안입니다</p><a href="#">맨 위로 ↑</a></footer>
+  <dialog id="zoom" aria-labelledby="zoom-title">
+    <header class="zoom-heading"><div><span id="zoom-level"></span><h2 id="zoom-title"></h2></div><button id="zoom-close" type="button" aria-label="확대 화면 닫기">×</button></header>
+    <div id="zoom-art"></div>
+    <p id="zoom-materials"></p>
+    <nav class="zoom-navigation" aria-label="확대 시안 이동"><button id="previous" type="button">← 이전</button><span id="zoom-position"></span><button id="next" type="button">다음 →</button></nav>
+  </dialog>
+</body>
+</html>
