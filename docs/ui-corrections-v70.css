@@ -10,3 +10,5 @@
 .scene.renovated-inside .scene-backfill>.floor-extension{background-size:var(--scene-art-width,100vw) 1034.343434%}
 /* Remove only the dark lower rule from the preparation-plan reset button. */
 #stock-prep .change-prep-plan{box-shadow:inset 0 1px #edc68b55}
+/* Anchor only the middle service plaque to its seat, independent of portrait trim. */
+#app .customer.seat-1 .customer-name{left:50%}
