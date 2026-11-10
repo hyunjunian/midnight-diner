@@ -1,7 +1,11 @@
-// Browser test site. Build first: node tools/build-web.cjs (copies docs/ and tags the release).
+// Browser test site. `npx wrangler deploy` runs the build below first: it copies docs/ to
+// dist/web and tags the release, so no separate build command is needed in the dashboard.
 {
   "name": "midnight-diner",
   "compatibility_date": "2026-11-04",
+  "build": {
+    "command": "node tools/build-web.cjs"
+  },
   "assets": {
     "directory": "./dist/web"
   }

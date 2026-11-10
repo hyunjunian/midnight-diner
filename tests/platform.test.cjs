@@ -176,4 +176,5 @@ test('builds tag their own output from the commit, leaving docs/ untouched',()=>
     assert.throws(()=>stamp(dir,'v1'));
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
   assert.match(fs.readFileSync('wrangler.jsonc','utf8'),/"directory": "\.\/dist\/web"/);
+  assert.match(fs.readFileSync('wrangler.jsonc','utf8'),/"command": "node tools\/build-web\.cjs"/,'plain wrangler deploy must build the site first');
 });
