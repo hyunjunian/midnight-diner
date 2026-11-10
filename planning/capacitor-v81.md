@@ -40,3 +40,9 @@ npm run open:android   # Android Studio 열기
 - `node --test tests/*.test.cjs`: `tests/platform.test.cjs` 5건 추가.
 - `tests/browser/native-shell.cjs`: `www/`를 Capacitor 브리지를 흉내 낸 Chromium으로 열어, 서비스 워커·`version.json` 요청 없이 번들 파일만으로 인트로와 게임이 시작되는지 확인.
 - 실제 기기/시뮬레이터 빌드는 이 작업 환경에 Xcode와 Android SDK가 없어 실행하지 못했다.
+
+## 아이콘·스플래시·화면 방향
+
+- `python3 tools/native-icons.py`(Pillow 필요)가 기존 덮밥·등불 아이콘(`docs/assets/icon-diner-v31-512.png`)으로 iOS 앱 아이콘, 안드로이드 적응형·기존·원형 아이콘, 양쪽 스플래시를 다시 만든다. 새 그림은 그리지 않는다.
+- 가장 큰 원본이 512px이라 iOS 1024px 아이콘은 확대본이다. 더 큰 원본이 생기면 스크립트의 입력만 바꾼다.
+- 세로 고정: iOS `Info.plist`는 iPhone·iPad 모두 Portrait만 허용하고 `UIRequiresFullScreen`을 켰다. 안드로이드는 `MainActivity`에 `android:screenOrientation="portrait"`.
