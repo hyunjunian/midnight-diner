@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261110-v72-physical-hud';
+const RELEASE = '20261110-v73-aligned-hud';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -539,7 +539,7 @@ const FILES = [
 const FILE_HASHES = {
   "assets/clock-face-v72.webp": "109a9d9f89e9463d468f2b0356ef55867ba3b5e59feb237e00f1e0e80c2b77eb",
   "assets/clock-hand-brass-v72.webp": "5451b26b071123095adab958a76fd9cd31ca542769ff1ded26c2d5fdc943dd52",
-  "wallet-layout-v71.css": "7a9f2872a0a14a3d721685692ace23674ee0647168e00e6a76c223102b03df1b",
+  "wallet-layout-v71.css": "1eebb631657fe71da15eeea373f4b1c33b5e10f3af502ba1d452cd9cbdc2097e",
   "assets/date-leaf-brass-v69.webp": "5ca281c74139dc985b77087d2e3f248550a3bae83b358f6276f782202c8b057f",
   "ui-corrections-v70.css": "6d65dc4e34ed51fa368b45a78c2da83ad98b49de2a00f0d49d6565fa27d3e905",
   "egg-food-v70.css": "1572a28556852fb1c59ecb4ddd6ee311deb58f30926af50161fd51ae058746ec",
@@ -749,7 +749,7 @@ const FILE_HASHES = {
   "ui-fixes-v38.css": "e93c04f1b5943ea06e4bc6a7626deca9c114b88e7e433579657f626c1f6b3159",
   "cooking-layout.js": "36c9bd448be4ec6d88198334dd73759e3dab0ec39e4ec62abe94ae56f4212674",
   "dialogue-motion.js": "28bd7aba2c4a1d927236109b528d0148441977ccf017db84ddf4d94af9e2b1aa",
-  "index.html": "47038837d1452e84409e1bb7d09cab7d3e522802ceb196bd409550baef8a6845",
+  "index.html": "a9703ba6d6f432dfa6d73a59d404bceb1d84ec027db2839be155dc22a91c4fe6",
   "style.css": "5f447981dd9d0d91d1037c2b2c5b53a90cd79bbaf7f3c317f51b52b701a79e96",
   "customer.css": "3e2b3d4fc4781651d11c9c887d87ae45ea12fe01dec75cf591f9a99b1775d880",
   "motion.css": "b0b20530ae8929d2e91b2b109df20038484fb654fba3ed8be2c3c58d5046df75",
@@ -798,7 +798,7 @@ const FILE_HASHES = {
   "stories.js": "000415984d1c791dc184bba686bd97d124031614dda6a0f6c6636df7a0c6ab0c",
   "engine.js": "b815f8d503e3439430c7433df9df9dced80b6479f010744e9d3ff2317887e099",
   "game.js": "ddcfb890e0ce499e9c291445fae0d83a5b0dc331e01ef5401dd87bdf31a2d3df",
-  "scene.js": "0aec583bd91e1d7aef9effe1284460f995db1456e51a891d2421f14a3944d412",
+  "scene.js": "62782314fc70867c9e40cea575ee2d474091556f22f231d76946e95ffbb18502",
   "rain.js": "32e5a58bd452b6eefb384fe8953c2f5eff7de1e2c74edd8a6928cea463ea4372",
   "morph.js": "3717749af5436dda9d7398e2d08f1c84f6b17846c6c09e676536b6751efb20ef",
   "pwa.js": "3efce6d2019db2ef09c238d002c2f05b3233fc51de9278804428c4535c941f8c",
