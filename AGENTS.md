@@ -194,3 +194,5 @@
 - `wrangler.jsonc` keeps `build.command: node tools/build-web.cjs`, so the dashboard's plain `npx wrangler deploy` builds and tags `dist/web` itself; the first Workers build failed without it (missing assets directory). Do not remove that custom build step. Run all browser tests with `npm run test:browser`.
 
 - The user renamed the Cloudflare Workers: the browser site is `midnight` (`wrangler.jsonc`) and the live-update site is `midnight-update` (`wrangler.updates.jsonc`). Keep these names equal to the dashboard Workers connected to Git; older notes that say `midnight-diner` / `midnight-diner-updates` are superseded.
+
+- Each Git-connected Worker checks the `name` in the `wrangler.jsonc` of its own root directory, so the two Workers use separate folders: the browser site `midnight` uses the repo-root `wrangler.jsonc` (root directory `/`), and the live-update site `midnight-update` uses `workers/update/wrangler.jsonc` (dashboard root directory `workers/update`). Both deploy with plain `npx wrangler deploy`; each config's `build.command` builds its own output. `wrangler.updates.jsonc` no longer exists; do not put a second Worker's config at the repo root.

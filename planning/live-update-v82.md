@@ -28,16 +28,16 @@
 
 ## 호스팅 (v84: 전용 Worker)
 
-v82–v83은 R2 버킷에 올렸으나, v84부터 **업데이트 전용 Worker**(`wrangler.updates.jsonc`, 이름 `midnight-update`)의 정적 자산으로 서빙한다.
+v82–v83은 R2 버킷에 올렸으나, v84부터 **업데이트 전용 Worker**(`workers/update/wrangler.jsonc`, 이름 `midnight-update`)의 정적 자산으로 서빙한다.
 Workers 정적 자산은 요청·저장 모두 무료라 사용자 수가 늘어도 비용이 없다. R2 버킷과 캐시 규칙은 필요 없다.
 
-- 주소: `https://midnight-update.couprice.com` (`docs/src/platform/config.js`의 `updateBaseUrl`과 `wrangler.updates.jsonc`의 route가 같아야 한다).
+- 주소: `https://midnight-update.couprice.com` (`docs/src/platform/config.js`의 `updateBaseUrl`과 `workers/update/wrangler.jsonc`의 route가 같아야 한다).
 - `html_handling: "none"`: `/index.html`을 `/`로 리디렉션하지 않고 모든 파일을 정확한 경로로 내준다.
 - 브라우저 테스트 사이트(`wrangler.jsonc`, `docs/`)와 분리돼 있어, 테스트 배포가 출시된 앱에 나가지 않는다.
 
 ## 배포 (v86: 자동 태그)
 
-`release` 브랜치에 푸시하면 Cloudflare Workers Builds가 `node tools/publish-update.cjs --deploy`를 실행한다.
+`release` 브랜치에 푸시하면 Cloudflare Workers Builds가 루트 디렉터리 `workers/update`에서 `npx wrangler deploy`를 실행하고, 그 설정의 빌드 단계가 `tools/publish-update.cjs`로 사이트를 만든다. Git에 연결된 Worker는 자기 루트 디렉터리의 `wrangler.jsonc` 이름을 검사하므로 Worker마다 폴더를 나눴다.
 릴리스 태그는 빌드가 커밋 시각(UTC)과 해시로 붙인다(`YYYYMMDD-vHHMMSS-<sha7>`). 같은 커밋으로 만든 스토어 앱과 업데이트 사이트는 같은 태그가 된다.
 
 ```sh

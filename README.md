@@ -74,7 +74,7 @@ v42는 승인된 시안에 맞춰 금빛 안내를 갈색 테두리 바깥의 �
 | 대상 | 브랜치 | 빌드·배포 명령 |
 | --- | --- | --- |
 | 브라우저 사이트 (`midnight`) | `main` | `npx wrangler deploy` (빌드는 `wrangler.jsonc`가 자동 실행) |
-| 앱 라이브 업데이트 (`midnight-update`) | `release` | `node tools/publish-update.cjs --deploy` |
+| 앱 라이브 업데이트 (`midnight-update`) | `release` | 루트 디렉터리 `workers/update`, `npx wrangler deploy` |
 
 GitHub Pages는 더 이상 배포 경로로 쓰지 않습니다. `docs/`의 태그는 로컬 실행·테스트용 자리표시자입니다.
 

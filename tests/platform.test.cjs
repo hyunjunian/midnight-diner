@@ -150,7 +150,9 @@ test('native shell saves, then applies a ready update only in the background and
 });
 test('update site route matches the address the app reads, and serves files at exact paths',()=>{
   const base=fs.readFileSync('docs/src/platform/config.js','utf8').match(/updateBaseUrl:\s*'https:\/\/([^'/]+)'/)[1];
-  const config=fs.readFileSync('wrangler.updates.jsonc','utf8');
+  const config=fs.readFileSync('workers/update/wrangler.jsonc','utf8');
+  assert.match(config,/"name": "midnight-update"/);assert.match(fs.readFileSync('wrangler.jsonc','utf8'),/"name": "midnight",/);
+  assert.match(config,/"command": "node \.\.\/\.\.\/tools\/publish-update\.cjs"/);
   assert.ok(config.includes(`"pattern": "${base}"`));assert.match(config,/"html_handling": "none"/);
   assert.doesNotMatch(fs.readFileSync('wrangler.jsonc','utf8'),/live-update\/site/);
 });

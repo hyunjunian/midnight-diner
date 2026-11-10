@@ -1,0 +1,22 @@
+// Live-update host for the native apps: serves the app bundle and latest.json as
+// free static assets. Cloudflare Workers Builds deploys it from the `release` branch
+// with Root directory `workers/update` and the default `npx wrangler deploy`.
+// It lives in its own folder because each Git-connected Worker reads the
+// wrangler.jsonc in its root directory; the browser site uses the one at the repo root.
+{
+  "name": "midnight-update",
+  "compatibility_date": "2026-11-04",
+  "build": {
+    // Builds dist/live-update/site: the tagged bundle plus latest.json and _headers.
+    "command": "node ../../tools/publish-update.cjs"
+  },
+  "assets": {
+    "directory": "../../dist/live-update/site",
+    // Serve every file at its exact path: no /index.html -> / redirects.
+    "html_handling": "none",
+    "not_found_handling": "none"
+  },
+  "routes": [
+    { "pattern": "midnight-update.couprice.com", "custom_domain": true }
+  ]
+}
