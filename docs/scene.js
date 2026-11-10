@@ -91,9 +91,13 @@
   const host=document.querySelector('.scene-controls');if(!host)return;
   const safe=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
   const night=document.querySelector('.night-hud'),wallet=document.querySelector('.wallet-hud'),settings=$('settings-open'),growth=$('progress-hud');
+  const rail=document.querySelector('.game-hud');rail.classList.remove('wallet-reflow');
+  const natural=wallet.getBoundingClientRect(),nightWidth=night.getBoundingClientRect().width,gap=parseFloat(getComputedStyle(rail).columnGap)||0;
+  const settingsSize=Math.max(44,natural.height);rail.style.setProperty('--settings-hud-size',`${settingsSize}px`);
+  const wrapped=nightWidth+natural.width+settingsSize+gap*2>rail.clientWidth+.5;
+  rail.classList.toggle('wallet-reflow',wrapped);$('app').classList.toggle('wallet-hud-wrapped',wrapped);
   const n=night.getBoundingClientRect(),w=wallet.getBoundingClientRect();
-  document.querySelector('.game-hud').style.setProperty('--settings-hud-size',`${Math.max(44,w.height)}px`);
-  const key=settings.getBoundingClientRect(),g=growth.getBoundingClientRect(),hud=document.querySelector('.game-hud').getBoundingClientRect();
+  const key=settings.getBoundingClientRect(),g=growth.getBoundingClientRect(),hud=rail.getBoundingClientRect();
   const left=n.right+8,right=w.left-8,inline=g.width>0&&right-left>=g.width;
   const hudBottom=Math.max(n.bottom,w.bottom,key.bottom);
   if(inline){
@@ -108,6 +112,7 @@
   const compactLandscape=innerWidth>innerHeight&&innerHeight<=550;
   const bottom=Math.max(hudBottom,growth.getBoundingClientRect().bottom);
   host.style.setProperty('--location-nav-top',`${Math.ceil(Math.max((compactLandscape?68:130)+safe,bottom+8))}px`);
+  $('app').style.setProperty('--hud-nav-bottom',`${Math.ceil(host.getBoundingClientRect().bottom)}px`);
  }
  function navigate(location){
   if(!['counter','kitchen','outside'].includes(location))return false;

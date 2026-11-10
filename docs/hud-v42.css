@@ -4,8 +4,10 @@
 .clock-minute-ticks{fill:none;stroke:#746445;stroke-width:.85;opacity:.7}
 .clock-ticks{fill:none;stroke:#242219;stroke-width:2.3}
 .clock-numbers{fill:#29261e;font:500 14px Arial,sans-serif;text-anchor:middle}
-.clock-hand{fill:none;stroke:#11110f;stroke-width:5.3;stroke-linecap:round;filter:drop-shadow(0 .6px .4px #36281155)}
-.clock-minute{stroke-width:3.6}
+.clock-hand{fill:none;stroke:url(#clock-brass-hour);stroke-width:5.3;stroke-linecap:round;filter:drop-shadow(0 .6px .4px #36281155)}
+.clock-hand-edge{fill:none;stroke:#49371f;stroke-width:6.6;stroke-linecap:round}
+.clock-minute-edge{stroke-width:4.9}
+.clock-minute{stroke:url(#clock-brass-minute);stroke-width:3.6}
 .wallet-hud{gap:0;padding-top:0;padding-bottom:0}
 .wallet-hud>button{appearance:none;min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;margin:0;padding:4px 0;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;cursor:pointer;text-align:left;line-height:1.3;transform:none;animation:none}
 .wallet-hud>button+button{margin-left:24px;padding-left:24px;border-left:1px solid var(--line)}

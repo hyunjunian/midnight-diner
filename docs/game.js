@@ -4,13 +4,7 @@
   const KEY = 'midnight-diner-save-v11';
   const $ = id => document.getElementById(id);
   const yen = n => `¥${n.toLocaleString('ja-JP')}`;
-  function displayMoney(value){
-    const holder=$('money'),text=yen(value);if(holder.textContent===text)return;
-    const fragment=document.createDocumentFragment();
-    text.split(',').forEach((part,i)=>{if(i){fragment.append(document.createTextNode(','),document.createElement('wbr'));}fragment.append(document.createTextNode(part));});
-    holder.replaceChildren(fragment);
-  }
-
+  function displayMoney(value){$('money').textContent=yen(value);}
   let state, storageAvailable = true, saveMessage = '';
   // Keep the current playthrough; import v10 once without resetting purchases or cooking.
   try { state=E.restore(localStorage.getItem(KEY)||localStorage.getItem('midnight-diner-save-v10')); }
