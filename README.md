@@ -10,9 +10,9 @@ v42는 승인된 시안에 맞춰 금빛 안내를 갈색 테두리 바깥의 �
 
 메인 주소에서 설치 없이 바로 실행하는 전체 화면 식당 운영 게임입니다. 브라우저와 설치한 앱 모두 **세로형 인트로 → 전체 화면 식당** 순서로 실행됩니다. 설치는 설정에서 선택할 수 있습니다.
 
-**게임 시작:** https://hyunjunian.github.io/midnight-diner/
+**게임 시작:** https://midnight.couprice.com/
 
-**보조 미리보기:** https://hyunjunian.github.io/midnight-diner/preview.html
+**보조 미리보기:** https://midnight.couprice.com/preview.html
 
 ## 실행과 설치
 
@@ -117,7 +117,7 @@ node --check docs/sw.js
 
 규칙·모핑 연속성·오프라인 영상 응답 테스트 총 26개를 실행합니다. 브라우저에서는 설치 진입 화면, 앱 표시 모드에서의 실행, 실사 재생·종료 전환, 주문·조리·구매, 세로·가로 화면, 오프라인 재실행과 저장 재개를 검사합니다.
 
-항상 같은 메인 주소 **https://hyunjunian.github.io/midnight-diner/** 에 업데이트를 적용합니다. 버전별 별도 주소를 만들지 않습니다. 설치 없는 미리보기도 고정 주소 `preview.html`을 사용합니다. GitHub Pages는 `main`의 `/docs`를 제공합니다. 검증 후 `main`에 푸시합니다. 앱 파일 변경 시 `docs/sw.js`의 `VERSION`도 바꿔 기존 설치 앱에 업데이트를 전달해야 합니다. 모든 자산 경로와 PWA 범위는 저장소 하위 경로를 지원합니다.
+항상 같은 메인 주소 **https://midnight.couprice.com/** 에 업데이트를 적용합니다. 버전별 별도 주소를 만들지 않습니다. 설치 없는 미리보기도 고정 주소 `preview.html`을 사용합니다. GitHub Pages는 `main`의 `/docs`를 제공합니다. 검증 후 `main`에 푸시합니다. 앱 파일 변경 시 `docs/sw.js`의 `VERSION`도 바꿔 기존 설치 앱에 업데이트를 전달해야 합니다. 모든 자산 경로와 PWA 범위는 저장소 하위 경로를 지원합니다.
 
 [기획 문서 목록](planning/README.md) · [원작 조사](planning/research/original-work.md)
 
