@@ -1,6 +1,12 @@
-// Run the browser tests against local servers: node tools/test-browser.cjs [name ...]
-// Serves docs/ at http://127.0.0.1:8765/midnight-diner/ and the native bundle (www/) at
-// http://127.0.0.1:8766/, then runs tests/browser/*.cjs one by one and prints a summary.
+// Run the essential browser checks against local servers: node tools/test-browser.cjs
+//   startup              the main URL starts the intro/game with the saved progress
+//   cloudflare-updates   a new web release replaces the old one and still works offline
+//   mobile-updates       installed/mobile clients update silently and keep partial cooking
+//   native-shell         the Capacitor bundle starts from local files without a service worker
+// Name tests to run others (node tools/test-browser.cjs dock renovation) or pass --all.
+// The remaining files in tests/browser/ are one-off checks from past UI releases; several
+// need extra packages or a fixed browser path and are not kept green.
+// Serves docs/ at http://127.0.0.1:8765/midnight-diner/ and www/ at http://127.0.0.1:8766/.
 // Needs Playwright with Chromium (CHROMIUM_PATH overrides the browser binary).
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
 const root=path.join(__dirname,'..'),dir=path.join(root,'tests','browser');
@@ -25,10 +31,18 @@ function serve(base,port,prefix){
   cp.execFileSync(process.execPath,[path.join(__dirname,'set-release.cjs')],{stdio:'ignore'});
   cp.execFileSync(process.execPath,[path.join(__dirname,'build-native.cjs')],{stdio:'ignore'});
   const servers=[await serve(path.join(root,'docs'),8765,'/midnight-diner/'),await serve(path.join(root,'www'),8766,'/')];
-  const wanted=process.argv.slice(2),names=fs.readdirSync(dir).filter(f=>f.endsWith('.cjs')).map(f=>f.slice(0,-4)).filter(n=>!wanted.length||wanted.includes(n)).sort();
+  const ESSENTIAL=['startup','cloudflare-updates','mobile-updates','native-shell'];
+  const args=process.argv.slice(2),all=args.includes('--all'),wanted=args.filter(a=>!a.startsWith('--'));
+  const names=fs.readdirSync(dir).filter(f=>f.endsWith('.cjs')).map(f=>f.slice(0,-4)).filter(n=>all||(wanted.length?wanted.includes(n):ESSENTIAL.includes(n))).sort();
   const failed=[];
   for(const name of names){
-    const began=Date.now(),result=cp.spawnSync(process.execPath,[path.join(dir,name+'.cjs')],{cwd:root,env:{...process.env,CHROMIUM_PATH:chromium},encoding:'utf8',timeout:420000});
+    // Asynchronous on purpose: the local servers above must keep answering while a test runs.
+    const began=Date.now(),result=await new Promise(resolve=>{
+      const child=cp.spawn(process.execPath,[path.join(dir,name+'.cjs')],{cwd:root,env:{...process.env,CHROMIUM_PATH:chromium}});
+      let stdout='';child.stdout.on('data',d=>stdout+=d);child.stderr.on('data',d=>stdout+=d);
+      const timer=setTimeout(()=>child.kill('SIGKILL'),240000);
+      child.on('close',status=>{clearTimeout(timer);resolve({status,stdout,stderr:''});});
+    });
     const ok=result.status===0;if(!ok)failed.push(name);
     console.log(`${ok?'ok  ':'FAIL'} ${name} (${Math.round((Date.now()-began)/1000)}s)`);
     if(!ok)console.log(((result.stdout||'')+(result.stderr||'')).trim().split('\n').slice(0,12).map(line=>'     '+line.slice(0,220)).join('\n'));

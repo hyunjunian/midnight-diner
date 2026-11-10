@@ -76,7 +76,9 @@ v42는 승인된 시안에 맞춰 금빛 안내를 갈색 테두리 바깥의 �
 | 브라우저 사이트 (`midnight`) | `main` | `npx wrangler deploy` (빌드는 `wrangler.jsonc`가 자동 실행) |
 | 앱 라이브 업데이트 (`midnight-update`) | `release` | 루트 디렉터리 `workers/update`, `npx wrangler deploy` |
 
-GitHub Pages는 더 이상 배포 경로로 쓰지 않습니다. `docs/`의 태그는 로컬 실행·테스트용 자리표시자입니다.
+GitHub Pages는 더 이상 배포 경로로 쓰지 않습니다.
+
+푸시 전 점검은 `npm test`(단위 테스트)와 `npm run test:browser`(필수 브라우저 점검 4개, 1분 이내)입니다. `docs/`의 태그는 로컬 실행·테스트용 자리표시자입니다.
 
 ## iOS/안드로이드 앱 (Capacitor)
 
