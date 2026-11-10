@@ -1,0 +1,40 @@
+{
+  "results": [
+    {
+      "width": 320,
+      "previewCount": 2,
+      "currentImages": 0,
+      "duplicateLevelLabels": 0,
+      "overflow": false
+    },
+    {
+      "width": 393,
+      "previewCount": 2,
+      "currentImages": 0,
+      "duplicateLevelLabels": 0,
+      "overflow": false
+    },
+    {
+      "width": 430,
+      "previewCount": 2,
+      "currentImages": 0,
+      "duplicateLevelLabels": 0,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "previewCount": 2,
+      "currentImages": 0,
+      "duplicateLevelLabels": 0,
+      "overflow": false
+    }
+  ],
+  "purchase": {
+    "moneyBefore": 4011,
+    "moneyAfter": 3511,
+    "atmosphereBefore": 3,
+    "atmosphereAfter": 5,
+    "environmentAfter": 4
+  },
+  "errors": []
+}

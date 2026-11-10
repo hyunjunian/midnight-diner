@@ -1,20 +1,34 @@
 /* Renovation section and scene-only reveal. Existing cooking/UI materials remain unchanged. */
-#management-dialog[data-section="shop"] .renovation-summary{padding:16px;margin-bottom:16px;border-bottom:1px solid #b79a6744}
-#management-dialog[data-section="shop"] .renovation-summary h3{font-size:18px;font-weight:400;margin:0 0 10px}
-#management-dialog[data-section="shop"] .renovation-summary p{font-size:13px;line-height:1.7}
-.renovation-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;font:13px/1.8 var(--sans)}
-.renovation-funds{grid-column:1/-1}
-.renovation-metrics b{font-weight:400;color:#f0d49a;margin-left:5px}
-.renovation-summary small{display:block;font:12px/1.8 var(--sans);opacity:.85;margin-top:10px}
+#management-dialog[data-section="shop"] .renovation-summary{padding:18px 16px;margin-bottom:20px;border:1px solid #b79a6755;background:radial-gradient(ellipse at 50% 0,#b78b3520,transparent 65%),#20140b38;box-shadow:inset 0 1px #efd29b18}
+#management-dialog[data-section="shop"] .renovation-summary h3{font-size:20px;font-weight:400;margin:0 0 6px}
+.renovation-growth-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+.renovation-growth-status{font:11px/1.6 var(--sans);color:#c9b28a}
+.renovation-growth-status.is-ready{color:#f2d38e}
+.renovation-growth-status.is-ready::before{content:'';display:inline-block;width:5px;height:5px;margin:0 6px 1px 0;border-radius:50%;background:#dbbb73;box-shadow:0 0 5px #dfbf6744}
+.renovation-purse{text-align:right;flex-shrink:0}
+.renovation-purse>span{display:block;font:11px/1.5 var(--sans);color:#d3c1a3}
+.renovation-purse>b{display:block;margin-top:3px;font:400 18px/1.5 var(--reading-serif);color:#f3dbad;font-variant-numeric:tabular-nums}
+.renovation-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.renovation-stat{position:relative;min-width:0;padding:12px 12px 22px;border:1px solid #b18e5544;background:linear-gradient(#140c0866,#3c281b66);box-shadow:inset 0 1px 5px #10090555}
+.renovation-stat-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.renovation-stat-heading>span{font:13px/1.5 var(--reading-serif);color:#ecddc4}
+.renovation-stat-heading strong{font:400 26px/1.2 var(--reading-serif);color:#f2d69a;font-variant-numeric:tabular-nums}
+.renovation-stat-heading strong small{display:inline;margin-left:3px;font:11px var(--sans);color:#cbb28e}
+.renovation-stat-track{height:8px;margin-top:14px;padding:1px;overflow:hidden;border:1px solid #83633699;background:#100c08;box-shadow:inset 0 1px 2px #0009}
+.renovation-stat-track>i{display:block;min-width:0;height:100%;background:linear-gradient(#f0d39a,#b18745);box-shadow:0 0 5px #b78d3e55}
+.renovation-stat-environment .renovation-stat-track>i{background:linear-gradient(#c7d1a1,#7e9263)}
+.renovation-stat-scale{position:absolute;right:12px;bottom:5px;font:10px/1.4 var(--sans);color:#bda98a}
+#management-dialog[data-section="shop"] .renovation-growth-hint{margin:14px 0 0;font:12px/1.7 var(--sans);text-align:center;color:#d5c0a0;word-break:keep-all}
+.renovation-summary>small{display:block;font:12px/1.8 var(--sans);opacity:.85;margin-top:10px}
 .renovation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .renovation-card{display:flex;flex-direction:column;min-width:0;padding:16px;border:1px solid #b1956344;background:#23190f33}
 .renovation-card h3{font-size:17px;font-weight:400;margin:12px 0 6px;word-break:keep-all}
 .renovation-card p,.renovation-card small{font:13px/1.7 var(--sans)}
 .renovation-card small{display:block;font-size:11px;margin-top:4px}
-.renovation-required{font:12px/1.6 var(--sans);opacity:.8}
-.renovation-comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.renovation-comparison{display:block;margin:10px 0}
 .renovation-comparison figure{margin:0;min-width:0}
 .renovation-comparison img{display:block;width:100%;height:auto;object-fit:contain}
+.renovation-preview-outside img{max-height:360px}
 .renovation-comparison figcaption{font:11px/1.7 var(--sans);padding-top:5px;text-align:center}
 .renovation-card .renovation-cost{margin-bottom:2px}
 .renovation-card .renovation-reward{color:#eed09a;font-size:13px;margin-bottom:20px}
@@ -44,4 +58,5 @@ body:has(.scene.renovation-running) .scene-controls,body:has(.scene.renovation-r
 @keyframes renovation-sweep{0%{opacity:0;transform:translateX(-110%)}20%,80%{opacity:1}100%{opacity:0;transform:translateX(110%)}}
 @keyframes renovation-sparkle{0%{opacity:0}15%,30%{opacity:1}100%{opacity:0;transform:translateY(-50px) scale(.1)}}
 @media(max-width:680px){.renovation-grid{grid-template-columns:1fr}.renovation-card{padding:14px}.renovation-rewards{gap:10px}}
+@media(max-width:359px){.renovation-growth-heading{gap:8px}.renovation-purse>b{font-size:16px}.renovation-stats{gap:8px}.renovation-stat{padding:10px 8px 22px}.renovation-stat-heading{gap:3px}.renovation-stat-heading>span{font-size:12px}.renovation-stat-heading strong{font-size:22px}}
 @media(prefers-reduced-motion:reduce){.renovation-sweep,.renovation-sparkles{display:none}.scene.renovation-running .world{transition:none}}

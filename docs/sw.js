@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261110-v74-smaller-wallet-numbers';
+const RELEASE = '20261110-v75-growth-preview';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -546,7 +546,7 @@ const FILE_HASHES = {
   "assets/egg-food-source-v70.webp": "b083f97a7197e8fde55f37575dd83732456efd63869e9e81a37a98569765d0cf",
   "renovation-preview/model.js": "4b57c0a9b73b9e54e9b410b85543f161d57059955d26853e9b75aea127baea3b",
   "renovation.js": "0dbcce0c40f6e3a2e981ef29045d48b7e0125cb24241e9ab54c872a253ea1895",
-  "renovation.css": "5c252c8c55b54263fc88f386ad3eb6a70522b3c5aa8cef1e42026cfaf78c6e62",
+  "renovation.css": "7568bc1404810edb322495f6ece4b17ccde7d0ac540da9d74076c17054e9af15",
   "renovation-preview/assets/inside-01.webp": "aa55e6ee41f28e506a66f326a1cb4ef85c5fcc424a8c4816d802318a424a30f6",
   "renovation-preview/assets/inside-02.webp": "39d112b348c6fc7d62a7a6052c36b83035094229ceacb372bf4f31306fbc3b64",
   "renovation-preview/assets/inside-03.webp": "f7bd0d6d0652cfca909929b6649be0338b2dc096fc98064815bf6faa962f62d7",
@@ -749,7 +749,7 @@ const FILE_HASHES = {
   "ui-fixes-v38.css": "e93c04f1b5943ea06e4bc6a7626deca9c114b88e7e433579657f626c1f6b3159",
   "cooking-layout.js": "36c9bd448be4ec6d88198334dd73759e3dab0ec39e4ec62abe94ae56f4212674",
   "dialogue-motion.js": "28bd7aba2c4a1d927236109b528d0148441977ccf017db84ddf4d94af9e2b1aa",
-  "index.html": "da32bcae84d2ef39d1609b1f226b6962fa49f2eb23761a7d4f6a3b06232b9927",
+  "index.html": "d741fc3ddd2fea2369ed2ab1989ff40eb05a426cedde34be553cf28da8ed9ae9",
   "style.css": "5f447981dd9d0d91d1037c2b2c5b53a90cd79bbaf7f3c317f51b52b701a79e96",
   "customer.css": "3e2b3d4fc4781651d11c9c887d87ae45ea12fe01dec75cf591f9a99b1775d880",
   "motion.css": "b0b20530ae8929d2e91b2b109df20038484fb654fba3ed8be2c3c58d5046df75",
@@ -797,7 +797,7 @@ const FILE_HASHES = {
   "catalog.js": "fa5f93ed52cd38482aed7a7188fa12c63e6f304cb59813fa24a615d2a8f56af6",
   "stories.js": "000415984d1c791dc184bba686bd97d124031614dda6a0f6c6636df7a0c6ab0c",
   "engine.js": "b815f8d503e3439430c7433df9df9dced80b6479f010744e9d3ff2317887e099",
-  "game.js": "ddcfb890e0ce499e9c291445fae0d83a5b0dc331e01ef5401dd87bdf31a2d3df",
+  "game.js": "72ed0f74190a81e46fbbfd94431d87119557883abde6d10e77d2a13d052b04e9",
   "scene.js": "62782314fc70867c9e40cea575ee2d474091556f22f231d76946e95ffbb18502",
   "rain.js": "32e5a58bd452b6eefb384fe8953c2f5eff7de1e2c74edd8a6928cea463ea4372",
   "morph.js": "3717749af5436dda9d7398e2d08f1c84f6b17846c6c09e676536b6751efb20ef",
