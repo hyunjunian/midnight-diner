@@ -1,0 +1,121 @@
+{
+  "date": "2026-11-11",
+  "tool": "image_gen",
+  "purpose": "review-only cosmetic concepts; no runtime artwork replacement",
+  "newSceneCount": 48,
+  "approvedMockupCount": 2,
+  "sheets": [
+    {
+      "file": "inside-02-approved.png",
+      "sha256": "01d3083020e826b6377c9b34c68d51b68d0b9a16235824283d98880741554004",
+      "size": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "file": "outside-02-approved.png",
+      "sha256": "4bbf09e9ff0fc7802e1214b9bc7ba91cadf24752cb27fc208c78312811699d83",
+      "size": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "file": "sheet-01.png",
+      "sha256": "7e89071cd45ce4886f47fde04e74cdf955991da531fd37992a80045c156f98ef",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-02.png",
+      "sha256": "6af3e248e587717647fc90f2560791964a87a156682b836392cdd4b93199908b",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-03.png",
+      "sha256": "eef608781c0e39e084084527f430d59d1f90c92ea52f4491ba1f4e421bd9f71f",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-04.png",
+      "sha256": "9ae119211a7a4f58dba3bafd8b5c06c6d33da344399b50b5754d15c8e2e10f04",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-05.png",
+      "sha256": "641e0e2a8aa1ad69d27e2a832ef5c242c495b98e035b2253ba939553795f8438",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-06.png",
+      "sha256": "de5bb4991f1ccc1f16eee8620193f6fbae661121816ed197e5af56be010090ef",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-07.png",
+      "sha256": "984c2b68098e543a982690be542d9255554712ab48f587919e5dfe13a2d53070",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-08.png",
+      "sha256": "52642dc6915d46a38f78da39da84d0900eec204e29654548ba49520aec25120d",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-09.png",
+      "sha256": "c7870e221e8098e2c9df7b65b170a34fac8e4c1285f7fd55567c15e23f0f991f",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-10.png",
+      "sha256": "4d7db61ee5ab828dfd36c1f97991b25681c2fd126cd405d531cf687bc195d7e4",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-11.png",
+      "sha256": "a2e45268b7714b9b778fec160dd8b8fc25dec90edb31c430a3fd12f9232a85a9",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "sheet-12.png",
+      "sha256": "4549cef8f732fdedbaacd4c2730f8575e34a3cd3f5faca0f85bfc652dc11e525",
+      "size": [
+        1536,
+        1024
+      ]
+    }
+  ]
+}
