@@ -170,12 +170,34 @@
   function renderShop(){
     const R=E.R,r=state.renovation;
     const complete=r.inside===50&&r.outside===50;
+    const designCopy={
+      '카운터':'매일 마주하는 자리에 나무의 온기를 더해요.',
+      '벽과 창':'벽과 창의 결을 다듬어, 머물고 싶은 분위기로.',
+      '냉장고':'생활감은 덜고, 가게에 어울리는 단정한 모습으로.',
+      '천장과 조명':'불빛이 머무는 저녁, 내 가게를 더 포근하게.',
+      '왼쪽 수납':'가지런한 선반에 주인장의 취향을 담아요.',
+      '뒤쪽 작업대':'눈길이 닿는 곳까지 깔끔하게 갖춘 나만의 식당.',
+      '후드 주변':'바랜 흔적을 정돈해, 실내 인상을 한결 깔끔하게.',
+      '오른쪽 수납장':'수납장도 가게의 풍경처럼, 한층 단정하게.',
+      '실내 출입문':'문을 여는 순간부터 느껴지는 따뜻한 나무의 멋.',
+      '바닥':'가게의 바탕부터 차분하게, 발길이 머무는 공간으로.',
+      '노렌':'골목에서 눈길이 닿는 첫인상, 내 가게답게.',
+      '간판':'지나가는 길에도 기억나는 나만의 식당 얼굴.',
+      '입구 문':'들어가 보고 싶은 문 앞, 정갈한 첫인상을 더해요.',
+      '외부 창':'창가에 담긴 가게의 표정, 더 또렷하고 단정하게.',
+      '외벽 목재':'골목 풍경에 스며드는 깊이 있는 나무의 멋.',
+      '외벽 회벽':'바랜 벽면을 정돈해, 외관을 한층 깔끔하게.',
+      '지붕과 처마':'지붕선까지 정갈하게, 오래 바라보고 싶은 가게로.',
+      '입구 식재':'문 앞에 더하는 초록 한 자리, 가게의 작은 쉼표.',
+      '입구 조명':'늦은 골목에서도 반가운 내 가게 앞 따뜻한 불빛.',
+      '문턱과 앞길':'발길이 닿는 입구까지 정성스럽게 맞이하는 모습으로.'
+    };
     const stat=(name,score,kind)=>{const metric=kind==='atmosphere'?'atmosphere':'environment',cap=['inside','outside'].reduce((sum,area)=>sum+R.areaTotals(area,50)[metric],kind==='atmosphere'?(r.legacyAtmosphere||0):0),scale=Math.max(10,Math.min(cap,Math.ceil(score/10)*10));return `<div class="renovation-stat renovation-stat-${kind}"><div class="renovation-stat-heading"><span>${name}</span><strong>${score}<small>점</small></strong></div><div class="renovation-stat-track" role="meter" aria-label="${name} 점수" aria-valuemin="0" aria-valuemax="${scale}" aria-valuenow="${score}"><i style="width:${score/scale*100}%"></i></div><span class="renovation-stat-scale" aria-hidden="true">${scale}</span></div>`;};
     $('management-content').innerHTML=`<section class="renovation-summary"><div class="renovation-growth-heading"><div><h3>내 취향의 가게</h3>${complete?'<span class="renovation-growth-status">매장 디자인 완성</span>':''}</div></div><div class="renovation-stats">${stat('분위기',E.atmosphere(state),'atmosphere')}${stat('환경',E.environment(state),'environment')}</div>${state.upgrades.length?'<small>이전 꾸미기 구매 내역과 혜택은 그대로 유지돼요.</small>':''}</section><div class="renovation-grid">${['inside','outside'].map(area=>{
       const label=area==='inside'?'내부':'외부',u=R.next(state,area);
       if(!u)return `<article class="renovation-card"><h3>${label} 개선 완료</h3><img class="renovation-finished" src="${R.image(area,50)}" alt="50단계 개선을 마친 ${label}"><p>50/50단계 · 모든 개선을 마쳤어요.</p><button disabled>개선 완료</button></article>`;
       const done=r[area]>=u.level,q=R.quote(state,area,u.level),prior=r[area]<u.previous,reason=q.reason;
-      return `<article class="renovation-card" data-renovation-card="${area}"><div class="renovation-comparison renovation-preview-${area}"><figure><img src="${R.image(area,u.level)}" alt="${label} 개선 후 미리보기" loading="lazy"><figcaption>개선 후 미리보기</figcaption></figure></div><p class="renovation-cost">${area==='inside'?'인테리어 개선':'외관 개선'}</p><p class="renovation-reward">분위기 +${u.atmosphere} · 환경 +${u.environment}<small>개선 내용: ${u.zone} ${u.name}</small></p><button data-renovate="${area}" data-renovation-level="${u.level}" ${done||prior||!q.ok||renovationBusy?'disabled':''}>${reason}</button></article>`;
+      return `<article class="renovation-card" data-renovation-card="${area}"><div class="renovation-comparison renovation-preview-${area}"><figure><img src="${R.image(area,u.level)}" alt="${label} 개선 후 미리보기" loading="lazy"><figcaption>개선 후 미리보기</figcaption></figure></div><p class="renovation-cost">${area==='inside'?'인테리어 개선':'외관 개선'}</p><p class="renovation-reward">분위기 +${u.atmosphere} · 환경 +${u.environment}<small>개선 내용 | ${u.zone} ${u.name} · ${designCopy[u.zone]}</small></p><button data-renovate="${area}" data-renovation-level="${u.level}" ${done||prior||!q.ok||renovationBusy?'disabled':''}>${reason}</button></article>`;
     }).join('')}</div>`;
   }
   async function buyRenovation(area,expected){
