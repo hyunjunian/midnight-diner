@@ -3,6 +3,6 @@
    the update files, without a trailing slash. Leave empty to turn live updates off. */
 (()=>{'use strict';
   (window.MidnightPlatform=window.MidnightPlatform||{}).config={
-    updateBaseUrl: ''
+    updateBaseUrl: 'https://midnight-r2.couprice.com'
   };
 })();
