@@ -96,12 +96,14 @@
 .night-hud #calendar-open{position:relative;align-items:center;justify-content:center;gap:0;min-width:0;min-height:44px;padding:5px 0 2px;isolation:isolate}
 .night-hud #day{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:3px;width:auto;min-height:0;margin:0;padding:0;border:0;background:none;box-shadow:none;font-weight:400;line-height:1;transform:translateY(-1px) scale(.92);transform-origin:center}
 .night-hud #day::before,.night-hud #day::after{content:none}
-.night-hud .date-leaf{position:relative;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:21px;height:35px;padding:3px 0 0;border:1px solid #c1ab81;border-radius:1px;background:#f1e4c8 url('./assets/ui-washi-v21.webp') center/260px;color:#493622;box-shadow:inset 0 1px #fff8e7,0 1px 0 #c0ab85,0 2px 0 #f0e2c2,0 3px 1px #160b0877;transform-origin:center top}
+.night-hud .date-leaf{position:relative;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:21px;height:35px;padding:3px 0 0;border:0;border-radius:0;background:none;color:#493622;box-shadow:none;transform-origin:center top}
 .night-hud .date-leaf>span{position:relative;z-index:1;font:400 23px/1 var(--reading-serif);font-variant-numeric:tabular-nums;letter-spacing:0;color:#493622;text-shadow:none}
 .night-hud .date-month>span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;writing-mode:horizontal-tb;text-orientation:mixed;font:400 11px/1.05 var(--reading-serif);letter-spacing:0}
 .night-hud .date-month-number,.night-hud .date-month-unit{display:block;font:inherit;line-height:1.05;letter-spacing:0}
-.night-hud .date-leaf::before{content:'';position:absolute;z-index:3;left:calc(50% - 2px);top:-6px;width:4px;height:11px;box-sizing:border-box;border:1px solid #735322;border-radius:50% 50% 38% 38%;background:linear-gradient(90deg,#765321 0%,#b8954b 23%,#e5cf8d 45%,#aa883f 67%,#70501f 100%);box-shadow:1px 1px 1px #160c0888,inset 1px 0 #f4dfa077;transform:rotate(-5deg)}
-.night-hud .date-leaf::after{content:'';position:absolute;z-index:2;left:calc(50% - 3px);top:2px;width:6px;height:3px;border-radius:50%;background:#3e2d1b;box-shadow:0 1px #fff3cf77}
+/* One photographed-material blank leaf and aged brass loop sits behind live ink.
+   Its transparent margins preserve the existing 21×35 leaf and six-pixel loop. */
+.night-hud .date-leaf::before{content:'';position:absolute;z-index:0;left:-3px;right:-3px;top:-6px;bottom:-3px;width:auto;height:auto;box-sizing:border-box;border:0;border-radius:0;background:transparent url('./assets/date-leaf-brass-v69.webp') center/100% 100% no-repeat;box-shadow:none;transform:none;pointer-events:none}
+.night-hud .date-leaf::after{content:none}
 .night-hud #calendar-open:active .date-leaf{filter:brightness(.96)}
 /* Real calendar rows retain the physical paper sheet and wood navigation. */
 .calendar-weekday{display:flex;align-items:center;justify-content:center;min-height:22px;border-right:1px solid #b6996c66;border-bottom:1px solid #b6996c66;font:400 10px/1.4 var(--reading-serif);color:#806747}

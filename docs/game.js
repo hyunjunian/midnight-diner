@@ -4,6 +4,13 @@
   const KEY = 'midnight-diner-save-v11';
   const $ = id => document.getElementById(id);
   const yen = n => `¥${n.toLocaleString('ja-JP')}`;
+  function displayMoney(value){
+    const holder=$('money'),text=yen(value);if(holder.textContent===text)return;
+    const fragment=document.createDocumentFragment();
+    text.split(',').forEach((part,i)=>{if(i){fragment.append(document.createTextNode(','),document.createElement('wbr'));}fragment.append(document.createTextNode(part));});
+    holder.replaceChildren(fragment);
+  }
+
   let state, storageAvailable = true, saveMessage = '';
   // Keep the current playthrough; import v10 once without resetting purchases or cooking.
   try { state=E.restore(localStorage.getItem(KEY)||localStorage.getItem('midnight-diner-save-v10')); }
@@ -196,7 +203,7 @@
     window.MidnightDaylight?.update(state);
   }
   function render() {
-    $('money').textContent=yen(cashAnimation?Math.round(cashAnimation.from):state.money);
+    displayMoney(cashAnimation?Math.round(cashAnimation.from):state.money);
     $('reputation').innerHTML = `${state.reputation} <small>/ 100</small>`;
     const date=window.MidnightDate.dateForNight(state.night),dateLabel=window.MidnightDate.label(state.night);
     $('day').setAttribute('aria-label',dateLabel);
@@ -437,7 +444,7 @@
     state = E.fresh(); resetTransient(); seenCustomers.clear(); render(); startIntro();
   });
   function frame(now){const dt=lastFrame?Math.min(now-lastFrame,100):0;lastFrame=now;
-    if(cashAnimation){const progress=Math.max(0,Math.min(1,(now-cashAnimation.start-450)/650));$('money').textContent=yen(Math.round(cashAnimation.from+(cashAnimation.to-cashAnimation.from)*(1-(1-progress)**3)));if(progress===1)cashAnimation=null;}
+    if(cashAnimation){const progress=Math.max(0,Math.min(1,(now-cashAnimation.start-450)/650));displayMoney(Math.round(cashAnimation.from+(cashAnimation.to-cashAnimation.from)*(1-(1-progress)**3)));if(progress===1)cashAnimation=null;}
     if(!document.hidden&&!$('app').hidden&&!$('reset-dialog').open&&!$('settings-dialog').open&&!$('intro').open){
       Kitchen.tick(dt);
       if(state.phase==='open'&&!Scene.isPlacing()){
