@@ -1,5 +1,5 @@
 /* Atomic app-shell updates, including the new portrait cinematic. */
-const RELEASE = '20261110-v80-renovation-copy';
+const RELEASE = '20261110-v81-design-copy';
 const CACHE_PREFIX = 'midnight-diner-pwa-';
 const VERSION = CACHE_PREFIX + RELEASE;
 const ROOT = new URL('./', self.location.href);
@@ -753,7 +753,7 @@ const FILE_HASHES = {
   "ui-fixes-v38.css": "e93c04f1b5943ea06e4bc6a7626deca9c114b88e7e433579657f626c1f6b3159",
   "cooking-layout.js": "36c9bd448be4ec6d88198334dd73759e3dab0ec39e4ec62abe94ae56f4212674",
   "dialogue-motion.js": "28bd7aba2c4a1d927236109b528d0148441977ccf017db84ddf4d94af9e2b1aa",
-  "index.html": "797db8c3b7bfc41ccc7f995674db0320aa9f26da35e89b68fdf55ce2c7ffb3e8",
+  "index.html": "5795350f98fcf682bda91828f03ad045bf497199edc00e9923b1102777c57ef3",
   "style.css": "5f447981dd9d0d91d1037c2b2c5b53a90cd79bbaf7f3c317f51b52b701a79e96",
   "customer.css": "3e2b3d4fc4781651d11c9c887d87ae45ea12fe01dec75cf591f9a99b1775d880",
   "motion.css": "b0b20530ae8929d2e91b2b109df20038484fb654fba3ed8be2c3c58d5046df75",
@@ -801,7 +801,7 @@ const FILE_HASHES = {
   "catalog.js": "fa5f93ed52cd38482aed7a7188fa12c63e6f304cb59813fa24a615d2a8f56af6",
   "stories.js": "000415984d1c791dc184bba686bd97d124031614dda6a0f6c6636df7a0c6ab0c",
   "engine.js": "696ee771692f9f6c9cf9de6e112d79c8b08a1ac7fefe4b7c980d42b846624ac2",
-  "game.js": "d45bb19edeffa6f706d56be60a48fc76f4336c8f0de2476c37b199ba258b5efe",
+  "game.js": "cef892333755a11abcb34a7cbb3db74236e02fc63571e47fe018ce2c7ff60419",
   "scene.js": "62782314fc70867c9e40cea575ee2d474091556f22f231d76946e95ffbb18502",
   "rain.js": "32e5a58bd452b6eefb384fe8953c2f5eff7de1e2c74edd8a6928cea463ea4372",
   "morph.js": "3717749af5436dda9d7398e2d08f1c84f6b17846c6c09e676536b6751efb20ef",
