@@ -5,8 +5,24 @@
   // install prompt and no web update checks. Updates go through src/platform/updater.js.
   if (window.Capacitor?.isNativePlatform?.() === true) {
     for (const id of ['install-app','install-hint','install-guide','install-status','update-app','offline-status','fullscreen']) { const el = $(id); if (el) el.hidden = true; }
+    // Live updates: check silently on launch and on each return, and switch to a
+    // downloaded bundle only after saving, while the app is in the background.
+    const app = window.MidnightApp, updater = window.MidnightPlatform?.updater;
     let nativeStarted = false;
-    const start = () => { if (!nativeStarted) { nativeStarted = true; window.MidnightApp.launch(); } };
+    const check = () => { try { updater?.check?.().catch(() => {}); } catch {} };
+    const start = () => {
+      if (nativeStarted) return;
+      nativeStarted = true;
+      if (updater?.consumeResume?.()) app.resumeAfterUpdate(); else app.launch();
+      Promise.resolve(updater?.init?.()).catch(() => {}).then(check);
+    };
+    document.addEventListener('visibilitychange', () => {
+      if (!nativeStarted) return;
+      if (!document.hidden) return check();
+      const saved = app.saveForUpdate() !== false;
+      if (saved && !$('app').hidden && updater?.hasReady?.()) updater.apply();
+    });
+    window.addEventListener('pagehide', () => { if (nativeStarted) app.saveForUpdate(); });
     window.MidnightPWA = { start };
     if (document.documentElement.dataset.preview !== 'embedded') start();
     return;

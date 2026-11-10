@@ -11,7 +11,7 @@
 | `tools/build-native.cjs` | `docs/` → `www/` 복사. 목업, `sw.js`, `preview.html`, `approved.html`, 리노베이션 검토 페이지 제외 |
 | `www/` | Capacitor `webDir`. 생성물이라 Git 제외 |
 | `ios/`, `android/` | 네이티브 프로젝트(Git 포함). 복사된 웹 자산 폴더만 각 `.gitignore`가 제외 |
-| `docs/src/platform/` | 네이티브 기능 경계: `ads.js`, `store.js`, `updater.js` |
+| `docs/src/platform/` | 네이티브 기능 경계: `ads.js`, `store.js`, `updater.js` (v82부터 `config.js`, 실제 업데이터는 live-update-v82.md) |
 
 번들러가 없어서 플랫폼 계층은 서빙 루트 안(`docs/src/platform/`)에 두고 `window.MidnightPlatform.{ads,store,updater}`로 노출한다.
 게임 로직은 이 인터페이스만 호출하고, Capacitor 플러그인은 이 세 파일 안에서만 부른다.

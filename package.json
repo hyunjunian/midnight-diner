@@ -10,14 +10,19 @@
     "sync:ios": "node tools/build-native.cjs && cap sync ios",
     "sync:android": "node tools/build-native.cjs && cap sync android",
     "open:ios": "cap open ios",
-    "open:android": "cap open android"
+    "open:android": "cap open android",
+    "publish:update": "node tools/publish-update.cjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.0",
     "@capacitor/core": "^8.6.0",
-    "@capacitor/ios": "^8.6.0"
+    "@capacitor/ios": "^8.6.0",
+    "@capgo/capacitor-updater": "^8.54.2"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.0"
+  },
+  "liveUpdate": {
+    "minNative": "1.0"
   }
 }

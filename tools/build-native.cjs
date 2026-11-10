@@ -5,7 +5,7 @@ const root=path.join(__dirname,'..'),from=path.join(root,'docs'),to=path.join(ro
 // Not needed inside a store bundle: design mockups, the browser-only worker and
 // preview/approval entries, and the renovation review pages (the game itself
 // uses only renovation-preview/model.js and renovation-preview/assets/).
-const skip=[/^mockups(\/|$)/,/^sw\.js$/,/^preview\.html$/,/^approved\.html$/,/^_headers$/,/(^|\/)\.DS_Store$/,
+const skip=[/^mockups(\/|$)/,/^sw\.js$/,/^preview\.html$/,/^approved\.html$/,/^_headers$/,/^\.nojekyll$/,/(^|\/)\.DS_Store$/,
   /^renovation-preview\/(?!assets(\/|$)|model\.js$).+/];
 fs.rmSync(to,{recursive:true,force:true});
 let files=0,bytes=0;
