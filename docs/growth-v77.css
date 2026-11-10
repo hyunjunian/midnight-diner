@@ -1,0 +1,22 @@
+/* Only the new operating-pass sheet and renovation benefit captions. */
+#access-dialog{max-width:660px}
+#access-dialog .sheet-header h2{font-size:24px}
+#access-content{font:14px/1.8 var(--reading-serif);color:#edddbd;word-break:keep-all}
+#access-content .access-status{margin:0 0 16px;color:#e8c789}
+#access-content .access-steps{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+#access-content .access-steps>section{min-width:0;padding:14px 10px;border:1px solid #a98a5555;background:#140c0833}
+#access-content .access-steps span,#access-content .access-themes>span{font-size:11px;color:#ccb28d}
+#access-content h3{margin:5px 0 8px;font:400 21px/1.5 var(--reading-serif);color:#f2d89f}
+#access-content p{margin:8px 0 12px;font-size:13px}
+#access-content .access-pass{padding:20px 16px;border:1px solid #c3a36888;background:radial-gradient(ellipse at top,#b78b3520,transparent 70%),#1b100940}
+#access-content .access-pass>strong{display:block;margin:18px 0 12px;font-size:22px;font-weight:400;color:#f3d59b}
+#access-content button{width:100%;min-height:48px;white-space:normal;font-size:14px;line-height:1.6}
+#access-content #access-purchase{margin:12px 0 10px}
+#access-content .access-pass small{display:block;font-size:11px;color:#ccb99b}
+#access-content .access-themes{margin-top:20px;padding:16px;border:1px solid #a98a5533}
+#access-content .access-themes h3{font-size:18px}
+#access-content .access-save-note{margin:20px 0 12px;text-align:center;font-size:12px;color:#ccb99b}
+#management-dialog[data-section="shop"] .renovation-stat-benefit{display:block;margin-top:10px;font:11px/1.6 var(--sans);color:#e3c695}
+#management-dialog[data-section="shop"] .renovation-stat-scale{bottom:34px}
+#management-dialog[data-section="shop"] .renovation-reward small{margin-top:10px;font-size:11px;color:#d6c5a5}
+@media(max-width:359px){#access-content .access-steps{gap:8px}#access-content .access-steps>section{padding:12px 8px}#access-content .access-steps h3{font-size:18px}#access-content .access-steps p{font-size:12px}#access-content .access-pass{padding:16px 12px}}

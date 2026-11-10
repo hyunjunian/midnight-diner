@@ -4,6 +4,8 @@
   const KEY = 'midnight-diner-save-v11';
   const $ = id => document.getElementById(id);
   const yen = n => `¥${n.toLocaleString('ja-JP')}`;
+  const percent=n=>Number(n.toFixed(1)).toLocaleString('ko-KR')+'%';
+  let accessNextNight=false;
   function displayMoney(value){$('money').textContent=yen(value);}
   let state, storageAvailable = true, saveMessage = '';
   // Keep the current playthrough; import v10 once without resetting purchases or cooking.
@@ -44,16 +46,29 @@
   }
   function levelNote(level) {
     const l = E.levels[level - 1];
-    return `레벨 ${level} · 누적 ${l.xp}점 / 평판 ${l.reputation} / 만족도 ${l.satisfaction}`;
+    return `레벨 ${level} · 누적 경험치 ${l.xp.toLocaleString()}점`;
   }
   function decorArt(id){return Scene.itemArt(id);}
   function delta(n,unit=''){return `<span class="score-delta ${n>0?'gain':n<0?'loss':'no-change'}" aria-label="이번 영업 ${n>0?'상승':n<0?'하락':'변화 없음'} ${Math.abs(n)}${unit}">${n===0?'±0':signed(n)}<small>${unit}</small></span>`;}
-  function requirements(level){const l=E.levels[level-1];return `성장 ${l.xp} · 평판 ${l.reputation} · 만족도 ${l.satisfaction} · 분위기 ${l.atmosphere}`;}
+  function requirements(level){const l=E.levels[level-1];return `누적 경험치 ${l.xp.toLocaleString()}점${level>E.Growth.trialLevel&&E.Growth.levelLimit(state)===E.Growth.trialLevel?' · 레벨 3부터 가게 운영권':''}`;}
+  function openAccess(nextNight=false){
+    accessNextNight=nextNight;
+    const existing=E.Growth.levelLimit(state)>E.Growth.trialLevel;
+    $('access-content').innerHTML=`<p class="access-status">${existing?'기존 플레이어 · 진행 유지':`현재 레벨 ${state.level} · 무료 체험`}</p><div class="access-steps"><section><span>무료 체험</span><h3>레벨 1~2</h3><p>요리하고 손님을 맞으며<br>첫 가게 개선을 경험해요.</p></section><section><span>한 번 구매</span><h3>레벨 3~50</h3><p>가게 운영권으로<br>성장을 이어 가요.</p></section></div><section class="access-pass"><h3>가게 운영권</h3><p>반복 결제 없이 레벨 50까지 플레이해요.<br>메뉴와 기본 내부·외부 개선은 성장에 맞춰 열려요.</p><strong>예정 가격 ₩${E.Growth.plannedPrice.toLocaleString('ko-KR')}</strong><p>개선에는 게임에서 번 ¥ 자금을 사용해요.<br>자금 충전은 필요하지 않아요.</p><button id="access-purchase" disabled>결제 준비 중</button><small>실제 결제는 아직 열리지 않았어요.${existing?' 기존 진행은 계속 플레이할 수 있어요.':' 지금은 레벨 1~2를 계속 즐길 수 있어요.'}</small></section><section class="access-themes"><span>원하는 분만 선택 구매 · 준비 중</span><h3>특별 매장 디자인</h3><p>기본 개선과 별도로, 내부·외부의 다른 분위기를 선택할 수 있도록 준비할 예정이에요.</p></section><p class="access-save-note">경험치·자금·개선 내역은 그대로 저장돼요.</p><button id="access-continue" class="primary">${nextNight?'무료 구간 계속 즐기기':'가게로 돌아가기'}</button>`;
+    openSheet('access-dialog');
+  }
+  $('access-open').addEventListener('click',()=>openAccess());
+  $('access-content').addEventListener('click',event=>{
+    if(!event.target.closest('#access-continue'))return;
+    if(accessNextNight&&state.phase==='end'&&E.next(state)){resetTransient();Scene.showArea('inside');}
+    accessNextNight=false;$('access-dialog').close();render();
+  });
+  $('access-dialog').addEventListener('close',()=>{accessNextNight=false;});
   function renderReport() {
     const r=E.report(state),levelled=r.level>r.previousLevel,next=r.next;
     const reviews=r.reviews.length?`<div class="night-reviews" aria-label="이번 영업 손님 리뷰">${r.reviews.map(x=>`<article class="night-review">${x.person!==null?`<span class="review-face">${portrait(E.person(x.person),x.person)}</span>`:'<span class="review-note" aria-hidden="true">★</span>'}<div><header><b>${x.guest}</b><span>★ ${(x.score/20).toFixed(1)}</span></header><p>“${x.text}”</p><small>${x.dish}</small></div></article>`).join('')}</div>`:'<p class="review-empty">음식값을 받은 손님의 리뷰가 이곳에 남아요.</p>';
-    const goal=next?`<section class="next-goal"><h4>레벨 ${r.level+1}까지 ${r.remaining?`성장 ${r.remaining.toLocaleString()}점`:'조건 채우기'}</h4><div class="level-growth"><span>성장</span><b>${r.xp.toLocaleString()} / ${next.xp.toLocaleString()}</b><progress value="${Math.min(r.xp,next.xp)}" max="${next.xp}" aria-label="다음 레벨 성장 점수"></progress></div><div class="goal-chips">${[[r.reputation,next.reputation,'평판'],[r.satisfaction,next.satisfaction,'만족도'],[r.atmosphere,next.atmosphere,'분위기']].map(([v,t,label])=>`<div class="goal-condition ${v>=t?'met':''}"><header><span>${label}</span><b>${v>=t?'✓ 달성':`${t-v}점 더`}</b></header><progress value="${Math.min(v,t)}" max="${t||1}" aria-label="${label} ${v} / ${t}"></progress><small>${v} / ${t}</small></div>`).join('')}</div>${r.atmosphere<next.atmosphere?`<button data-go-shop>분위기 및 환경 개선 · 분위기 ${next.atmosphere-r.atmosphere}점 더하기</button>`:''}</section>`:'<p class="max-level-message">백 가지 밤의 주인장이 되었어요.</p>';
-    $('report-content').innerHTML=`<div class="report-heading"><span class="night-stamp">${window.MidnightDate.label(state.night)}</span><h3>오늘 밤도 수고했어요</h3><p>${state.nightScores.length}명 대접 · 평균 만족도 ${r.average}점</p></div><section class="growth-banner ${levelled?'level-up':''}"><span class="level-tile"><small>레벨</small><b>${r.level}</b></span><div><small>${levelled?'레벨 상승':'오늘의 성장'}</small><h3>${E.levels[r.level-1].name}</h3>${delta(r.xpDelta,'XP')}</div></section><section class="report-reputation report-metric"><div class="metric-heading"><div><h4>골목의 평판</h4><strong>${r.reputation}<small> / 100</small></strong></div>${delta(r.reputationDelta,'점')}</div>${reviews}</section><div class="report-metric-pair"><section class="report-metric"><h4>고객 만족도</h4><strong>${r.satisfaction}<small> / 100</small></strong>${delta(r.satisfactionDelta,'점')}</section><section class="report-metric"><h4>가게의 분위기</h4><strong>${r.atmosphere}<small>점</small></strong>${delta(r.atmosphereDelta,'점')}</section></div><section class="till-summary"><div class="till-heading"><span>오늘의 금고</span><strong>${yen(r.money)}</strong>${delta(r.net,'엔')}</div><div class="till-lines"><p><span>오늘 매출</span><b>${yen(r.revenue)}</b></p><p class="tip-income"><span>매출에 포함된 팁</span><b>+${yen(r.tips)}</b></p>${r.storyIncome?`<p><span>이야기의 답례</span><b class="income">+${yen(r.storyIncome)}</b></p>`:''}${r.purchases?`<p><span>재료·가게 구입</span><b class="expense">−${yen(r.purchases)}</b></p>`:''}${r.storyCosts?`<p><span>이야기에 보탠 비용</span><b class="expense">−${yen(r.storyCosts)}</b></p>`:''}<p><span>영업비 <small>임대·가스·전기</small></span><b class="expense">−${yen(r.expenses)}</b></p></div><small>총 성장 점수 ${r.xp.toLocaleString()} XP</small></section>${goal}${r.menus.length?`<section class="earned-gallery"><h4>이번 밤에 열린 새로운 한 끼</h4>${Array.from({length:Math.min(r.level,34)-r.previousLevel},(_,i)=>rewardGallery(r.previousLevel+i+1)).join('')}</section>`:''}${upcoming()}<button id="report-next" class="primary cook-button">다음 밤 준비 <span></span></button>`;
+    const goal=next?`<section class="next-goal"><h4>${E.trialComplete(state)?'무료 체험 구간을 마쳤어요':`레벨 ${next.level}까지 경험치 ${r.remaining.toLocaleString()}점`}</h4><div class="level-growth"><span>경험치</span><b>${r.xp.toLocaleString()} / ${next.xp.toLocaleString()}</b><progress value="${Math.min(r.xp,next.xp)}" max="${next.xp}" aria-label="다음 레벨 경험치"></progress></div><p>${E.trialComplete(state)?'지금 영업을 마친 뒤, 가게 운영권 안내를 확인해 보세요.':'음식값을 받으면 경험치가 쌓여요. 평판·만족도·분위기는 레벨 상승을 막지 않아요.'}</p></section>`:'<p class="max-level-message">백 가지 밤의 주인장이 되었어요.</p>';
+    $('report-content').innerHTML=`<div class="report-heading"><span class="night-stamp">${window.MidnightDate.label(state.night)}</span><h3>오늘 밤도 수고했어요</h3><p>${state.nightScores.length}명 대접 · 평균 만족도 ${r.average}점</p></div><section class="growth-banner ${levelled?'level-up':''}"><span class="level-tile"><small>레벨</small><b>${r.level}</b></span><div><small>${levelled?'레벨 상승':'오늘의 성장'}</small><h3>${E.levels[r.level-1].name}</h3>${delta(r.xpDelta,'XP')}</div></section><section class="report-reputation report-metric"><div class="metric-heading"><div><h4>골목의 평판</h4><strong>${r.reputation}<small> / 100</small></strong></div>${delta(r.reputationDelta,'점')}</div>${reviews}</section><div class="report-metric-pair"><section class="report-metric"><h4>고객 만족도</h4><strong>${r.satisfaction}<small> / 100</small></strong>${delta(r.satisfactionDelta,'점')}</section><section class="report-metric"><h4>가게의 분위기</h4><strong>${r.atmosphere}<small>점</small></strong>${delta(r.atmosphereDelta,'점')}</section></div><section class="till-summary"><div class="till-heading"><span>오늘의 금고</span><strong>${yen(r.money)}</strong>${delta(r.net,'엔')}</div><div class="till-lines"><p><span>오늘 매출</span><b>${yen(r.revenue)}</b></p><p class="tip-income"><span>매출에 포함된 팁</span><b>+${yen(r.tips)}</b></p>${r.storyIncome?`<p><span>이야기의 답례</span><b class="income">+${yen(r.storyIncome)}</b></p>`:''}${r.purchases?`<p><span>재료·가게 구입</span><b class="expense">−${yen(r.purchases)}</b></p>`:''}${r.storyCosts?`<p><span>이야기에 보탠 비용</span><b class="expense">−${yen(r.storyCosts)}</b></p>`:''}<p><span>영업비 <small>임대·가스·전기</small></span><b class="expense">−${yen(r.expenses)}</b></p></div><small>총 성장 점수 ${r.xp.toLocaleString()} XP</small></section>${goal}${r.menus.length?`<section class="earned-gallery"><h4>이번 밤에 열린 새로운 한 끼</h4>${Array.from({length:Math.min(r.level,34)-r.previousLevel},(_,i)=>rewardGallery(r.previousLevel+i+1)).join('')}</section>`:''}${upcoming()}<button id="report-next" class="primary cook-button">${E.trialComplete(state)?'레벨 3 이후 안내':'다음 밤 준비'} <span></span></button>`;
   }
 
   function renderScene() {
@@ -162,14 +177,15 @@
   }
 
   function renderShop(){
-    const R=E.R,r=state.renovation;
+    const R=E.R,r=state.renovation,benefits=E.growthBenefits(state);
     const complete=r.inside===50&&r.outside===50,ready=['inside','outside'].some(area=>R.quote(state,area).ok);
-    const stat=(name,score,kind)=>{const metric=kind==='atmosphere'?'atmosphere':'environment',cap=['inside','outside'].reduce((sum,area)=>sum+R.areaTotals(area,50)[metric],kind==='atmosphere'?(r.legacyAtmosphere||0):0),scale=Math.max(10,Math.min(cap,Math.ceil(score/10)*10));return `<div class="renovation-stat renovation-stat-${kind}"><div class="renovation-stat-heading"><span>${name}</span><strong>${score}<small>점</small></strong></div><div class="renovation-stat-track" role="meter" aria-label="${name} 점수" aria-valuemin="0" aria-valuemax="${scale}" aria-valuenow="${score}"><i style="width:${score/scale*100}%"></i></div><span class="renovation-stat-scale" aria-hidden="true">${scale}</span></div>`;};
-    $('management-content').innerHTML=`<section class="renovation-summary"><div class="renovation-growth-heading"><div><h3>내 가게 성장</h3><span class="renovation-growth-status ${ready?'is-ready':''}">${complete?'가게 성장 완성':ready?'개선 준비 완료':'한 단계 더 따뜻하게'}</span></div><div class="renovation-purse"><span>보유 자금</span><b>${yen(state.money)}</b></div></div><div class="renovation-stats">${stat('분위기',E.atmosphere(state),'atmosphere')}${stat('환경',E.environment(state),'environment')}</div><p class="renovation-growth-hint">개선할 때마다 두 점수가 함께 올라요.</p>${r.insideCredit||r.outsideCredit?`<small>이전 구매 반영 금액 · 내부 ${yen(r.insideCredit)} / 외부 ${yen(r.outsideCredit)}<br>개선 비용에서 먼저 사용하고, 남은 금액만 보유 자금에서 차감해요.</small>`:''}${state.upgrades.length?'<small>이전 꾸미기 구매 내역과 혜택은 그대로 유지돼요.</small>':''}</section><div class="renovation-grid">${['inside','outside'].map(area=>{
+    const stat=(name,score,kind)=>{const metric=kind==='atmosphere'?'atmosphere':'environment',cap=['inside','outside'].reduce((sum,area)=>sum+R.areaTotals(area,50)[metric],kind==='atmosphere'?(r.legacyAtmosphere||0):0),scale=Math.max(10,Math.min(cap,Math.ceil(score/10)*10));return `<div class="renovation-stat renovation-stat-${kind}"><div class="renovation-stat-heading"><span>${name}</span><strong>${score}<small>점</small></strong></div><div class="renovation-stat-track" role="meter" aria-label="${name} 점수" aria-valuemin="0" aria-valuemax="${scale}" aria-valuenow="${score}"><i style="width:${score/scale*100}%"></i></div><span class="renovation-stat-scale" aria-hidden="true">${scale}</span><small class="renovation-stat-benefit">${kind==='atmosphere'?`팁 +${percent(benefits.tips)}`:`영업비 −${percent(benefits.operatingDiscount)}`}</small></div>`;};
+    $('management-content').innerHTML=`<section class="renovation-summary"><div class="renovation-growth-heading"><div><h3>내 가게 성장</h3><span class="renovation-growth-status ${ready?'is-ready':''}">${complete?'가게 성장 완성':ready?'개선 준비 완료':'한 단계 더 따뜻하게'}</span></div><div class="renovation-purse"><span>보유 자금</span><b>${yen(state.money)}</b></div></div><div class="renovation-stats">${stat('분위기',E.atmosphere(state),'atmosphere')}${stat('환경',E.environment(state),'environment')}</div><p class="renovation-growth-hint">개선은 게임에서 번 ¥ 자금으로 해요. 분위기는 팁을 늘리고, 환경은 영업비를 줄여요.</p>${r.insideCredit||r.outsideCredit?`<small>이전 구매 반영 금액 · 내부 ${yen(r.insideCredit)} / 외부 ${yen(r.outsideCredit)}<br>개선 비용에서 먼저 사용하고, 남은 금액만 보유 자금에서 차감해요.</small>`:''}${state.upgrades.length?'<small>이전 꾸미기 구매 내역과 혜택은 그대로 유지돼요.</small>':''}</section><div class="renovation-grid">${['inside','outside'].map(area=>{
       const label=area==='inside'?'내부':'외부',u=R.next(state,area);
       if(!u)return `<article class="renovation-card"><h3>${label} 개선 완료</h3><img class="renovation-finished" src="${R.image(area,50)}" alt="50단계 개선을 마친 ${label}"><p>50/50단계 · 모든 개선을 마쳤어요.</p><button disabled>개선 완료</button></article>`;
+      const after=E.Growth.benefits({atmosphere:E.atmosphere(state)+u.atmosphere,environment:E.environment(state)+u.environment});
       const done=r[area]>=u.level,q=R.quote(state,area,u.level),prior=r[area]<u.previous,reason=done?'이미 개선 완료':prior?`${label} ${u.previous}단계 먼저 개선`:!q.ok?q.reason:renovationBusy?'개선 준비 중…':yen(q.cash);
-      return `<article class="renovation-card" data-renovation-card="${area}"><h3>${label} 개선 · ${u.zone}</h3><p>${u.name}</p><div class="renovation-comparison renovation-preview-${area}"><figure><img src="${R.image(area,u.level)}" alt="${label} 개선 후 미리보기" loading="lazy"><figcaption>개선 후 미리보기</figcaption></figure></div><p class="renovation-cost">${yen(u.cost)}${!done&&!prior&&q.credit?`<small>이전 구매 반영 ${yen(q.credit)} · 차감 자금 ${yen(q.cash)}</small>`:''}</p><p class="renovation-reward">분위기 +${u.atmosphere} · 환경 +${u.environment}</p><button data-renovate="${area}" data-renovation-level="${u.level}" ${done||prior||!q.ok||renovationBusy?'disabled':''}>${reason}</button></article>`;
+      return `<article class="renovation-card" data-renovation-card="${area}"><h3>${label} 개선 · ${u.zone}</h3><p>${u.name}</p><div class="renovation-comparison renovation-preview-${area}"><figure><img src="${R.image(area,u.level)}" alt="${label} 개선 후 미리보기" loading="lazy"><figcaption>개선 후 미리보기</figcaption></figure></div><p class="renovation-cost">${yen(u.cost)}${!done&&!prior&&q.credit?`<small>이전 구매 반영 ${yen(q.credit)} · 차감 자금 ${yen(q.cash)}</small>`:''}</p><p class="renovation-reward">분위기 +${u.atmosphere} · 환경 +${u.environment}<small>팁 +${percent(benefits.tips)} → +${percent(after.tips)}<br>영업비 −${percent(benefits.operatingDiscount)} → −${percent(after.operatingDiscount)}</small></p><button data-renovate="${area}" data-renovation-level="${u.level}" ${done||prior||!q.ok||renovationBusy?'disabled':''}>${reason}</button></article>`;
     }).join('')}</div>`;
   }
   async function buyRenovation(area,expected){
@@ -243,8 +259,8 @@
     $('service-hint').textContent = state.phase === 'prep' ? (E.stockPlan(state,3).units?'아래 재료 준비를 먼저 확인해 주세요.':'재료가 준비됐어요. 식당 불을 켜고 손님을 맞이해요.') : state.phase === 'end' ? '재료를 채워 두면 다음 밤이 더 든든해져요.' : canClose ? '9명의 손님을 대접했어요! 아래 밤 마무리하기를 눌러 영업보고를 확인하세요.' : state.event === 'pending' ? '손님들의 이야기가 이어지고 있어요.\n빨간 알림이 있는 이야기 메뉴를 눌러 답해 주세요.' : state.guests.some(g=>g.status==='paying')?'식사를 마친 손님의 별점 위 금액을 눌러 결제해 주세요.':'손님을 눌러 대화하고 주문을 받아 주세요.';
     $('night-action').classList.toggle('close-ready',canClose);
     const nextLevel=E.levels.find(l=>l.level>state.level);
-    const remaining=nextLevel?Math.max(0,nextLevel.xp-state.xp):0,conditions=nextLevel?[[state.reputation,nextLevel.reputation,'평판'],[E.satisfaction(state),nextLevel.satisfaction,'만족도'],[E.atmosphere(state),nextLevel.atmosphere,'분위기']]:[];
-    $('progress-hud').innerHTML=`<b class="hud-level" aria-label="레벨 ${state.level}"><strong>${state.level}</strong></b><div class="hud-growth"><span>${nextLevel?`레벨 ${nextLevel.level}까지 <strong>${remaining?remaining.toLocaleString()+'점 더':'성장 달성'}</strong>`:'최고 레벨 달성'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}" aria-label="${nextLevel?'다음 레벨까지 '+remaining+'점':'최고 레벨'}"></progress></div><div class="hud-conditions">${conditions.map(([v,t,label])=>`<span class="${v>=t?'met':''}" title="${label} ${v} / ${t}" aria-label="${label} ${v}점, 목표 ${t}점${v>=t?', 달성':''}">${label} <b>${v>=t?'✓':(t-v)+'점 더'}</b></span>`).join('')}</div>`;
+    const remaining=nextLevel?Math.max(0,nextLevel.xp-state.xp):0,conditions=[['평판',state.reputation],['만족도',E.satisfaction(state)+'점'],['분위기',E.atmosphere(state)+'점']];
+    $('progress-hud').innerHTML=`<b class="hud-level" aria-label="레벨 ${state.level}"><strong>${state.level}</strong></b><div class="hud-growth"><span>${nextLevel?`레벨 ${nextLevel.level}까지 <strong>${E.trialComplete(state)?'가게 운영권으로 계속':remaining?remaining.toLocaleString()+'점 더':'성장 달성'}</strong>`:'최고 레벨 달성'}</span><progress value="${nextLevel?Math.min(state.xp,nextLevel.xp):1}" max="${nextLevel?.xp||1}" aria-label="${nextLevel?'다음 레벨까지 '+remaining+'점':'최고 레벨'}"></progress></div><div class="hud-conditions">${conditions.map(([label,value])=>`<span title="레벨은 경험치로 올라요" aria-label="${label} ${value}">${label} <b>${value}</b></span>`).join('')}</div>`;
     renderStockPrep();renderScene();renderTalk();renderStory();renderManagement();save();
     const storyAttention=E.storyNeedsAttention(state);
     $('story-badge').hidden=!storyAttention;
@@ -253,7 +269,7 @@
     maybeStory();
   }
   function tryArrival() {
-    if (performance.now()<openingUntil || Scene.isPlacing() || $('app').hidden || $('intro').open || document.hidden || $('settings-dialog').open || $('reset-dialog').open) return;
+    if (performance.now()<openingUntil || Scene.isPlacing() || $('app').hidden || $('intro').open || document.hidden || $('settings-dialog').open || $('reset-dialog').open || $('access-dialog').open) return;
     const g = E.arrive(state);
     if (g) { E.conversation(state); render(); }
   }
@@ -325,7 +341,7 @@
     const button = event.target.closest('[data-choice]');
     if (button && E.resolveEvent(state, button.dataset.choice)) { render(); $('story-dialog').scrollTop=0; toast(state.event==='pending'?'그다음 이야기가 이어집니다.':'이 선택의 소식이 다음 밤에 도착해요.'); }
   });
-  const sheetIds = ['report-dialog', 'guest-dialog', 'management-dialog', 'story-dialog', 'settings-dialog', 'hud-detail-dialog', 'calendar-dialog'];
+  const sheetIds = ['report-dialog', 'guest-dialog', 'management-dialog', 'story-dialog', 'settings-dialog', 'hud-detail-dialog', 'calendar-dialog', 'access-dialog'];
   let hudDetail='funds';
   function syncDockState() {
     $('calendar-open').setAttribute('aria-expanded',String($('calendar-dialog').open));
@@ -344,7 +360,7 @@
   for (const id of ['management-dialog','story-dialog']) dockPanels.observe($(id),{attributes:true,attributeFilter:['open']});
   function anySheetOpen() { return sheetIds.some(id => $(id).open); }
   function openSheet(id) {
-    if(['settings-dialog','reset-dialog'].includes(id))FX?.stopCooking();
+    if(['settings-dialog','reset-dialog','access-dialog'].includes(id))FX?.stopCooking();
     for (const other of sheetIds) if (other !== id && $(other).open) $(other).close();
     if (!$(id).open) $(id).showModal();
     syncDockState();
@@ -359,7 +375,7 @@
     $(close.dataset.close).close();
     maybeStory();
   });
-  $('report-content').addEventListener('click',e=>{if(e.target.closest('[data-go-shop]')){tab='shop';$('report-dialog').close();renderManagement();openSheet('management-dialog');return;}if(e.target.closest('#report-next') && E.next(state)){resetTransient();$('report-dialog').close();Scene.showArea('inside');render();}});
+  $('report-content').addEventListener('click',e=>{if(e.target.closest('[data-go-shop]')){tab='shop';$('report-dialog').close();renderManagement();openSheet('management-dialog');return;}if(e.target.closest('#report-next')&&E.trialComplete(state)){openAccess(true);return;}if(e.target.closest('#report-next') && E.next(state)){resetTransient();$('report-dialog').close();Scene.showArea('inside');render();}});
   $('story-open').addEventListener('click',()=>{E.markStoryRead(state);storyRenderKey='';render();openSheet('story-dialog');});
   function soundLabel(){if(FX){$('sound-effects').textContent=FX.enabled?'조리·게임 효과음 · 켜짐':'조리·게임 효과음 · 꺼짐';$('sound-effects').setAttribute('aria-pressed',String(FX.enabled));}}
   $('sound-effects').addEventListener('click',()=>{FX?.setEnabled(!FX.enabled);soundLabel();});soundLabel();
@@ -367,13 +383,13 @@
     const r=E.report(state),next=E.levels[state.level],line=(name,value)=>`<p><span>${name}</span><b>${value}</b></p>`;
     $('hud-detail-title').textContent=hudDetail==='funds'?'자금 상세':'평판 상세';
     if(hudDetail==='funds'){
-      const expected=650+(state.phase==='prep'?state.level:state.nightStart.level)*250;
+      const expected=E.operatingCost(state);
       if(state.phase==='prep'){
         $('hud-detail-content').innerHTML=`<section class="till-summary"><div class="till-heading"><span>현재 보유 자금</span><strong>${yen(state.money)}</strong></div></section><p class="hud-detail-note">개점 전 재료·가게 구입 비용은 보유 자금에 바로 반영돼요. 음식 매출과 팁 등 이번 밤의 내역은 식당 불을 켠 뒤부터 새로 집계돼요.</p><p class="hud-detail-note">영업을 마치면 임대·가스·전기 비용 ${yen(expected)}이 보유 자금 한도에서 정산돼요.</p>`;return;
       }
       $('hud-detail-content').innerHTML=`<section class="till-summary"><div class="till-heading"><span>현재 보유 자금</span><strong>${yen(state.money)}</strong></div><div class="till-lines">${line('이번 밤 시작 자금',yen(state.nightStart.money))}${line('음식 매출 · 팁 포함','+'+yen(r.revenue))}${line('매출에 포함된 팁',yen(r.tips))}${line('이야기의 답례','+'+yen(r.storyIncome))}${line('재료·가게 구입','−'+yen(r.purchases))}${line('이야기에 보탠 비용','−'+yen(r.storyCosts))}${line('정산된 영업비','−'+yen(r.expenses))}${line('시작 대비 증감',(r.net<0?'−':'+')+yen(Math.abs(r.net)))}</div></section><p class="hud-detail-note">${state.phase==='end'?'이번 밤 영업비 정산이 끝났어요.':`영업을 마치면 임대·가스·전기 비용 ${yen(expected)}이 보유 자금 한도에서 정산돼요.`} 음식 매출은 손님에게 음식값을 받았을 때 반영돼요.</p>`;
     }else{
-      $('hud-detail-content').innerHTML=`<section class="report-metric"><h3>골목의 평판</h3><strong>${r.reputation}<small> / 100</small></strong>${delta(r.reputationDelta,'점')}<p>음식값을 받은 손님의 만족도에 따라 평판이 바뀌어요.</p><div class="hud-reputation-rules">${line('85점 이상','+4')}${line('65–84점','+2')}${line('40–64점','−1')}${line('40점 미만','−4')}</div><p>이야기의 선택, 가게 꾸미기, 손님 응대도 평판에 영향을 줘요.</p></section><section class="next-goal"><h4>${next?`레벨 ${next.level} 성장 조건`:'최고 레벨 달성'}</h4>${next?`<div class="hud-reputation-rules">${[[state.xp,next.xp,'성장 점수'],[state.reputation,next.reputation,'평판'],[E.satisfaction(state),next.satisfaction,'만족도'],[E.atmosphere(state),next.atmosphere,'분위기']].map(([v,t,n])=>line(n,`${v} / ${t}${v>=t?' · 달성':''}`)).join('')}</div><p>네 가지 조건을 모두 채우면 레벨이 올라요.</p>`:''}</section>`;
+      $('hud-detail-content').innerHTML=`<section class="report-metric"><h3>골목의 평판</h3><strong>${r.reputation}<small> / 100</small></strong>${delta(r.reputationDelta,'점')}<p>음식값을 받은 손님의 만족도에 따라 평판이 바뀌어요.</p><div class="hud-reputation-rules">${line('85점 이상','+4')}${line('65–84점','+2')}${line('40–64점','−1')}${line('40점 미만','−4')}</div><p>이야기의 선택, 가게 꾸미기, 손님 응대도 평판에 영향을 줘요.</p></section><section class="next-goal"><h4>${next?`레벨 ${next.level} 성장 조건`:'최고 레벨 달성'}</h4>${next?`<div class="hud-reputation-rules">${line('누적 경험치',`${state.xp.toLocaleString()} / ${next.xp.toLocaleString()}`)}</div><p>경험치를 채우면 레벨이 올라요.${E.Growth.levelLimit(state)===E.Growth.trialLevel?' 레벨 3부터는 가게 운영권으로 이어져요.':''}</p>`:''}</section>`;
     }
   }
   for(const kind of ['funds','reputation'])$(kind+'-open').addEventListener('click',()=>{hudDetail=kind;renderHudDetail();openSheet('hud-detail-dialog');});
@@ -450,11 +466,11 @@
   $('reset').addEventListener('click', () => { if (state.kitchen) return toast('조리 중인 한 끼를 먼저 내어 주세요.'); $('reset-dialog').showModal(); });
   $('reset-dialog').addEventListener('close', () => {
     if ($('reset-dialog').returnValue !== 'reset') return;
-    state = E.fresh(); resetTransient(); seenCustomers.clear(); render(); startIntro();
+    const access=state.access;state = E.fresh();state.access=access; resetTransient(); seenCustomers.clear(); render(); startIntro();
   });
   function frame(now){const dt=lastFrame?Math.min(now-lastFrame,100):0;lastFrame=now;
     if(cashAnimation){const progress=Math.max(0,Math.min(1,(now-cashAnimation.start-450)/650));displayMoney(Math.round(cashAnimation.from+(cashAnimation.to-cashAnimation.from)*(1-(1-progress)**3)));if(progress===1)cashAnimation=null;}
-    if(!document.hidden&&!$('app').hidden&&!$('reset-dialog').open&&!$('settings-dialog').open&&!$('intro').open){
+    if(!document.hidden&&!$('app').hidden&&!$('reset-dialog').open&&!$('settings-dialog').open&&!$('access-dialog').open&&!$('intro').open){
       Kitchen.tick(dt);
       if(state.phase==='open'&&!Scene.isPlacing()){
         state.nightElapsedMs=Math.min(1e9,Math.round((state.nightElapsedMs||0)+dt));

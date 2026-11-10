@@ -1,7 +1,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),E=require('../docs/engine.js');
-test('fresh games offer renovations and every level is reachable with earlier unlocked work',()=>{
+test('existing full playthroughs can complete all 100 renovations through level 50',()=>{
  const s=E.fresh();assert.equal(s.renovation.inside,0);assert.equal(s.renovation.outside,0);assert.equal(E.atmosphere(s),0);assert.equal(E.environment(s),0);assert.equal(E.levels.length,50);
- s.money=1000000;s.xp=10000000;s.reputation=100;s.totalServed=100;s.satisfactionTotal=10000;E.progress(s);
+ s.access={version:1,kind:'existing-player'};s.money=1000000;s.xp=10000000;s.reputation=100;s.totalServed=100;s.satisfactionTotal=10000;E.progress(s);
  for(let level=1;level<=50;level++){assert(s.level>=level,`level ${level} must not depend on its own locked upgrade`);for(const area of ['inside','outside'])assert(E.renovate(s,area,level));E.progress(s);}
  assert.equal(s.level,50);assert.equal(s.renovation.inside,50);assert.equal(s.renovation.outside,50);assert.equal(E.atmosphere(s),180);assert.equal(E.environment(s),180);assert.equal(E.restore(JSON.stringify(s)).level,50);
 });

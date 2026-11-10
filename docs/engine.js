@@ -4,6 +4,7 @@
   const C=typeof module!=='undefined'?require('./catalog.js'):window.MidnightCatalog;
   const S=typeof module!=='undefined'?require('./stories.js'):window.MidnightStories;
   const Cooking=typeof module!=='undefined'?require('./cooking-rules.js'):window.MidnightCookingRules;
+  const Growth=typeof module!=='undefined'?require('./growth-v77.js'):window.MidnightGrowth;
   const ingredients = {
     rice: { name: '쌀', icon: '🍚', price: 60 },
     nori: { name: '김', icon: '🌿', price: 40 },
@@ -85,10 +86,13 @@
   }
   function satisfaction(s) { return s.totalServed ? Math.round(s.satisfactionTotal / s.totalServed) : 0; }
   function progress(s) {
-    for (const l of levels) if (s.xp >= l.xp && s.reputation >= l.reputation && satisfaction(s) >= l.satisfaction && atmosphere(s)>=l.atmosphere) s.level = Math.max(s.level, l.level);
+    for (const l of levels) if (s.xp >= l.xp && l.level<=Growth.levelLimit(s)) s.level = Math.max(s.level, l.level);
     s.unlocked=[...new Set([...s.unlocked,...Object.keys(recipes).filter(id=>recipes[id].level<=s.level)])];
     return s.level;
   }
+  const growthBenefits=s=>Growth.benefits(R.totals(s));
+  const trialComplete=s=>Growth.needsPass(s,levels[2].xp);
+  function operatingCost(s){const level=s.phase==='prep'?s.level:s.nightStart.level;return Math.round((650+level*250)*(1-growthBenefits(s).operatingDiscount/100));}
   function patience(g,s) {return Math.max(0,1-(g.waitMs||0)/(105000+(g.person%4)*15000+(s?F.benefits(s).patience*1000:0)));}
   function cookSpec(s,id) {
     const i=Object.keys(recipes).indexOf(id),shift=((s.night+i)%3-1)*.025;
@@ -233,7 +237,7 @@
   }
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fresh = () => ({
-    version:11,calendarRecords:[],nightNewsRead:0,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,fridgeDoorHintSeen:false,kitchen:null,dialogueSerial:0,menuRotation:[],recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
+    version:11,access:Growth.initialAccess(),calendarRecords:[],nightNewsRead:0,nightElapsedMs:0,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:false,fridgeDoorHintSeen:false,kitchen:null,dialogueSerial:0,menuRotation:[],recentOrders:[],nightOrders:[],storyRun:null,storyMemory:[],pendingConsequences:[],nightNews:[],storyIncome:0,storyCosts:0,nextVisitor: 0, nightVisitors: [], xp: 0, level: 1, satisfactionTotal: 0, customerBook: {},
     nightStart: { money: 3200, reputation: 12, satisfaction: 0, xp: 0, level: 1,atmosphere:0 }, introSeen: false, night: 1, phase: 'prep', money: 3200, reputation: 12,
     totalServed: 0, inventory: Object.assign({rice:5,nori:5,egg:4,dashi:6,pork:3,miso:3,salmon:0},Object.fromEntries(Object.keys(C.ingredients).map(id=>[id,0]))),
     unlocked:Object.keys(recipes).filter(id=>recipes[id].level===1), upgrades: [],upgradeQty:{},equipped:{},renovation:R.initial(), special: 'onigiri',
@@ -355,6 +359,7 @@
     restored.menuRotation=[];
     for(const id of history)if(Object.hasOwn(recipes,id))restored.menuRotation=[...restored.menuRotation.filter(x=>x!==id),id];
     restored.calendarRecords=Array.isArray(v.calendarRecords)?v.calendarRecords.filter(r=>r&&Number.isSafeInteger(r.night)&&r.night>0&&['revenue','tips','expenses','purchases','money','net','reputation','average','served','level'].every(k=>Number.isFinite(r[k]))).slice(-1000).map(r=>Object.fromEntries(['night','revenue','tips','expenses','purchases','money','net','reputation','average','served','level'].map(k=>[k,r[k]]))):[];
+    restored.access=Growth.restoreAccess(v.access,restored.level);
     progress(restored);return restored;
 
 
@@ -438,7 +443,7 @@
     let score=Math.round(clamp(recipeScore*25+clamp(preparation,0,1)*25+heat*50+benefits.quality+(g.gifted?5:0)-waited,0,100));
     if(recipeScore<1)score=Math.min(Math.round(50*recipeScore),score);
     const base=Math.round(r.price*(.35+score*.006));
-    const tip=Math.round(r.price*Math.max(0,score-80)/100*.8*(1+benefits.tips/100));
+    const tip=Math.round(r.price*Math.max(0,score-80)/100*.8*(1+(benefits.tips+growthBenefits(s).tips)/100));
     selected.forEach(id => s.inventory[id]--);
     const result={appearance:heatLook(s,g.recipe,timing),heatValue:clamp(timing,0,1),score,base,tip,total:base+tip,preparation:Math.round(clamp(preparation,0,1)*100),heat:Math.round(heat*100),waitPenalty:waited,dish:r.name,guest:person(g.person).name};
     g.status='eating';g.score=score;g.eatMs=0;g.bill=result;g.paid=false;
@@ -524,7 +529,7 @@
     return false;
   }
   function canClose(s) { return s.phase === 'open' && s.arrived === s.target && s.nightScores.length === s.target && s.event !== 'pending'&&s.guests.every(g=>g.status==='left'); }
-  function close(s) { if (!canClose(s)) return false; s.nightCosts=Math.min(s.money,650+s.nightStart.level*250);s.money-=s.nightCosts;s.phase = 'end';archiveNight(s); return true; }
+  function close(s) { if (!canClose(s)) return false; s.nightCosts=Math.min(s.money,operatingCost(s));s.money-=s.nightCosts;s.phase = 'end';archiveNight(s); return true; }
   function archiveNight(s){
     const r=report(s),record={night:s.night,served:s.nightScores.length};
     for(const key of ['revenue','tips','expenses','purchases','money','net','reputation','average','level'])record[key]=r[key];
@@ -534,7 +539,7 @@
     if (s.phase !== 'end') return false;
     archiveNight(s);s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();
