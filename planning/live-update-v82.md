@@ -28,7 +28,7 @@
 
 ## 호스팅 (v84: 전용 Worker)
 
-v82–v83은 R2 버킷에 올렸으나, v84부터 **업데이트 전용 Worker**(`wrangler.updates.jsonc`, 이름 `midnight-diner-updates`)의 정적 자산으로 서빙한다.
+v82–v83은 R2 버킷에 올렸으나, v84부터 **업데이트 전용 Worker**(`wrangler.updates.jsonc`, 이름 `midnight-update`)의 정적 자산으로 서빙한다.
 Workers 정적 자산은 요청·저장 모두 무료라 사용자 수가 늘어도 비용이 없다. R2 버킷과 캐시 규칙은 필요 없다.
 
 - 주소: `https://midnight-update.couprice.com` (`docs/src/platform/config.js`의 `updateBaseUrl`과 `wrangler.updates.jsonc`의 route가 같아야 한다).
