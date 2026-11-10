@@ -22,18 +22,13 @@
  function quote(s,area,expected){
   if(!validArea(area))return {ok:false,reason:'잘못된 개선 구역'};
   const u=next(s,area);if(!u)return {ok:false,reason:'50단계 개선 완료'};
-  const credit=Math.min(u.cost,s.renovation?.[area+'Credit']||0),cash=u.cost-credit,result={upgrade:u,credit,cash};
-  if(expected!==undefined&&u.level!==expected)return {...result,ok:false,reason:'이전 개선부터 진행해 주세요'};
-  if(!Number.isSafeInteger(s.level)||s.level<u.level)return {...result,ok:false,reason:`레벨 ${u.level}에 개선 가능`};
-  if(!integer(s.money)||s.money<cash)return {...result,ok:false,reason:'자금 부족'};
-  return {...result,ok:true};
+  if(expected!==undefined&&u.level!==expected)return {ok:false,reason:'디자인을 다시 확인해 주세요'};
+  return {ok:false,upgrade:u,requiresPayment:true,reason:'결제 준비 중'};
  }
  function install(s,area,expected){
-  if(!Number.isSafeInteger(expected))return false;
-  const q=quote(s,area,expected);if(!q.ok)return false;
-  s.renovation??=initial();s.money-=q.cash;s.renovation[area+'Credit']-=q.credit;s.renovation[area]=q.upgrade.level;
-  if(s.phase!=='prep')s.nightPurchases=(s.nightPurchases||0)+q.cash;
-  return q;
+  // Paid cosmetic checkout is not connected yet. Never spend earned game funds
+  // or accept client-side claims of payment. Existing installed designs remain.
+  return false;
  }
  function atmosphereTarget(level){if(level<=2)return 0;const a=M.totals('inside',level-1),b=M.totals('outside',level-1);return Math.floor((a.atmosphere+b.atmosphere)*.65);}
  return {catalog:M.catalog,initial,restore,totals,image,next,quote,install,atmosphereTarget,areaTotals:M.totals};

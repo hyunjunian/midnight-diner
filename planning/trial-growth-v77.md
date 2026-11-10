@@ -1,5 +1,7 @@
 # Approved trial and growth structure
 
+Superseded by [cosmetic-only-v79.md](cosmetic-only-v79.md): all gameplay is free and only optional appearance is reserved for real-money purchase. The trial and renovation operating bonuses below describe the previous release.
+
 The user approved levels 1–2 as the free trial, a one-time operating pass for levels 3–50, ordinary renovations funded by earned ¥, and optional visual themes. They subsequently selected **payment provider undecided; implement the trial screens and growth benefits first**, and explicitly prohibited unrelated changes.
 
 ## Shipped now

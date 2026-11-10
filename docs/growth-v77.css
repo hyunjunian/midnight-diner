@@ -1,4 +1,4 @@
-/* Only the new operating-pass sheet and renovation benefit captions. */
+/* Only the free-play and optional paid-cosmetic information sheet. */
 #access-dialog{max-width:660px}
 #access-dialog .sheet-header h2{font-size:24px}
 #access-content{font:14px/1.8 var(--reading-serif);color:#edddbd;word-break:keep-all}
@@ -16,7 +16,5 @@
 #access-content .access-themes{margin-top:20px;padding:16px;border:1px solid #a98a5533}
 #access-content .access-themes h3{font-size:18px}
 #access-content .access-save-note{margin:20px 0 12px;text-align:center;font-size:12px;color:#ccb99b}
-#management-dialog[data-section="shop"] .renovation-stat-benefit{display:block;margin-top:10px;font:11px/1.6 var(--sans);color:#e3c695}
-#management-dialog[data-section="shop"] .renovation-stat-scale{bottom:34px}
 #management-dialog[data-section="shop"] .renovation-reward small{margin-top:10px;font-size:11px;color:#d6c5a5}
 @media(max-width:359px){#access-content .access-steps{gap:8px}#access-content .access-steps>section{padding:12px 8px}#access-content .access-steps h3{font-size:18px}#access-content .access-steps p{font-size:12px}#access-content .access-pass{padding:16px 12px}}
