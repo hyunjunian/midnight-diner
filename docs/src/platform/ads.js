@@ -16,9 +16,10 @@
   const cap=()=>window.Capacitor;
   const isNative=()=>cap()?.isNativePlatform?.()===true;
   const platform=()=>isNative()?String(cap().getPlatform?.()||''):'web';
-  const usable=()=>isNative()&&typeof cap().nativePromise==='function';
-  const call=(method,options={})=>cap().nativePromise(PLUGIN,method,options);
   const settings=()=>window.MidnightPlatform?.config?.ads||{};
+  // Off until config.ads.enabled: the app then behaves exactly as if it had no ad SDK.
+  const usable=()=>isNative()&&settings().enabled===true&&typeof cap().nativePromise==='function';
+  const call=(method,options={})=>cap().nativePromise(PLUGIN,method,options);
   const testing=()=>settings().testMode!==false;
   const unit=type=>testing()?(TEST[platform()]?.[type]||''):String(settings().units?.[platform()]?.[type]||'');
   const browserTest=()=>{try{return!isNative()&&new URLSearchParams(location.search).has('ads-test');}catch{return false;}};

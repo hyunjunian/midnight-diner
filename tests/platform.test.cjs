@@ -206,7 +206,7 @@ function shop(options={}){
 const own=(more={})=>({productIdentifier:ADS,transactionId:'t0',purchaseState:'1',...more});
 test('shipped settings: one remove-ads product on sale in the apps, iOS still in its paid period, test ads only',()=>{
   const {store}=shop(),text=fs.readFileSync('docs/src/platform/config.js','utf8');
-  assert.match(text,/removeAdsOnSale: true/);assert.match(text,/iosFreeSince: ''/);assert.match(text,/testMode: true/);
+  assert.match(text,/removeAdsOnSale: true/);assert.match(text,/iosFreeSince: ''/);assert.match(text,/enabled: false/);assert.match(text,/testMode: true/);
   assert.match(text,/\{ id: 'midnight_remove_ads', type: 'non-consumable' \}/);
   assert.equal(store.hasNoAds(),false);
 });
@@ -280,7 +280,7 @@ test('iOS paid-to-free: earlier buyers stay ad-free, later installs do not, unkn
 test('settings purchase rows exist in both entry pages and stay out of the native plugin',()=>{
   for(const page of ['docs/index.html','docs/approved.html']){const html=fs.readFileSync(page,'utf8');for(const id of ['store-section','store-remove-ads','store-restore','store-status'])assert.ok(html.includes(`id="${id}"`),page+' '+id);assert.match(html,/id="store-section"[^>]* hidden>/);assert.match(html,/\.\/store-settings\.js\?release=/);}
   const ui=fs.readFileSync('docs/store-settings.js','utf8');
-  assert.doesNotMatch(ui,/nativePromise|NativePurchases/);assert.match(ui,/store\.isNative\(\)\?settings\.removeAdsOnSale===true:testing/);
+  assert.doesNotMatch(ui,/nativePromise|NativePurchases/);assert.match(ui,/settings\.removeAdsOnSale===true&&platform\.config\?\.ads\?\.enabled===true:testing/);
   assert.ok(fs.readFileSync('docs/sw.js','utf8').includes("'store-settings.js'"));
   for(const file of fs.readdirSync('docs').filter(f=>f.endsWith('.js')&&f!=='sw.js'))assert.doesNotMatch(fs.readFileSync('docs/'+file,'utf8'),/nativePromise|NativePurchases|CapacitorUpdater|'AdMob'/,file);
 });
@@ -311,7 +311,7 @@ function adNet(options={}){
     }}};
   const document={documentElement:{setAttribute:n=>attrs.add(n),removeAttribute:n=>attrs.delete(n)},dispatchEvent:e=>events.push(e.type)};
   for(const name of ['config','ads'])vm.runInNewContext(fs.readFileSync(`docs/src/platform/${name}.js`,'utf8'),{window,document,Event,setTimeout,clearTimeout,Promise,String,Boolean,Number,URLSearchParams,location:{search:''}});
-  const p=window.MidnightPlatform;if(options.config)Object.assign(p.config.ads,options.config);
+  const p=window.MidnightPlatform;p.config.ads.enabled=options.enabled!==false;if(options.config)Object.assign(p.config.ads,options.config);
   const settle=()=>new Promise(r=>setTimeout(r,15));
   return{ads:p.ads,calls,of:m=>calls.filter(c=>c.method===m),attrs,events,settle};
 }
@@ -391,4 +391,35 @@ test('ad moments are labelled as ads, hook into the game only through its interf
   const plist=fs.readFileSync('ios/App/App/Info.plist','utf8'),manifest=fs.readFileSync('android/app/src/main/AndroidManifest.xml','utf8');
   assert.match(plist,/GADApplicationIdentifier/);assert.match(plist,/NSUserTrackingUsageDescription/);assert.match(plist,/cstr6suwn9\.skadnetwork/);
   assert.match(manifest,/com\.google\.android\.gms\.ads\.APPLICATION_ID/);
+});
+
+test('ads stay completely off until an AdMob account is configured',async()=>{
+  const a=adNet({enabled:false,platform:'ios',tracking:'notDetermined'});
+  await a.ads.init();await a.settle();
+  assert.equal(a.calls.length,0,'the SDK is never started and nothing is asked');
+  assert.equal(a.ads.needsPrivacyPrompt(),false);assert.equal(a.ads.interstitialReady(),false);assert.equal(a.ads.rewardedAvailable(),false);
+  assert.equal((await a.ads.showInterstitial()).shown,false);assert.equal((await a.ads.showRewarded()).rewarded,false);
+  await a.ads.requestPrivacy();assert.equal(a.calls.length,0);
+});
+test('set-admob fills every id, leaves test mode and turns ads on; bad ids change nothing',()=>{
+  const os=require('node:os'),path=require('node:path'),cp=require('node:child_process');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'admob-'));
+  try{
+    const files=['docs/src/platform/config.js','ios/App/App/Info.plist','android/app/src/main/AndroidManifest.xml'];
+    for(const f of files){fs.mkdirSync(path.join(dir,path.dirname(f)),{recursive:true});fs.copyFileSync(f,path.join(dir,f));}
+    const run=args=>cp.spawnSync(process.execPath,['tools/set-admob.cjs','--root',dir,...args],{encoding:'utf8'});
+    const A='ca-app-pub-1234567890123456',good=['--ios-app',A+'~1111111111','--android-app',A+'~2222222222','--ios-interstitial',A+'/3333333333','--ios-rewarded',A+'/4444444444','--android-interstitial',A+'/5555555555','--android-rewarded',A+'/6666666666'];
+    const bad=run([...good.slice(0,10),'--android-rewarded','ca-app-pub-3940256099942544/5224354917']);
+    assert.notEqual(bad.status,0);assert.match(bad.stderr,/sample/);
+    assert.equal(fs.readFileSync(path.join(dir,files[0]),'utf8'),fs.readFileSync(files[0],'utf8'),'nothing written on a rejected id');
+    assert.notEqual(run(good.slice(0,8)).status,0,'all six ids are required');
+    const ok=run(good);assert.equal(ok.status,0,ok.stderr);
+    const config=fs.readFileSync(path.join(dir,files[0]),'utf8');
+    assert.match(config,/enabled: true/);assert.match(config,/testMode: false/);
+    assert.match(config,/ios: \{ interstitial: 'ca-app-pub-1234567890123456\/3333333333', rewarded: 'ca-app-pub-1234567890123456\/4444444444' \}/);
+    assert.match(config,/android: \{ interstitial: 'ca-app-pub-1234567890123456\/5555555555', rewarded: 'ca-app-pub-1234567890123456\/6666666666' \}/);
+    assert.match(fs.readFileSync(path.join(dir,files[1]),'utf8'),/<string>ca-app-pub-1234567890123456~1111111111<\/string>/);
+    assert.match(fs.readFileSync(path.join(dir,files[2]),'utf8'),/android:value="ca-app-pub-1234567890123456~2222222222"/);
+    new vm.Script(config);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });

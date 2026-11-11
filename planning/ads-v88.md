@@ -33,16 +33,36 @@
 - `docs/ad-events.js`: 소식지·쪽지·손님 영상. 플랫폼 인터페이스만 호출한다. 플레이 시간과 "오늘 밤 권했는지"는 세이브 파일이 아닌 별도 저장소(`midnight-diner-ad-events-v1`)에 둔다.
 - `docs/engine.js` `befriend()`: 배웅 중인 손님의 친밀도만 올린다. `docs/game.js`는 다음 밤 버튼과 손님 대화창에서 `MidnightAdEvents`를 부르는 두 줄과 `MidnightApp.befriend`만 추가했다.
 - 광고가 떠 있는 동안 배경음악을 멈춘다(`data-ad` 표시).
-- 설정의 "광고 제거" 줄은 앱에서 `removeAdsOnSale: true`로 열렸다. 스토어가 상품을 돌려줄 때만 보인다. 브라우저 사이트에서는 `?store-test`일 때만 보인다.
+- 설정의 "광고 제거" 줄은 광고가 켜져 있고(`ads.enabled`) `removeAdsOnSale: true`이며 스토어가 상품을 돌려줄 때만 앱에 보인다. 브라우저 사이트에서는 `?store-test`일 때만 보인다.
 
-## 지금은 테스트 광고만 나온다
+## AdMob 계정 전: 광고는 꺼져 있다
 
-`config.js`의 `ads.testMode`가 `true`이고, 네이티브 프로젝트의 AdMob 앱 ID도 Google 공개 샘플 ID다. 실제 광고로 바꾸려면:
+AdMob 계정이 아직 없어서 `config.js`의 `ads.enabled`를 `false`로 두었다. 이 상태의 앱은 광고 SDK가 없는 것처럼 동작한다.
 
-1. AdMob에서 iOS·안드로이드 앱을 등록하고 전면·보상형 광고 단위를 각각 만든다.
-2. `ios/App/App/Info.plist`의 `GADApplicationIdentifier`와 `android/app/src/main/AndroidManifest.xml`의 `APPLICATION_ID`를 실제 앱 ID로 바꾼다(네이티브 빌드 필요).
-3. `config.js`의 `ads.units`에 광고 단위 ID 4개를 넣고 `testMode`를 `false`로 바꾼다(라이브 업데이트 가능).
-4. `Info.plist`의 `SKAdNetworkItems`에는 Google 식별자 하나만 넣었다. Google 안내의 전체 목록을 추가하면 iOS 광고 수익에 도움이 된다.
+- 광고 SDK를 시작하지 않고, 광고 요청·동의 화면·추적 허용 창이 전혀 뜨지 않는다.
+- 소식지는 기사만 실려 도착한다. 손님 영상 권유와 편집부 쪽지는 나오지 않는다.
+- 설정의 "광고 제거" 구매 줄도 나오지 않는다(팔 광고가 없으므로).
+- 네이티브 프로젝트에는 Google 공개 샘플 앱 ID가 들어 있다. 광고 SDK가 앱 시작 때 앱 ID를 요구하기 때문에 비워 둘 수 없다.
+
+## 계정을 만든 뒤: 명령 하나로 켠다
+
+1. AdMob에서 iOS·안드로이드 앱을 등록하고(앱 ID 2개), 각각 전면·보상형 광고 단위를 만든다(단위 ID 4개).
+2. 아래 명령에 ID 6개를 넣어 실행한다. 형식이 틀리거나 샘플 ID가 섞이면 아무것도 바꾸지 않고 멈춘다.
+
+```sh
+node tools/set-admob.cjs \
+  --ios-app ca-app-pub-…~… --android-app ca-app-pub-…~… \
+  --ios-interstitial ca-app-pub-…/… --ios-rewarded ca-app-pub-…/… \
+  --android-interstitial ca-app-pub-…/… --android-rewarded ca-app-pub-…/…
+```
+
+3. `npm test` 후 커밋해 `main`과 `release`에 올리고, 앱을 다시 빌드해 스토어에 제출한다.
+
+**앱 ID는 네이티브 프로젝트에 들어가므로 스토어 빌드로만 전달된다.** 샘플 앱 ID로 출시한 앱은 라이브 업데이트만으로는 실제 광고를 켤 수 없고 앱 업데이트가 한 번 필요하다. 첫 출시 전에 계정을 만들어 이 명령을 실행해 두면 그 뒤로는 광고 단위·간격·켜고 끄기를 모두 라이브 업데이트로 바꿀 수 있다.
+
+계정 전에 광고 흐름을 기기에서 미리 보려면 `ads.enabled`만 `true`로 바꾼다(`testMode`가 `true`라 Google 테스트 광고만 나온다). 이 상태로 출시하면 안 된다.
+
+`Info.plist`의 `SKAdNetworkItems`에는 Google 식별자 하나만 넣었다. Google 안내의 전체 목록을 추가하면 iOS 광고 수익에 도움이 된다.
 
 ## 검증과 한계
 

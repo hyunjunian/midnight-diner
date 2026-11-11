@@ -22,8 +22,10 @@
       iosFreeSince: ''
     },
     ads: {
-      // true: always request Google's public test ads. Switch to false only together with
-      // the real unit ids below and the real AdMob app ids in Info.plist / AndroidManifest.xml.
+      // Ads are off until an AdMob account exists: no SDK start, no ad requests, no privacy
+      // questions. `node tools/set-admob.cjs` fills in the real ids and turns this on.
+      enabled: false,
+      // true: request only Google's public test ads (for trying ads before the real ids exist).
       testMode: true,
       units: {
         ios: { interstitial: '', rewarded: '' },
