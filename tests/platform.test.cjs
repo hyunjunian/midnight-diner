@@ -385,11 +385,12 @@ test('a shared clip brings only a departing guest closer, within the customer bo
 });
 test('ad moments are labelled as ads, hook into the game only through its interface, and are precached',()=>{
   const events=fs.readFileSync('docs/ad-events.js','utf8'),game=fs.readFileSync('docs/game.js','utf8');
-  assert.match(events,/다음 장은 광고 지면입니다/);assert.match(events,/다음 장 넘기기 · 광고/);assert.match(events,/영상 함께 보기 · 광고/);
-  assert.match(events,/허용하지 않아도 소식지와 식당 영업은 똑같이 이어집니다/);
+  assert.match(events,/다음 장은 광고 지면입니다/);assert.match(events,/다음 장 넘기기 · 광고/);assert.match(events,/같이 봐요 · 광고 시청 \(친밀도 ↑\)/);
+  assert.match(events,/허용하지 않아도 영상은 똑같이 볼 수 있어요/,'the guest says declining changes nothing');
+  assert.doesNotMatch(events,/deliveryNote|편집부에서 온 쪽지/,'no separate privacy notice');
   assert.match(events,/context\.night<2/);assert.doesNotMatch(events,/nativePromise|'AdMob'/);
   assert.match(game,/MidnightAdEvents/);assert.doesNotMatch(game,/MidnightPlatform/);
-  for(const page of ['docs/index.html','docs/approved.html']){const html=fs.readFileSync(page,'utf8');for(const id of ['bulletin-dialog','bulletin-next','talk-share','talk-share-status'])assert.ok(html.includes(`id="${id}"`),page+' '+id);assert.match(html,/\.\/ad-events\.js\?release=/);}
+  for(const page of ['docs/index.html','docs/approved.html']){const html=fs.readFileSync(page,'utf8');for(const id of ['bulletin-dialog','bulletin-next','talk-share-status'])assert.ok(html.includes(`id="${id}"`),page+' '+id);assert.match(html,/\.\/ad-events\.js\?release=/);}
   assert.ok(fs.readFileSync('docs/sw.js','utf8').includes("'ad-events.js'"));
   const plist=fs.readFileSync('ios/App/App/Info.plist','utf8'),manifest=fs.readFileSync('android/app/src/main/AndroidManifest.xml','utf8');
   assert.match(plist,/GADApplicationIdentifier/);assert.match(plist,/NSUserTrackingUsageDescription/);assert.match(plist,/cstr6suwn9\.skadnetwork/);
@@ -481,4 +482,54 @@ test('iOS declares the ad networks Google lists and that it uses only exempt enc
   const ids=[...plist.matchAll(/<string>([a-z0-9]{10})\.skadnetwork<\/string>/g)].map(m=>m[1]);
   assert.equal(ids.length,50);assert.equal(new Set(ids).size,50);assert.equal(ids[0],'cstr6suwn9');
   assert.match(plist,/<key>ITSAppUsesNonExemptEncryption<\/key>\s*<false\/>/);
+});
+
+// ---- The shared clip as a conversation ----
+function clipTalk(options={}){
+  const store=new Map(),shown=[],befriended=[];let needs=!!options.privacy,asked=0;
+  const ads={isNative:()=>true,init:async()=>{},isAdFree:()=>false,interstitialReady:()=>false,
+    rewardedAvailable:()=>options.available!==false,needsPrivacyPrompt:()=>needs,privacyOptionsRequired:()=>false,
+    requestPrivacy:async()=>{asked++;needs=false;},showRewarded:async place=>{shown.push(place);return options.result||{rewarded:true};}};
+  const el=()=>Object.assign(new EventTarget(),{hidden:false,open:false,textContent:'',showModal(){},close(){}});
+  const els={'bulletin-dialog':el(),app:el(),intro:el()};
+  const document=Object.assign(new EventTarget(),{hidden:false,getElementById:id=>els[id]||null,documentElement:{hasAttribute:()=>false}});
+  const window={MidnightPlatform:{ads,config:{ads:{shareAffinity:2,bulletinMinPlayMinutes:12}}},MidnightApp:{befriend:(id,n)=>{befriended.push([id,n]);return true;},refreshTalk(){}}};
+  vm.runInNewContext(fs.readFileSync('docs/ad-events.js','utf8'),{window,document,localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)},location:{search:''},URLSearchParams,setInterval(){},Date,JSON,Promise,Number,Object,String});
+  const api=window.MidnightAdEvents,guest={id:'g1',score:90,name:'고로',night:3};
+  return{api,guest,shown,befriended,asked:()=>asked,settle:()=>new Promise(r=>setTimeout(r,5))};
+}
+test('a departing guest brings up the clip in words, and the owner answers; the ad label is in the answer',async()=>{
+  const t=clipTalk();
+  let scene=t.api.farewellScene(t.guest);
+  assert.equal(scene.key,'offer');assert.match(scene.line,/같이 보/);assert.equal(scene.hideNext,true);
+  assert.deepEqual([...scene.choices].map(c=>c.label),['같이 봐요 · 광고 시청 (친밀도 ↑)','오늘은 마음만 받을게요']);
+  t.api.answerScene('watch');await t.settle();
+  scene=t.api.farewellScene(t.guest);
+  assert.equal(scene.key,'thanks');assert.equal(scene.hideNext,false);assert.equal(scene.choices.length,0);
+  assert.match(scene.status,/고로 님과 한층 가까워졌어요/);assert.equal(scene.playerLine,'같이 봐요 · 광고 시청 (친밀도 ↑)');
+  assert.deepEqual(t.shown,['guest-share']);assert.deepEqual(JSON.parse(JSON.stringify(t.befriended)),[['g1',2]]);assert.equal(t.asked(),0);
+  assert.equal(t.api.farewellScene({...t.guest,id:'g2'}),null,'only one guest a night');
+});
+test('the first time, the guest explains the coming question before any prompt and never pressures',async()=>{
+  const t=clipTalk({privacy:true});
+  t.api.farewellScene(t.guest);t.api.answerScene('watch');await t.settle();
+  let scene=t.api.farewellScene(t.guest);
+  assert.equal(scene.key,'ask');assert.equal(t.asked(),0,'nothing is asked until the owner agrees to go on');assert.equal(t.shown.length,0);
+  assert.match(scene.line,/관심사를 알려 줄지 묻는 창/);assert.match(scene.line,/허용하지 않아도 영상은 똑같이 볼 수 있어요/);
+  assert.doesNotMatch(scene.line,/친밀도|보상|선물|드릴게요/,'no reward is tied to allowing');
+  assert.deepEqual([...scene.choices].map(c=>c.id),['go']);
+  t.api.answerScene('go');await t.settle();
+  assert.equal(t.asked(),1);assert.equal(t.shown.length,1);assert.equal(t.api.farewellScene(t.guest).key,'thanks');
+});
+test('declining, closing early or a missing ad gives nothing and the guest takes it kindly',async()=>{
+  const no=clipTalk();no.api.farewellScene(no.guest);no.api.answerScene('pass');
+  let scene=no.api.farewellScene(no.guest);
+  assert.equal(scene.key,'declined');assert.equal(scene.hideNext,false);assert.equal(no.shown.length,0);assert.equal(no.befriended.length,0);
+  const early=clipTalk({result:{rewarded:false,reason:'closed-early'}});early.api.farewellScene(early.guest);early.api.answerScene('watch');await early.settle();
+  scene=early.api.farewellScene(early.guest);
+  assert.equal(scene.key,'early');assert.equal(early.befriended.length,0);assert.deepEqual([...scene.choices].map(c=>c.id),['watch','pass']);
+  const fail=clipTalk({result:{rewarded:false,reason:'not-ready'}});fail.api.farewellScene(fail.guest);fail.api.answerScene('watch');await fail.settle();
+  assert.equal(fail.api.farewellScene(fail.guest).key,'fail');assert.equal(fail.befriended.length,0);
+  assert.equal(clipTalk({available:false}).api.farewellScene({id:'g1',score:90,name:'고로',night:3}),null);
+  assert.equal(clipTalk().api.farewellScene({id:'g1',score:50,name:'고로',night:3}),null,'only a satisfied guest offers');
 });

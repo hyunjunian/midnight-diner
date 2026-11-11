@@ -113,20 +113,23 @@
   function renderTalk(){
     if(!$('guest-dialog').open)return;const g=state.guests.find(g=>g.id===selectedGuest&&g.status!=='left');if(!g){$('guest-dialog').close();return;}
     const p=E.person(g.person),profile=E.guestProfile(state,g.person),view=E.guestConversation(state,g.id),lines=view?null:talkLines(g),last=view?view.orderReady:talkIndex>=lines.length-1,other=state.kitchen&&state.kitchen.guest!==g.id;
+    // At the goodbye a guest may bring up a clip to watch together (docs/ad-events.js); it speaks through this same panel.
+    const scene=!view&&g.status==='farewell'&&last?window.MidnightAdEvents?.farewellScene?.({id:g.id,score:g.score,name:profile.name,night:state.night})||null:null;
     let action=g.status==='paying'?(last?'계산 받기 ':'계산해 드릴게요 '):g.status==='farewell'?(last?'조심히 돌아가세요 ':g.score<65?'말씀 새겨들을게요 ':g.score>=90?'맛있게 드셨다니 기뻐요 ':'들러 주셔서 고마워요 '):'편히 드세요 · 자리로 돌아가기';
     if(view)action=other?'진행 중인 요리를 먼저 마무리해 주세요':g.status==='waiting'?'접수한 주문 조리하러 가기 ':'주문 받고 부엌으로 ';
     // Keep the live mesh and controls intact through HUD/inventory/timer updates.
     if($('guest-dialog').dataset.person!==String(g.person)){$('talk-portrait').innerHTML=portrait(p,g.person);$('guest-dialog').dataset.person=g.person;}
     $('talk-name').textContent=profile.name;
     $('talk-profile').textContent=profile.role||'';$('talk-profile').hidden=!profile.role;
-    window.MidnightDialogue.write($('talk-line'),`${g.id}-${view?.node||talkIndex}`,view?view.line:lines[Math.min(talkIndex,lines.length-1)]);
-    $('talk-player-line').hidden=!view?.playerLine;$('talk-player-words').textContent=view?.playerLine||'';
-    const choicesKey=JSON.stringify([g.id,view?.node,view?.choices.map(x=>[x.id,x.label])]);
-    if($('talk-choices').dataset.key!==choicesKey){$('talk-choices').dataset.key=choicesKey;$('talk-choices').replaceChildren(...(view?.choices||[]).map((choice,i)=>{const button=document.createElement('button'),number=document.createElement('span'),words=document.createElement('span');button.type='button';button.dataset.guestReply=choice.id;button.setAttribute('aria-label',choice.label);number.className='talk-choice-number';number.setAttribute('aria-hidden','true');number.textContent=String(i+1);words.textContent=choice.label;if(view.choices.length>1)button.append(number);button.append(words);return button;}));}
+    window.MidnightDialogue.write($('talk-line'),`${g.id}-${view?.node||(scene?'scene-'+scene.key:talkIndex)}`,view?view.line:scene?scene.line:lines[Math.min(talkIndex,lines.length-1)]);
+    const playerLine=view?.playerLine||scene?.playerLine||'';$('talk-player-line').hidden=!playerLine;$('talk-player-words').textContent=playerLine;
+    const choices=view?.choices||scene?.choices||[];
+    const choicesKey=JSON.stringify([g.id,view?.node,scene?.key,choices.map(x=>[x.id,x.label])]);
+    if($('talk-choices').dataset.key!==choicesKey){$('talk-choices').dataset.key=choicesKey;$('talk-choices').replaceChildren(...choices.map((choice,i)=>{const button=document.createElement('button'),number=document.createElement('span'),words=document.createElement('span');button.type='button';if(view)button.dataset.guestReply=choice.id;else button.dataset.sceneReply=choice.id;button.setAttribute('aria-label',choice.label);number.className='talk-choice-number';number.setAttribute('aria-hidden','true');number.textContent=String(i+1);words.textContent=choice.label;if(choices.length>1)button.append(number);button.append(words);return button;}));}
     $('talk-choices').classList.toggle('optional',!!view?.orderReady);
-    $('talk-next').hidden=!!view&&!view.orderReady;$('talk-next').textContent=action;$('talk-next').disabled=!!view&&last&&!!other;
+    $('talk-next').hidden=(!!view&&!view.orderReady)||!!scene?.hideNext;$('talk-next').textContent=action;$('talk-next').disabled=!!view&&last&&!!other;
     $('talk-order').hidden=!view?.orderReady;$('talk-order').innerHTML=`${food(g.recipe)}<span>${E.recipes[g.recipe].name}<small>${E.recipes[g.recipe].ingredients.map(id=>E.ingredients[id].name).join(' · ')}</small></span>`;
-    window.MidnightAdEvents?.guestPanel?.({id:g.id,status:g.status,score:g.score,name:profile.name,night:state.night});
+    $('talk-share-status').textContent=scene?.status||'';$('talk-share-status').hidden=!scene?.status;
     $('talk-gift').hidden=!E.regular(state,g.person)||!view?.orderReady;$('talk-gift').disabled=g.gifted||!state.inventory.egg;$('talk-gift').textContent=g.gifted?'✓ 달걀 곁들임을 서비스했어요':'단골 서비스 · 달걀 곁들임 1개';
   }
   function openTalk(id){selectedGuest=id;talkIndex=0;openSheet('guest-dialog');renderTalk();renderScene();}
@@ -313,6 +316,8 @@
   });
   guestDialog.addEventListener('close',()=>{guestOutsidePress=false;});
   $('talk-choices').addEventListener('click',event=>{
+    const reply=event.target.closest('[data-scene-reply]');
+    if(reply){window.MidnightAdEvents?.answerScene?.(reply.dataset.sceneReply);renderTalk();return;}
     const button=event.target.closest('[data-guest-reply]');if(!button)return;
     if(E.answerGuest(state,selectedGuest,button.dataset.guestReply)){render();const focus=$('talk-choices').querySelector('button')||$('talk-next');focus.focus({preventScroll:true});}
   });
@@ -509,7 +514,7 @@
   Kitchen.init({getState:()=>state,food,toast,openPantry:()=>{tab='pantry';renderManagement();openSheet('management-dialog');},clearToast:()=>{$('kitchen-inline-feedback')?.remove();clearTimeout(toastTimer);$('toast').classList.remove('visible');},changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
   render();
   window.MidnightCalendar.init({getState:()=>state,open:()=>openSheet('calendar-dialog')});
-  window.MidnightApp = { befriend:(id,amount)=>{const ok=E.befriend(state,id,amount);if(ok){save();render();}return ok;},launch:startIntro,resumeAfterUpdate,save,saveForUpdate,canApplyUpdate:()=>!state.kitchen&&!anySheetOpen()&&!Scene.isPlacing()&&!cashAnimation&&performance.now()>=openingUntil,isCooking:()=>Boolean(state.kitchen) };
+  window.MidnightApp = { befriend:(id,amount)=>{const ok=E.befriend(state,id,amount);if(ok){save();render();}return ok;},refreshTalk:()=>renderTalk(),launch:startIntro,resumeAfterUpdate,save,saveForUpdate,canApplyUpdate:()=>!state.kitchen&&!anySheetOpen()&&!Scene.isPlacing()&&!cashAnimation&&performance.now()>=openingUntil,isCooking:()=>Boolean(state.kitchen) };
   if (saveMessage) toast(saveMessage);
   raf = requestAnimationFrame(frame);
 })();

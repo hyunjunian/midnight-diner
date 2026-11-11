@@ -43,14 +43,35 @@ function nights(count,keepFarewell){
       state=await view(page);assert.equal(state.bulletin,false);assert.equal(state.phase,'prep');assert.ok(state.playMs<5000,'play time starts over');
       assert.deepEqual(errors,[]);await page.close();
     }
-    // A happy departing guest offers a clip once; watching it raises that guest's closeness.
-    const {page,errors}=await open(nights(2,true),0,'?ads-test');
-    await page.locator('#customers .customer').first().click({force:true});await page.waitForTimeout(500);
-    const read=()=>page.evaluate(()=>({share:document.getElementById('talk-share').hidden?'':document.getElementById('talk-share').textContent,status:document.getElementById('talk-share-status').textContent,affinity:Object.values(JSON.parse(localStorage.getItem('midnight-diner-save-v11')).customerBook).reduce((sum,c)=>sum+(c.affinity||0),0)}));
-    let talk=await read();assert.match(talk.share,/영상 함께 보기 · 광고 \(친밀도 ↑\)/);assert.equal(talk.affinity,0);
-    await page.locator('#talk-share').click();await page.waitForTimeout(500);
-    talk=await read();assert.equal(talk.share,'');assert.match(talk.status,/한층 가까워졌어요/);assert.equal(talk.affinity,2);
-    assert.deepEqual(errors,[]);await page.close();
-    console.log('PASS dawn bulletin gating, announced ad page, and the shared clip raising closeness once');
+    // A happy departing guest brings the clip up in conversation; the owner answers in words.
+    const talk=page=>page.evaluate(()=>({line:document.getElementById('talk-line').textContent,choices:[...document.querySelectorAll('#talk-choices button')].map(b=>b.getAttribute('aria-label')),next:!document.getElementById('talk-next').hidden,status:document.getElementById('talk-share-status').hidden?'':document.getElementById('talk-share-status').textContent,affinity:Object.values(JSON.parse(localStorage.getItem('midnight-diner-save-v11')).customerBook).reduce((sum,c)=>sum+(c.affinity||0),0),left:JSON.parse(localStorage.getItem('midnight-diner-save-v11')).guests.filter(g=>g.status==='left').length}));
+    const meet=async query=>{const opened=await open(nights(2,true),0,query);await opened.page.locator('#customers .customer').first().click({force:true});await opened.page.waitForTimeout(400);await opened.page.locator('#talk-next').click();await opened.page.waitForTimeout(1200);return opened;};
+    {
+      const {page,errors}=await meet('?ads-test');
+      let now=await talk(page);
+      assert.deepEqual(now.choices,['같이 봐요 · 광고 시청 (친밀도 ↑)','오늘은 마음만 받을게요']);assert.equal(now.next,false);assert.equal(now.affinity,0);
+      await page.locator('#talk-choices button').first().click();await page.waitForTimeout(1500);
+      now=await talk(page);assert.equal(now.choices.length,0);assert.equal(now.next,true);assert.match(now.status,/한층 가까워졌어요/);assert.equal(now.affinity,2);
+      const before=now.left;await page.locator('#talk-next').click();await page.waitForTimeout(400);
+      assert.equal((await talk(page)).left,before+1,'the goodbye still ends the visit');assert.deepEqual(errors,[]);await page.close();
+    }
+    {
+      // First time: the guest explains the coming question before anything is asked.
+      const {page,errors}=await meet('?ads-test=privacy');
+      await page.locator('#talk-choices button').first().click();await page.waitForTimeout(2500);
+      let now=await talk(page);
+      assert.deepEqual(now.choices,['알겠어요, 틀어 주세요']);assert.equal(now.affinity,0);
+      await page.locator('#talk-line').click();await page.waitForTimeout(200);
+      assert.match((await talk(page)).line,/허용하지 않아도 영상은 똑같이 볼 수 있어요/);
+      await page.locator('#talk-choices button').first().click();await page.waitForTimeout(1500);
+      now=await talk(page);assert.equal(now.affinity,2);assert.deepEqual(errors,[]);await page.close();
+    }
+    {
+      const {page,errors}=await meet('?ads-test');
+      await page.locator('#talk-choices button').nth(1).click();await page.waitForTimeout(600);
+      const now=await talk(page);assert.equal(now.choices.length,0);assert.equal(now.next,true);assert.equal(now.affinity,0);assert.equal(now.status,'');
+      assert.deepEqual(errors,[]);await page.close();
+    }
+    console.log('PASS dawn bulletin gating, announced ad page, and the clip offered, explained and declined in conversation');
   }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});

@@ -3,15 +3,19 @@
    Dawn bulletin: after enough real play, the alley bulletin sometimes arrives when the owner
    moves on to the next night. It carries a short piece about last night; for players who
    see ads its next page is an advertisement, announced as such before it opens.
-   Shared clip: once a night a satisfied, departing guest may offer to watch a clip together.
-   It is an advertisement and says so; watching it to the end brings that guest a little closer.
-   Delivery note: before the first ad request the bulletin's editors explain, in plain words,
-   that the pages carry ads and that the next screens ask how ads may be chosen. */
+   Shared clip: once a night a satisfied, departing guest brings up a clip in conversation and
+   asks to watch it together. The answer the owner picks says it is an advertisement; watching
+   it to the end brings that guest a little closer.
+   Privacy: there is no separate notice. The first time, the same guest explains in passing
+   what the phone is about to ask (whether ads may follow the owner's interests) and that
+   saying no changes nothing. Only then are Google's consent form and the iOS tracking
+   question shown. Until a guest has had that talk, no ad is requested and the bulletin
+   arrives without an ad page. */
 (()=>{'use strict';
   const $=id=>document.getElementById(id);
   const platform=window.MidnightPlatform||{},ads=platform.ads,settings=platform.config?.ads||{};
-  const dialog=$('bulletin-dialog'),share=$('talk-share'),shareStatus=$('talk-share-status');
-  if(!ads||!dialog||!share||!shareStatus)return;
+  const dialog=$('bulletin-dialog');
+  if(!ads||!dialog)return;
   const KEY='midnight-diner-ad-events-v1';
   const minPlayMs=Math.max(1,Number(settings.bulletinMinPlayMinutes)||12)*60000;
   let memory={playMs:0,offerNight:0,offerGuest:'',doneNight:0};
@@ -49,17 +53,6 @@
   dialog.addEventListener('cancel',event=>event.preventDefault()); // pages close through their button only
 
   let paintPrivacy=()=>{};
-  async function deliveryNote(reason){
-    await page({tag:'편집부에서 온 쪽지',title:'골목 소식지',
-      paragraphs:[reason==='share'
-        ?'골목 소식지 편집부입니다. 손님이 보여 주려는 영상은 광고입니다. 처음 광고를 보여 드리기 전에 한 가지만 여쭙니다.'
-        :'골목 소식지 편집부입니다. 앞으로 가끔 새벽에 소식지를 넣어 드릴게요. 소식지에는 골목 이야기와 함께 광고 지면이 실립니다.',
-        '광고를 사장님의 관심사에 맞춰 골라도 될지, 이어지는 안내에서 정해 주세요. 허용하지 않아도 소식지와 식당 영업은 똑같이 이어집니다.'],
-      button:'안내 이어서 보기'});
-    dialog.close();
-    await ads.requestPrivacy();
-    paintPrivacy();
-  }
   const articles=[
     c=>({headline:`어젯밤 ${c.served}명이 쉬어 간 골목 끝 식당`,paragraphs:['늦은 시간까지 불이 켜진 가게가 드문 골목에서, 끝집 식당의 등불은 어젯밤에도 꺼지지 않았다.',`다녀간 손님은 ${c.served}명. 주인장은 한 사람 한 사람의 이야기를 들으며 밥을 지었다고 한다.`]}),
     c=>({headline:'비 오는 밤에는 따뜻한 한 끼',paragraphs:['골목에 비가 잦아들지 않는 요즘, 우산을 접고 들어서는 발걸음이 늘었다.',`어젯밤 식당을 찾은 ${c.served}명의 손님도 젖은 어깨를 말리며 그릇을 비웠다.`]}),
@@ -89,43 +82,77 @@
       tick();
       // Never after the very first night, and only after enough real play since the last issue.
       if(!context||context.night<2||memory.playMs<minPlayMs)return;
-      if(ads.isNative()&&!ads.isAdFree()&&ads.needsPrivacyPrompt())await deliveryNote('bulletin');
       await bulletin(context);
     })().catch(()=>{if(dialog.open)dialog.close();}).finally(()=>{pending=null;});
     return pending;
   }
 
-  let panel=null,working=false;
-  // Called on every guest panel render. Offers the clip once a night, at a happy goodbye.
-  function guestPanel(guest){
-    panel=guest;
+  // ---- The shared clip, told as a short exchange at the goodbye ----
+  // The guest brings it up, the owner answers, and the first time the guest also explains,
+  // in their own words, the question the phone is about to ask. Nothing is promised for
+  // saying yes, and saying no still plays the clip.
+  const TEXT={
+    offers:['가기 전에 잠깐만요. 오는 길에 본 광고가 자꾸 생각나서요. 삼십 초쯤인데, 주인장도 같이 보실래요? 혼자 보긴 아까워서요.',
+      '아, 나가기 전에 하나만요. 요즘 눈에 밟히는 광고가 있는데 같이 보면 재밌을 것 같아요. 잠깐이면 돼요.',
+      '배가 부르니 떠오르네요. 어제 본 광고가 하나 있는데, 주인장한테도 보여 드리고 싶었어요. 같이 보실래요?'],
+    watch:'같이 봐요 · 광고 시청 (친밀도 ↑)',pass:'오늘은 마음만 받을게요',
+    ask:'좋아요! 틀기 전에 화면에 관심사를 알려 줄지 묻는 창이 뜰 거예요. 광고 일 하는 친구 말로는, 알려 주면 뜬금없는 광고 대신 주인장 취향에 맞는 게 나온대요. 허용하지 않아도 영상은 똑같이 볼 수 있어요.',
+    go:'알겠어요, 틀어 주세요',
+    loading:'잠깐만요, 금방 틀게요.',
+    thanks:'같이 보니까 더 재밌네요. 다음에 또 좋은 걸 찾으면 들고 올게요. 잘 먹고 갑니다.',
+    early:'앗, 끝까지는 못 봤네요. 다시 틀어 볼까요?',again:'다시 볼게요 · 광고 시청',later:'다음에 볼게요',
+    fail:'어라, 지금은 영상이 안 열리네요. 다음에 꼭 보여 드릴게요. 잘 먹고 갑니다.',
+    declined:'괜찮아요. 다음에 재밌는 걸 찾으면 또 말씀드릴게요. 잘 먹고 갑니다.'
+  };
+  let forcePrivacy=false;
+  try{forcePrivacy=!ads.isNative()&&new URLSearchParams(location.search).get('ads-test')==='privacy';}catch{}
+  const needsPrivacy=()=>ads.isNative()?ads.needsPrivacyPrompt():forcePrivacy;
+  let talk=null; // {id,night,name,node,said}
+  const refresh=()=>{try{window.MidnightApp?.refreshTalk?.();}catch{}};
+  // Called while a departing guest's goodbye is on screen. Returns what the guest says and
+  // what the owner can answer, or null when this guest has nothing to share tonight.
+  function farewellScene(guest){
     const mine=memory.offerNight===guest.night&&memory.offerGuest===guest.id;
-    const done=mine&&memory.doneNight===guest.night;
-    const eligible=guest.status==='farewell'&&guest.score>=65;
-    const offer=eligible&&!done&&(mine||(memory.offerNight!==guest.night&&ads.rewardedAvailable()));
-    if(offer&&!mine){memory.offerNight=guest.night;memory.offerGuest=guest.id;remember();}
-    share.hidden=!offer;share.disabled=working;
-    if(offer)share.textContent=`${guest.name} 님이 권하는 영상 함께 보기 · 광고 (친밀도 ↑)`;
-    shareStatus.hidden=!(eligible&&mine&&shareStatus.textContent);
-    if(!eligible||!mine)shareStatus.textContent='';
+    if(!talk||talk.id!==guest.id||talk.night!==guest.night){
+      if(guest.score<65)return null;
+      if(mine&&memory.doneNight===guest.night)return null;            // already watched together
+      if(!mine&&(memory.offerNight===guest.night||!ads.rewardedAvailable()))return null; // one guest a night
+      if(!mine){memory.offerNight=guest.night;memory.offerGuest=guest.id;remember();}
+      talk={id:guest.id,night:guest.night,name:guest.name,node:'offer',said:''};
+    }
+    const n=talk.node,line=n==='offer'?TEXT.offers[guest.night%TEXT.offers.length]:TEXT[n];
+    const choices=n==='offer'?[{id:'watch',label:TEXT.watch},{id:'pass',label:TEXT.pass}]
+      :n==='ask'?[{id:'go',label:TEXT.go}]
+      :n==='early'?[{id:'watch',label:TEXT.again},{id:'pass',label:TEXT.later}]:[];
+    return{key:n,line,playerLine:talk.said,choices,hideNext:['offer','ask','loading','early'].includes(n),
+      status:n==='thanks'?`${talk.name} 님과 한층 가까워졌어요.`:''};
   }
-  share.addEventListener('click',async()=>{
-    const guest=panel;if(!guest||working)return;
-    working=true;share.disabled=true;shareStatus.textContent='';
+  async function play(){
+    talk.node='loading';refresh();
+    const current=talk;
+    let result={rewarded:false,reason:'failed'};
     try{
-      if(ads.isNative()&&ads.needsPrivacyPrompt())await deliveryNote('share');
-      const result=await ads.showRewarded('guest-share');
-      if(result.rewarded&&window.MidnightApp?.befriend?.(guest.id,Number(settings.shareAffinity)||2)){
-        memory.doneNight=guest.night;remember();
-        shareStatus.textContent=`${guest.name} 님과 나란히 영상을 봤어요. 한층 가까워졌어요.`;
-      }else shareStatus.textContent=result.reason==='closed-early'?'끝까지 보지 못했어요. 다시 볼 수 있어요.':'지금은 영상을 불러오지 못했어요. 잠시 후 다시 볼 수 있어요.';
-    }catch{shareStatus.textContent='지금은 영상을 불러오지 못했어요.';}
-    finally{working=false;if(panel)guestPanel(panel);}
-  });
+      if(ads.isNative()&&ads.needsPrivacyPrompt()){await ads.requestPrivacy();paintPrivacy();}
+      forcePrivacy=false;
+      result=await ads.showRewarded('guest-share');
+    }catch{}
+    if(talk!==current)return;
+    if(result.rewarded&&window.MidnightApp?.befriend?.(current.id,Number(settings.shareAffinity)||2)){
+      memory.doneNight=current.night;remember();current.node='thanks';
+    }else current.node=result.reason==='closed-early'?'early':'fail';
+    refresh();
+  }
+  // The owner picked one of the answers offered by farewellScene().
+  function answerScene(reply){
+    if(!talk||['loading','thanks','fail','declined'].includes(talk.node))return;
+    if(reply==='pass'){talk.said=talk.node==='early'?TEXT.later:TEXT.pass;talk.node='declined';return;}
+    if(reply==='watch'&&needsPrivacy()){talk.said=TEXT.watch;talk.node='ask';return;}
+    if(reply==='watch'||reply==='go'){talk.said=reply==='go'?TEXT.go:TEXT.watch;play();}
+  }
   // Settings row for changing or withdrawing ad consent, shown only where the law requires it.
   const privacy=$('ads-privacy');
   paintPrivacy=()=>{if(privacy)privacy.hidden=!ads.privacyOptionsRequired?.();};
   privacy?.addEventListener('click',async()=>{privacy.disabled=true;try{await ads.showPrivacyOptions();}finally{privacy.disabled=false;paintPrivacy();}});
-  window.MidnightAdEvents={beforeNextNight,guestPanel,playMs:()=>memory.playMs};
+  window.MidnightAdEvents={beforeNextNight,farewellScene,answerScene,playMs:()=>memory.playMs};
   Promise.resolve(ads.init()).catch(()=>{}).then(paintPrivacy);
 })();

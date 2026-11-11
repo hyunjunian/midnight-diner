@@ -33,9 +33,7 @@
 #bulletin-text p{margin:0 0 10px;font-size:14px;line-height:1.75;word-break:keep-all}
 .bulletin-note{margin:0;padding-top:10px;border-top:1px solid #7a5b3a55;font-size:12px;line-height:1.6;opacity:.8;word-break:keep-all}
 #bulletin-next{width:100%;min-height:48px;margin-top:4px}
-/* A departing guest's offer to watch a clip together, beside the regular's egg gift. */
-#guest-dialog #talk-share{display:block;width:100%;min-height:44px;margin-top:10px;padding:8px 12px;background:#3c5145;border:1px solid #778461;border-radius:4px;color:#e6d4ae;font:12px/1.5 var(--sans);word-break:keep-all}
-#guest-dialog #talk-share:disabled{opacity:.7}
+/* Note under a departing guest's shared clip (closeness gained). */
 #guest-dialog #talk-share-status{margin:8px 0 0;font-size:12px;line-height:1.5;text-align:center}
 #bulletin-dialog{--wood-ink:#493b2b;--wood-muted:#776247;--ui-ink:#493b2b;color-scheme:light;color:#493b2b;background-color:#f2e4c5;background-image:var(--folio-face);background-size:auto,620px}
 #bulletin-dialog .sheet-header{color:#493b2b;background-image:var(--folio-face);border-color:#b298715c;box-shadow:0 1px 3px #7751251c,inset 0 1px #fff9df}
