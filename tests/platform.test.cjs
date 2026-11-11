@@ -533,3 +533,9 @@ test('declining, closing early or a missing ad gives nothing and the guest takes
   assert.equal(clipTalk({available:false}).api.farewellScene({id:'g1',score:90,name:'고로',night:3}),null);
   assert.equal(clipTalk().api.farewellScene({id:'g1',score:50,name:'고로',night:3}),null,'only a satisfied guest offers');
 });
+
+test('the owner\'s chosen reply is not echoed and the bubble tail is outlined',()=>{
+  const game=fs.readFileSync('docs/game.js','utf8'),css=fs.readFileSync('docs/hud-settings-v66.css','utf8');
+  assert.match(game,/\$\('talk-player-line'\)\.hidden=true;/);assert.doesNotMatch(game,/talk-player-line'\)\.hidden=!/);
+  assert.match(css,/\.talk-speech::before\{[^}]*background:#d3be97\}/);assert.match(css,/\.talk-speech::after\{content:''[^}]*background:#f0ddb8\}/);
+});

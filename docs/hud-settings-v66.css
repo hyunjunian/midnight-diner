@@ -39,3 +39,7 @@
 #bulletin-dialog .sheet-header{color:#493b2b;background-image:var(--folio-face);border-color:#b298715c;box-shadow:0 1px 3px #7751251c,inset 0 1px #fff9df}
 #bulletin-dialog .sheet-header .eyebrow{color:#936342}
 #bulletin-dialog .primary{color:#fff0cf;background-color:#52311e;background-image:linear-gradient(#512d1ba6,#30190dcc),url('./assets/ui-walnut-v21.webp');background-size:auto,420px;text-shadow:0 1px #1b0e09}
+/* Guest speech bubble tail: a small outlined point toward the portrait, drawn as a border-coloured
+   triangle with the bubble's own paper colour inside, so the bubble edge reads as one unbroken line. */
+#guest-dialog .talk-guest-copy .talk-speech::before{content:'';position:absolute;left:-9px;top:15px;width:9px;height:16px;transform:none;border:0;border-radius:0;box-shadow:none;clip-path:polygon(100% 0,0 50%,100% 100%);background:#d3be97}
+#guest-dialog .talk-guest-copy .talk-speech::after{content:'';position:absolute;left:-7px;top:16.5px;width:9px;height:13px;clip-path:polygon(100% 0,0 50%,100% 100%);background:#f0ddb8}

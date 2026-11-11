@@ -122,7 +122,8 @@
     $('talk-name').textContent=profile.name;
     $('talk-profile').textContent=profile.role||'';$('talk-profile').hidden=!profile.role;
     window.MidnightDialogue.write($('talk-line'),`${g.id}-${view?.node||(scene?'scene-'+scene.key:talkIndex)}`,view?view.line:scene?scene.line:lines[Math.min(talkIndex,lines.length-1)]);
-    const playerLine=view?.playerLine||scene?.playerLine||'';$('talk-player-line').hidden=!playerLine;$('talk-player-words').textContent=playerLine;
+    // The owner's chosen reply is not echoed above the guest: the guest's answer follows directly.
+    $('talk-player-line').hidden=true;$('talk-player-words').textContent='';
     const choices=view?.choices||scene?.choices||[];
     const choicesKey=JSON.stringify([g.id,view?.node,scene?.key,choices.map(x=>[x.id,x.label])]);
     if($('talk-choices').dataset.key!==choicesKey){$('talk-choices').dataset.key=choicesKey;$('talk-choices').replaceChildren(...choices.map((choice,i)=>{const button=document.createElement('button'),number=document.createElement('span'),words=document.createElement('span');button.type='button';if(view)button.dataset.guestReply=choice.id;else button.dataset.sceneReply=choice.id;button.setAttribute('aria-label',choice.label);number.className='talk-choice-number';number.setAttribute('aria-hidden','true');number.textContent=String(i+1);words.textContent=choice.label;if(choices.length>1)button.append(number);button.append(words);return button;}));}
