@@ -149,7 +149,7 @@
   function renderStory(){
     const view=E.story(state),news=E.news(state),history=state.storyMemory.slice(-5).reverse(),key=JSON.stringify([view?.run,news,state.storyMemory.length,view?.run.cast.map(id=>E.guestProfile(state,id).known)]);
     if(key===storyRenderKey&&$('story-content').childElementCount){if(view?.run.step===0)for(const choice of view.definition.choices){const button=$('story-content').querySelector(`[data-choice="${choice.id}"]`);if(button)button.disabled=!E.canChoose(state,choice);}return;}storyRenderKey=key;
-    $('story-tag').textContent=state.event==='pending'?'주인장의 선택 · 이어지는 이야기':'골목에 남은 기억';
+    $('story-tag').textContent=view?.definition.series||(state.event==='pending'?'주인장의 선택 · 이어지는 이야기':'골목에 남은 기억');
     $('story-title').textContent=view?view.definition.title:'다음 밤에 도착한 소식';
     const memories=`<section class="story-journal"><h4>가게의 작은 수첩</h4>${history.length?history.map(t=>{const st=E.storyContent.stories.find(x=>x.id===t.id),c=st.choices.find(x=>x.id===t.choice);return `<details><summary>${window.MidnightDate.label(t.night)} · ${st.title}</summary><p>${c.result}</p></details>`}).join(''):'<p>손님 둘이 모이면 오늘 밤의 이야기가 시작돼요.</p>'}</section>`;
     const followups=news.length?`<div class="story-followups">${news.map(n=>`<p>✉ ${n.text}</p>`).join('')}</div>`:'';

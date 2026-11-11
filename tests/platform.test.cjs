@@ -539,3 +539,39 @@ test('the owner\'s chosen reply is not echoed and the bubble tail is outlined',(
   assert.match(game,/\$\('talk-player-line'\)\.hidden=true;/);assert.doesNotMatch(game,/talk-player-line'\)\.hidden=!/);
   assert.match(css,/\.talk-speech::before\{[^}]*background:#d3be97\}/);assert.match(css,/\.talk-speech::after\{content:''[^}]*background:#f0ddb8\}/);
 });
+
+// ---- Story threads ----
+test('story threads are told once, in order, on every second night, then single stories take over',()=>{
+  const E=require('../docs/engine'),S=E.storyContent,s=E.fresh(),told=[];
+  for(let night=1;night<=22;night++){
+    E.open(s);for(let i=0;i<3;i++)E.arrive(s);assert.ok(E.conversation(s),'night '+night);
+    const view=E.story(s);told.push(view.definition.id);
+    assert.ok(E.resolveEvent(s,view.definition.choices.find(c=>E.canChoose(s,c)).id));assert.ok(E.resolveEvent(s,S.reflection[0].id));
+    s.guests.forEach(g=>g.status='left');s.arrived=s.target;s.nightScores=Array(s.target).fill(80);
+    assert.ok(E.close(s));assert.ok(E.next(s));E.restore(JSON.stringify(s));
+  }
+  const chapters=S.stories.filter(t=>t.arc).map(t=>t.id);
+  assert.equal(chapters.length,9);
+  assert.deepEqual(told.filter((id,i)=>i%2===1).slice(0,9),chapters,'chapters in order on nights 2,4,6…');
+  for(const id of chapters)assert.equal(told.filter(x=>x===id).length,1,id+' is told once');
+  assert.ok(told.filter((id,i)=>i%2===0).every(id=>!chapters.includes(id)));
+  assert.ok(told.slice(18).every(id=>!chapters.includes(id)),'after the threads end, single stories only');
+  assert.deepEqual(told.filter(id=>!chapters.includes(id)).slice(0,6),S.stories.filter(t=>!t.arc).map(t=>t.id),'single stories keep their rotation');
+});
+test('every story chapter is complete, affordable somehow, and original',()=>{
+  const E=require('../docs/engine'),S=E.storyContent,ids=new Set(S.stories.map(t=>t.id));
+  for(const t of S.stories.filter(x=>x.arc)){
+    assert.ok(t.series&&t.title&&t.intro.length>40,t.id);assert.equal(t.lines.length,4,t.id);
+    assert.ok(t.lines.every(line=>/^\{[ab]\}: /.test(line)),t.id);
+    if(t.after)assert.ok(ids.has(t.after),t.id);
+    assert.equal(t.choices.length,3,t.id);
+    assert.ok(t.choices.some(c=>!c.money&&!c.ingredients),t.id+' needs one choice that costs nothing');
+    for(const c of t.choices){
+      assert.ok(c.label&&c.result&&c.future?.text,t.id+'/'+c.id);
+      for(const id of [...Object.keys(c.ingredients||{}),...Object.keys(c.future.ingredients||{})])assert.ok(E.ingredients[id],t.id+' '+id);
+      assert.ok((c.money||0)>=-300&&(c.future.money||0)<=700&&(c.rep||0)<=4&&(c.affinity||0)<=3,t.id+'/'+c.id+' stays within the existing reward range');
+    }
+  }
+  const text=JSON.stringify(S);
+  for(const word of ['야쿠자','비엔나','소시지','마스터','코스즈','마릴린','도시락','문어'])assert.ok(!text.includes(word),word+' belongs to the reference drama');
+});

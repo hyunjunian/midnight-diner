@@ -43,3 +43,6 @@
    triangle with the bubble's own paper colour inside, so the bubble edge reads as one unbroken line. */
 #guest-dialog .talk-guest-copy .talk-speech::before{content:'';position:absolute;left:-9px;top:15px;width:9px;height:16px;transform:none;border:0;border-radius:0;box-shadow:none;clip-path:polygon(100% 0,0 50%,100% 100%);background:#d3be97}
 #guest-dialog .talk-guest-copy .talk-speech::after{content:'';position:absolute;left:-7px;top:16.5px;width:9px;height:13px;clip-path:polygon(100% 0,0 50%,100% 100%);background:#f0ddb8}
+
+/* News that arrives the next night was cream text from the old dark sheet; on washi it needs ink. */
+#story-dialog .story-followups{color:#493b2b;background:#fff8e455;border-color:#b2987166}

@@ -474,7 +474,13 @@
   }
   function depart(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='farewell');if(!g)return false;g.status='left';return true;}
   function ensureStory(s) {
-    if(!s.storyRun){const st=S.stories[(s.night-1)%S.stories.length],cast=s.guests.slice(0,2).map(g=>g.person);while(cast.length<2)cast.push(cast.length);s.storyRun={id:st.id,night:s.night,step:s.event==='resolved'?2:0,cast,choice:null,reflection:null};}
+    if(!s.storyRun){
+      // Single stories rotate in order. Chapters of a longer thread ("arc") are told once each,
+      // in order, on every second night, so time passes between them; an unresolved chapter
+      // comes back on a later night, and once every chapter is told the single stories take over.
+      const told=new Set((s.storyMemory||[]).map(t=>t.id)),singles=S.stories.filter(t=>!t.arc);
+      const chapter=s.night%2===0?S.stories.find(t=>t.arc&&!told.has(t.id)&&(!t.after||told.has(t.after))):null;
+      const st=chapter||singles[(s.storyMemory||[]).filter(t=>singles.some(x=>x.id===t.id)).length%singles.length],cast=s.guests.slice(0,2).map(g=>g.person);while(cast.length<2)cast.push(cast.length);s.storyRun={id:st.id,night:s.night,step:s.event==='resolved'?2:0,cast,choice:null,reflection:null};}
     return s.storyRun;
   }
   function story(s) {
