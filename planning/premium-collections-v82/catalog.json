@@ -37,9 +37,9 @@
           "area": "inside",
           "name": "소박한 첫 불빛의 식당",
           "materials": [
-            "작은 한지등",
             "생활감 있는 목재",
-            "작은 화분"
+            "작은 한지등",
+            "수수한 그릇"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -75,8 +75,8 @@
           "area": "outside",
           "name": "작은 노렌의 골목집",
           "materials": [
-            "작은 한지등",
-            "생활감 있는 목재",
+            "작은 등불",
+            "담백한 노렌",
             "작은 화분"
           ],
           "artStatus": "revised_concept_review",
@@ -124,8 +124,8 @@
           "name": "가지런한 나무 상판",
           "materials": [
             "정돈한 무광 상판",
-            "단정한 목재 문틀",
-            "작은 그릇"
+            "가지런한 그릇",
+            "단정한 목재"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -171,9 +171,9 @@
           "area": "outside",
           "name": "조용한 나무 입구",
           "materials": [
-            "정돈한 무광 상판",
-            "단정한 목재 문틀",
-            "작은 그릇"
+            "손질한 문틀",
+            "수수한 노렌",
+            "무광 목재"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -229,9 +229,9 @@
           "area": "inside",
           "name": "작은 한지등의 식당",
           "materials": [
-            "작고 둥근 한지등 하나",
+            "작은 한지등",
             "따뜻한 흰 그릇",
-            "담백한 천"
+            "담백한 수납"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -277,9 +277,9 @@
           "area": "outside",
           "name": "따뜻한 한 등불의 입구",
           "materials": [
-            "작고 둥근 한지등 하나",
-            "따뜻한 흰 그릇",
-            "담백한 천"
+            "작은 한 등불",
+            "담백한 천",
+            "단정한 입구"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -335,9 +335,9 @@
           "area": "inside",
           "name": "나무결이 살아나는 식당",
           "materials": [
-            "차분한 갈색 목재",
+            "차분한 갈색 상판",
             "정돈한 수납",
-            "수수한 노렌"
+            "작은 도기"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -383,9 +383,9 @@
           "area": "outside",
           "name": "차분한 목재 골목집",
           "materials": [
-            "차분한 갈색 목재",
-            "정돈한 수납",
-            "수수한 노렌"
+            "차분한 나무결",
+            "수수한 노렌",
+            "작은 화분"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -443,7 +443,7 @@
           "materials": [
             "작은 꽃가지",
             "옅은 분홍 도기",
-            "수수한 봄 노렌"
+            "수수한 한지등"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -489,9 +489,9 @@
           "area": "outside",
           "name": "봄 노렌의 작은 입구",
           "materials": [
+            "수수한 봄 노렌",
             "작은 꽃가지",
-            "옅은 분홍 도기",
-            "수수한 봄 노렌"
+            "단정한 입구"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -548,7 +548,7 @@
           "name": "정갈한 원목 식당",
           "materials": [
             "보수한 회벽",
-            "매끈한 원목 상판",
+            "매끈한 상판",
             "깨끗한 냉장고 외관"
           ],
           "artStatus": "revised_concept_review",
@@ -595,9 +595,9 @@
           "area": "outside",
           "name": "가지런히 가꾼 입구",
           "materials": [
-            "보수한 회벽",
-            "매끈한 원목 상판",
-            "깨끗한 냉장고 외관"
+            "단정한 문틀",
+            "손질한 회벽",
+            "고른 목재 마감"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -655,7 +655,7 @@
           "materials": [
             "작은 한지등 두 개",
             "가지런한 생활 도자기",
-            "고운 천"
+            "고운 목재"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -701,9 +701,9 @@
           "area": "outside",
           "name": "은은한 등불의 골목집",
           "materials": [
-            "작은 한지등 두 개",
-            "가지런한 생활 도자기",
-            "고운 천"
+            "작은 한지등",
+            "단정한 직조 천",
+            "고운 목재"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -760,8 +760,8 @@
           "name": "정갈하게 가꾼 단골집",
           "materials": [
             "정돈한 원목 상판",
-            "작은 조명",
-            "담백한 그릇"
+            "단정한 벽",
+            "가지런한 그릇"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -807,9 +807,9 @@
           "area": "outside",
           "name": "따뜻한 단골집 입구",
           "materials": [
-            "정돈한 원목 상판",
-            "작은 조명",
-            "담백한 그릇"
+            "손질한 창호",
+            "따뜻한 등불",
+            "단정한 노렌"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -865,9 +865,9 @@
           "area": "inside",
           "name": "차분한 참나무 식당",
           "materials": [
-            "정갈한 참나무 수납",
-            "손질한 문틀",
-            "작은 도기 화분"
+            "차분한 참나무 수납",
+            "고운 상판",
+            "작은 도기"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -913,9 +913,9 @@
           "area": "outside",
           "name": "참나무결의 입구",
           "materials": [
-            "정갈한 참나무 수납",
-            "손질한 문틀",
-            "작은 도기 화분"
+            "손질한 참나무 문틀",
+            "작은 도기 화분",
+            "단정한 천"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -972,8 +972,8 @@
           "name": "그릇이 가지런한 식당",
           "materials": [
             "가지런한 그릇장",
-            "단정한 원목 마감",
-            "작은 목제 간판"
+            "정돈한 벽",
+            "원목 상판"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1019,9 +1019,9 @@
           "area": "outside",
           "name": "수수한 간판의 골목집",
           "materials": [
-            "가지런한 그릇장",
-            "단정한 원목 마감",
-            "작은 목제 간판"
+            "작은 목제 간판",
+            "단정한 창호",
+            "손질한 입구"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1077,9 +1077,9 @@
           "area": "inside",
           "name": "푸른 그릇과 여름빛",
           "materials": [
-            "차분한 남빛 천",
             "청자색 그릇",
-            "작은 초록 가지"
+            "작은 초록 가지",
+            "정돈한 목재"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1125,9 +1125,9 @@
           "area": "outside",
           "name": "여름 노렌이 걸린 입구",
           "materials": [
-            "차분한 남빛 천",
-            "청자색 그릇",
-            "작은 초록 가지"
+            "차분한 남빛 노렌",
+            "작은 초록 가지",
+            "단정한 입구"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1231,9 +1231,9 @@
           "area": "outside",
           "name": "담백한 회벽 골목집",
           "materials": [
-            "매끈한 회벽",
-            "고운 목재 결",
-            "가지런한 수납"
+            "담백한 회벽",
+            "고운 문틀",
+            "단정한 처마"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1290,8 +1290,8 @@
           "name": "수공예 한지등의 식당",
           "materials": [
             "작은 수공예 한지등",
-            "직조 무늬",
-            "섬세한 나무결"
+            "섬세한 나무결",
+            "수수한 도자기"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1337,9 +1337,9 @@
           "area": "outside",
           "name": "직조 노렌의 입구",
           "materials": [
-            "작은 수공예 한지등",
-            "직조 무늬",
-            "섬세한 나무결"
+            "직조 노렌",
+            "수공예 등불",
+            "고운 나무결"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1395,7 +1395,7 @@
           "area": "inside",
           "name": "깊은 갈색 원목 식당",
           "materials": [
-            "차분한 짙은 갈색 원목",
+            "짙은 갈색 원목",
             "깨끗한 크림색 냉장고",
             "작은 도기"
           ],
@@ -1443,8 +1443,8 @@
           "area": "outside",
           "name": "갈색 격자의 골목집",
           "materials": [
-            "차분한 짙은 갈색 원목",
-            "깨끗한 크림색 냉장고",
+            "깊은 갈색 격자",
+            "단정한 직조 천",
             "작은 도기"
           ],
           "artStatus": "revised_concept_review",
@@ -1502,7 +1502,7 @@
           "name": "정성이 쌓인 나무 식당",
           "materials": [
             "깔끔한 벽과 수납",
-            "단정한 문틀",
+            "고운 상판",
             "따뜻한 조명"
           ],
           "artStatus": "revised_concept_review",
@@ -1549,9 +1549,9 @@
           "area": "outside",
           "name": "오래 아낀 골목집 입구",
           "materials": [
-            "깔끔한 벽과 수납",
-            "단정한 문틀",
-            "따뜻한 조명"
+            "잘 가꾼 문틀",
+            "은은한 등불",
+            "차분한 노렌"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1655,9 +1655,9 @@
           "area": "outside",
           "name": "손길이 쌓인 골목집",
           "materials": [
-            "고운 원목 상판",
-            "깨끗한 회벽",
-            "가지런한 그릇"
+            "고운 목재 격자",
+            "손질한 외벽",
+            "단정한 노렌"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1713,9 +1713,9 @@
           "area": "inside",
           "name": "가을가지가 놓인 식당",
           "materials": [
-            "작은 억새",
+            "작은 가을가지",
             "갈색 도기",
-            "차분한 가을 노렌"
+            "고운 상판"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1762,8 +1762,8 @@
           "name": "초가을 억새의 입구",
           "materials": [
             "작은 억새",
-            "갈색 도기",
-            "차분한 가을 노렌"
+            "차분한 가을 노렌",
+            "도기 화분"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1820,8 +1820,8 @@
           "name": "맞춤 원목의 조용한 식당",
           "materials": [
             "섬세한 원목 이음",
-            "맞춤 격자",
-            "작은 한지등"
+            "작은 한지등",
+            "맞춤 수납"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1867,9 +1867,9 @@
           "area": "outside",
           "name": "정갈한 맞춤 격자 입구",
           "materials": [
-            "섬세한 원목 이음",
-            "맞춤 격자",
-            "작은 한지등"
+            "맞춤 목재 격자",
+            "작은 한지등",
+            "직조 노렌"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1927,7 +1927,7 @@
           "materials": [
             "절제된 수공예 도자기",
             "고운 상판",
-            "도기 화분"
+            "정갈한 수납"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -1973,9 +1973,9 @@
           "area": "outside",
           "name": "도자기 화분의 골목집",
           "materials": [
-            "절제된 수공예 도자기",
-            "고운 상판",
-            "도기 화분"
+            "수공예 도기 화분",
+            "고운 격자",
+            "단정한 노렌"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -2033,7 +2033,7 @@
           "materials": [
             "깊은 월넛 결",
             "고운 회벽",
-            "정갈한 맞춤 수납"
+            "맞춤 수납"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -2079,9 +2079,9 @@
           "area": "outside",
           "name": "깊은 월넛 격자의 입구",
           "materials": [
-            "깊은 월넛 결",
-            "고운 회벽",
-            "정갈한 맞춤 수납"
+            "깊은 월넛 격자",
+            "고운 외벽",
+            "단정한 입구"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -2137,7 +2137,7 @@
           "area": "inside",
           "name": "황동 손잡이의 목조 식당",
           "materials": [
-            "절제된 작은 황동 손잡이",
+            "작은 황동 손잡이",
             "수공예 조명",
             "좋은 원목"
           ],
@@ -2185,9 +2185,9 @@
           "area": "outside",
           "name": "작은 황동등의 골목집",
           "materials": [
-            "절제된 작은 황동 손잡이",
-            "수공예 조명",
-            "좋은 원목"
+            "작은 황동등",
+            "고운 목재 격자",
+            "섬세한 노렌"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -2243,7 +2243,7 @@
           "area": "inside",
           "name": "오래 아낀 작은 식당",
           "materials": [
-            "깊이 있는 원목 마감",
+            "깊은 원목 마감",
             "깨끗한 올리브색 냉장고",
             "소박한 도자기"
           ],
@@ -2291,9 +2291,9 @@
           "area": "outside",
           "name": "잔잔한 멋의 골목집",
           "materials": [
-            "깊이 있는 원목 마감",
-            "깨끗한 올리브색 냉장고",
-            "소박한 도자기"
+            "깊이 있는 나무결",
+            "정갈한 외벽",
+            "담백한 직조 천"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -2349,7 +2349,7 @@
           "area": "inside",
           "name": "도톰한 한지와 겨울 그릇",
           "materials": [
-            "도톰한 직조 천",
+            "포근한 한지등",
             "흰 도자기",
             "작은 동백 가지"
           ],
@@ -2397,9 +2397,9 @@
           "area": "outside",
           "name": "겨울 노렌의 포근한 입구",
           "materials": [
-            "도톰한 직조 천",
-            "흰 도자기",
-            "작은 동백 가지"
+            "도톰한 겨울 노렌",
+            "작은 동백 가지",
+            "은은한 등불"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -2503,9 +2503,9 @@
           "area": "outside",
           "name": "장인의 목재 격자 입구",
           "materials": [
-            "섬세한 원목 이음",
-            "수공예 한지등",
-            "절제된 금속 마감"
+            "장인의 목재 격자",
+            "직조 노렌",
+            "작은 금속 디테일"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
@@ -2609,9 +2609,9 @@
           "area": "outside",
           "name": "깊은 온기의 골목집",
           "materials": [
-            "좋은 월넛 원목",
-            "수공예 도자기",
-            "작은 황동 디테일"
+            "완성도 높은 목재 격자",
+            "고운 직조 천",
+            "절제된 등불"
           ],
           "artStatus": "revised_concept_review",
           "mockup": null,
