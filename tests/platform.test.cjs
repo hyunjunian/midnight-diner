@@ -475,3 +475,10 @@ test('app-ads.txt authorises the AdMob publisher of the shipped ad units',()=>{
   assert.equal(text,'google.com, pub-7477519330314468, DIRECT, f08c47fec0942fa0\n');
   assert.match(fs.readFileSync('docs/src/platform/config.js','utf8'),/ca-app-pub-7477519330314468\//,'same publisher as the ad units');
 });
+
+test('iOS declares the ad networks Google lists and that it uses only exempt encryption',()=>{
+  const plist=fs.readFileSync('ios/App/App/Info.plist','utf8');
+  const ids=[...plist.matchAll(/<string>([a-z0-9]{10})\.skadnetwork<\/string>/g)].map(m=>m[1]);
+  assert.equal(ids.length,50);assert.equal(new Set(ids).size,50);assert.equal(ids[0],'cstr6suwn9');
+  assert.match(plist,/<key>ITSAppUsesNonExemptEncryption<\/key>\s*<false\/>/);
+});

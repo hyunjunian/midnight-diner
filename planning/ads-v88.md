@@ -66,7 +66,7 @@ node tools/set-admob.cjs \
 
 계정 전에 광고 흐름을 기기에서 미리 보려면 `ads.enabled`만 `true`로 바꾼다(`testMode`가 `true`라 Google 테스트 광고만 나온다). 이 상태로 출시하면 안 된다.
 
-`Info.plist`의 `SKAdNetworkItems`에는 Google 식별자 하나만 넣었다. Google 안내의 전체 목록을 추가하면 iOS 광고 수익에 도움이 된다.
+`Info.plist`의 `SKAdNetworkItems`에는 Google이 안내하는 식별자 50개(Google 자체 1개와 제3자 구매자 49개)를 넣었다. 출처는 https://developers.google.com/admob/ios/3p-skadnetworks (2026-01-30 갱신본)이며, Google이 목록을 바꾸면 다시 맞춘다. 암호화는 HTTPS만 쓰므로 `ITSAppUsesNonExemptEncryption`을 `false`로 선언했다.
 
 ## 검증과 한계
 
