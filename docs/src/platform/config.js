@@ -22,14 +22,14 @@
       iosFreeSince: ''
     },
     ads: {
-      // Ads are off until an AdMob account exists: no SDK start, no ad requests, no privacy
-      // questions. `node tools/set-admob.cjs` fills in the real ids and turns this on.
-      enabled: false,
-      // true: request only Google's public test ads (for trying ads before the real ids exist).
-      testMode: true,
+      // false turns ads off completely: no SDK start, no ad requests, no privacy questions.
+      // The ids below were written by `node tools/set-admob.cjs` (app ids live in the native projects).
+      enabled: true,
+      // true: request only Google's public test ads instead of the real units. Never ship with true.
+      testMode: false,
       units: {
-        ios: { interstitial: '', rewarded: '' },
-        android: { interstitial: '', rewarded: '' }
+        ios: { interstitial: 'ca-app-pub-7477519330314468/3681611083', rewarded: 'ca-app-pub-7477519330314468/8554838820' },
+        android: { interstitial: 'ca-app-pub-7477519330314468/9220732439', rewarded: 'ca-app-pub-7477519330314468/2352071758' }
       },
       // The dawn bulletin (and its ad page) appears when moving on to the next night only after
       // this much active play since the last one. Short gaps earn little and wear the event out.

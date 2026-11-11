@@ -204,9 +204,12 @@ function shop(options={}){
   return{store:p.store,ads:p.ads,calls,cache,of:m=>calls.filter(c=>c.method===m)};
 }
 const own=(more={})=>({productIdentifier:ADS,transactionId:'t0',purchaseState:'1',...more});
-test('shipped settings: one remove-ads product on sale in the apps, iOS still in its paid period, test ads only',()=>{
+test('shipped settings: one remove-ads product on sale in the apps, iOS still in its paid period, real ad units on',()=>{
   const {store}=shop(),text=fs.readFileSync('docs/src/platform/config.js','utf8');
-  assert.match(text,/removeAdsOnSale: true/);assert.match(text,/iosFreeSince: ''/);assert.match(text,/enabled: false/);assert.match(text,/testMode: true/);
+  assert.match(text,/removeAdsOnSale: true/);assert.match(text,/iosFreeSince: ''/);assert.match(text,/enabled: true/);assert.match(text,/testMode: false/);
+  assert.doesNotMatch(text,/3940256099942544/,'no sample unit ids in the shipped settings');
+  for(const file of ['ios/App/App/Info.plist','android/app/src/main/AndroidManifest.xml'])assert.doesNotMatch(fs.readFileSync(file,'utf8'),/3940256099942544/,file+' still has the sample app id');
+  assert.equal((text.match(/ca-app-pub-7477519330314468\/\d{10}/g)||[]).length,4);
   assert.match(text,/\{ id: 'midnight_remove_ads', type: 'non-consumable' \}/);
   assert.equal(store.hasNoAds(),false);
 });
@@ -311,7 +314,7 @@ function adNet(options={}){
     }}};
   const document={documentElement:{setAttribute:n=>attrs.add(n),removeAttribute:n=>attrs.delete(n)},dispatchEvent:e=>events.push(e.type)};
   for(const name of ['config','ads'])vm.runInNewContext(fs.readFileSync(`docs/src/platform/${name}.js`,'utf8'),{window,document,Event,setTimeout,clearTimeout,Promise,String,Boolean,Number,URLSearchParams,location:{search:''}});
-  const p=window.MidnightPlatform;p.config.ads.enabled=options.enabled!==false;if(options.config)Object.assign(p.config.ads,options.config);
+  const p=window.MidnightPlatform;p.config.ads.enabled=options.enabled!==false;p.config.ads.testMode=true;p.config.ads.units={ios:{interstitial:'',rewarded:''},android:{interstitial:'',rewarded:''}};if(options.config)Object.assign(p.config.ads,options.config);
   const settle=()=>new Promise(r=>setTimeout(r,15));
   return{ads:p.ads,calls,of:m=>calls.filter(c=>c.method===m),attrs,events,settle};
 }
@@ -422,4 +425,17 @@ test('set-admob fills every id, leaves test mode and turns ads on; bad ids chang
     assert.match(fs.readFileSync(path.join(dir,files[2]),'utf8'),/android:value="ca-app-pub-1234567890123456~2222222222"/);
     new vm.Script(config);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('shipped apps request the real ad units of their own platform',async()=>{
+  const real=options=>{const a=adNet(options);return a;};
+  const units=fs.readFileSync('docs/src/platform/config.js','utf8');
+  for(const [platform,kind,id] of [['ios','interstitial','ca-app-pub-7477519330314468/3681611083'],['ios','rewarded','ca-app-pub-7477519330314468/8554838820'],['android','interstitial','ca-app-pub-7477519330314468/9220732439'],['android','rewarded','ca-app-pub-7477519330314468/2352071758']])
+    assert.match(units,new RegExp(`${platform}: \\{[^}]*${kind}: '${id.replace('/','\\/')}'`),platform+' '+kind);
+  assert.match(fs.readFileSync('ios/App/App/Info.plist','utf8'),/<string>ca-app-pub-7477519330314468~7333256491<\/string>/);
+  assert.match(fs.readFileSync('android/app/src/main/AndroidManifest.xml','utf8'),/android:value="ca-app-pub-7477519330314468~7772899339"/);
+  const a=real({platform:'ios',config:{testMode:false,units:{ios:{interstitial:'ca-app-pub-7477519330314468/3681611083',rewarded:'ca-app-pub-7477519330314468/8554838820'}}}});
+  await a.ads.init();await a.settle();
+  assert.equal(a.of('initialize')[0].data.initializeForTesting,false);
+  assert.deepEqual([a.of('prepareInterstitial')[0].data.adId,a.of('prepareRewardVideoAd')[0].data.adId],['ca-app-pub-7477519330314468/3681611083','ca-app-pub-7477519330314468/8554838820']);
 });

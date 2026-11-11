@@ -35,7 +35,11 @@
 - 광고가 떠 있는 동안 배경음악을 멈춘다(`data-ad` 표시).
 - 설정의 "광고 제거" 줄은 광고가 켜져 있고(`ads.enabled`) `removeAdsOnSale: true`이며 스토어가 상품을 돌려줄 때만 앱에 보인다. 브라우저 사이트에서는 `?store-test`일 때만 보인다.
 
-## AdMob 계정 전: 광고는 꺼져 있다
+## 현재 상태: 실제 광고 ID 적용됨
+
+사용자가 AdMob 계정을 만들고 ID 6개를 전달해 `tools/set-admob.cjs`로 적용했다(`ads.enabled: true`, `testMode: false`). 아래 두 절은 계정 전 상태와 적용 절차의 기록이다. 테스트할 때 실제 광고를 누르면 계정이 정지될 수 있으므로 AdMob에 테스트 기기를 등록한다.
+
+## (기록) AdMob 계정 전: 광고는 꺼져 있었다
 
 AdMob 계정이 아직 없어서 `config.js`의 `ads.enabled`를 `false`로 두었다. 이 상태의 앱은 광고 SDK가 없는 것처럼 동작한다.
 

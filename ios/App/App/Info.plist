@@ -52,7 +52,7 @@
 		<string>armv7</string>
 	</array>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-7477519330314468~7333256491</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>허용하면 골목 소식지와 손님이 권하는 영상의 광고가 관심사에 맞게 표시됩니다. 허용하지 않아도 게임은 똑같이 즐길 수 있습니다.</string>
 	<key>SKAdNetworkItems</key>
