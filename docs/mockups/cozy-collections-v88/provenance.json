@@ -1,0 +1,117 @@
+{
+  "date": "2026-11-11",
+  "tool": "image_gen.imagegen",
+  "purpose": "Review-only interior/exterior cosmetic concepts; gradual cozy midnight diner growth",
+  "designCount": 50,
+  "collectionCount": 25,
+  "allSeasonCollections": 21,
+  "optionalSeasonalCollections": 4,
+  "productionAssetsModified": false,
+  "imageProcessing": "Raw generated PNG files copied unchanged. Browser SVG viewBox displays individual panels. No bitmap editing.",
+  "sourceSheets": [
+    {
+      "file": "assets/growth-early.png",
+      "sha256": "9cd4de01574b9a71692e5bf53b52da2b46df34a5d24273cc4cc482f2959ad75d",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/growth-late.png",
+      "sha256": "8aba03259fc6581de7dee321341723af1715af8c41d2eca24d7b03ec575efd66",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-01.png",
+      "sha256": "81df1a96a8ed74fa969cfe83c470483dead11f968a4ee2d649786877c6acd88e",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-02.png",
+      "sha256": "9bfd7c8ab56435ab2e8632f12b3393867cb2e5e9f6e53b7ea7cc2912434eb612",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-03.png",
+      "sha256": "40f498f448e684140e3a545810778f63386d0c6d67c6c28e5216b0aa4db35461",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-04.png",
+      "sha256": "5cb260424bf3bb28598019238880aeeca638031e0767565ed47d44165a1dfe96",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-05.png",
+      "sha256": "8142793f055c9dc78c481d0ff2b173b10fa7acb2d9e3769db221b34baded5ff6",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-06.png",
+      "sha256": "67b70dbb8881f7822789c901e23051550b7b2151bce1f373d18b47218a9def66",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-07.png",
+      "sha256": "88a3157c53f5138e492343a46bb1dc91c7596d28cf640d2ddc265eabf7838d8c",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-08.png",
+      "sha256": "059301847861bbab39ba9a747e3caf70884a6416b78180381ea8981e80ccc0e2",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-09.png",
+      "sha256": "8cef2b6f6283f4d0a7fb7a8ad5b1873b4338c391095a4dadbd04c26aadc24811",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-10.png",
+      "sha256": "ff340ff3785f27108566d5a73f1317c598edca4b7857c627c4016e3be41483b1",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-11.png",
+      "sha256": "440ad5b00910de360e38cbac24fec3c8bdd004764496c5d866bd02038aca06bd",
+      "size": [
+        1536,
+        1024
+      ]
+    }
+  ]
+}

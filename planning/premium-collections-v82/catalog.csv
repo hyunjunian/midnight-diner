@@ -1,26 +1,51 @@
-공개 레벨,테마,내부 디자인,외부 디자인,제작 상태,시안 보기
-2,호박빛과 벚꽃,호박빛 목조 식당,벚꽃이 머무는 입구,수정 시안 승인 · 게임용 이미지 제작 전,https://midnight.couprice.com/mockups/premium-collections-v86/#level-2
-4,먹빛과 황동,먹빛 황동 식당,남색 노렌의 골목집,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-4
-6,초여름 대나무,초록 바람이 드는 식당,대나무가 반기는 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-6
-8,달빛과 백목,달빛 백목 식당,달빛이 머무는 처마,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-8
-10,홍매와 도자기,매화빛 도자기 식당,홍매가 피어난 문 앞,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-10
-12,쇼와의 추억,오래된 재즈가 어울리는 식당,추억을 밝히는 골목 간판,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-12
-14,바다와 유리,바닷빛 유리 식당,푸른 유리가 빛나는 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-14
-16,단풍 드는 밤,단풍빛 목조 식당,단풍이 물든 골목집,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-16
-18,설백과 자작,설백 자작나무 식당,하얀 노렌의 겨울 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-18
-20,고요한 다실,숲빛 다실 식당,차 향이 어울리는 골목집,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-20
-22,청자의 결,청자빛 식당,옥빛 노렌의 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-22
-24,자줏빛 저녁,자줏빛 저녁 식당,자주빛 등불의 골목집,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-24
-26,구리와 밤색,구리빛 나무 식당,구리 등불의 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-26
-28,등나무 향기,등나무 그늘 식당,등꽃이 드리운 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-28
-30,남빛 직조,남빛 직조 식당,쪽빛 천이 걸린 골목집,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-30
-32,살구빛 온기,살구빛 저녁 식당,살구빛 노렌의 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-32
-34,백자의 온도,백자 진열 식당,백자가 반기는 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-34
-36,작은 이끼 정원,이끼빛 쉼표 식당,작은 정원이 있는 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-36
-38,동백이 피는 밤,동백빛 식당,붉은 동백의 골목집,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-38
-40,은빛과 남회색,은빛 남회색 식당,은빛 격자의 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-40
-42,흑단과 자개,흑단 자개 식당,자개빛 간판의 골목집,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-42
-44,복숭아꽃 밤,복숭아꽃이 머무는 식당,복사꽃이 반기는 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-44
-46,보랏빛 수국,수국빛 유리 식당,수국이 피어난 골목집,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-46
-48,석양빛 원목,석양빛 원목 식당,석양색 등불의 입구,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-48
-50,깊은 밤의 금빛,깊은 밤의 황금 식당,금빛이 머무는 골목집,시안 제작 완료 · 검토 대기,https://midnight.couprice.com/mockups/premium-collections-v86/#level-50
+level,collection,area,id,name,season,growth_stage,materials,status,preview_url
+2,소박한 첫 불빛,inside,inside-collection-01,소박한 첫 불빛의 식당,all,소박하고 아늑한 시작,작은 한지등 | 생활감 있는 목재 | 작은 화분,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-2
+2,소박한 첫 불빛,outside,outside-collection-01,작은 노렌의 골목집,all,소박하고 아늑한 시작,작은 한지등 | 생활감 있는 목재 | 작은 화분,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-2
+4,가지런한 나무결,inside,inside-collection-02,가지런한 나무 상판,all,소박하고 아늑한 시작,정돈한 무광 상판 | 단정한 목재 문틀 | 작은 그릇,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-4
+4,가지런한 나무결,outside,outside-collection-02,조용한 나무 입구,all,소박하고 아늑한 시작,정돈한 무광 상판 | 단정한 목재 문틀 | 작은 그릇,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-4
+6,작은 한지등,inside,inside-collection-03,작은 한지등의 식당,all,소박하고 아늑한 시작,작고 둥근 한지등 하나 | 따뜻한 흰 그릇 | 담백한 천,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-6
+6,작은 한지등,outside,outside-collection-03,따뜻한 한 등불의 입구,all,소박하고 아늑한 시작,작고 둥근 한지등 하나 | 따뜻한 흰 그릇 | 담백한 천,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-6
+8,오래된 나무의 온기,inside,inside-collection-04,나무결이 살아나는 식당,all,소박하고 아늑한 시작,차분한 갈색 목재 | 정돈한 수납 | 수수한 노렌,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-8
+8,오래된 나무의 온기,outside,outside-collection-04,차분한 목재 골목집,all,소박하고 아늑한 시작,차분한 갈색 목재 | 정돈한 수납 | 수수한 노렌,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-8
+10,봄의 작은 가지,inside,inside-collection-05,봄가지가 놓인 식당,spring,소박하고 아늑한 시작,작은 꽃가지 | 옅은 분홍 도기 | 수수한 봄 노렌,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-10
+10,봄의 작은 가지,outside,outside-collection-05,봄 노렌의 작은 입구,spring,소박하고 아늑한 시작,작은 꽃가지 | 옅은 분홍 도기 | 수수한 봄 노렌,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-10
+12,정갈한 손길,inside,inside-collection-06,정갈한 원목 식당,all,정갈하게 가꾼 단골집,보수한 회벽 | 매끈한 원목 상판 | 깨끗한 냉장고 외관,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-12
+12,정갈한 손길,outside,outside-collection-06,가지런히 가꾼 입구,all,정갈하게 가꾼 단골집,보수한 회벽 | 매끈한 원목 상판 | 깨끗한 냉장고 외관,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-12
+14,한지와 도자기,inside,inside-collection-07,한지등과 작은 도자기,all,정갈하게 가꾼 단골집,작은 한지등 두 개 | 가지런한 생활 도자기 | 고운 천,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-14
+14,한지와 도자기,outside,outside-collection-07,은은한 등불의 골목집,all,정갈하게 가꾼 단골집,작은 한지등 두 개 | 가지런한 생활 도자기 | 고운 천,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-14
+16,포근한 단골집,inside,inside-collection-08,정갈하게 가꾼 단골집,all,정갈하게 가꾼 단골집,정돈한 원목 상판 | 작은 조명 | 담백한 그릇,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-16
+16,포근한 단골집,outside,outside-collection-08,따뜻한 단골집 입구,all,정갈하게 가꾼 단골집,정돈한 원목 상판 | 작은 조명 | 담백한 그릇,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-16
+18,참나무의 차분함,inside,inside-collection-09,차분한 참나무 식당,all,정갈하게 가꾼 단골집,정갈한 참나무 수납 | 손질한 문틀 | 작은 도기 화분,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-18
+18,참나무의 차분함,outside,outside-collection-09,참나무결의 입구,all,정갈하게 가꾼 단골집,정갈한 참나무 수납 | 손질한 문틀 | 작은 도기 화분,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-18
+20,가지런한 그릇장,inside,inside-collection-10,그릇이 가지런한 식당,all,정갈하게 가꾼 단골집,가지런한 그릇장 | 단정한 원목 마감 | 작은 목제 간판,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-20
+20,가지런한 그릇장,outside,outside-collection-10,수수한 간판의 골목집,all,정갈하게 가꾼 단골집,가지런한 그릇장 | 단정한 원목 마감 | 작은 목제 간판,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-20
+22,여름의 푸른 천,inside,inside-collection-11,푸른 그릇과 여름빛,summer,정갈하게 가꾼 단골집,차분한 남빛 천 | 청자색 그릇 | 작은 초록 가지,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-22
+22,여름의 푸른 천,outside,outside-collection-11,여름 노렌이 걸린 입구,summer,정갈하게 가꾼 단골집,차분한 남빛 천 | 청자색 그릇 | 작은 초록 가지,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-22
+24,따뜻한 목재와 회벽,inside,inside-collection-12,따뜻한 나무와 담백한 벽,all,정갈하게 가꾼 단골집,매끈한 회벽 | 고운 목재 결 | 가지런한 수납,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-24
+24,따뜻한 목재와 회벽,outside,outside-collection-12,담백한 회벽 골목집,all,정갈하게 가꾼 단골집,매끈한 회벽 | 고운 목재 결 | 가지런한 수납,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-24
+26,수공예의 첫 결,inside,inside-collection-13,수공예 한지등의 식당,all,재료와 마감의 깊이,작은 수공예 한지등 | 직조 무늬 | 섬세한 나무결,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-26
+26,수공예의 첫 결,outside,outside-collection-13,직조 노렌의 입구,all,재료와 마감의 깊이,작은 수공예 한지등 | 직조 무늬 | 섬세한 나무결,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-26
+28,깊어지는 나무색,inside,inside-collection-14,깊은 갈색 원목 식당,all,재료와 마감의 깊이,차분한 짙은 갈색 원목 | 깨끗한 크림색 냉장고 | 작은 도기,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-28
+28,깊어지는 나무색,outside,outside-collection-14,갈색 격자의 골목집,all,재료와 마감의 깊이,차분한 짙은 갈색 원목 | 깨끗한 크림색 냉장고 | 작은 도기,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-28
+30,잘 가꾼 오래된 가게,inside,inside-collection-15,정성이 쌓인 나무 식당,all,재료와 마감의 깊이,깔끔한 벽과 수납 | 단정한 문틀 | 따뜻한 조명,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-30
+30,잘 가꾼 오래된 가게,outside,outside-collection-15,오래 아낀 골목집 입구,all,재료와 마감의 깊이,깔끔한 벽과 수납 | 단정한 문틀 | 따뜻한 조명,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-30
+32,손길이 쌓인 식당,inside,inside-collection-16,손길이 쌓인 아늑한 식당,all,재료와 마감의 깊이,고운 원목 상판 | 깨끗한 회벽 | 가지런한 그릇,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-32
+32,손길이 쌓인 식당,outside,outside-collection-16,손길이 쌓인 골목집,all,재료와 마감의 깊이,고운 원목 상판 | 깨끗한 회벽 | 가지런한 그릇,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-32
+34,가을의 작은 장식,inside,inside-collection-17,가을가지가 놓인 식당,autumn,재료와 마감의 깊이,작은 억새 | 갈색 도기 | 차분한 가을 노렌,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-34
+34,가을의 작은 장식,outside,outside-collection-17,초가을 억새의 입구,autumn,재료와 마감의 깊이,작은 억새 | 갈색 도기 | 차분한 가을 노렌,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-34
+36,맞춤 목재와 한지,inside,inside-collection-18,맞춤 원목의 조용한 식당,all,재료와 마감의 깊이,섬세한 원목 이음 | 맞춤 격자 | 작은 한지등,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-36
+36,맞춤 목재와 한지,outside,outside-collection-18,정갈한 맞춤 격자 입구,all,재료와 마감의 깊이,섬세한 원목 이음 | 맞춤 격자 | 작은 한지등,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-36
+38,담백한 도자기 취향,inside,inside-collection-19,수공예 도자기의 식당,all,재료와 마감의 깊이,절제된 수공예 도자기 | 고운 상판 | 도기 화분,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-38
+38,담백한 도자기 취향,outside,outside-collection-19,도자기 화분의 골목집,all,재료와 마감의 깊이,절제된 수공예 도자기 | 고운 상판 | 도기 화분,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-38
+40,월넛의 깊은 온기,inside,inside-collection-20,월넛의 따뜻한 식당,all,작고 깊은 멋의 완성,깊은 월넛 결 | 고운 회벽 | 정갈한 맞춤 수납,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-40
+40,월넛의 깊은 온기,outside,outside-collection-20,깊은 월넛 격자의 입구,all,작고 깊은 멋의 완성,깊은 월넛 결 | 고운 회벽 | 정갈한 맞춤 수납,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-40
+42,황동의 작은 포인트,inside,inside-collection-21,황동 손잡이의 목조 식당,all,작고 깊은 멋의 완성,절제된 작은 황동 손잡이 | 수공예 조명 | 좋은 원목,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-42
+42,황동의 작은 포인트,outside,outside-collection-21,작은 황동등의 골목집,all,작고 깊은 멋의 완성,절제된 작은 황동 손잡이 | 수공예 조명 | 좋은 원목,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-42
+44,오래 아낀 가게의 멋,inside,inside-collection-22,오래 아낀 작은 식당,all,작고 깊은 멋의 완성,깊이 있는 원목 마감 | 깨끗한 올리브색 냉장고 | 소박한 도자기,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-44
+44,오래 아낀 가게의 멋,outside,outside-collection-22,잔잔한 멋의 골목집,all,작고 깊은 멋의 완성,깊이 있는 원목 마감 | 깨끗한 올리브색 냉장고 | 소박한 도자기,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-44
+46,겨울의 포근한 천,inside,inside-collection-23,도톰한 한지와 겨울 그릇,winter,작고 깊은 멋의 완성,도톰한 직조 천 | 흰 도자기 | 작은 동백 가지,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-46
+46,겨울의 포근한 천,outside,outside-collection-23,겨울 노렌의 포근한 입구,winter,작고 깊은 멋의 완성,도톰한 직조 천 | 흰 도자기 | 작은 동백 가지,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-46
+48,손으로 만든 마감,inside,inside-collection-24,수공예 마감의 목조 식당,all,작고 깊은 멋의 완성,섬세한 원목 이음 | 수공예 한지등 | 절제된 금속 마감,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-48
+48,손으로 만든 마감,outside,outside-collection-24,장인의 목재 격자 입구,all,작고 깊은 멋의 완성,섬세한 원목 이음 | 수공예 한지등 | 절제된 금속 마감,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-48
+50,작고 깊은 멋,inside,inside-collection-25,작고 깊은 멋의 심야식당,all,작고 깊은 멋의 완성,좋은 월넛 원목 | 수공예 도자기 | 작은 황동 디테일,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-50
+50,작고 깊은 멋,outside,outside-collection-25,깊은 온기의 골목집,all,작고 깊은 멋의 완성,좋은 월넛 원목 | 수공예 도자기 | 작은 황동 디테일,revised_concept_review,https://midnight.couprice.com/mockups/cozy-collections-v88/#level-50
