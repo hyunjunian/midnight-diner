@@ -452,3 +452,20 @@ test('while testing, the apps request only Google test ads even though the real 
     assert.equal(a.of('initialize')[0].data.initializeForTesting,true);
   }
 });
+
+test('privacy policy is published beside the update bundle, names the operator and stays out of the app',()=>{
+  const page=fs.readFileSync('workers/update/public/privacy.html','utf8');
+  for(const text of ['Wakly','rgk2014@gmail.com','Google AdMob','광고 개인정보 설정','시행일','Privacy Policy','policies.google.com/technologies/partner-sites'])assert.ok(page.includes(text),text);
+  assert.doesNotMatch(page,/<script|https?:\/\/(?!policies\.google\.com)/,'self-contained page');
+  const tool=fs.readFileSync('tools/publish-update.cjs','utf8');assert.match(tool,/workers','update','public'/);
+  assert.equal(fs.existsSync('docs/privacy.html'),false,'not part of the game bundle or the test site');
+});
+test('consent can be reopened from Settings only where it is required',async()=>{
+  const eu=adNet({consent:{status:'OBTAINED',canRequestAds:true,privacyOptionsRequirementStatus:'REQUIRED'}});
+  assert.equal(eu.ads.privacyOptionsRequired(),false);await eu.ads.init();await eu.settle();
+  assert.equal(eu.ads.privacyOptionsRequired(),true);
+  await eu.ads.showPrivacyOptions();assert.equal(eu.of('showPrivacyOptionsForm').length,1);
+  const other=adNet();await other.ads.init();await other.settle();
+  assert.equal(other.ads.privacyOptionsRequired(),false);await other.ads.showPrivacyOptions();assert.equal(other.of('showPrivacyOptionsForm').length,0);
+  for(const page of ['docs/index.html','docs/approved.html'])assert.match(fs.readFileSync(page,'utf8'),/id="ads-privacy" type="button" hidden>/);
+});

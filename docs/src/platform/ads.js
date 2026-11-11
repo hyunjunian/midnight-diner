@@ -23,7 +23,7 @@
   const testing=()=>settings().testMode!==false;
   const unit=type=>testing()?(TEST[platform()]?.[type]||''):String(settings().units?.[platform()]?.[type]||'');
   const browserTest=()=>{try{return!isNative()&&new URLSearchParams(location.search).has('ads-test');}catch{return false;}};
-  let adFree=false,started=null,sdk=false,canRequest=false,needsForm=false,tracking='',showing=false;
+  let adFree=false,started=null,sdk=false,canRequest=false,needsForm=false,optionsRequired=false,tracking='',showing=false;
   const slot={interstitial:{ready:false,loading:null},rewarded:{ready:false,loading:null}};
   const waiters=new Set();
   function emit(name){for(const waiter of [...waiters])if(waiter.names.includes(name)){waiters.delete(waiter);waiter.resolve(name);}}
@@ -55,6 +55,7 @@
       const info=await call('requestConsentInfo');
       canRequest=info?.canRequestAds!==false;
       needsForm=info?.status==='REQUIRED'&&info?.isConsentFormAvailable===true;
+      optionsRequired=info?.privacyOptionsRequirementStatus==='REQUIRED';
     }catch{canRequest=true;needsForm=false;}   // consent service unreachable: Google still applies its own limits
     if(platform()==='ios')try{tracking=(await call('trackingAuthorizationStatus')).status||'';}catch{tracking='';}
     else tracking='';
@@ -97,6 +98,7 @@
       if(needsForm)try{
         const info=await call('showConsentForm');
         canRequest=info?.canRequestAds!==false;needsForm=false;
+        optionsRequired=info?.privacyOptionsRequirementStatus==='REQUIRED'||optionsRequired;
       }catch{needsForm=false;}
       if(tracking==='notDetermined'){
         try{await call('requestTrackingAuthorization');}catch{}
@@ -104,6 +106,14 @@
         if(tracking==='notDetermined')tracking='';   // never ask twice in one session
       }
       preload();
+      return state();
+    },
+    // Where consent applies, players must be able to change or withdraw it at any time.
+    privacyOptionsRequired:()=>sdk&&optionsRequired,
+    async showPrivacyOptions(){
+      if(!sdk||!optionsRequired)return state();
+      try{await call('showPrivacyOptionsForm');}catch{}
+      await readPrivacy();preload();
       return state();
     },
     // An interstitial is loaded and may be shown to this player right now.

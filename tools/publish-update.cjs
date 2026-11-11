@@ -45,6 +45,13 @@ const LIMIT=25*1024*1024; // Workers static assets: 25 MiB per file
   if(!files['index.html'])throw new Error('www/index.html missing');
   const latest={version,minNative,published:new Date().toISOString(),files:Object.fromEntries(Object.entries(files).sort())};
   fs.rmSync(site,{recursive:true,force:true});fs.cpSync(www,site,{recursive:true});
+  // Public pages that live beside the bundle on the update site (privacy policy). They are
+  // not part of the app bundle, so they are not listed in latest.json.
+  const pages=path.join(root,'workers','update','public');
+  for(const name of fs.existsSync(pages)?fs.readdirSync(pages):[]){
+    if(files[name]||name==='latest.json'||name==='_headers')throw new Error(`workers/update/public/${name} collides with a bundle file`);
+    fs.copyFileSync(path.join(pages,name),path.join(site,name));
+  }
   fs.writeFileSync(path.join(site,'latest.json'),JSON.stringify(latest)+'\n');
   fs.writeFileSync(path.join(site,'_headers'),'/latest.json\n  Cache-Control: no-cache, max-age=0\n/*\n  Access-Control-Allow-Origin: *\n');
   console.log(`Update ${version}: ${Object.keys(files).length} files, ${(bytes/1048576).toFixed(1)} MB, minNative ${minNative}`);

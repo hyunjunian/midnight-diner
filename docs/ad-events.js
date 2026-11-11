@@ -48,6 +48,7 @@
   }
   dialog.addEventListener('cancel',event=>event.preventDefault()); // pages close through their button only
 
+  let paintPrivacy=()=>{};
   async function deliveryNote(reason){
     await page({tag:'편집부에서 온 쪽지',title:'골목 소식지',
       paragraphs:[reason==='share'
@@ -57,6 +58,7 @@
       button:'안내 이어서 보기'});
     dialog.close();
     await ads.requestPrivacy();
+    paintPrivacy();
   }
   const articles=[
     c=>({headline:`어젯밤 ${c.served}명이 쉬어 간 골목 끝 식당`,paragraphs:['늦은 시간까지 불이 켜진 가게가 드문 골목에서, 끝집 식당의 등불은 어젯밤에도 꺼지지 않았다.',`다녀간 손님은 ${c.served}명. 주인장은 한 사람 한 사람의 이야기를 들으며 밥을 지었다고 한다.`]}),
@@ -120,6 +122,10 @@
     }catch{shareStatus.textContent='지금은 영상을 불러오지 못했어요.';}
     finally{working=false;if(panel)guestPanel(panel);}
   });
+  // Settings row for changing or withdrawing ad consent, shown only where the law requires it.
+  const privacy=$('ads-privacy');
+  paintPrivacy=()=>{if(privacy)privacy.hidden=!ads.privacyOptionsRequired?.();};
+  privacy?.addEventListener('click',async()=>{privacy.disabled=true;try{await ads.showPrivacyOptions();}finally{privacy.disabled=false;paintPrivacy();}});
   window.MidnightAdEvents={beforeNextNight,guestPanel,playMs:()=>memory.playMs};
-  Promise.resolve(ads.init()).catch(()=>{});
+  Promise.resolve(ads.init()).catch(()=>{}).then(paintPrivacy);
 })();
