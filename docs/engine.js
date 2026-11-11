@@ -466,6 +466,12 @@
     s.money+=r.total;s.nightRevenue+=r.total;s.nightTips+=r.tip;s.totalServed++;s.satisfactionTotal+=r.score;s.xp+=r.score;s.nightScores.push(r.score);s.nightReviews.push({guest:person(g.person).name,person:g.person,dish:recipes[g.recipe].name,score:r.score,text:reviewText(r,g.person+s.night)});
     s.customerBook[g.person].lastScore=r.score;s.reputation=clamp(s.reputation+(r.score>=85?4:r.score>=65?2:r.score>=40?-1:-4),0,100);progress(s);s.customerBook[g.person].dueLevel=s.level+2;g.paid=true;g.status='farewell';return r;
   }
+  // A departing guest and the owner shared a moment (watching a clip together): the guest
+  // grows a little closer, which raises the chance of a return visit. Nothing else changes.
+  function befriend(s,id,amount=2){
+    const g=s.guests.find(g=>g.id===id&&g.status==='farewell'),book=g&&s.customerBook[g.person];if(!book)return false;
+    book.affinity=Math.min(20,(book.affinity||0)+Math.max(0,Math.min(5,Math.floor(Number(amount)||0))));return true;
+  }
   function depart(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='farewell');if(!g)return false;g.status='left';return true;}
   function ensureStory(s) {
     if(!s.storyRun){const st=S.stories[(s.night-1)%S.stories.length],cast=s.guests.slice(0,2).map(g=>g.person);while(cast.length<2)cast.push(cast.length);s.storyRun={id:st.id,night:s.night,step:s.event==='resolved'?2:0,cast,choice:null,reflection:null};}
@@ -539,7 +545,7 @@
     if (s.phase !== 'end') return false;
     archiveNight(s);s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { befriend,Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();

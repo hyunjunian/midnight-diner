@@ -1,13 +1,15 @@
 /* Settings rows for the "remove ads" purchase and purchase restore.
    Uses only window.MidnightPlatform.store; no store plugin is called from here.
-   Hidden until config.store.removeAdsOnSale is true (add ?store-test to try it in a browser). */
+   Shown in the apps when config.store.removeAdsOnSale is true and the store returns the product;
+   in a browser only with ?store-test. */
 (()=>{'use strict';
   const $=id=>document.getElementById(id);
   const platform=window.MidnightPlatform||{},store=platform.store,settings=platform.config?.store||{};
   const section=$('store-section'),buy=$('store-remove-ads'),price=$('store-remove-ads-price'),restore=$('store-restore'),status=$('store-status');
   if(!store||!section||!buy||!price||!restore||!status)return;
   const testing=!store.isNative()&&new URLSearchParams(location.search).has('store-test');
-  const onSale=settings.removeAdsOnSale===true||testing;
+  // Real purchases exist only in the apps; the browser site shows the rows for testing only.
+  const onSale=store.isNative()?settings.removeAdsOnSale===true:testing;
   const productId=settings.removeAdsProductId;
   let working=false,drawn=0;
   async function render(){

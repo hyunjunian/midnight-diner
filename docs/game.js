@@ -126,6 +126,7 @@
     $('talk-choices').classList.toggle('optional',!!view?.orderReady);
     $('talk-next').hidden=!!view&&!view.orderReady;$('talk-next').textContent=action;$('talk-next').disabled=!!view&&last&&!!other;
     $('talk-order').hidden=!view?.orderReady;$('talk-order').innerHTML=`${food(g.recipe)}<span>${E.recipes[g.recipe].name}<small>${E.recipes[g.recipe].ingredients.map(id=>E.ingredients[id].name).join(' · ')}</small></span>`;
+    window.MidnightAdEvents?.guestPanel?.({id:g.id,status:g.status,score:g.score,name:profile.name,night:state.night});
     $('talk-gift').hidden=!E.regular(state,g.person)||!view?.orderReady;$('talk-gift').disabled=g.gifted||!state.inventory.egg;$('talk-gift').textContent=g.gifted?'✓ 달걀 곁들임을 서비스했어요':'단골 서비스 · 달걀 곁들임 1개';
   }
   function openTalk(id){selectedGuest=id;talkIndex=0;openSheet('guest-dialog');renderTalk();renderScene();}
@@ -387,7 +388,12 @@
     $(close.dataset.close).close();
     maybeStory();
   });
-  $('report-content').addEventListener('click',e=>{if(e.target.closest('[data-go-shop]')){tab='shop';$('report-dialog').close();renderManagement();openSheet('management-dialog');return;}if(e.target.closest('#report-next') && E.next(state)){resetTransient();$('report-dialog').close();Scene.showArea('inside');render();}});
+  $('report-content').addEventListener('click',e=>{if(e.target.closest('[data-go-shop]')){tab='shop';$('report-dialog').close();renderManagement();openSheet('management-dialog');return;}if(e.target.closest('#report-next')&&state.phase==='end'){
+    // A dawn bulletin (or its one-time delivery note) may arrive before the next night begins.
+    const go=()=>{if(E.next(state)){resetTransient();$('report-dialog').close();Scene.showArea('inside');render();}};
+    const events=window.MidnightAdEvents;
+    if(events?.beforeNextNight)Promise.resolve().then(()=>events.beforeNextNight({night:state.night,level:state.level,served:state.nightScores.length,report:E.report(state)})).then(go,go);else go();
+  }});
   $('story-open').addEventListener('click',()=>{E.markStoryRead(state);storyRenderKey='';render();openSheet('story-dialog');});
   function soundLabel(){if(FX){$('sound-effects').textContent=FX.enabled?'조리·게임 효과음 · 켜짐':'조리·게임 효과음 · 꺼짐';$('sound-effects').setAttribute('aria-pressed',String(FX.enabled));}}
   $('sound-effects').addEventListener('click',()=>{FX?.setEnabled(!FX.enabled);soundLabel();});soundLabel();
@@ -503,7 +509,7 @@
   Kitchen.init({getState:()=>state,food,toast,openPantry:()=>{tab='pantry';renderManagement();openSheet('management-dialog');},clearToast:()=>{$('kitchen-inline-feedback')?.remove();clearTimeout(toastTimer);$('toast').classList.remove('visible');},changed:render,save,onDeliver:g=>{Scene.showArea('inside');render();toast(`${E.person(g.person).name} 님 앞에 ${E.recipes[g.recipe].name}을 놓았어요.`);}});
   render();
   window.MidnightCalendar.init({getState:()=>state,open:()=>openSheet('calendar-dialog')});
-  window.MidnightApp = { launch:startIntro,resumeAfterUpdate,save,saveForUpdate,canApplyUpdate:()=>!state.kitchen&&!anySheetOpen()&&!Scene.isPlacing()&&!cashAnimation&&performance.now()>=openingUntil,isCooking:()=>Boolean(state.kitchen) };
+  window.MidnightApp = { befriend:(id,amount)=>{const ok=E.befriend(state,id,amount);if(ok){save();render();}return ok;},launch:startIntro,resumeAfterUpdate,save,saveForUpdate,canApplyUpdate:()=>!state.kitchen&&!anySheetOpen()&&!Scene.isPlacing()&&!cashAnimation&&performance.now()>=openingUntil,isCooking:()=>Boolean(state.kitchen) };
   if (saveMessage) toast(saveMessage);
   raf = requestAnimationFrame(frame);
 })();

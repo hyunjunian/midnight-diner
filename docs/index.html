@@ -71,6 +71,7 @@
   <script src="./src/platform/store.js?release=20261110-v85-capacitor-merge" defer></script>
   <script src="./src/platform/updater.js?release=20261110-v85-capacitor-merge" defer></script>
   <script src="./store-settings.js?release=20261110-v85-capacitor-merge" defer></script>
+  <script src="./ad-events.js?release=20261110-v85-capacitor-merge" defer></script>
   <script src="./pwa.js?release=20261110-v85-capacitor-merge" defer></script>
   <link rel="stylesheet" href="./wallet-layout-v71.css?release=20261110-v85-capacitor-merge">
 </head>
@@ -112,8 +113,13 @@
       <div class="talk-guest-message"><div id="talk-portrait" class="talk-portrait" aria-hidden="true"></div><div class="talk-guest-copy"><h2 id="talk-name"></h2><p id="talk-profile"></p><div class="talk-speech" tabindex="0" role="button" aria-label="대사 전체 보기" aria-describedby="talk-line"><p id="talk-line" aria-live="polite"></p></div></div></div>
       <div id="talk-order" class="talk-order" hidden></div>
       <div id="talk-choices" class="talk-choices" role="group" aria-label="대화 선택지"></div>
-      <button id="talk-gift" hidden></button><button id="talk-next" class="primary" hidden>주문 받고 부엌으로 </button>
+      <button id="talk-gift" hidden></button><button id="talk-share" type="button" hidden></button><p id="talk-share-status" role="status" hidden></p><button id="talk-next" class="primary" hidden>주문 받고 부엌으로 </button>
     </div>
+  </dialog>
+  <dialog id="bulletin-dialog" class="sheet bulletin" aria-labelledby="bulletin-title">
+    <header class="sheet-header"><div><span id="bulletin-tag" class="eyebrow">새벽에 도착한 소식</span><h2 id="bulletin-title">골목 소식지</h2></div></header>
+    <div class="sheet-body bulletin-body"><p id="bulletin-date" class="bulletin-date"></p><h3 id="bulletin-headline"></h3><div id="bulletin-text"></div><p id="bulletin-note" class="bulletin-note" hidden></p>
+      <button id="bulletin-next" class="primary" type="button"></button></div>
   </dialog>
   <dialog id="calendar-dialog" class="sheet calendar-sheet" aria-labelledby="calendar-title"><header class="sheet-header"><h2 id="calendar-title">가게의 달력</h2><button type="button" data-close="calendar-dialog" class="round-button" aria-label="달력 닫기">×</button></header><div id="calendar-content" class="sheet-body"></div></dialog>
   <dialog id="hud-detail-dialog" class="sheet hud-detail" aria-labelledby="hud-detail-title"><header class="sheet-header"><h2 id="hud-detail-title">자금 상세</h2><button type="button" data-close="hud-detail-dialog" class="round-button" aria-label="상세 정보 닫기">×</button></header><div id="hud-detail-content" class="sheet-body"></div></dialog>

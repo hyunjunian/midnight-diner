@@ -204,9 +204,9 @@ function shop(options={}){
   return{store:p.store,ads:p.ads,calls,cache,of:m=>calls.filter(c=>c.method===m)};
 }
 const own=(more={})=>({productIdentifier:ADS,transactionId:'t0',purchaseState:'1',...more});
-test('shipped store settings: one remove-ads product, not on sale yet, iOS still in its paid period',()=>{
+test('shipped settings: one remove-ads product on sale in the apps, iOS still in its paid period, test ads only',()=>{
   const {store}=shop(),text=fs.readFileSync('docs/src/platform/config.js','utf8');
-  assert.match(text,/removeAdsOnSale: false/);assert.match(text,/iosFreeSince: ''/);
+  assert.match(text,/removeAdsOnSale: true/);assert.match(text,/iosFreeSince: ''/);assert.match(text,/testMode: true/);
   assert.match(text,/\{ id: 'midnight_remove_ads', type: 'non-consumable' \}/);
   assert.equal(store.hasNoAds(),false);
 });
@@ -280,7 +280,115 @@ test('iOS paid-to-free: earlier buyers stay ad-free, later installs do not, unkn
 test('settings purchase rows exist in both entry pages and stay out of the native plugin',()=>{
   for(const page of ['docs/index.html','docs/approved.html']){const html=fs.readFileSync(page,'utf8');for(const id of ['store-section','store-remove-ads','store-restore','store-status'])assert.ok(html.includes(`id="${id}"`),page+' '+id);assert.match(html,/id="store-section"[^>]* hidden>/);assert.match(html,/\.\/store-settings\.js\?release=/);}
   const ui=fs.readFileSync('docs/store-settings.js','utf8');
-  assert.doesNotMatch(ui,/nativePromise|NativePurchases/);assert.match(ui,/removeAdsOnSale===true/);
+  assert.doesNotMatch(ui,/nativePromise|NativePurchases/);assert.match(ui,/store\.isNative\(\)\?settings\.removeAdsOnSale===true:testing/);
   assert.ok(fs.readFileSync('docs/sw.js','utf8').includes("'store-settings.js'"));
-  for(const file of fs.readdirSync('docs').filter(f=>f.endsWith('.js')&&f!=='sw.js'))assert.doesNotMatch(fs.readFileSync('docs/'+file,'utf8'),/nativePromise|NativePurchases|CapacitorUpdater/,file);
+  for(const file of fs.readdirSync('docs').filter(f=>f.endsWith('.js')&&f!=='sw.js'))assert.doesNotMatch(fs.readFileSync('docs/'+file,'utf8'),/nativePromise|NativePurchases|CapacitorUpdater|'AdMob'/,file);
+});
+
+// ---- Ads (AdMob through the platform layer) ----
+function adNet(options={}){
+  const calls=[],listeners=new Map(),attrs=new Set(),events=[];
+  let tracking=options.tracking||'authorized';
+  const fire=name=>(listeners.get(name)||[]).forEach(fn=>fn({}));
+  const window={Capacitor:{isNativePlatform:()=>true,getPlatform:()=>options.platform||'android',
+    addListener:(plugin,name,fn)=>{if(!listeners.has(name))listeners.set(name,[]);listeners.get(name).push(fn);return{remove(){}};},
+    nativePromise:async(plugin,method,data)=>{
+      calls.push({plugin,method,data});
+      if(plugin!=='AdMob')throw new Error('other plugin');
+      if(method==='initialize'&&options.initFails)throw new Error('init');
+      if(method==='requestConsentInfo')return options.consent||{status:'NOT_REQUIRED',canRequestAds:true};
+      if(method==='showConsentForm')return{status:'OBTAINED',canRequestAds:true};
+      if(method==='trackingAuthorizationStatus')return{status:tracking};
+      if(method==='requestTrackingAuthorization'){tracking='denied';return{};}
+      if(method.startsWith('prepare')&&options.noFill)throw new Error('no fill');
+      if(method==='showInterstitial'){setTimeout(()=>fire(options.showFails?'interstitialAdFailedToShow':'interstitialAdDismissed'),5);return{};}
+      if(method==='showRewardVideoAd'){
+        if(options.earn!==false)setTimeout(()=>fire('onRewardedVideoAdReward'),2);
+        setTimeout(()=>fire('onRewardedVideoAdDismissed'),6);
+        return new Promise(()=>{});   // like the plugin on an early close: never settles
+      }
+      return{};
+    }}};
+  const document={documentElement:{setAttribute:n=>attrs.add(n),removeAttribute:n=>attrs.delete(n)},dispatchEvent:e=>events.push(e.type)};
+  for(const name of ['config','ads'])vm.runInNewContext(fs.readFileSync(`docs/src/platform/${name}.js`,'utf8'),{window,document,Event,setTimeout,clearTimeout,Promise,String,Boolean,Number,URLSearchParams,location:{search:''}});
+  const p=window.MidnightPlatform;if(options.config)Object.assign(p.config.ads,options.config);
+  const settle=()=>new Promise(r=>setTimeout(r,15));
+  return{ads:p.ads,calls,of:m=>calls.filter(c=>c.method===m),attrs,events,settle};
+}
+test('ads: test units load only after the SDK starts and privacy needs nothing more',async()=>{
+  const a=adNet();
+  assert.equal(a.ads.interstitialReady(),false);assert.equal(a.ads.rewardedAvailable(),false);
+  await a.ads.init();await a.settle();
+  assert.equal(a.of('initialize')[0].data.initializeForTesting,true);
+  assert.equal(a.of('prepareInterstitial')[0].data.adId,'ca-app-pub-3940256099942544/1033173712');
+  assert.equal(a.of('prepareRewardVideoAd')[0].data.adId,'ca-app-pub-3940256099942544/5224354917');
+  assert.equal(a.ads.interstitialReady(),true);assert.equal(a.ads.rewardedAvailable(),true);assert.equal(a.ads.needsPrivacyPrompt(),false);
+  const ios=adNet({platform:'ios'});await ios.ads.init();await ios.settle();
+  assert.equal(ios.of('prepareInterstitial')[0].data.adId,'ca-app-pub-3940256099942544/4411468910');
+  const live=adNet({config:{testMode:false}});await live.ads.init();await live.settle();
+  assert.equal(live.of('prepareInterstitial').length,0,'no real unit id configured: nothing is requested');
+  const real=adNet({config:{testMode:false,units:{android:{interstitial:'ca-app-pub-1/2',rewarded:'ca-app-pub-1/3'}}}});await real.ads.init();await real.settle();
+  assert.equal(real.of('prepareInterstitial')[0].data.adId,'ca-app-pub-1/2');assert.equal(real.of('prepareInterstitial')[0].data.isTesting,false);
+});
+test('ads: nothing is requested before the consent form and the iOS tracking question are answered',async()=>{
+  const a=adNet({platform:'ios',tracking:'notDetermined',consent:{status:'REQUIRED',isConsentFormAvailable:true,canRequestAds:false}});
+  await a.ads.init();await a.settle();
+  assert.equal(a.ads.needsPrivacyPrompt(),true);assert.equal(a.of('prepareInterstitial').length+a.of('prepareRewardVideoAd').length,0);
+  assert.equal(a.ads.interstitialReady(),false);assert.equal(a.ads.rewardedAvailable(),true,'can be offered; the note comes first');
+  assert.equal(a.of('showConsentForm').length+a.of('requestTrackingAuthorization').length,0,'never prompted on its own');
+  await a.ads.requestPrivacy();await a.settle();
+  assert.deepEqual(a.calls.filter(c=>['showConsentForm','requestTrackingAuthorization'].includes(c.method)).map(c=>c.method),['showConsentForm','requestTrackingAuthorization']);
+  assert.equal(a.ads.needsPrivacyPrompt(),false);assert.equal(a.of('prepareInterstitial').length,1);assert.equal(a.ads.interstitialReady(),true);
+  const android=adNet({tracking:'notDetermined'});await android.ads.init();await android.settle();
+  assert.equal(android.ads.needsPrivacyPrompt(),false);assert.equal(android.of('trackingAuthorizationStatus').length,0);
+});
+test('ads: interstitial resolves after it closes, pauses the game audio flag, and reloads',async()=>{
+  const a=adNet();await a.ads.init();await a.settle();
+  const shown=a.ads.showInterstitial('dawn-bulletin');await Promise.resolve();
+  assert.equal(a.attrs.has('data-ad'),true);assert.equal(a.ads.interstitialReady(),false);
+  assert.equal((await shown).shown,true);assert.equal(a.attrs.has('data-ad'),false);
+  assert.deepEqual(a.events,['midnight:ad','midnight:ad']);
+  await a.settle();assert.equal(a.of('prepareInterstitial').length,2);
+  const failing=adNet({showFails:true});await failing.ads.init();await failing.settle();
+  assert.equal((await failing.ads.showInterstitial()).shown,false);assert.equal(failing.attrs.has('data-ad'),false);
+  const empty=adNet({noFill:true});await empty.ads.init();await empty.settle();
+  assert.equal(empty.ads.interstitialReady(),false);assert.equal((await empty.ads.showInterstitial()).reason,'not-ready');assert.equal(empty.of('showInterstitial').length,0);
+});
+test('ads: no-ads owners never load or see an interstitial but can still choose a rewarded ad',async()=>{
+  const a=adNet();a.ads.setAdFree(true);await a.ads.init();await a.settle();
+  assert.equal(a.of('prepareInterstitial').length,0);assert.equal(a.ads.interstitialReady(),false);
+  assert.equal((await a.ads.showInterstitial()).reason,'ad-free');assert.equal(a.of('showInterstitial').length,0);
+  assert.equal(a.ads.rewardedAvailable(),true);assert.equal((await a.ads.showRewarded('guest-share')).rewarded,true);
+});
+test('ads: a reward counts only when earned; closing early, failures and a missing SDK give nothing',async()=>{
+  const a=adNet();await a.ads.init();await a.settle();
+  assert.deepEqual([(await a.ads.showRewarded()).rewarded,a.attrs.has('data-ad')],[true,false]);
+  const early=adNet({earn:false});await early.ads.init();await early.settle();
+  const result=await early.ads.showRewarded();assert.equal(result.rewarded,false);assert.equal(result.reason,'closed-early');
+  const empty=adNet({noFill:true});await empty.ads.init();await empty.settle();
+  assert.equal(empty.ads.rewardedAvailable(),false);assert.equal((await empty.ads.showRewarded()).rewarded,false);
+  const dead=adNet({initFails:true});await dead.ads.init();
+  assert.equal(dead.ads.rewardedAvailable(),false);assert.equal((await dead.ads.showRewarded()).rewarded,false);assert.equal((await dead.ads.showInterstitial()).shown,false);
+});
+test('a shared clip brings only a departing guest closer, within the customer book limit, and saves',()=>{
+  const E=require('../docs/engine');const s=E.fresh();E.open(s);const g=E.arrive(s);
+  assert.equal(E.befriend(s,g.id),false,'not while seated');
+  g.status='farewell';const book=s.customerBook[g.person];
+  assert.equal(E.befriend(s,g.id,2),true);assert.equal(book.affinity,2);
+  for(let i=0;i<20;i++)E.befriend(s,g.id,99);assert.equal(book.affinity,20);
+  assert.equal(E.befriend(s,'missing'),false);
+  const money=s.money,xp=s.xp;E.befriend(s,g.id);assert.deepEqual([s.money,s.xp],[money,xp],'no money or growth is granted');
+  assert.equal(E.restore(JSON.stringify(s)).customerBook[g.person].affinity,20);
+});
+test('ad moments are labelled as ads, hook into the game only through its interface, and are precached',()=>{
+  const events=fs.readFileSync('docs/ad-events.js','utf8'),game=fs.readFileSync('docs/game.js','utf8');
+  assert.match(events,/다음 장은 광고 지면입니다/);assert.match(events,/다음 장 넘기기 · 광고/);assert.match(events,/영상 함께 보기 · 광고/);
+  assert.match(events,/허용하지 않아도 소식지와 식당 영업은 똑같이 이어집니다/);
+  assert.match(events,/context\.night<2/);assert.doesNotMatch(events,/nativePromise|'AdMob'/);
+  assert.match(game,/MidnightAdEvents/);assert.doesNotMatch(game,/MidnightPlatform/);
+  for(const page of ['docs/index.html','docs/approved.html']){const html=fs.readFileSync(page,'utf8');for(const id of ['bulletin-dialog','bulletin-next','talk-share','talk-share-status'])assert.ok(html.includes(`id="${id}"`),page+' '+id);assert.match(html,/\.\/ad-events\.js\?release=/);}
+  assert.ok(fs.readFileSync('docs/sw.js','utf8').includes("'ad-events.js'"));
+  const plist=fs.readFileSync('ios/App/App/Info.plist','utf8'),manifest=fs.readFileSync('android/app/src/main/AndroidManifest.xml','utf8');
+  assert.match(plist,/GADApplicationIdentifier/);assert.match(plist,/NSUserTrackingUsageDescription/);assert.match(plist,/cstr6suwn9\.skadnetwork/);
+  assert.match(manifest,/com\.google\.android\.gms\.ads\.APPLICATION_ID/);
 });

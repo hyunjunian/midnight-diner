@@ -13,12 +13,27 @@
       ],
       // The product that turns interstitial ads off.
       removeAdsProductId: 'midnight_remove_ads',
-      // Show the "remove ads" purchase in Settings. Stays false until ads exist (stage 4).
-      removeAdsOnSale: false,
+      // Show the "remove ads" purchase in Settings of the apps (ads exist since stage 4).
+      // The row still appears only when the store really returns the product.
+      removeAdsOnSale: true,
       // iOS was sold as a paid app first. Set the UTC time it became free, e.g.
       // '2027-03-01T00:00:00Z': people who got the app before it never see interstitials.
       // While this is empty the app is still paid, so every iOS player is ad-free.
       iosFreeSince: ''
+    },
+    ads: {
+      // true: always request Google's public test ads. Switch to false only together with
+      // the real unit ids below and the real AdMob app ids in Info.plist / AndroidManifest.xml.
+      testMode: true,
+      units: {
+        ios: { interstitial: '', rewarded: '' },
+        android: { interstitial: '', rewarded: '' }
+      },
+      // The dawn bulletin (and its ad page) appears when moving on to the next night only after
+      // this much active play since the last one. Short gaps earn little and wear the event out.
+      bulletinMinPlayMinutes: 12,
+      // Closeness a guest gains when the owner watches the clip they share (customer book, max 20).
+      shareAffinity: 2
     }
   };
 })();
