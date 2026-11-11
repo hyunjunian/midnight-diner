@@ -131,6 +131,7 @@
     $('talk-next').hidden=(!!view&&!view.orderReady)||!!scene?.hideNext;$('talk-next').textContent=action;$('talk-next').disabled=!!view&&last&&!!other;
     $('talk-order').hidden=!view?.orderReady;$('talk-order').innerHTML=`${food(g.recipe)}<span>${E.recipes[g.recipe].name}<small>${E.recipes[g.recipe].ingredients.map(id=>E.ingredients[id].name).join(' · ')}</small></span>`;
     $('talk-share-status').textContent=scene?.status||'';$('talk-share-status').hidden=!scene?.status;
+    $('talk-note').textContent=view?.note||'';$('talk-note').hidden=!view?.note;
     $('talk-gift').hidden=!E.regular(state,g.person)||!view?.orderReady;$('talk-gift').disabled=g.gifted||!state.inventory.egg;$('talk-gift').textContent=g.gifted?'✓ 달걀 곁들임을 서비스했어요':'단골 서비스 · 달걀 곁들임 1개';
   }
   function openTalk(id){selectedGuest=id;talkIndex=0;openSheet('guest-dialog');renderTalk();renderScene();}
@@ -156,6 +157,8 @@
     if(!view){$('story-content').innerHTML=followups+memories;return;}
     const {run,definition,choice,reflection}=view,cast=run.cast.map(id=>E.person(id));
     const text=t=>t.replaceAll('{a}',cast[0].name).replaceAll('{b}',cast[1].name);
+    // A thread chapter is told by a guest in conversation; the sheet only points there while a guest can still tell it.
+    if(definition.arc&&run.step<2&&E.storyCarrier(state)){$('story-content').innerHTML=followups+`<div class="story-scene"><span>${definition.series}</span><p>${definition.intro}</p></div><p class="story-pointer">이 이야기는 오늘 밤 손님과 나누는 대화에서 이어집니다. 자리에 앉은 손님에게 말을 걸어 보세요.</p>`+memories;return;}
     const faces=`<div class="story-cast-strip">${run.cast.map(id=>`<div class="story-cast-chip"><span class="story-mini-face">${portrait(E.person(id),id)}</span><span><b>${E.guestProfile(state,id).name}</b><small>${E.guestProfile(state,id).role||'아직 이야기를 나누지 않은 손님'}</small></span></div>`).join('')}</div>`;
     const dialogue=`<div class="story-chat" aria-label="손님들의 대화">${definition.lines.map((line,i)=>{
       const actor=line.startsWith('{b}')?1:line.startsWith('{a}')?0:i%2,id=run.cast[actor],p=cast[actor],words=text(line).replace(new RegExp('^'+p.name+'[：:]\\s*'),'');

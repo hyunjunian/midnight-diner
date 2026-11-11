@@ -46,3 +46,8 @@
 
 /* News that arrives the next night was cream text from the old dark sheet; on washi it needs ink. */
 #story-dialog .story-followups{color:#493b2b;background:#fff8e455;border-color:#b2987166}
+
+/* What happened as the owner sees it, set beside the guest's words: the result of a choice in a
+   story thread, or news that arrived from last night. */
+#guest-dialog .talk-note{margin:10px 0 2px;padding:10px 12px;border-left:2px solid #a8763f;background:#fff8e455;color:#5b4a35;font-size:13px;line-height:1.7;white-space:pre-line;word-break:keep-all}
+#story-dialog .story-pointer{margin:14px 2px 18px;color:#5b4a35;font-size:13px;line-height:1.7;word-break:keep-all}

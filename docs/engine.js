@@ -134,7 +134,7 @@
   // Knowledge belongs to a person, while the conversation position belongs to this visit.
   // Both are optional v11 additions: older saves retain their entire service/financial state.
   const guestFacts=['name','role','age','style','bio'];
-  const guestNodes=['hello','intro','day','warm','quiet','about','order'];
+  const guestNodes=['hello','tale','taleResult','intro','day','warm','quiet','about','order'];
   const guestReplies={
     welcome:'어서 오세요. 편히 앉으세요.',
     day:'오늘은 어떤 하루를 보내셨어요?',
@@ -164,15 +164,41 @@
       role:known.includes('role')?p.role:null,age:known.includes('age')?p.age:null,
       style:known.includes('style')?p.style:null,bio:known.includes('bio')?p.bio:null};
   }
+  // 0: a thread chapter waits for the owner's choice, 1: it waits for the closing reflection, -1: neither.
+  function chapterStep(s){
+    if(s.event!=='pending')return -1;
+    const run=ensureStory(s),definition=S.stories.find(t=>t.id===run.id);
+    return definition?.arc&&run.step<2?run.step:-1;
+  }
+  // A guest who can still bring the waiting chapter up in conversation.
+  function storyCarrier(s){
+    return chapterStep(s)>=0&&s.guests.some(g=>['seated','waiting'].includes(g.status)&&(!g.chat||['hello','tale','taleResult'].includes(g.chat.node)));
+  }
   function guestConversation(s,id){
     const g=s.guests.find(x=>x.id===id&&['seated','waiting'].includes(x.status));if(!g)return null;
-    const p=person(g.person),profile=guestProfile(s,g.person),node=guestNodes.includes(g.chat?.node)?g.chat.node:'hello';
+    const p=person(g.person),profile=guestProfile(s,g.person);
+    // A chapter of a story thread waits to be told: the guest brings it up after the greeting,
+    // the owner answers with one of its choices, and the guest closes it before the usual talk.
+    const tale=chapterStep(s);
+    let node=guestNodes.includes(g.chat?.node)?g.chat.node:'hello';
+    if((node==='tale'&&tale!==0)||(node==='taleResult'&&tale!==1))node='hello';
     const choices=[],offer=(id,to)=>choices.push({id,label:guestReplies[id],to});
-    let line='',caption='서로 알아가는 중';
+    let line='',caption='서로 알아가는 중',note='';
     if(node==='hello'){
       caption=profile.known.includes('name')?'다시 만난 반가운 얼굴':'첫 인사';
       line=profile.known.includes('name')?`또 들렀어요. 오늘도 잠깐 쉬어 가도 괜찮죠?`:openings[(g.lineKey||0)%openings.length];
-      offer('welcome','intro');
+      // News from last night's choice reaches the owner at the first greeting of the night.
+      if(s.nightNews.length>(s.nightNewsRead||0))note=news(s).slice(s.nightNewsRead||0).map(n=>'지난밤 소식 · '+n.text).join('\n');
+      offer('welcome',tale===0?'tale':tale===1?'taleResult':'intro');
+    }else if(node==='tale'){
+      const view=story(s);caption=view.definition.series;line=view.definition.tale;
+      for(const c of view.definition.choices)if(canChoose(s,c)){
+        const cost=[c.money<0?`¥${-c.money}`:'',...Object.entries(c.ingredients||{}).map(([id,n])=>`${ingredients[id].name} ${n}`)].filter(Boolean).join(', ');
+        choices.push({id:c.id,label:cost?`${c.label} (${cost})`:c.label,to:'taleResult'});
+      }
+    }else if(node==='taleResult'){
+      const view=story(s);caption=view.definition.series;line=view.definition.afterword;note=view.choice.result;
+      for(const c of S.reflection)choices.push({id:c.id,label:c.label,to:'intro'});
     }else if(node==='intro'){
       line=profile.known.includes('role')?`${p.name}입니다. 저를 기억해 주시니 반갑네요.`:`저는 ${p.name}입니다. 이렇게 인사하니 한결 편안하네요.`;
       offer('day','day');offer('menu','order');
@@ -190,12 +216,15 @@
       caption=g.status==='waiting'?'접수한 주문':'오늘의 주문';
       line=g.status==='waiting'?`${recipes[g.recipe].name}, 편히 기다리고 있을게요.`:requests[Math.floor((g.lineKey||0)/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
     }
-    return {node,line,caption,choices,orderReady:node==='order',
+    return {node,line,caption,note,choices,orderReady:node==='order',
       playerLine:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
   }
   function answerGuest(s,id,reply){
     const view=guestConversation(s,id),choice=view?.choices.find(x=>x.id===reply);if(!choice)return false;
     const g=s.guests.find(x=>x.id===id),memory=s.customerBook[g.person];if(!memory)return false;
+    // Answers inside a story chapter are the owner's decision and the closing reflection.
+    if((view.node==='tale'||view.node==='taleResult')&&!resolveEvent(s,reply))return false;
+    if(view.node==='hello'&&view.note)markStoryRead(s);
     const known=(memory.known||[]).filter(x=>guestFacts.includes(x));
     const reveal=choice.to==='intro'?['name','style']:choice.to==='day'?['role','bio']:choice.to==='about'?['role','bio','age']:[];
     const discovered=reveal.filter(x=>!known.includes(x));memory.known=[...new Set([...known,...reveal])];
@@ -475,11 +504,11 @@
   function depart(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='farewell');if(!g)return false;g.status='left';return true;}
   function ensureStory(s) {
     if(!s.storyRun){
-      // Single stories rotate in order. Chapters of a longer thread ("arc") are told once each,
-      // in order, on every second night, so time passes between them; an unresolved chapter
-      // comes back on a later night, and once every chapter is told the single stories take over.
+      // Chapters of the story threads ("arc") are told once each, in order, one a night from the
+      // second night on; the threads are interleaved so each rests for several nights between
+      // its chapters. On the first night and once every chapter is told, single stories rotate.
       const told=new Set((s.storyMemory||[]).map(t=>t.id)),singles=S.stories.filter(t=>!t.arc);
-      const chapter=s.night%2===0?S.stories.find(t=>t.arc&&!told.has(t.id)&&(!t.after||told.has(t.after))):null;
+      const chapter=s.night>1?S.stories.find(t=>t.arc&&!told.has(t.id)&&(!t.after||told.has(t.after))):null;
       const st=chapter||singles[(s.storyMemory||[]).filter(t=>singles.some(x=>x.id===t.id)).length%singles.length],cast=s.guests.slice(0,2).map(g=>g.person);while(cast.length<2)cast.push(cast.length);s.storyRun={id:st.id,night:s.night,step:s.event==='resolved'?2:0,cast,choice:null,reflection:null};}
     return s.storyRun;
   }
@@ -505,7 +534,8 @@
     s.pendingConsequences=s.pendingConsequences.filter(t=>t.night>s.night);progress(s);
   }
   function news(s) {return s.nightNews.map(t=>S.stories.find(st=>st.id===t.id).choices.find(c=>c.id===t.choice).future);}
-  function storyNeedsAttention(s){return s.event==='pending'&&(!s.storyRun||s.storyRun.step<2)||s.nightNews.length>(s.nightNewsRead||0);}
+  // A chapter that a guest is about to tell does not light the story sheet; the conversation is its place.
+  function storyNeedsAttention(s){return s.event==='pending'&&(!s.storyRun||s.storyRun.step<2)&&!storyCarrier(s)||s.nightNews.length>(s.nightNewsRead||0);}
   function markStoryRead(s){s.nightNewsRead=s.nightNews.length;}
   function conversation(s) {
     if(s.phase!=='open'||s.event!=='none'||s.guests.filter(g=>g.status!=='left').length<2)return false;
@@ -551,7 +581,7 @@
     if (s.phase !== 'end') return false;
     archiveNight(s);s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { befriend,Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { befriend,storyCarrier,Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();

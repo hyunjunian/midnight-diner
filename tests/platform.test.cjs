@@ -541,27 +541,63 @@ test('the owner\'s chosen reply is not echoed and the bubble tail is outlined',(
 });
 
 // ---- Story threads ----
-test('story threads are told once, in order, on every second night, then single stories take over',()=>{
+test('story threads are told once and in order, one chapter a night through a guest\'s conversation',()=>{
   const E=require('../docs/engine'),S=E.storyContent,s=E.fresh(),told=[];
-  for(let night=1;night<=22;night++){
-    E.open(s);for(let i=0;i<3;i++)E.arrive(s);assert.ok(E.conversation(s),'night '+night);
-    const view=E.story(s);told.push(view.definition.id);
-    assert.ok(E.resolveEvent(s,view.definition.choices.find(c=>E.canChoose(s,c)).id));assert.ok(E.resolveEvent(s,S.reflection[0].id));
+  const chapters=S.stories.filter(t=>t.arc).map(t=>t.id);
+  assert.equal(chapters.length,18);assert.equal(new Set(S.stories.filter(t=>t.arc).map(t=>t.arc)).size,6);
+  for(let night=1;night<=24;night++){
+    E.open(s);const first=E.arrive(s);E.conversation(s);const guest=E.arrive(s);assert.ok(E.conversation(s)||s.event==='pending','night '+night);
+    const run=E.story(s),isChapter=Boolean(run.definition.arc);told.push(run.definition.id);
+    let view=E.guestConversation(s,guest.id);assert.equal(view.node,'hello');
+    if(night>1&&told.length>1)assert.ok(view.note.length>10,'last night\'s news arrives with the first greeting on night '+night);
+    assert.ok(E.answerGuest(s,guest.id,'welcome'));assert.equal(s.nightNewsRead,s.nightNews.length);
+    assert.equal(E.storyNeedsAttention(s),!isChapter,'a chapter a guest will tell does not light the story sheet');
+    view=E.guestConversation(s,guest.id);
+    if(isChapter){
+      assert.equal(E.storyCarrier(s),true);
+      assert.equal(view.node,'tale');assert.equal(view.line,run.definition.tale);assert.equal(view.orderReady,false);
+      assert.ok(view.choices.length>=1&&view.choices.every(c=>run.definition.choices.some(x=>x.id===c.id&&E.canChoose(s,x))));
+      const picked=view.choices[view.choices.length-1],before=s.reputation;
+      assert.ok(E.answerGuest(s,guest.id,picked.id));
+      view=E.guestConversation(s,guest.id);
+      assert.equal(view.node,'taleResult');assert.equal(view.line,run.definition.afterword);
+      assert.equal(view.note,run.definition.choices.find(c=>c.id===picked.id).result);assert.ok(s.reputation>=before);
+      assert.equal(E.guestConversation(s,first.id).node==='tale',false,'the same chapter is not told twice');
+      assert.ok(E.answerGuest(s,guest.id,view.choices[0].id));
+      view=E.guestConversation(s,guest.id);
+      assert.equal(view.node,'intro');assert.ok(E.guestProfile(s,guest.person).known.includes('name'),'the usual introduction still follows');
+      assert.equal(s.event,'resolved');assert.equal(E.storyCarrier(s),false);
+    }else{
+      assert.equal(view.node,'intro','single stories stay in the story sheet');
+      assert.ok(E.resolveEvent(s,run.definition.choices.find(c=>E.canChoose(s,c)).id));assert.ok(E.resolveEvent(s,S.reflection[0].id));
+    }
     s.guests.forEach(g=>g.status='left');s.arrived=s.target;s.nightScores=Array(s.target).fill(80);
     assert.ok(E.close(s));assert.ok(E.next(s));E.restore(JSON.stringify(s));
   }
-  const chapters=S.stories.filter(t=>t.arc).map(t=>t.id);
-  assert.equal(chapters.length,9);
-  assert.deepEqual(told.filter((id,i)=>i%2===1).slice(0,9),chapters,'chapters in order on nights 2,4,6…');
-  for(const id of chapters)assert.equal(told.filter(x=>x===id).length,1,id+' is told once');
-  assert.ok(told.filter((id,i)=>i%2===0).every(id=>!chapters.includes(id)));
-  assert.ok(told.slice(18).every(id=>!chapters.includes(id)),'after the threads end, single stories only');
-  assert.deepEqual(told.filter(id=>!chapters.includes(id)).slice(0,6),S.stories.filter(t=>!t.arc).map(t=>t.id),'single stories keep their rotation');
+  assert.ok(!chapters.includes(told[0]),'the first night keeps a single story');
+  assert.deepEqual(told.slice(1,19),chapters,'chapters follow from the second night');
+  assert.ok(told.slice(19).every(id=>!chapters.includes(id)),'after the threads end, single stories only');
+  const arcOf=id=>S.stories.find(t=>t.id===id).arc;
+  for(let i=1;i<18;i++)assert.notEqual(arcOf(told[i]),arcOf(told[i+1]),'a thread rests between its chapters');
+});
+test('a chapter survives a reload mid-conversation and falls back to the sheet only without a guest to tell it',()=>{
+  const E=require('../docs/engine'),s=E.fresh();
+  E.open(s);for(const g of [E.arrive(s),E.arrive(s)]){}E.conversation(s);
+  const v=E.story(s);E.resolveEvent(s,v.definition.choices.find(c=>E.canChoose(s,c)).id);E.resolveEvent(s,E.storyContent.reflection[0].id);
+  s.guests.forEach(g=>g.status='left');s.arrived=s.target;s.nightScores=Array(s.target).fill(80);E.close(s);E.next(s);
+  E.open(s);E.arrive(s);const guest=E.arrive(s);E.conversation(s);
+  E.answerGuest(s,guest.id,'welcome');E.answerGuest(s,guest.id,E.guestConversation(s,guest.id).choices[0].id);
+  const again=E.restore(JSON.stringify(s)),view=E.guestConversation(again,guest.id);
+  assert.equal(view.node,'taleResult');assert.ok(view.note);
+  for(const g of again.guests)g.status='eating';
+  assert.equal(E.storyCarrier(again),false);assert.equal(E.storyNeedsAttention(again),true,'no guest can tell it: the story sheet takes over');
 });
 test('every story chapter is complete, affordable somehow, and original',()=>{
   const E=require('../docs/engine'),S=E.storyContent,ids=new Set(S.stories.map(t=>t.id));
   for(const t of S.stories.filter(x=>x.arc)){
     assert.ok(t.series&&t.title&&t.intro.length>40,t.id);assert.equal(t.lines.length,4,t.id);
+    assert.ok(t.tale.length>60&&t.afterword.length>20,t.id+' needs the guest\'s telling and closing words');
+    assert.ok(!/\{[ab]\}/.test(t.tale+t.afterword),t.id);
     assert.ok(t.lines.every(line=>/^\{[ab]\}: /.test(line)),t.id);
     if(t.after)assert.ok(ids.has(t.after),t.id);
     assert.equal(t.choices.length,3,t.id);
