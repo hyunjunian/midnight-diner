@@ -23,3 +23,6 @@
 @media(orientation:landscape) and (max-height:550px){
  .scene-controls{top:var(--location-nav-top,calc(var(--safe-top) + 68px))}
 }
+
+/* Purchase rows in Settings keep the same spacing as the other settings buttons. */
+.store-settings{display:grid;gap:12px}.store-settings p:empty{display:none}.store-settings button:disabled{opacity:.72;cursor:default}

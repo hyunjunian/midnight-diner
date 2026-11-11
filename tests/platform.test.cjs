@@ -11,11 +11,10 @@ test('browser fallback: ads count as watched, purchases succeed, updates are ski
     assert.equal(p.ads.isNative(),false);
     assert.equal((await p.ads.showInterstitial('night-end')).shown,true);
     assert.equal((await p.ads.showRewarded('bonus')).rewarded,true);
-    assert.equal((await p.store.purchase('coins_small')).ok,true);
     assert.equal(p.store.hasNoAds(),false);
-    assert.equal((await p.store.purchase('remove_ads')).ok,true);
+    assert.equal((await p.store.purchase('midnight_remove_ads')).ok,true);
     assert.equal(p.store.hasNoAds(),true);
-    assert.deepEqual([...(await p.store.restore()).restored],['remove_ads']);
+    assert.deepEqual([...(await p.store.restore()).restored],['midnight_remove_ads']);
     assert.equal((await p.store.purchase('nope')).ok,false);
     assert.equal((await p.updater.check()).status,'skipped');
     assert.equal((await p.updater.apply()).applied,false);
@@ -26,13 +25,13 @@ test('ad-free players never get an interstitial but may still choose a rewarded 
   assert.equal((await p.ads.showInterstitial()).shown,false);
   assert.equal((await p.ads.showRewarded()).rewarded,true);
 });
-test('native build without SDKs grants nothing and skips updates',async()=>{
+test('native build whose plugins do not answer grants nothing and skips updates',async()=>{
   const p=load(true);
   assert.equal(p.ads.isNative(),true);
   assert.equal((await p.ads.showInterstitial()).shown,false);
   assert.equal((await p.ads.showRewarded()).rewarded,false);
-  assert.equal((await p.store.purchase('remove_ads')).ok,false);
-  assert.equal(p.store.hasNoAds(),false);
+  assert.equal((await p.store.purchase('midnight_remove_ads')).ok,false);
+  assert.equal(p.store.isOwned('midnight_remove_ads'),false);
   assert.equal((await p.updater.check()).status,'skipped');
 });
 test('native app launches without registering a service worker or checking the web version',()=>{
@@ -179,4 +178,109 @@ test('builds tag their own output from the commit, leaving docs/ untouched',()=>
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
   assert.match(fs.readFileSync('wrangler.jsonc','utf8'),/"directory": "\.\/dist\/web"/);
   assert.match(fs.readFileSync('wrangler.jsonc','utf8'),/"command": "node tools\/build-web\.cjs"/,'plain wrangler deploy must build the site first');
+});
+
+// ---- In-app purchases (StoreKit 2 / Play Billing through the platform layer) ----
+const ADS='midnight_remove_ads';
+function shop(options={}){
+  const calls=[],saved=new Map(options.cache?[['midnight-diner-store-v1',JSON.stringify(options.cache)]]:[]);
+  let purchases=options.purchases||[];
+  const window={Capacitor:{isNativePlatform:()=>true,getPlatform:()=>options.platform||'android',nativePromise:async(plugin,method,data)=>{
+    calls.push({plugin,method,data});
+    if(plugin!=='NativePurchases')throw new Error('other plugin');
+    if(method==='isBillingSupported')return{isBillingSupported:options.billing!==false};
+    if(method==='getPurchases'){if(options.queryFails)throw new Error('offline');return{purchases};}
+    if(method==='getProducts')return{products:options.products||[{identifier:ADS,title:'광고 제거',priceString:'₩3,300'}]};
+    if(method==='getAppTransaction'){if(options.appFails)throw new Error('App Transaction requires iOS 16.0 or later');return{appTransaction:options.app};}
+    if(method==='purchaseProduct'){if(options.buy instanceof Error)throw options.buy;const bought={productIdentifier:data.productIdentifier,transactionId:'t1',purchaseState:'1',...options.buy};if(options.afterBuy)purchases=options.afterBuy;return bought;}
+    if(method==='restorePurchases'){if(options.restoreFails)throw new Error('restore');if(options.afterRestore)purchases=options.afterRestore;return{};}
+    return{};
+  }}};
+  const localStorage={getItem:k=>saved.has(k)?saved.get(k):null,setItem:(k,v)=>saved.set(k,String(v)),removeItem:k=>saved.delete(k)};
+  for(const name of ['config','ads','store'])vm.runInNewContext(fs.readFileSync(`docs/src/platform/${name}.js`,'utf8'),{window,localStorage,JSON,Date,Promise,Number,String,Boolean,Array,Set,Error});
+  const p=window.MidnightPlatform;if('since' in options)p.config.store.iosFreeSince=options.since;
+  if(options.extra)p.config.store.products.push(...options.extra);
+  const cache=()=>JSON.parse(saved.get('midnight-diner-store-v1')||'{}');
+  return{store:p.store,ads:p.ads,calls,cache,of:m=>calls.filter(c=>c.method===m)};
+}
+const own=(more={})=>({productIdentifier:ADS,transactionId:'t0',purchaseState:'1',...more});
+test('shipped store settings: one remove-ads product, not on sale yet, iOS still in its paid period',()=>{
+  const {store}=shop(),text=fs.readFileSync('docs/src/platform/config.js','utf8');
+  assert.match(text,/removeAdsOnSale: false/);assert.match(text,/iosFreeSince: ''/);
+  assert.match(text,/\{ id: 'midnight_remove_ads', type: 'non-consumable' \}/);
+  assert.equal(store.hasNoAds(),false);
+});
+test('android: a completed purchase removes ads, is cached for offline starts and reaches the ad layer',async()=>{
+  const s=shop();
+  assert.equal((await s.store.init()).noAds,false);assert.equal(s.ads.isAdFree(),false);
+  assert.deepEqual([...(await s.store.getProducts())].map(x=>[x.id,x.type,x.price]),[[ADS,'non-consumable','₩3,300']]);
+  const seen=[];s.store.onChange(state=>seen.push(state.noAds));
+  const result=await s.store.purchase(ADS);
+  assert.equal(result.ok,true);assert.equal(s.of('purchaseProduct')[0].data.isConsumable,false);
+  assert.equal(s.store.hasNoAds(),true);assert.equal(s.ads.isAdFree(),true);assert.deepEqual(seen,[true]);
+  assert.deepEqual(s.cache().owned,[ADS]);
+  const offline=shop({cache:{owned:[ADS]},queryFails:true});
+  assert.equal((await offline.store.init()).noAds,true,'a failed store query keeps cached ownership');
+  const refunded=shop({cache:{owned:[ADS]},purchases:[]});
+  assert.equal((await refunded.store.init()).noAds,false,'the store answering without the purchase removes it');
+});
+test('nothing is granted from cancelled, pending, unverified, revoked, mismatched or unknown purchases',async()=>{
+  const cancel=shop({buy:new Error('User cancelled the purchase')});await cancel.store.init();
+  assert.equal((await cancel.store.purchase(ADS)).reason,'cancelled');
+  const failed=shop({buy:new Error('network')});await failed.store.init();
+  assert.equal((await failed.store.purchase(ADS)).reason,'failed');
+  const pending=shop({buy:{purchaseState:'0'}});await pending.store.init();
+  assert.equal((await pending.store.purchase(ADS)).reason,'pending');
+  const other=shop({buy:{productIdentifier:'something_else'}});await other.store.init();
+  assert.equal((await other.store.purchase(ADS)).ok,false);
+  const unverified=shop({platform:'ios',since:'2027-01-01T00:00:00Z',app:{environment:'Production',originalPurchaseDate:'2027-06-01T00:00:00Z'},buy:{verificationError:'bad signature'}});await unverified.store.init();
+  assert.equal((await unverified.store.purchase(ADS)).ok,false);
+  for(const s of [cancel,failed,pending,other,unverified]){assert.equal(s.store.hasNoAds(),false);assert.equal(s.store.isOwned(ADS),false);}
+  assert.equal((await cancel.store.purchase('nope')).reason,'unknown-product');
+  const closed=shop({billing:false});await closed.store.init();
+  assert.equal((await closed.store.purchase(ADS)).reason,'unavailable');assert.equal(closed.of('purchaseProduct').length,0);
+  const listed=shop({platform:'ios',since:'2027-01-01T00:00:00Z',app:{environment:'Production',originalPurchaseDate:'2027-06-01T00:00:00Z'},purchases:[own({revocationDate:'2027-07-01'}),own({verificationError:'x'})]});
+  assert.equal((await listed.store.init()).noAds,false);
+  const waiting=shop({purchases:[own({purchaseState:'0'})]});assert.equal((await waiting.store.init()).noAds,false);
+});
+test('restore brings back an earlier purchase and reports failures',async()=>{
+  const s=shop({afterRestore:[own()]});await s.store.init();assert.equal(s.store.hasNoAds(),false);
+  const result=await s.store.restore();
+  assert.equal(result.ok,true);assert.deepEqual([...result.restored],[ADS]);assert.equal(s.store.hasNoAds(),true);
+  const broken=shop({restoreFails:true});await broken.store.init();
+  assert.equal((await broken.store.restore()).ok,false);assert.equal(broken.store.hasNoAds(),false);
+});
+test('consumables are bought as consumable and never stored as owned',async()=>{
+  const s=shop({extra:[{id:'coins_small',type:'consumable'}],purchases:[{productIdentifier:'coins_small',purchaseState:'1'}]});await s.store.init();
+  const result=await s.store.purchase('coins_small');
+  assert.equal(result.ok,true);assert.equal(result.transactionId,'t1');assert.equal(s.of('purchaseProduct')[0].data.isConsumable,true);
+  assert.equal(s.store.isOwned('coins_small'),false);assert.deepEqual(s.cache().owned,[]);
+});
+test('iOS paid-to-free: earlier buyers stay ad-free, later installs do not, unknown never shows ads',async()=>{
+  const SINCE='2027-03-01T00:00:00Z',app=(date,environment='Production')=>({environment,originalPurchaseDate:date});
+  const paidEra=shop({platform:'ios'});
+  assert.equal((await paidEra.store.init()).noAds,true,'no conversion date yet: the app is still paid');
+  assert.equal(paidEra.of('getAppTransaction').length,0);assert.equal(paidEra.ads.isAdFree(),true);
+  const early=shop({platform:'ios',since:SINCE,app:app('2027-02-28T23:59:59Z')});
+  assert.equal((await early.store.init()).noAds,true);assert.equal(early.cache().legacy,true);
+  assert.equal(early.of('getPurchases')[0].data.onlyCurrentEntitlements,true);
+  const late=shop({platform:'ios',since:SINCE,app:app('2027-03-01T00:00:00Z')});
+  assert.equal((await late.store.init()).noAds,false);assert.notEqual(late.cache().legacy,true);
+  assert.equal((await late.store.purchase(ADS)).ok,true);assert.equal(late.store.hasNoAds(),true);
+  const tester=shop({platform:'ios',since:SINCE,app:app('2013-08-01T07:00:00Z','Sandbox')});
+  assert.equal((await tester.store.init()).noAds,false,'sandbox and TestFlight dates do not count');
+  const remembered=shop({platform:'ios',since:SINCE,cache:{legacy:true},appFails:true});
+  assert.equal((await remembered.store.init()).noAds,true);assert.equal(remembered.of('getAppTransaction').length,0);
+  const unknown=shop({platform:'ios',since:SINCE,appFails:true});
+  assert.equal((await unknown.store.init()).noAds,true,'cannot tell (offline or iOS 15): no ads this session');
+  assert.notEqual(unknown.cache().legacy,true,'an unknown answer is never stored');
+  const android=shop({platform:'android',since:SINCE,app:app('2020-01-01T00:00:00Z')});
+  assert.equal((await android.store.init()).noAds,false);assert.equal(android.of('getAppTransaction').length,0);
+});
+test('settings purchase rows exist in both entry pages and stay out of the native plugin',()=>{
+  for(const page of ['docs/index.html','docs/approved.html']){const html=fs.readFileSync(page,'utf8');for(const id of ['store-section','store-remove-ads','store-restore','store-status'])assert.ok(html.includes(`id="${id}"`),page+' '+id);assert.match(html,/id="store-section"[^>]* hidden>/);assert.match(html,/\.\/store-settings\.js\?release=/);}
+  const ui=fs.readFileSync('docs/store-settings.js','utf8');
+  assert.doesNotMatch(ui,/nativePromise|NativePurchases/);assert.match(ui,/removeAdsOnSale===true/);
+  assert.ok(fs.readFileSync('docs/sw.js','utf8').includes("'store-settings.js'"));
+  for(const file of fs.readdirSync('docs').filter(f=>f.endsWith('.js')&&f!=='sw.js'))assert.doesNotMatch(fs.readFileSync('docs/'+file,'utf8'),/nativePromise|NativePurchases|CapacitorUpdater/,file);
 });

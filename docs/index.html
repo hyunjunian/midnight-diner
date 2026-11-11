@@ -70,6 +70,7 @@
   <script src="./src/platform/ads.js?release=20261110-v85-capacitor-merge" defer></script>
   <script src="./src/platform/store.js?release=20261110-v85-capacitor-merge" defer></script>
   <script src="./src/platform/updater.js?release=20261110-v85-capacitor-merge" defer></script>
+  <script src="./store-settings.js?release=20261110-v85-capacitor-merge" defer></script>
   <script src="./pwa.js?release=20261110-v85-capacitor-merge" defer></script>
   <link rel="stylesheet" href="./wallet-layout-v71.css?release=20261110-v85-capacitor-merge">
 </head>
@@ -133,6 +134,11 @@
       <button id="replay">인트로 다시 보기 <span>▶</span></button>
       <button id="sound-effects" aria-pressed="true">게임 소리 · 켜짐</button>
       <section class="music-settings" aria-label="배경음악 설정"><div><span>배경음악</span><button id="music-toggle" type="button" aria-pressed="true">켜짐</button></div><label for="music-volume">음량 <output id="music-volume-value">25%</output></label><input id="music-volume" type="range" min="0" max="100" value="25" aria-label="배경음악 음량"><small class="music-credit">음악: <a href="https://peritune.com/blog/2016/06/12/minamo/" target="_blank" rel="noopener">Minamo · PeriTune</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a><br>음량 조정·MP3 재인코딩</small></section>
+      <section id="store-section" class="store-settings" aria-label="광고 제거와 구매 복원" hidden>
+        <button id="store-remove-ads" type="button">광고 제거 <span id="store-remove-ads-price"></span></button>
+        <button id="store-restore" type="button">구매 복원 <span></span></button>
+        <p id="store-status" role="status"></p>
+      </section>
       <button id="install-app">홈 화면에 설치하기 <span></span></button>
       <p id="install-hint">설치는 선택 사항이에요. 홈 화면에서도 식당을 열 수 있어요.</p>
       <div id="install-guide" hidden></div><p id="install-status" role="status"></p>

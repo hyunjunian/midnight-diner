@@ -21,7 +21,8 @@
     "@capacitor/android": "^8.6.0",
     "@capacitor/core": "^8.6.0",
     "@capacitor/ios": "^8.6.0",
-    "@capgo/capacitor-updater": "^8.54.2"
+    "@capgo/capacitor-updater": "^8.54.2",
+    "@capgo/native-purchases": "^8.9.8"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.0",
