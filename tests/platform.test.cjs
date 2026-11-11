@@ -469,3 +469,9 @@ test('consent can be reopened from Settings only where it is required',async()=>
   assert.equal(other.ads.privacyOptionsRequired(),false);await other.ads.showPrivacyOptions();assert.equal(other.of('showPrivacyOptionsForm').length,0);
   for(const page of ['docs/index.html','docs/approved.html'])assert.match(fs.readFileSync(page,'utf8'),/id="ads-privacy" type="button" hidden>/);
 });
+
+test('app-ads.txt authorises the AdMob publisher of the shipped ad units',()=>{
+  const text=fs.readFileSync('workers/update/public/app-ads.txt','utf8');
+  assert.equal(text,'google.com, pub-7477519330314468, DIRECT, f08c47fec0942fa0\n');
+  assert.match(fs.readFileSync('docs/src/platform/config.js','utf8'),/ca-app-pub-7477519330314468\//,'same publisher as the ad units');
+});
