@@ -105,7 +105,7 @@
     declined:'괜찮아요. 다음에 재밌는 걸 찾으면 또 말씀드릴게요. 잘 먹고 갑니다.'
   };
   let forcePrivacy=false;
-  try{forcePrivacy=!ads.isNative()&&new URLSearchParams(location.search).get('ads-test')==='privacy';}catch{}
+  try{forcePrivacy=ads.browserTestMode?.()==='privacy';}catch{}
   const needsPrivacy=()=>ads.isNative()?ads.needsPrivacyPrompt():forcePrivacy;
   let talk=null; // {id,night,name,node,said}
   const refresh=()=>{try{window.MidnightApp?.refreshTalk?.();}catch{}};

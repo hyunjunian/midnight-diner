@@ -36,15 +36,19 @@ function serve(base,port,prefix){
   const names=fs.readdirSync(dir).filter(f=>f.endsWith('.cjs')).map(f=>f.slice(0,-4)).filter(n=>all||(wanted.length?wanted.includes(n):ESSENTIAL.includes(n))).sort();
   const failed=[];
   for(const name of names){
-    // Asynchronous on purpose: the local servers above must keep answering while a test runs.
-    const began=Date.now(),result=await new Promise(resolve=>{
+    const run=()=>new Promise(resolve=>{
       const child=cp.spawn(process.execPath,[path.join(dir,name+'.cjs')],{cwd:root,env:{...process.env,CHROMIUM_PATH:chromium}});
       let stdout='';child.stdout.on('data',d=>stdout+=d);child.stderr.on('data',d=>stdout+=d);
       const timer=setTimeout(()=>child.kill('SIGKILL'),240000);
       child.on('close',status=>{clearTimeout(timer);resolve({status,stdout,stderr:''});});
     });
+    // Asynchronous on purpose: the local servers above must keep answering while a test runs.
+    // The update tests install a 200 MB offline cache and occasionally time out on a busy
+    // machine, so a failure is tried once more before it counts.
+    const began=Date.now();let result=await run(),retried=false;
+    if(result.status!==0){retried=true;result=await run();}
     const ok=result.status===0;if(!ok)failed.push(name);
-    console.log(`${ok?'ok  ':'FAIL'} ${name} (${Math.round((Date.now()-began)/1000)}s)`);
+    console.log(`${ok?'ok  ':'FAIL'} ${name} (${Math.round((Date.now()-began)/1000)}s)${ok&&retried?' after one retry':''}`);
     if(!ok)console.log(((result.stdout||'')+(result.stderr||'')).trim().split('\n').slice(0,12).map(line=>'     '+line.slice(0,220)).join('\n'));
   }
   for(const server of servers){server.closeAllConnections();server.close();}

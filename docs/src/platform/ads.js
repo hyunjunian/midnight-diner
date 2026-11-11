@@ -22,7 +22,16 @@
   const call=(method,options={})=>cap().nativePromise(PLUGIN,method,options);
   const testing=()=>settings().testMode!==false;
   const unit=type=>testing()?(TEST[platform()]?.[type]||''):String(settings().units?.[platform()]?.[type]||'');
-  const browserTest=()=>{try{return!isNative()&&new URLSearchParams(location.search).has('ads-test');}catch{return false;}};
+  // Browser test switch: ?ads-test (or ?ads-test=privacy) in the address. It is remembered for
+  // the tab, because an automatic site update reloads the page without the query.
+  const browserTest=()=>{
+    if(isNative())return'';
+    try{
+      const asked=new URLSearchParams(location.search).get('ads-test');
+      if(asked!==null)sessionStorage.setItem('midnight-ads-test',asked||'on');
+      return sessionStorage.getItem('midnight-ads-test')||'';
+    }catch{return'';}
+  };
   let adFree=false,started=null,sdk=false,canRequest=false,needsForm=false,optionsRequired=false,tracking='',showing=false;
   const slot={interstitial:{ready:false,loading:null},rewarded:{ready:false,loading:null}};
   const waiters=new Set();
@@ -117,9 +126,11 @@
       return state();
     },
     // An interstitial is loaded and may be shown to this player right now.
-    interstitialReady:()=>isNative()?(slot.interstitial.ready&&!adFree&&!showing):browserTest()&&!adFree,
+    interstitialReady:()=>isNative()?(slot.interstitial.ready&&!adFree&&!showing):Boolean(browserTest())&&!adFree,
     // A rewarded ad can be offered: one is loaded, or it can load once the player answers the privacy note.
-    rewardedAvailable:()=>isNative()?(sdk&&!showing&&Boolean(unit('rewarded'))&&(slot.rewarded.ready||needsPrompt())):browserTest(),
+    rewardedAvailable:()=>isNative()?(sdk&&!showing&&Boolean(unit('rewarded'))&&(slot.rewarded.ready||needsPrompt())):Boolean(browserTest()),
+    // '' in the apps and normally in browsers; 'on' or 'privacy' while the browser test switch is set.
+    browserTestMode:()=>browserTest(),
     // Resolves {shown} after the ad is closed. Ad-free players never see an interstitial.
     async showInterstitial(placement=''){
       if(adFree)return{shown:false,reason:'ad-free',placement};
