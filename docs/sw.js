@@ -547,7 +547,7 @@ const FILES = [
 const FILE_HASHES = {
   "ad-events.js": "e3d98239e8b09317213929f62537a4d1ee579e75cc15f029ac5c79b4eccbf753",
   "store-settings.js": "a2edca0804ea881eb58ab2fd5ab7c78c8a21dce5450f9585ff35b1e03d6766a6",
-  "src/platform/config.js": "66227a5fb5a08e7285dfcbb9d0c2cd1715bfceb8f2eef71a72e3ee61972ccc96",
+  "src/platform/config.js": "0377e470acf54ebdb7e2b9e558397da46b08552f053feb199f43e1f970412f9b",
   "src/platform/ads.js": "501e54067bffb1b1232830af7404427d33218e1c3a46cae9ad1641134a397c86",
   "src/platform/store.js": "0c251ecec797c5325ab2b6b374c25a153d4cdad8f283de6b3faa0c3da5ca33cf",
   "src/platform/updater.js": "818828cc232f6b885b7a6e20847a747c47e3c80bd4abf281dbba151d6eb09de5",

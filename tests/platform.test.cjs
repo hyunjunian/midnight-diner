@@ -204,9 +204,9 @@ function shop(options={}){
   return{store:p.store,ads:p.ads,calls,cache,of:m=>calls.filter(c=>c.method===m)};
 }
 const own=(more={})=>({productIdentifier:ADS,transactionId:'t0',purchaseState:'1',...more});
-test('shipped settings: one remove-ads product on sale in the apps, iOS still in its paid period, real ad units on',()=>{
+test('shipped settings: one remove-ads product on sale in the apps, iOS still in its paid period, ads on with test ads during testing',()=>{
   const {store}=shop(),text=fs.readFileSync('docs/src/platform/config.js','utf8');
-  assert.match(text,/removeAdsOnSale: true/);assert.match(text,/iosFreeSince: ''/);assert.match(text,/enabled: true/);assert.match(text,/testMode: false/);
+  assert.match(text,/removeAdsOnSale: true/);assert.match(text,/iosFreeSince: ''/);assert.match(text,/enabled: true/);assert.match(text,/testMode: true/,'testing phase: Google test ads only; set false before the store release');
   assert.doesNotMatch(text,/3940256099942544/,'no sample unit ids in the shipped settings');
   for(const file of ['ios/App/App/Info.plist','android/app/src/main/AndroidManifest.xml'])assert.doesNotMatch(fs.readFileSync(file,'utf8'),/3940256099942544/,file+' still has the sample app id');
   assert.equal((text.match(/ca-app-pub-7477519330314468\/\d{10}/g)||[]).length,4);
@@ -438,4 +438,17 @@ test('shipped apps request the real ad units of their own platform',async()=>{
   await a.ads.init();await a.settle();
   assert.equal(a.of('initialize')[0].data.initializeForTesting,false);
   assert.deepEqual([a.of('prepareInterstitial')[0].data.adId,a.of('prepareRewardVideoAd')[0].data.adId],['ca-app-pub-7477519330314468/3681611083','ca-app-pub-7477519330314468/8554838820']);
+});
+
+test('while testing, the apps request only Google test ads even though the real unit ids are stored',async()=>{
+  const context={window:{}};vm.runInNewContext(fs.readFileSync('docs/src/platform/config.js','utf8'),context);
+  const shipped=context.window.MidnightPlatform.config.ads;
+  assert.equal(shipped.enabled,true);assert.equal(shipped.testMode,true);
+  for(const platform of ['ios','android']){
+    const a=adNet({platform,config:{testMode:shipped.testMode,units:JSON.parse(JSON.stringify(shipped.units))}});
+    await a.ads.init();await a.settle();
+    const requested=[a.of('prepareInterstitial')[0].data,a.of('prepareRewardVideoAd')[0].data];
+    for(const ad of requested){assert.match(ad.adId,/^ca-app-pub-3940256099942544\//,platform);assert.equal(ad.isTesting,true);}
+    assert.equal(a.of('initialize')[0].data.initializeForTesting,true);
+  }
 });
