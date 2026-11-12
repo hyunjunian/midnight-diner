@@ -199,15 +199,23 @@
     for(const t of traitIds){const stage=growthStage(after[t]);if(stage>growthStage(before[t]))return S.growth.traits[t].remarks[stage-1]||'';}
     return '';
   }
+  // The three ways of closing a night are worded differently from night to night.
+  function reflectionLabel(s,c){const labels=c.labels?.length?c.labels:[c.label];return labels[(s.night||0)%labels.length];}
   function grownEnough(s,c){const counts=ownerGrowth(s).counts;return Object.entries(c.needs||{}).every(([t,n])=>counts[t]>=n);}
   function hasMemory(s,key){const [id,choice]=key.split(':');return (s.storyMemory||[]).some(t=>t.id===id&&(!choice||t.choice===choice));}
   // Tonight's wording: the authored text plus the sentences ("echo") that earlier choices or the
   // owner's leading trait have earned.
   function telling(s,definition){
-    const out={intro:definition.intro,tale:definition.tale||'',afterword:definition.afterword||''},lead=ownerGrowth(s).lead,used={};
+    // A telling comes in beats: the guest says a little, the owner asks, the guest goes on.
+    const tale=Array.isArray(definition.tale)?[...definition.tale]:[definition.tale||''];
+    const out={intro:definition.intro,tale,afterword:definition.afterword||''},lead=ownerGrowth(s).lead,used={};
     for(const e of definition.echo||[]){
       if(!(e.if?hasMemory(s,e.if):e.lead?e.lead===lead:false))continue;
-      for(const k of ['intro','tale','afterword'])if(e[k]&&(used[k]||0)<2){out[k]+=' '+e[k];used[k]=(used[k]||0)+1;}
+      for(const k of ['intro','tale','afterword'])if(e[k]&&(used[k]||0)<2){
+        if(k==='tale'){const i=Number.isInteger(e.beat)?Math.max(0,Math.min(tale.length-1,e.beat)):tale.length-1;tale[i]+=' '+e[k];}
+        else out[k]+=' '+e[k];
+        used[k]=(used[k]||0)+1;
+      }
     }
     return out;
   }
@@ -224,7 +232,7 @@
     let node=guestNodes.includes(g.chat?.node)?g.chat.node:'hello';
     if((node==='tale'&&tale!==0)||(node==='taleResult'&&tale!==1))node='hello';
     const choices=[],offer=(id,to)=>choices.push({id,label:guestReplies[id],to});
-    let line='',caption='서로 알아가는 중',note='';
+    let line='',caption='서로 알아가는 중',note='',beat=0;
     if(node==='hello'){
       caption=profile.known.includes('name')?'다시 만난 반가운 얼굴':'첫 인사';
       line=profile.known.includes('name')?`또 들렀어요. 오늘도 잠깐 쉬어 가도 괜찮죠?`:openings[(g.lineKey||0)%openings.length];
@@ -232,8 +240,11 @@
       if(s.nightNews.length>(s.nightNewsRead||0))note=news(s).slice(s.nightNewsRead||0).map(n=>'지난밤 소식 · '+n.text).join('\n');
       offer('welcome',tale===0?'tale':tale===1?'taleResult':'intro');
     }else if(node==='tale'){
-      const view=story(s),growth=ownerGrowth(s);caption=view.definition.series||'오늘 밤, 카운터에서';line=view.telling.tale;
-      for(const c of view.definition.choices)if(!grownEnough(s,c)){
+      const view=story(s),growth=ownerGrowth(s),beats=view.telling.tale;caption=view.definition.series||'오늘 밤, 카운터에서';
+      beat=Math.max(0,Math.min(beats.length-1,g.chat?.beat||0));line=beats[beat];
+      // Until the last beat the owner only draws the story out; the decision comes with the whole of it.
+      if(beat<beats.length-1)choices.push({id:'go_on',label:(view.definition.asks||[])[beat]||'그래서요?',to:'tale'});
+      else for(const c of view.definition.choices)if(!grownEnough(s,c)){
         // Words the owner has not grown into yet stay visible but out of reach.
         choices.push({id:c.id,locked:true,label:'아직은 꺼낼 수 없는 말 ('+Object.entries(c.needs).map(([t,n])=>`${S.growth.traits[t].name} ${growth.counts[t]}/${n}`).join(', ')+')'});
       }else if(canChoose(s,c)){
@@ -241,8 +252,9 @@
         choices.push({id:c.id,label:cost?`${c.label} (${cost})`:c.label,to:'taleResult'});
       }
     }else if(node==='taleResult'){
-      const view=story(s),remark=growthRemark(s);caption=view.definition.series||'오늘 밤, 카운터에서';line=view.telling.afterword+(remark?'\n'+remark:'');note=view.choice.result;
-      for(const c of S.reflection)choices.push({id:c.id,label:c.label,to:'intro'});
+      const view=story(s),remark=growthRemark(s);caption=view.definition.series||'오늘 밤, 카운터에서';// The guest answers what the owner actually did, then closes the night's story.
+      line=(view.choice.reply?view.choice.reply+' ':'')+view.telling.afterword+(remark?'\n'+remark:'');note=view.choice.result;
+      for(const c of S.reflection)choices.push({id:c.id,label:reflectionLabel(s,c),to:'intro'});
     }else if(node==='intro'){
       line=profile.known.includes('role')?`${p.name}입니다. 저를 기억해 주시니 반갑네요.`:`저는 ${p.name}입니다. 이렇게 인사하니 한결 편안하네요.`;
       offer('day','day');offer('menu','order');
@@ -260,19 +272,20 @@
       caption=g.status==='waiting'?'접수한 주문':'오늘의 주문';
       line=g.status==='waiting'?`${recipes[g.recipe].name}, 편히 기다리고 있을게요.`:requests[Math.floor((g.lineKey||0)/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
     }
-    return {node,line,caption,note,choices,orderReady:node==='order',
+    return {node,beat,line,caption,note,choices,orderReady:node==='order',
       playerLine:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
   }
   function answerGuest(s,id,reply){
     const view=guestConversation(s,id),choice=view?.choices.find(x=>x.id===reply);if(!choice||choice.locked)return false;
     const g=s.guests.find(x=>x.id===id),memory=s.customerBook[g.person];if(!memory)return false;
     // Answers inside a story chapter are the owner's decision and the closing reflection.
-    if((view.node==='tale'||view.node==='taleResult')&&!resolveEvent(s,reply))return false;
+    const goOn=view.node==='tale'&&reply==='go_on';
+    if(!goOn&&(view.node==='tale'||view.node==='taleResult')&&!resolveEvent(s,reply))return false;
     if(view.node==='hello'&&view.note)markStoryRead(s);
     const known=(memory.known||[]).filter(x=>guestFacts.includes(x));
     const reveal=choice.to==='intro'?['name','style']:choice.to==='day'?['role','bio']:choice.to==='about'?['role','bio','age']:[];
     const discovered=reveal.filter(x=>!known.includes(x));memory.known=[...new Set([...known,...reveal])];
-    g.chat={node:choice.to,reply,discovered};if(['warm','quiet','order'].includes(choice.to))g.menuReadyAt=s.nightElapsedMs||0;return true;
+    g.chat={node:choice.to,reply,discovered};if(goOn)g.chat.beat=view.beat+1;if(['warm','quiet','order'].includes(choice.to))g.menuReadyAt=s.nightElapsedMs||0;return true;
   }
   function chooseRecipe(s,omakase) {
     const menuLevel=s.phase==='open'?Math.min(s.level,s.nightStart.level):s.level;
@@ -427,7 +440,7 @@
     // A corrupt optional conversation must not erase a valid older game or its money.
     for(const memory of Object.values(restored.customerBook))memory.known=Array.isArray(memory.known)?[...new Set(memory.known.filter(x=>guestFacts.includes(x)))]:[];
     for(const g of restored.guests){
-      if(g.chat&&guestNodes.includes(g.chat.node))g.chat={node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
+      if(g.chat&&guestNodes.includes(g.chat.node))g.chat={...(g.chat.node==='tale'&&integer(g.chat.beat,0,9)?{beat:g.chat.beat}:{}),node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
       else delete g.chat;
     }
     const history=Array.isArray(v.menuRotation)?v.menuRotation:restored.recentOrders;
@@ -631,7 +644,7 @@
     if (s.phase !== 'end') return false;
     archiveNight(s);s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { befriend,storyCarrier,ownerGrowth,grownEnough,Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { befriend,storyCarrier,ownerGrowth,grownEnough,reflectionLabel,Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();

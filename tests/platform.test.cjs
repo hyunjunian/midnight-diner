@@ -541,6 +541,8 @@ test('the owner\'s chosen reply is not echoed and the bubble tail is outlined',(
 });
 
 // ---- Story threads ----
+// The owner draws the guest's telling out beat by beat; returns the view that holds the choices.
+function hearOut(E,s,id){let view=E.guestConversation(s,id);while(view.node==='tale'&&view.choices.length===1&&view.choices[0].id==='go_on'){assert.ok(E.answerGuest(s,id,'go_on'));view=E.guestConversation(s,id);}return view;}
 test('every night\'s story is told once through a guest\'s conversation, the threads in their authored order',()=>{
   const E=require('../docs/engine'),S=E.storyContent,s=E.fresh(),told=[];
   const chapters=S.stories.filter(t=>t.arc).map(t=>t.id),total=chapters.length;
@@ -554,7 +556,17 @@ test('every night\'s story is told once through a guest\'s conversation, the thr
     assert.equal(E.storyNeedsAttention(s),false,'a story a guest will tell does not light the story sheet');
     assert.equal(E.storyCarrier(s),true);
     view=E.guestConversation(s,guest.id);
-    assert.equal(view.node,'tale');assert.equal(view.line,E.story(s).telling.tale);assert.ok(view.line.startsWith(run.definition.tale));assert.equal(view.orderReady,false);
+    assert.equal(view.node,'tale');assert.equal(view.orderReady,false);
+    // The telling comes in beats; until the last one the owner can only ask the guest to go on.
+    const beats=E.story(s).telling.tale;assert.equal(beats.length,run.definition.tale.length);
+    for(let i=0;i<beats.length-1;i++){
+      assert.equal(view.beat,i);assert.equal(view.line,beats[i]);assert.ok(view.line.startsWith(run.definition.tale[i]));
+      assert.deepEqual(view.choices.map(c=>[c.id,c.label]),[['go_on',run.definition.asks[i]]]);
+      assert.equal(E.resolveEvent(s,'go_on'),false);assert.ok(E.answerGuest(s,guest.id,'go_on'));
+      view=E.guestConversation(E.restore(JSON.stringify(s)),guest.id);assert.equal(view.beat,i+1,'the place in the telling survives a reload');
+      view=E.guestConversation(s,guest.id);assert.equal(s.storyRun.step,0);
+    }
+    assert.equal(view.line,beats[beats.length-1]);
     const open=view.choices.filter(c=>!c.locked);
     assert.ok(open.length>=1&&open.every(c=>run.definition.choices.some(x=>x.id===c.id&&E.canChoose(s,x))));
     for(const c of view.choices.filter(c=>c.locked)){
@@ -564,10 +576,12 @@ test('every night\'s story is told once through a guest\'s conversation, the thr
     const picked=open[night%open.length],before=s.reputation;
     assert.ok(E.answerGuest(s,guest.id,picked.id));
     view=E.guestConversation(s,guest.id);
-    assert.equal(view.node,'taleResult');assert.ok(view.line.startsWith(run.definition.afterword));
+    const chosen=run.definition.choices.find(c=>c.id===picked.id);
+    assert.equal(view.node,'taleResult');assert.ok(view.line.startsWith(chosen.reply+' '+run.definition.afterword),'the guest answers what the owner did, then closes the story');
     assert.equal(view.note,run.definition.choices.find(c=>c.id===picked.id).result);assert.ok(s.reputation>=before);
     assert.equal(E.guestConversation(s,first.id).node==='tale',false,'the same story is not told twice');
-    assert.equal(view.choices.length,3);assert.ok(E.answerGuest(s,guest.id,view.choices[night%3].id));
+    assert.equal(view.choices.length,3);assert.deepEqual(view.choices.map(c=>c.label),S.reflection.map(r=>r.labels[s.night%r.labels.length]),'closing words vary from night to night');
+    assert.ok(E.answerGuest(s,guest.id,view.choices[night%3].id));
     view=E.guestConversation(s,guest.id);
     assert.equal(view.node,'intro');assert.ok(E.guestProfile(s,guest.person).known.includes('name'),'the usual introduction still follows');
     assert.equal(s.event,'resolved');assert.equal(E.storyCarrier(s),false);
@@ -596,7 +610,7 @@ test('the owner grows by what they choose: titles, remarks from guests, and word
   const s=E.fresh(),remarks=[];let opened=0;
   for(let night=1;night<=24;night++){
     E.open(s);E.arrive(s);const guest=E.arrive(s);E.conversation(s);E.answerGuest(s,guest.id,'welcome');
-    const definition=E.story(s).definition,view=E.guestConversation(s,guest.id);
+    const definition=E.story(s).definition,view=hearOut(E,s,guest.id);
     const grown=view.choices.find(c=>!c.locked&&definition.choices.find(x=>x.id===c.id).needs?.keep);
     const quiet=grown||view.choices.find(c=>!c.locked&&definition.choices.find(x=>x.id===c.id).trait==='keep')||view.choices.find(c=>!c.locked);
     if(grown)opened++;
@@ -619,7 +633,7 @@ test('the owner grows by what they choose: titles, remarks from guests, and word
   const other=E.fresh();other.night=19;other.storyMemory=S.stories.filter(t=>t.arc).slice(0,17).map((t,i)=>({id:t.id,choice:t.choices.find(c=>c.trait==='act'&&!c.needs).id,night:i+2}));
   E.open(other);E.arrive(other);const g=E.arrive(other);E.conversation(other);E.answerGuest(other,g.id,'welcome');
   const chapter=E.story(other).definition;assert.equal(chapter.id,'brooch_two');
-  const locked=E.guestConversation(other,g.id).choices.find(c=>c.locked);
+  const locked=hearOut(E,other,g.id).choices.find(c=>c.locked);
   assert.equal(locked.id,'promise');assert.equal(locked.label,'아직은 꺼낼 수 없는 말 (무거운 입 0/9)');
   assert.equal(E.resolveEvent(other,'promise'),false);assert.equal(E.grownEnough(other,chapter.choices.find(c=>c.id==='promise')),false);
 });
@@ -629,15 +643,18 @@ test('earlier choices echo in later chapters and the last night answers to who t
     s.storyMemory=chapters.slice(0,i).map((t,n)=>{const own=memory[t.id];return {id:t.id,choice:own?.choice||t.choices.find(c=>!c.needs).id,night:n+2,...(own?.reflection?{reflection:own.reflection}:{})};});
     E.open(s);E.arrive(s);E.arrive(s);E.conversation(s);const view=E.story(s);assert.equal(view.definition.id,id);return view;};
   const home=at('lucky_two',{lucky_one:{choice:'home'}}),more=at('lucky_two',{lucky_one:{choice:'more'}});
-  assert.ok(home.telling.tale.includes('택시에 태워 보내셨잖아요'));assert.ok(more.telling.tale.includes('조금만 일찍 들어갔더라면'));
-  assert.ok(home.telling.tale.startsWith(home.definition.tale)&&!home.telling.tale.includes('조금만 일찍'));
+  const last=view=>view.telling.tale[view.telling.tale.length-1];
+  assert.ok(last(home).includes('택시에 태워 보내셨잖아요'));assert.ok(last(more).includes('조금만 일찍 들어갔더라면'));
+  assert.ok(last(home).startsWith(home.definition.tale[2])&&!home.telling.tale.join(' ').includes('조금만 일찍'));
+  assert.deepEqual(home.telling.tale.slice(0,2),home.definition.tale.slice(0,2),'only the beat that earned it changes');
   const base=S.stories.find(t=>t.id==='carol_two'),crowd=at('carol_two',{rival_three:{choice:'light'},half_three:{choice:'two'},note_three:{choice:'bundle'}});
-  assert.ok(crowd.telling.tale.includes('그 등이요')&&crowd.telling.tale.includes('주먹밥을 두 개'));
-  assert.ok(!crowd.telling.tale.includes('쪽지 묶음'),'at most two echoes are added to one telling');assert.ok(crowd.telling.tale.length>base.tale.length);
+  assert.ok(crowd.telling.tale[1].includes('그 등이요')&&crowd.telling.tale[1].includes('주먹밥을 두 개'),'an echo lands in the beat it was written for');
+  assert.ok(!crowd.telling.tale.join(' ').includes('쪽지 묶음'),'at most two echoes are added to one telling');assert.equal(crowd.telling.tale[2],base.tale[2]);
   const quiet=Object.fromEntries(S.stories.filter(t=>t.arc).map(t=>[t.id,{choice:(t.choices.find(c=>c.trait==='keep'&&!c.needs)||t.choices[0]).id,reflection:'hold'}]));
-  const last=at('carol_three',quiet);assert.ok(last.telling.afterword.includes('아무 말도 안 하는 사람 앞에서'));
+  const finale=at('carol_three',quiet);assert.ok(finale.telling.afterword.includes('아무 말도 안 하는 사람 앞에서'));
   for(const t of S.stories)for(const e of t.echo||[]){
     assert.ok(e.if||e.lead,t.id);assert.ok(e.tale||e.afterword||e.intro,t.id);
+    if(e.beat!==undefined)assert.ok(e.tale&&Number.isInteger(e.beat)&&e.beat>=0&&e.beat<t.tale.length,t.id);
     if(e.lead)assert.ok(S.growth.traits[e.lead],t.id);
     if(e.if){const [id,choice]=e.if.split(':'),st=S.stories.find(x=>x.id===id);assert.ok(st&&(!choice||st.choices.some(c=>c.id===choice)),t.id+' echoes '+e.if);
       assert.ok(S.stories.indexOf(st)<S.stories.indexOf(t),t.id+' can only echo an earlier story');}
@@ -649,7 +666,7 @@ test('a chapter survives a reload mid-conversation and falls back to the sheet o
   const v=E.story(s);E.resolveEvent(s,v.definition.choices.find(c=>E.canChoose(s,c)).id);E.resolveEvent(s,E.storyContent.reflection[0].id);
   s.guests.forEach(g=>g.status='left');s.arrived=s.target;s.nightScores=Array(s.target).fill(80);E.close(s);E.next(s);
   E.open(s);E.arrive(s);const guest=E.arrive(s);E.conversation(s);
-  E.answerGuest(s,guest.id,'welcome');E.answerGuest(s,guest.id,E.guestConversation(s,guest.id).choices[0].id);
+  E.answerGuest(s,guest.id,'welcome');E.answerGuest(s,guest.id,hearOut(E,s,guest.id).choices[0].id);
   const again=E.restore(JSON.stringify(s)),view=E.guestConversation(again,guest.id);
   assert.equal(view.node,'taleResult');assert.ok(view.note);
   for(const g of again.guests)g.status='eating';
@@ -660,10 +677,14 @@ test('every story is complete, affordable somehow, and original',()=>{
   assert.deepEqual(traits,['listen','act','keep']);
   for(const id of traits){const t=S.growth.traits[id];assert.ok(t.name);assert.equal(t.titles.length,S.growth.stages.length);assert.equal(t.remarks.length,S.growth.stages.length);}
   assert.deepEqual(S.reflection.map(r=>r.trait).sort(),['act','keep','listen']);
+  for(const r of S.reflection){assert.equal(r.labels.length,3,r.id);assert.equal(r.labels[0],r.label,r.id);}
   for(const t of S.stories){
     assert.ok(t.title&&t.intro.length>40,t.id);
-    assert.ok(t.tale.length>60&&t.afterword.length>20,t.id+' needs the guest\'s telling and closing words');
-    assert.ok(!/\{[ab]\}/.test(t.tale+t.afterword),t.id);
+    assert.ok(Array.isArray(t.tale)&&t.tale.length>=2&&t.tale.length<=4,t.id+' is told in two to four beats');
+    assert.ok(t.tale.every(b=>b.length>=20&&b.length<=110),t.id+' keeps each beat short enough for one bubble');
+    assert.ok(Array.isArray(t.asks)&&t.asks.length===t.tale.length-1&&t.asks.every(a=>a.length>=3&&a.length<=24),t.id+' needs what the owner says between beats');
+    assert.ok(t.afterword.length>20,t.id+' needs the guest\'s closing words');
+    assert.ok(!/\{[ab]\}/.test(t.tale.join('')+t.afterword),t.id);
     assert.ok(t.lines.every(line=>/^\{[ab]\}: /.test(line)),t.id);
     assert.equal(new Set(t.choices.map(c=>c.id)).size,t.choices.length,t.id);
     const base=t.choices.filter(c=>!c.needs);
@@ -672,6 +693,7 @@ test('every story is complete, affordable somehow, and original',()=>{
     for(const c of t.choices){
       assert.ok(traits.includes(c.trait),t.id+'/'+c.id+' needs a trait');
       assert.ok(c.label&&c.result&&c.future?.text,t.id+'/'+c.id);
+      assert.ok(c.id!=='go_on'&&c.reply&&c.reply.length>=12&&c.reply.length<=70,t.id+'/'+c.id+' needs the guest\'s answer to this choice');
       for(const id of [...Object.keys(c.ingredients||{}),...Object.keys(c.future.ingredients||{})])assert.ok(E.ingredients[id],t.id+' '+id);
       for(const [trait,n] of Object.entries(c.needs||{}))assert.ok(traits.includes(trait)&&n>0,t.id+'/'+c.id);
       if(c.needs)assert.ok(!c.money&&!c.ingredients,t.id+'/'+c.id+': words the owner grew into cost nothing');

@@ -121,7 +121,7 @@
     if($('guest-dialog').dataset.person!==String(g.person)){$('talk-portrait').innerHTML=portrait(p,g.person);$('guest-dialog').dataset.person=g.person;}
     $('talk-name').textContent=profile.name;
     $('talk-profile').textContent=profile.role||'';$('talk-profile').hidden=!profile.role;
-    window.MidnightDialogue.write($('talk-line'),`${g.id}-${view?.node||(scene?'scene-'+scene.key:talkIndex)}`,view?view.line:scene?scene.line:lines[Math.min(talkIndex,lines.length-1)]);
+    window.MidnightDialogue.write($('talk-line'),`${g.id}-${view?view.node+(view.beat||''):(scene?'scene-'+scene.key:talkIndex)}`,view?view.line:scene?scene.line:lines[Math.min(talkIndex,lines.length-1)]);
     // The owner's chosen reply is not echoed above the guest: the guest's answer follows directly.
     $('talk-player-line').hidden=true;$('talk-player-words').textContent='';
     const choices=view?.choices||scene?.choices||[];
@@ -173,7 +173,7 @@
         return `<button class="story-choice-card" data-choice="${c.id}" ${available?'':'disabled'}><span class="choice-number">${available?String(i+1):'잠김'}</span><span class="choice-copy"><b>${grown?c.label:'아직은 꺼낼 수 없는 말'}</b><small>${available?cost||'부담 없이 이야기를 나눠요':grown?`${cost} 필요 · 냉장고에서 준비해 주세요`:Object.entries(c.needs).map(([t,n])=>`${growth.traits.find(x=>x.id===t).name} ${growth.counts[t]}/${n}`).join(' · ')}</small></span><span class="choice-arrow" aria-hidden="true">${available?'':'◇'}</span></button>`;
       }).join('')}</div></section>`;return;
     }
-    if(run.step===1){$('story-content').innerHTML=faces+`<div class="story-result"><span>당신의 마음이 닿았어요</span><p>${choice.result}</p></div>`+prompt(2,'이 밤을 어떻게 남길까요?')+`<div class="story-choices">${E.storyContent.reflection.map((c,i)=>`<button class="story-choice-card" data-choice="${c.id}"><span class="choice-number">${i+1}</span><span class="choice-copy"><b>${c.label}</b><small>${c.hint||''}</small></span><span class="choice-arrow" aria-hidden="true"></span></button>`).join('')}</div>`;return;}
+    if(run.step===1){$('story-content').innerHTML=faces+`<div class="story-result"><span>당신의 마음이 닿았어요</span><p>${choice.result}</p></div>`+prompt(2,'이 밤을 어떻게 남길까요?')+`<div class="story-choices">${E.storyContent.reflection.map((c,i)=>`<button class="story-choice-card" data-choice="${c.id}"><span class="choice-number">${i+1}</span><span class="choice-copy"><b>${E.reflectionLabel(state,c)}</b><small>${c.hint||''}</small></span><span class="choice-arrow" aria-hidden="true"></span></button>`).join('')}</div>`;return;}
     $('story-content').innerHTML=followups+faces+`<div class="story-result"><span>오늘 밤의 이야기</span><p>${choice?.result||'오늘 손님들과 나눈 이야기가 가게의 기억으로 남았어요.'}</p></div><p class="story-memory">${reflection?.text||''}</p><p class="story-next">다음 영업일에 이 선택의 소식이 도착해요.</p>${credit}<button class="story-finish primary" data-close="story-dialog">이 온기를 안고 가게로 돌아가기 </button>`+memories;
   }
 
