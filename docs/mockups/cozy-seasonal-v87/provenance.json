@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-11",
+  "tool": "image_gen.imagegen",
+  "purpose": "Four growth reference pairs and optional seasonal exterior examples",
+  "designCount": null,
+  "collectionCount": 25,
+  "allSeasonCollections": 21,
+  "optionalSeasonalCollections": 4,
+  "productionAssetsModified": false,
+  "imageProcessing": "Raw generated PNG files copied unchanged. Browser SVG viewBox displays individual panels. No bitmap editing.",
+  "sourceSheets": [
+    {
+      "file": "assets/growth-early.png",
+      "sha256": "9cd4de01574b9a71692e5bf53b52da2b46df34a5d24273cc4cc482f2959ad75d",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/growth-late.png",
+      "sha256": "8aba03259fc6581de7dee321341723af1715af8c41d2eca24d7b03ec575efd66",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/season-exterior.png",
+      "sha256": "2cd16ec6d9eef934edeff2895a4e860f5c4723578c0154921e59b50bac360108",
+      "size": [
+        1536,
+        1024
+      ]
+    }
+  ]
+}

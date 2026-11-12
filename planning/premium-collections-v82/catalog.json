@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "concept_review",
+  "status": "revised_concept_review",
   "playerLevelCap": 50,
   "cadenceLevels": 2,
   "firstRevealLevel": 2,
@@ -9,7 +9,7 @@
   "insideDesignCount": 25,
   "outsideDesignCount": 25,
   "totalDesignCount": 50,
-  "approvedMockupCount": 2,
+  "approvedMockupCount": 0,
   "remainingDesignsToProduce": 0,
   "checkoutStatus": "not_configured",
   "liveGameChanged": false,
@@ -27,73 +27,128 @@
     {
       "id": "collection-01",
       "revealLevel": 2,
-      "theme": "호박빛과 벚꽃",
+      "theme": "소박한 첫 불빛",
+      "growthStage": "humble",
+      "growthLabel": "소박하고 아늑한 시작",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-01",
           "area": "inside",
-          "name": "호박빛 목조 식당",
+          "name": "소박한 첫 불빛의 식당",
           "materials": [
-            "월넛",
-            "한지",
-            "황동"
+            "생활감 있는 목재",
+            "작은 한지등",
+            "수수한 그릇"
           ],
-          "artStatus": "approved_mockup",
-          "mockup": "inside-01-approved-mockup.png",
+          "artStatus": "revised_concept_review",
+          "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/growth-early.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-2",
+          "previousPreview": {
             "type": "poster",
             "file": "assets/inside-02-approved.png"
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-2"
+          "growthStage": "humble",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-01",
           "area": "outside",
-          "name": "벚꽃이 머무는 입구",
+          "name": "작은 노렌의 골목집",
           "materials": [
-            "벚꽃",
-            "크림색 노렌",
-            "등불"
+            "작은 등불",
+            "담백한 노렌",
+            "작은 화분"
           ],
-          "artStatus": "approved_mockup",
-          "mockup": "outside-01-approved-mockup.png",
+          "artStatus": "revised_concept_review",
+          "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/growth-early.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-2",
+          "previousPreview": {
             "type": "poster",
             "file": "assets/outside-02-approved.png"
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-2"
+          "growthStage": "humble",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-02",
       "revealLevel": 4,
-      "theme": "먹빛과 황동",
+      "theme": "가지런한 나무결",
+      "growthStage": "humble",
+      "growthLabel": "소박하고 아늑한 시작",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-02",
           "area": "inside",
-          "name": "먹빛 황동 식당",
+          "name": "가지런한 나무 상판",
           "materials": [
-            "먹빛 목재",
-            "황동",
-            "백자"
+            "정돈한 무광 상판",
+            "가지런한 그릇",
+            "단정한 목재"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-01.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-4",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-01.png",
             "size": [
@@ -107,18 +162,20 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-4"
+          "growthStage": "humble",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-02",
           "area": "outside",
-          "name": "남색 노렌의 골목집",
+          "name": "조용한 나무 입구",
           "materials": [
-            "남색 노렌",
-            "황동 간판",
-            "원목"
+            "손질한 문틀",
+            "수수한 노렌",
+            "무광 목재"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -132,37 +189,72 @@
               1024
             ],
             "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-4",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-01.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               769,
               0,
               767,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-4"
+          "growthStage": "humble",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-03",
       "revealLevel": 6,
-      "theme": "초여름 대나무",
+      "theme": "작은 한지등",
+      "growthStage": "humble",
+      "growthLabel": "소박하고 아늑한 시작",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-03",
           "area": "inside",
-          "name": "초록 바람이 드는 식당",
+          "name": "작은 한지등의 식당",
           "materials": [
-            "밝은 원목",
-            "대나무 결",
-            "녹색 도기"
+            "작은 한지등",
+            "따뜻한 흰 그릇",
+            "담백한 수납"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-01.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-6",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-01.png",
             "size": [
@@ -176,18 +268,20 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-6"
+          "growthStage": "humble",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-03",
           "area": "outside",
-          "name": "대나무가 반기는 입구",
+          "name": "따뜻한 한 등불의 입구",
           "materials": [
-            "대나무 식재",
-            "연두 노렌",
-            "목제 안돈"
+            "작은 한 등불",
+            "담백한 천",
+            "단정한 입구"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -201,37 +295,72 @@
               1024
             ],
             "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-6",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-01.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               769,
               512,
               767,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-6"
+          "growthStage": "humble",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-04",
       "revealLevel": 8,
-      "theme": "달빛과 백목",
+      "theme": "오래된 나무의 온기",
+      "growthStage": "humble",
+      "growthLabel": "소박하고 아늑한 시작",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-04",
           "area": "inside",
-          "name": "달빛 백목 식당",
+          "name": "나무결이 살아나는 식당",
           "materials": [
-            "백목",
-            "남빛 포인트",
-            "유백 조명"
+            "차분한 갈색 상판",
+            "정돈한 수납",
+            "작은 도기"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-02.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-8",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-02.png",
             "size": [
@@ -245,18 +374,20 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-8"
+          "growthStage": "humble",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-04",
           "area": "outside",
-          "name": "달빛이 머무는 처마",
+          "name": "차분한 목재 골목집",
           "materials": [
-            "달 문양 노렌",
-            "백목 격자",
-            "흰 도기"
+            "차분한 나무결",
+            "수수한 노렌",
+            "작은 화분"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -270,31 +401,51 @@
               1024
             ],
             "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-8",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-02.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               770,
               0,
               766,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-8"
+          "growthStage": "humble",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-05",
       "revealLevel": 10,
-      "theme": "홍매와 도자기",
+      "theme": "봄의 작은 가지",
+      "growthStage": "humble",
+      "growthLabel": "소박하고 아늑한 시작",
+      "season": "spring",
       "designs": [
         {
           "id": "inside-collection-05",
           "area": "inside",
-          "name": "매화빛 도자기 식당",
+          "name": "봄가지가 놓인 식당",
           "materials": [
-            "짙은 원목",
-            "매화색 도기",
-            "한지"
+            "작은 꽃가지",
+            "옅은 분홍 도기",
+            "수수한 한지등"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -308,30 +459,62 @@
               1024
             ],
             "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-10",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-02.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               0,
               512,
               769,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-10"
+          "growthStage": "humble",
+          "season": "spring",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-05",
           "area": "outside",
-          "name": "홍매가 피어난 문 앞",
+          "name": "봄 노렌의 작은 입구",
           "materials": [
-            "홍매 가지",
-            "자주색 노렌",
-            "도기 화분"
+            "수수한 봄 노렌",
+            "작은 꽃가지",
+            "단정한 입구"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-02.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-10",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-02.png",
             "size": [
@@ -345,31 +528,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-10"
+          "growthStage": "humble",
+          "season": "spring",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-06",
       "revealLevel": 12,
-      "theme": "쇼와의 추억",
+      "theme": "정갈한 손길",
+      "growthStage": "cared",
+      "growthLabel": "정갈하게 가꾼 단골집",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-06",
           "area": "inside",
-          "name": "오래된 재즈가 어울리는 식당",
+          "name": "정갈한 원목 식당",
           "materials": [
-            "꿀빛 목재",
-            "앰버 유리",
-            "빈티지 장식"
+            "보수한 회벽",
+            "매끈한 상판",
+            "깨끗한 냉장고 외관"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-03.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-12",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-03.png",
             "size": [
@@ -383,18 +586,20 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-12"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-06",
           "area": "outside",
-          "name": "추억을 밝히는 골목 간판",
+          "name": "가지런히 가꾼 입구",
           "materials": [
-            "적갈색 노렌",
-            "복고 목제 간판",
-            "호박색 등"
+            "단정한 문틀",
+            "손질한 회벽",
+            "고른 목재 마감"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -408,37 +613,72 @@
               1024
             ],
             "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-12",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-03.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               840,
               0,
               696,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-12"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-07",
       "revealLevel": 14,
-      "theme": "바다와 유리",
+      "theme": "한지와 도자기",
+      "growthStage": "cared",
+      "growthLabel": "정갈하게 가꾼 단골집",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-07",
           "area": "inside",
-          "name": "바닷빛 유리 식당",
+          "name": "한지등과 작은 도자기",
           "materials": [
-            "청록 유리",
-            "소나무색 목재",
-            "청색 도기"
+            "작은 한지등 두 개",
+            "가지런한 생활 도자기",
+            "고운 목재"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-03.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-14",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-03.png",
             "size": [
@@ -452,18 +692,20 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-14"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-07",
           "area": "outside",
-          "name": "푸른 유리가 빛나는 입구",
+          "name": "은은한 등불의 골목집",
           "materials": [
-            "해청색 노렌",
-            "청록 유리",
-            "유약 화분"
+            "작은 한지등",
+            "단정한 직조 천",
+            "고운 목재"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -477,37 +719,72 @@
               1024
             ],
             "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-14",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-03.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               840,
               512,
               696,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-14"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-08",
       "revealLevel": 16,
-      "theme": "단풍 드는 밤",
+      "theme": "포근한 단골집",
+      "growthStage": "cared",
+      "growthLabel": "정갈하게 가꾼 단골집",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-08",
           "area": "inside",
-          "name": "단풍빛 목조 식당",
+          "name": "정갈하게 가꾼 단골집",
           "materials": [
-            "적갈색 원목",
-            "구릿빛 장식",
-            "단풍 가지"
+            "정돈한 원목 상판",
+            "단정한 벽",
+            "가지런한 그릇"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/growth-early.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-16",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-04.png",
             "size": [
@@ -521,24 +798,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-16"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-08",
           "area": "outside",
-          "name": "단풍이 물든 골목집",
+          "name": "따뜻한 단골집 입구",
           "materials": [
-            "단풍 식재",
-            "주홍 노렌",
-            "동빛 등"
+            "손질한 창호",
+            "따뜻한 등불",
+            "단정한 노렌"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/growth-early.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-16",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-04.png",
             "size": [
@@ -552,31 +846,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-16"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-09",
       "revealLevel": 18,
-      "theme": "설백과 자작",
+      "theme": "참나무의 차분함",
+      "growthStage": "cared",
+      "growthLabel": "정갈하게 가꾼 단골집",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-09",
           "area": "inside",
-          "name": "설백 자작나무 식당",
+          "name": "차분한 참나무 식당",
           "materials": [
-            "자작나무",
-            "설백 도기",
-            "부드러운 한지"
+            "차분한 참나무 수납",
+            "고운 상판",
+            "작은 도기"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-04.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-18",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-04.png",
             "size": [
@@ -590,18 +904,20 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-18"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-09",
           "area": "outside",
-          "name": "하얀 노렌의 겨울 입구",
+          "name": "참나무결의 입구",
           "materials": [
-            "설백 노렌",
-            "마른 가지 장식",
-            "회백색 돌"
+            "손질한 참나무 문틀",
+            "작은 도기 화분",
+            "단정한 천"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -615,37 +931,72 @@
               1024
             ],
             "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-18",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-04.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               769,
               512,
               767,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-18"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-10",
       "revealLevel": 20,
-      "theme": "고요한 다실",
+      "theme": "가지런한 그릇장",
+      "growthStage": "cared",
+      "growthLabel": "정갈하게 가꾼 단골집",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-10",
           "area": "inside",
-          "name": "숲빛 다실 식당",
+          "name": "그릇이 가지런한 식당",
           "materials": [
-            "차분한 녹색",
-            "원목 격자",
-            "찻잔 진열"
+            "가지런한 그릇장",
+            "정돈한 벽",
+            "원목 상판"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-04.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-20",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-05.png",
             "size": [
@@ -659,24 +1010,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-20"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-10",
           "area": "outside",
-          "name": "차 향이 어울리는 골목집",
+          "name": "수수한 간판의 골목집",
           "materials": [
-            "이끼색 노렌",
-            "작은 정원",
-            "목제 표찰"
+            "작은 목제 간판",
+            "단정한 창호",
+            "손질한 입구"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-04.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-20",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-05.png",
             "size": [
@@ -690,31 +1058,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-20"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-11",
       "revealLevel": 22,
-      "theme": "청자의 결",
+      "theme": "여름의 푸른 천",
+      "growthStage": "cared",
+      "growthLabel": "정갈하게 가꾼 단골집",
+      "season": "summer",
       "designs": [
         {
           "id": "inside-collection-11",
           "area": "inside",
-          "name": "청자빛 식당",
+          "name": "푸른 그릇과 여름빛",
           "materials": [
-            "청자",
-            "밝은 회벽",
-            "참나무"
+            "청자색 그릇",
+            "작은 초록 가지",
+            "정돈한 목재"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-05.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-22",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-05.png",
             "size": [
@@ -728,18 +1116,20 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-22"
+          "growthStage": "cared",
+          "season": "summer",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-11",
           "area": "outside",
-          "name": "옥빛 노렌의 입구",
+          "name": "여름 노렌이 걸린 입구",
           "materials": [
-            "옥빛 노렌",
-            "청자 화분",
-            "담백한 목재"
+            "차분한 남빛 노렌",
+            "작은 초록 가지",
+            "단정한 입구"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -753,37 +1143,72 @@
               1024
             ],
             "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-22",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-05.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               769,
               512,
               767,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-22"
+          "growthStage": "cared",
+          "season": "summer",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-12",
       "revealLevel": 24,
-      "theme": "자줏빛 저녁",
+      "theme": "따뜻한 목재와 회벽",
+      "growthStage": "cared",
+      "growthLabel": "정갈하게 가꾼 단골집",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-12",
           "area": "inside",
-          "name": "자줏빛 저녁 식당",
+          "name": "따뜻한 나무와 담백한 벽",
           "materials": [
-            "자주색 포인트",
-            "밤색 목재",
-            "검은 도기"
+            "매끈한 회벽",
+            "고운 목재 결",
+            "가지런한 수납"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-05.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-24",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-06.png",
             "size": [
@@ -797,24 +1222,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-24"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-12",
           "area": "outside",
-          "name": "자주빛 등불의 골목집",
+          "name": "담백한 회벽 골목집",
           "materials": [
-            "가지색 노렌",
-            "짙은 목재",
-            "유리 등"
+            "담백한 회벽",
+            "고운 문틀",
+            "단정한 처마"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-05.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-24",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-06.png",
             "size": [
@@ -828,31 +1270,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-24"
+          "growthStage": "cared",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-13",
       "revealLevel": 26,
-      "theme": "구리와 밤색",
+      "theme": "수공예의 첫 결",
+      "growthStage": "crafted",
+      "growthLabel": "재료와 마감의 깊이",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-13",
           "area": "inside",
-          "name": "구리빛 나무 식당",
+          "name": "수공예 한지등의 식당",
           "materials": [
-            "구리색 장식",
-            "밤색 목재",
-            "도기"
+            "작은 수공예 한지등",
+            "섬세한 나무결",
+            "수수한 도자기"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-06.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-26",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-06.png",
             "size": [
@@ -866,18 +1328,20 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-26"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-13",
           "area": "outside",
-          "name": "구리 등불의 입구",
+          "name": "직조 노렌의 입구",
           "materials": [
-            "구리 등",
-            "밤색 격자",
-            "갈색 노렌"
+            "직조 노렌",
+            "수공예 등불",
+            "고운 나무결"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -891,37 +1355,72 @@
               1024
             ],
             "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-26",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-06.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               769,
               512,
               767,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-26"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-14",
       "revealLevel": 28,
-      "theme": "등나무 향기",
+      "theme": "깊어지는 나무색",
+      "growthStage": "crafted",
+      "growthLabel": "재료와 마감의 깊이",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-14",
           "area": "inside",
-          "name": "등나무 그늘 식당",
+          "name": "깊은 갈색 원목 식당",
           "materials": [
-            "라탄 결",
-            "밝은 목재",
-            "라벤더색 도기"
+            "짙은 갈색 원목",
+            "깨끗한 크림색 냉장고",
+            "작은 도기"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-06.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-28",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-07.png",
             "size": [
@@ -935,24 +1434,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-28"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-14",
           "area": "outside",
-          "name": "등꽃이 드리운 입구",
+          "name": "갈색 격자의 골목집",
           "materials": [
-            "등나무 장식",
-            "연보라 노렌",
-            "직조 장식"
+            "깊은 갈색 격자",
+            "단정한 직조 천",
+            "작은 도기"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-06.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-28",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-07.png",
             "size": [
@@ -966,31 +1482,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-28"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-15",
       "revealLevel": 30,
-      "theme": "남빛 직조",
+      "theme": "잘 가꾼 오래된 가게",
+      "growthStage": "crafted",
+      "growthLabel": "재료와 마감의 깊이",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-15",
           "area": "inside",
-          "name": "남빛 직조 식당",
+          "name": "정성이 쌓인 나무 식당",
           "materials": [
-            "남빛 직조 패널",
-            "원목",
-            "흰 도기"
+            "깔끔한 벽과 수납",
+            "고운 상판",
+            "따뜻한 조명"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-07.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-30",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-07.png",
             "size": [
@@ -1004,18 +1540,20 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-30"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-15",
           "area": "outside",
-          "name": "쪽빛 천이 걸린 골목집",
+          "name": "오래 아낀 골목집 입구",
           "materials": [
-            "쪽빛 노렌",
-            "직조 문양",
-            "흰 화분"
+            "잘 가꾼 문틀",
+            "은은한 등불",
+            "차분한 노렌"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
@@ -1029,37 +1567,72 @@
               1024
             ],
             "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-30",
+          "previousPreview": {
+            "type": "sheet",
+            "file": "assets/sheet-07.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
               773,
               512,
               763,
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-30"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-16",
       "revealLevel": 32,
-      "theme": "살구빛 온기",
+      "theme": "손길이 쌓인 식당",
+      "growthStage": "crafted",
+      "growthLabel": "재료와 마감의 깊이",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-16",
           "area": "inside",
-          "name": "살구빛 저녁 식당",
+          "name": "손길이 쌓인 아늑한 식당",
           "materials": [
-            "살구색 포인트",
-            "밝은 참나무",
-            "반투명 한지"
+            "고운 원목 상판",
+            "깨끗한 회벽",
+            "가지런한 그릇"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/growth-late.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              919,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-32",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-08.png",
             "size": [
@@ -1073,24 +1646,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-32"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-16",
           "area": "outside",
-          "name": "살구빛 노렌의 입구",
+          "name": "손길이 쌓인 골목집",
           "materials": [
-            "살구색 노렌",
-            "살구꽃 장식",
-            "황동 등"
+            "고운 목재 격자",
+            "손질한 외벽",
+            "단정한 노렌"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/growth-late.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              928,
+              2,
+              606,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-32",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-08.png",
             "size": [
@@ -1104,31 +1694,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-32"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-17",
       "revealLevel": 34,
-      "theme": "백자의 온도",
+      "theme": "가을의 작은 장식",
+      "growthStage": "crafted",
+      "growthLabel": "재료와 마감의 깊이",
+      "season": "autumn",
       "designs": [
         {
           "id": "inside-collection-17",
           "area": "inside",
-          "name": "백자 진열 식당",
+          "name": "가을가지가 놓인 식당",
           "materials": [
-            "백자 진열",
-            "고운 목재",
-            "아이보리 회벽"
+            "작은 가을가지",
+            "갈색 도기",
+            "고운 상판"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-07.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-34",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-08.png",
             "size": [
@@ -1142,24 +1752,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-34"
+          "growthStage": "crafted",
+          "season": "autumn",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-17",
           "area": "outside",
-          "name": "백자가 반기는 입구",
+          "name": "초가을 억새의 입구",
           "materials": [
-            "백자 화분",
-            "상아색 노렌",
-            "짙은 격자"
+            "작은 억새",
+            "차분한 가을 노렌",
+            "도기 화분"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-07.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-34",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-08.png",
             "size": [
@@ -1173,31 +1800,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-34"
+          "growthStage": "crafted",
+          "season": "autumn",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-18",
       "revealLevel": 36,
-      "theme": "작은 이끼 정원",
+      "theme": "맞춤 목재와 한지",
+      "growthStage": "crafted",
+      "growthLabel": "재료와 마감의 깊이",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-18",
           "area": "inside",
-          "name": "이끼빛 쉼표 식당",
+          "name": "맞춤 원목의 조용한 식당",
           "materials": [
-            "이끼색 포인트",
-            "돌 질감",
-            "짙은 원목"
+            "섬세한 원목 이음",
+            "작은 한지등",
+            "맞춤 수납"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-08.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-36",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-09.png",
             "size": [
@@ -1211,24 +1858,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-36"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-18",
           "area": "outside",
-          "name": "작은 정원이 있는 입구",
+          "name": "정갈한 맞춤 격자 입구",
           "materials": [
-            "이끼 화분",
-            "작은 정원석",
-            "초록 노렌"
+            "맞춤 목재 격자",
+            "작은 한지등",
+            "직조 노렌"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-08.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-36",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-09.png",
             "size": [
@@ -1242,31 +1906,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-36"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-19",
       "revealLevel": 38,
-      "theme": "동백이 피는 밤",
+      "theme": "담백한 도자기 취향",
+      "growthStage": "crafted",
+      "growthLabel": "재료와 마감의 깊이",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-19",
           "area": "inside",
-          "name": "동백빛 식당",
+          "name": "수공예 도자기의 식당",
           "materials": [
-            "동백색 도기",
-            "짙은 밤나무",
-            "금속 장식"
+            "절제된 수공예 도자기",
+            "고운 상판",
+            "정갈한 수납"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-08.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-38",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-09.png",
             "size": [
@@ -1280,24 +1964,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-38"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-19",
           "area": "outside",
-          "name": "붉은 동백의 골목집",
+          "name": "도자기 화분의 골목집",
           "materials": [
-            "동백 식재",
-            "진홍 노렌",
-            "검은 도기"
+            "수공예 도기 화분",
+            "고운 격자",
+            "단정한 노렌"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-08.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-38",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-09.png",
             "size": [
@@ -1311,31 +2012,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-38"
+          "growthStage": "crafted",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-20",
       "revealLevel": 40,
-      "theme": "은빛과 남회색",
+      "theme": "월넛의 깊은 온기",
+      "growthStage": "refined",
+      "growthLabel": "작고 깊은 멋의 완성",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-20",
           "area": "inside",
-          "name": "은빛 남회색 식당",
+          "name": "월넛의 따뜻한 식당",
           "materials": [
-            "은색 장식",
-            "남회색 목재",
-            "투명 유리"
+            "깊은 월넛 결",
+            "고운 회벽",
+            "맞춤 수납"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-09.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-40",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-10.png",
             "size": [
@@ -1349,24 +2070,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-40"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-20",
           "area": "outside",
-          "name": "은빛 격자의 입구",
+          "name": "깊은 월넛 격자의 입구",
           "materials": [
-            "남회색 노렌",
-            "은빛 디테일",
-            "회색 돌"
+            "깊은 월넛 격자",
+            "고운 외벽",
+            "단정한 입구"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-09.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-40",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-10.png",
             "size": [
@@ -1380,31 +2118,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-40"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-21",
       "revealLevel": 42,
-      "theme": "흑단과 자개",
+      "theme": "황동의 작은 포인트",
+      "growthStage": "refined",
+      "growthLabel": "작고 깊은 멋의 완성",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-21",
           "area": "inside",
-          "name": "흑단 자개 식당",
+          "name": "황동 손잡이의 목조 식당",
           "materials": [
-            "흑단색 목재",
-            "절제된 자개",
-            "검은 도기"
+            "작은 황동 손잡이",
+            "수공예 조명",
+            "좋은 원목"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-09.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-42",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-10.png",
             "size": [
@@ -1418,24 +2176,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-42"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-21",
           "area": "outside",
-          "name": "자개빛 간판의 골목집",
+          "name": "작은 황동등의 골목집",
           "materials": [
-            "자개 포인트 간판",
-            "검은 노렌",
-            "나무 격자"
+            "작은 황동등",
+            "고운 목재 격자",
+            "섬세한 노렌"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-09.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-42",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-10.png",
             "size": [
@@ -1449,31 +2224,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-42"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-22",
       "revealLevel": 44,
-      "theme": "복숭아꽃 밤",
+      "theme": "오래 아낀 가게의 멋",
+      "growthStage": "refined",
+      "growthLabel": "작고 깊은 멋의 완성",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-22",
           "area": "inside",
-          "name": "복숭아꽃이 머무는 식당",
+          "name": "오래 아낀 작은 식당",
           "materials": [
-            "분홍빛 도기",
-            "밝은 목재",
-            "복사꽃 가지"
+            "깊은 원목 마감",
+            "깨끗한 올리브색 냉장고",
+            "소박한 도자기"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-10.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-44",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-11.png",
             "size": [
@@ -1487,24 +2282,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-44"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-22",
           "area": "outside",
-          "name": "복사꽃이 반기는 입구",
+          "name": "잔잔한 멋의 골목집",
           "materials": [
-            "복사꽃 장식",
-            "연분홍 노렌",
-            "백색 화분"
+            "깊이 있는 나무결",
+            "정갈한 외벽",
+            "담백한 직조 천"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-10.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-44",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-11.png",
             "size": [
@@ -1518,31 +2330,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-44"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-23",
       "revealLevel": 46,
-      "theme": "보랏빛 수국",
+      "theme": "겨울의 포근한 천",
+      "growthStage": "refined",
+      "growthLabel": "작고 깊은 멋의 완성",
+      "season": "winter",
       "designs": [
         {
           "id": "inside-collection-23",
           "area": "inside",
-          "name": "수국빛 유리 식당",
+          "name": "도톰한 한지와 겨울 그릇",
           "materials": [
-            "수국색 유리",
-            "회갈색 목재",
-            "차분한 도기"
+            "포근한 한지등",
+            "흰 도자기",
+            "작은 동백 가지"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-10.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-46",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-11.png",
             "size": [
@@ -1556,24 +2388,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-46"
+          "growthStage": "refined",
+          "season": "winter",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-23",
           "area": "outside",
-          "name": "수국이 피어난 골목집",
+          "name": "겨울 노렌의 포근한 입구",
           "materials": [
-            "보라 수국",
-            "회청색 노렌",
-            "유약 화분"
+            "도톰한 겨울 노렌",
+            "작은 동백 가지",
+            "은은한 등불"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-10.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-46",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-11.png",
             "size": [
@@ -1587,31 +2436,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-46"
+          "growthStage": "refined",
+          "season": "winter",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-24",
       "revealLevel": 48,
-      "theme": "석양빛 원목",
+      "theme": "손으로 만든 마감",
+      "growthStage": "refined",
+      "growthLabel": "작고 깊은 멋의 완성",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-24",
           "area": "inside",
-          "name": "석양빛 원목 식당",
+          "name": "수공예 마감의 목조 식당",
           "materials": [
-            "호두나무",
-            "테라코타색 도기",
-            "앰버 유리"
+            "섬세한 원목 이음",
+            "수공예 한지등",
+            "절제된 금속 마감"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-11.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              762,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-48",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-12.png",
             "size": [
@@ -1625,24 +2494,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-48"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-24",
           "area": "outside",
-          "name": "석양색 등불의 입구",
+          "name": "장인의 목재 격자 입구",
           "materials": [
-            "적토색 노렌",
-            "앰버 등",
-            "짙은 원목"
+            "장인의 목재 격자",
+            "직조 노렌",
+            "작은 금속 디테일"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/sheet-11.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              771,
+              2,
+              763,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-48",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-12.png",
             "size": [
@@ -1656,31 +2542,51 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-48"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     },
     {
       "id": "collection-25",
       "revealLevel": 50,
-      "theme": "깊은 밤의 금빛",
+      "theme": "작고 깊은 멋",
+      "growthStage": "refined",
+      "growthLabel": "작고 깊은 멋의 완성",
+      "season": "all",
       "designs": [
         {
           "id": "inside-collection-25",
           "area": "inside",
-          "name": "깊은 밤의 황금 식당",
+          "name": "작고 깊은 멋의 심야식당",
           "materials": [
-            "짙은 월넛",
-            "절제된 금빛 장식",
-            "유백 조명"
+            "좋은 월넛 원목",
+            "수공예 도자기",
+            "작은 황동 디테일"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/growth-late.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              919,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-50",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-12.png",
             "size": [
@@ -1694,24 +2600,41 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-50"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         },
         {
           "id": "outside-collection-25",
           "area": "outside",
-          "name": "금빛이 머무는 골목집",
+          "name": "깊은 온기의 골목집",
           "materials": [
-            "금빛 꽃 문양",
-            "짙은 남색 노렌",
-            "황동 안돈"
+            "완성도 높은 목재 격자",
+            "고운 직조 천",
+            "절제된 등불"
           ],
-          "artStatus": "concept_review",
+          "artStatus": "revised_concept_review",
           "mockup": null,
           "productionAsset": null,
           "priceKRW": null,
           "requiresEarlierPurchase": false,
           "gameplayEffects": [],
           "preview": {
+            "type": "sheet",
+            "file": "assets/growth-late.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              928,
+              514,
+              606,
+              508
+            ]
+          },
+          "previewPage": "https://midnight.couprice.com/mockups/cozy-collections-v88/#level-50",
+          "previousPreview": {
             "type": "sheet",
             "file": "assets/sheet-12.png",
             "size": [
@@ -1725,15 +2648,96 @@
               512
             ]
           },
-          "previewPage": "https://midnight.couprice.com/mockups/premium-collections-v86/#level-50"
+          "growthStage": "refined",
+          "season": "all",
+          "previousPreviewArchive": "https://midnight.couprice.com/mockups/premium-collections-v86/"
         }
       ]
     }
   ],
   "conceptCount": 50,
-  "newConceptCount": 48,
+  "newConceptCount": 50,
   "productionAssetsReady": 0,
   "remainingProductionAssets": 50,
-  "previewUrl": "https://midnight.couprice.com/mockups/premium-collections-v86/",
-  "conceptDate": "2026-11-11"
+  "previewUrl": "https://midnight.couprice.com/mockups/cozy-collections-v88/",
+  "conceptDate": "2026-11-11",
+  "growthStages": [
+    {
+      "id": "humble",
+      "range": [
+        2,
+        10
+      ],
+      "label": "소박하고 아늑한 시작",
+      "budget": "ONE small paper pendant at most, old plain matte timber and a few ordinary bowls, only one small vase/planter, no brass trim, no decorative panels, no new showroom. Clean aged ivory fridge, natural age without grime. Improvements must remain small and affordable-looking."
+    },
+    {
+      "id": "cared",
+      "range": [
+        12,
+        24
+      ],
+      "label": "정갈하게 가꾼 단골집",
+      "budget": "TWO small paper lamps at most; repaired plain matte counter, clean ivory vintage fridge, neatly repaired cream plaster, organized everyday ceramics in existing shelves, simple cleaned joinery. No gold/brass outlines or fancy motifs. A very modest cared-for neighborhood shop."
+    },
+    {
+      "id": "crafted",
+      "range": [
+        26,
+        38
+      ],
+      "label": "재료와 마감의 깊이",
+      "budget": "TWO or THREE SMALL crafted washi lamps, visibly better quality MATTE oak/walnut counter, clean refurbished ivory fridge, smooth cream plaster, crafted wood joints and organized shelves, very restrained ceramics. No gilded wall lines, no patterned luxury panels; still intimate and quiet."
+    },
+    {
+      "id": "refined",
+      "range": [
+        40,
+        50
+      ],
+      "label": "작고 깊은 멋의 완성",
+      "budget": "THREE SMALL handmade paper lamps; excellent MATTE walnut joinery and counter, perfect cream plaster and cabinetry, refurbished clean cream or deep olive vintage fridge, tiny brass handles/contact fittings only, few refined ceramics. Quality improves across walls, fridge and storage as well as the counter. No illuminated display niche, shiny gold lines or lavish decorative abundance. Quiet boutique craftsmanship in the SAME small diner."
+    }
+  ],
+  "allSeasonCollectionCount": 21,
+  "seasonalCollectionCount": 4,
+  "previouslyApprovedStyleMockups": 2,
+  "directionUrl": "https://midnight.couprice.com/mockups/cozy-seasonal-v87/",
+  "seasonPolicy": {
+    "dateSource": "MidnightDate.dateForNight(state.night)",
+    "gameStartDate": "2026-09-01",
+    "monthGroups": {
+      "spring": [
+        3,
+        4,
+        5
+      ],
+      "summer": [
+        6,
+        7,
+        8
+      ],
+      "autumn": [
+        9,
+        10,
+        11
+      ],
+      "winter": [
+        12,
+        1,
+        2
+      ]
+    },
+    "mostlyAllSeasonDesigns": true,
+    "recommendMatchingSeason": true,
+    "manualSelection": true,
+    "autoApply": "optional_owned_only",
+    "noMatchingOwnedTheme": "keep_current_design",
+    "autoPurchase": false,
+    "additionalChargeForAutomaticSwitch": false,
+    "gameplayBenefits": false,
+    "weatherIsIndependent": true
+  },
+  "updatedAt": "2026-11-11",
+  "reviewStatus": "50 revised concepts awaiting user review; no production assets changed"
 }

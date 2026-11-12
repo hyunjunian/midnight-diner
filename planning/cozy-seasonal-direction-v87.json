@@ -1,0 +1,311 @@
+{
+  "date": "2026-11-11",
+  "status": "review_only",
+  "stages": [
+    {
+      "level": 2,
+      "range": [
+        2,
+        10
+      ],
+      "title": "소박하고 아늑한 시작",
+      "description": "생활감 있는 목재에 작은 불빛과 단정한 소품을 더해요. 처음부터 큰 장식이나 고급 마감을 채우지 않아요.",
+      "materials": [
+        "생활감 있는 목재",
+        "작은 한지등",
+        "수수한 노렌"
+      ],
+      "images": [
+        {
+          "area": "inside",
+          "title": "소박하고 아늑한 시작 · 내부",
+          "label": "레벨 2",
+          "file": "assets/growth-early.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "rect": [
+            0,
+            0,
+            846,
+            512
+          ]
+        },
+        {
+          "area": "outside",
+          "title": "소박하고 아늑한 시작 · 외부",
+          "label": "레벨 2",
+          "file": "assets/growth-early.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "rect": [
+            847,
+            0,
+            689,
+            512
+          ]
+        }
+      ]
+    },
+    {
+      "level": 16,
+      "range": [
+        12,
+        24
+      ],
+      "title": "정갈하게 가꾼 단골집",
+      "description": "상판·벽·냉장고 외관과 그릇 수납을 정돈해, 가꿔 온 차이가 보이게 해요.",
+      "materials": [
+        "정돈한 상판과 벽",
+        "깨끗한 냉장고 외관",
+        "가지런한 그릇장"
+      ],
+      "images": [
+        {
+          "area": "inside",
+          "title": "정갈하게 가꾼 단골집 · 내부",
+          "label": "레벨 16",
+          "file": "assets/growth-early.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "rect": [
+            0,
+            512,
+            846,
+            512
+          ]
+        },
+        {
+          "area": "outside",
+          "title": "정갈하게 가꾼 단골집 · 외부",
+          "label": "레벨 16",
+          "file": "assets/growth-early.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "rect": [
+            847,
+            512,
+            689,
+            512
+          ]
+        }
+      ]
+    },
+    {
+      "level": 32,
+      "range": [
+        26,
+        38
+      ],
+      "title": "재료와 마감의 깊이",
+      "description": "좋은 나무결과 한지, 수납과 창호의 마감이 함께 좋아져요. 낮은 조도와 작은 가게의 규모는 유지해요.",
+      "materials": [
+        "고운 원목",
+        "수공예 조명",
+        "단정한 수납과 창호"
+      ],
+      "images": [
+        {
+          "area": "inside",
+          "title": "재료와 마감의 깊이 · 내부",
+          "label": "레벨 32",
+          "file": "assets/growth-late.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "rect": [
+            0,
+            0,
+            925,
+            512
+          ]
+        },
+        {
+          "area": "outside",
+          "title": "재료와 마감의 깊이 · 외부",
+          "label": "레벨 32",
+          "file": "assets/growth-late.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "rect": [
+            926,
+            0,
+            610,
+            512
+          ]
+        }
+      ]
+    },
+    {
+      "level": 50,
+      "range": [
+        40,
+        50
+      ],
+      "title": "작고 깊은 멋의 완성",
+      "description": "벽과 냉장고, 맞춤 원목과 도자기까지 완성도를 높여요. 작은 금속 디테일로 절제된 고급감을 더해요.",
+      "materials": [
+        "맞춤 원목 이음",
+        "수공예 도자기",
+        "절제된 금속 디테일"
+      ],
+      "images": [
+        {
+          "area": "inside",
+          "title": "작고 깊은 멋의 완성 · 내부",
+          "label": "레벨 50",
+          "file": "assets/growth-late.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "rect": [
+            0,
+            512,
+            925,
+            512
+          ]
+        },
+        {
+          "area": "outside",
+          "title": "작고 깊은 멋의 완성 · 외부",
+          "label": "레벨 50",
+          "file": "assets/growth-late.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "rect": [
+            926,
+            512,
+            610,
+            512
+          ]
+        }
+      ]
+    }
+  ],
+  "seasons": {
+    "spring": [
+      {
+        "area": "outside",
+        "title": "봄의 작은 계절 장식",
+        "label": "선택형 계절 컬렉션 예시",
+        "file": "assets/season-exterior.png",
+        "size": [
+          1536,
+          1024
+        ],
+        "rect": [
+          0,
+          0,
+          768,
+          512
+        ]
+      }
+    ],
+    "summer": [
+      {
+        "area": "outside",
+        "title": "여름의 작은 계절 장식",
+        "label": "선택형 계절 컬렉션 예시",
+        "file": "assets/season-exterior.png",
+        "size": [
+          1536,
+          1024
+        ],
+        "rect": [
+          768,
+          0,
+          768,
+          512
+        ]
+      }
+    ],
+    "autumn": [
+      {
+        "area": "outside",
+        "title": "초가을의 작은 계절 장식",
+        "label": "선택형 계절 컬렉션 예시",
+        "file": "assets/season-exterior.png",
+        "size": [
+          1536,
+          1024
+        ],
+        "rect": [
+          0,
+          512,
+          768,
+          512
+        ]
+      }
+    ],
+    "winter": [
+      {
+        "area": "outside",
+        "title": "겨울의 작은 계절 장식",
+        "label": "선택형 계절 컬렉션 예시",
+        "file": "assets/season-exterior.png",
+        "size": [
+          1536,
+          1024
+        ],
+        "rect": [
+          768,
+          512,
+          768,
+          512
+        ]
+      }
+    ]
+  },
+  "policy": {
+    "gameDateSource": "MidnightDate.dateForNight(state.night)",
+    "firstGameDate": "2026-09-01",
+    "months": {
+      "spring": [
+        3,
+        4,
+        5
+      ],
+      "summer": [
+        6,
+        7,
+        8
+      ],
+      "autumn": [
+        9,
+        10,
+        11
+      ],
+      "winter": [
+        12,
+        1,
+        2
+      ]
+    },
+    "normalCollectionCount": 21,
+    "seasonalCollectionCount": 4,
+    "totalDesignCount": 50,
+    "seasonRecommendation": "match_in_game_date",
+    "selection": "player_choice",
+    "automaticMode": "optional_owned_only",
+    "missingOwnedTheme": "keep_current_design",
+    "autoPurchase": false,
+    "extraChargeForAutoSwitch": false,
+    "gameplayAdvantage": false,
+    "weatherIndependent": true,
+    "liveGameModified": false,
+    "all50ConceptsRevised": true
+  }
+}
