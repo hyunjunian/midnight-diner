@@ -164,11 +164,52 @@
       role:known.includes('role')?p.role:null,age:known.includes('age')?p.age:null,
       style:known.includes('style')?p.style:null,bio:known.includes('bio')?p.bio:null};
   }
-  // 0: a thread chapter waits for the owner's choice, 1: it waits for the closing reflection, -1: neither.
+  // 0: tonight's story waits for the owner's choice, 1: it waits for the closing reflection, -1: neither.
   function chapterStep(s){
     if(s.event!=='pending')return -1;
     const run=ensureStory(s),definition=S.stories.find(t=>t.id===run.id);
-    return definition?.arc&&run.step<2?run.step:-1;
+    return definition?.tale&&run.step<2?run.step:-1;
+  }
+  // ---- The owner's growth ----
+  // Every story choice and closing reflection carries a trait: listening, stepping in, or keeping
+  // quiet. The tally is derived from the story memory, so it needs no save field of its own.
+  const traitIds=['listen','act','keep'];
+  function traitTally(tokens,pending){
+    const n={listen:0,act:0,keep:0},add=t=>{if(Object.hasOwn(n,t))n[t]++;};
+    for(const t of tokens){add(S.stories.find(x=>x.id===t.id)?.choices.find(c=>c.id===t.choice)?.trait);add(S.reflection.find(c=>c.id===t.reflection)?.trait);}
+    add(pending);return n;
+  }
+  const growthStage=n=>S.growth.stages.filter(x=>n>=x).length;
+  // The choice made tonight counts as soon as it is made, before the reflection files it in memory.
+  function pendingTrait(s){const run=s.storyRun;return s.event==='pending'&&run&&run.step===1?S.stories.find(x=>x.id===run.id)?.choices.find(c=>c.id===run.choice)?.trait:null;}
+  function ownerGrowth(s){
+    const counts=traitTally(s.storyMemory||[],pendingTrait(s)),top=Math.max(...traitIds.map(t=>counts[t]));
+    const lead=top?traitIds.find(t=>counts[t]===top):null,stage=lead?growthStage(top):0;
+    const told=new Set((s.storyMemory||[]).map(t=>t.id)),chapters=S.stories.filter(t=>t.arc),next=chapters.find(t=>!told.has(t.id));
+    const act=S.acts.find(a=>a.id===(next?next.act:S.acts[S.acts.length-1].id));
+    return {counts,lead,stage,title:lead&&stage?S.growth.traits[lead].titles[stage-1]:S.growth.start,
+      traits:traitIds.map(id=>({id,name:S.growth.traits[id].name,count:counts[id],stage:growthStage(counts[id])})),
+      act,chaptersTold:chapters.filter(t=>told.has(t.id)).length,chapters:chapters.length,finished:!next};
+  }
+  // What a guest notices aloud when the owner has just grown a stage (by tonight's choice, or by
+  // last night's reflection, which no guest was there to remark on).
+  function growthRemark(s){
+    const memory=s.storyMemory||[],last=memory[memory.length-1];
+    const before=traitTally(last?[...memory.slice(0,-1),{id:last.id,choice:last.choice}]:memory,null),after=traitTally(memory,pendingTrait(s));
+    for(const t of traitIds){const stage=growthStage(after[t]);if(stage>growthStage(before[t]))return S.growth.traits[t].remarks[stage-1]||'';}
+    return '';
+  }
+  function grownEnough(s,c){const counts=ownerGrowth(s).counts;return Object.entries(c.needs||{}).every(([t,n])=>counts[t]>=n);}
+  function hasMemory(s,key){const [id,choice]=key.split(':');return (s.storyMemory||[]).some(t=>t.id===id&&(!choice||t.choice===choice));}
+  // Tonight's wording: the authored text plus the sentences ("echo") that earlier choices or the
+  // owner's leading trait have earned.
+  function telling(s,definition){
+    const out={intro:definition.intro,tale:definition.tale||'',afterword:definition.afterword||''},lead=ownerGrowth(s).lead,used={};
+    for(const e of definition.echo||[]){
+      if(!(e.if?hasMemory(s,e.if):e.lead?e.lead===lead:false))continue;
+      for(const k of ['intro','tale','afterword'])if(e[k]&&(used[k]||0)<2){out[k]+=' '+e[k];used[k]=(used[k]||0)+1;}
+    }
+    return out;
   }
   // A guest who can still bring the waiting chapter up in conversation.
   function storyCarrier(s){
@@ -177,8 +218,8 @@
   function guestConversation(s,id){
     const g=s.guests.find(x=>x.id===id&&['seated','waiting'].includes(x.status));if(!g)return null;
     const p=person(g.person),profile=guestProfile(s,g.person);
-    // A chapter of a story thread waits to be told: the guest brings it up after the greeting,
-    // the owner answers with one of its choices, and the guest closes it before the usual talk.
+    // Tonight's story waits to be told: the guest brings it up after the greeting, the owner
+    // answers with one of its choices, and the guest closes it before the usual talk.
     const tale=chapterStep(s);
     let node=guestNodes.includes(g.chat?.node)?g.chat.node:'hello';
     if((node==='tale'&&tale!==0)||(node==='taleResult'&&tale!==1))node='hello';
@@ -191,13 +232,16 @@
       if(s.nightNews.length>(s.nightNewsRead||0))note=news(s).slice(s.nightNewsRead||0).map(n=>'지난밤 소식 · '+n.text).join('\n');
       offer('welcome',tale===0?'tale':tale===1?'taleResult':'intro');
     }else if(node==='tale'){
-      const view=story(s);caption=view.definition.series;line=view.definition.tale;
-      for(const c of view.definition.choices)if(canChoose(s,c)){
+      const view=story(s),growth=ownerGrowth(s);caption=view.definition.series||'오늘 밤, 카운터에서';line=view.telling.tale;
+      for(const c of view.definition.choices)if(!grownEnough(s,c)){
+        // Words the owner has not grown into yet stay visible but out of reach.
+        choices.push({id:c.id,locked:true,label:'아직은 꺼낼 수 없는 말 ('+Object.entries(c.needs).map(([t,n])=>`${S.growth.traits[t].name} ${growth.counts[t]}/${n}`).join(', ')+')'});
+      }else if(canChoose(s,c)){
         const cost=[c.money<0?`¥${-c.money}`:'',...Object.entries(c.ingredients||{}).map(([id,n])=>`${ingredients[id].name} ${n}`)].filter(Boolean).join(', ');
         choices.push({id:c.id,label:cost?`${c.label} (${cost})`:c.label,to:'taleResult'});
       }
     }else if(node==='taleResult'){
-      const view=story(s);caption=view.definition.series;line=view.definition.afterword;note=view.choice.result;
+      const view=story(s),remark=growthRemark(s);caption=view.definition.series||'오늘 밤, 카운터에서';line=view.telling.afterword+(remark?'\n'+remark:'');note=view.choice.result;
       for(const c of S.reflection)choices.push({id:c.id,label:c.label,to:'intro'});
     }else if(node==='intro'){
       line=profile.known.includes('role')?`${p.name}입니다. 저를 기억해 주시니 반갑네요.`:`저는 ${p.name}입니다. 이렇게 인사하니 한결 편안하네요.`;
@@ -220,7 +264,7 @@
       playerLine:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
   }
   function answerGuest(s,id,reply){
-    const view=guestConversation(s,id),choice=view?.choices.find(x=>x.id===reply);if(!choice)return false;
+    const view=guestConversation(s,id),choice=view?.choices.find(x=>x.id===reply);if(!choice||choice.locked)return false;
     const g=s.guests.find(x=>x.id===id),memory=s.customerBook[g.person];if(!memory)return false;
     // Answers inside a story chapter are the owner's decision and the closing reflection.
     if((view.node==='tale'||view.node==='taleResult')&&!resolveEvent(s,reply))return false;
@@ -307,6 +351,8 @@
     const restored = { ...s, ...v,version:11,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
     restored.fridgeDoorHintSeen=v.fridgeDoorHintSeen===true;
     restored.nightElapsedMs=Number.isFinite(v.nightElapsedMs)&&v.nightElapsedMs>=0?Math.min(1e9,Math.round(v.nightElapsedMs)):0;
+    // The closing reflection is an optional part of a memory; an unknown one is dropped, never fatal.
+    restored.storyMemory=(restored.storyMemory||[]).map(t=>{const {reflection,...rest}=t;return S.reflection.some(c=>c.id===reflection)?t:rest;});
     restored.nightNewsRead=Number.isSafeInteger(v.nightNewsRead)?Math.max(0,Math.min(restored.nightNews.length,v.nightNewsRead)):(restored.event==='resolved'?restored.nightNews.length:0);
     restored.upgrades=[...new Set(restored.upgrades)];
     if(v.upgradeQty!==undefined&&(!v.upgradeQty||Array.isArray(v.upgradeQty)||Object.entries(v.upgradeQty).some(([id,n])=>!restored.upgrades.includes(id)||!integer(n,1,upgrades[id].max))))throw new Error('Invalid furnishing quantities');
@@ -504,9 +550,9 @@
   function depart(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='farewell');if(!g)return false;g.status='left';return true;}
   function ensureStory(s) {
     if(!s.storyRun){
-      // Chapters of the story threads ("arc") are told once each, in order, one a night from the
-      // second night on; the threads are interleaved so each rests for several nights between
-      // its chapters. On the first night and once every chapter is told, single stories rotate.
+      // Chapters of the story threads ("arc") are told once each, in the authored order of the
+      // acts, one a night from the second night on; a thread rests for several nights between its
+      // chapters. On the first night and once every chapter is told, single stories rotate.
       const told=new Set((s.storyMemory||[]).map(t=>t.id)),singles=S.stories.filter(t=>!t.arc);
       const chapter=s.night>1?S.stories.find(t=>t.arc&&!told.has(t.id)&&(!t.after||told.has(t.after))):null;
       const st=chapter||singles[(s.storyMemory||[]).filter(t=>singles.some(x=>x.id===t.id)).length%singles.length],cast=s.guests.slice(0,2).map(g=>g.person);while(cast.length<2)cast.push(cast.length);s.storyRun={id:st.id,night:s.night,step:s.event==='resolved'?2:0,cast,choice:null,reflection:null};}
@@ -515,9 +561,9 @@
   function story(s) {
     if(s.event==='none')return null;const run=ensureStory(s),definition=S.stories.find(t=>t.id===run.id);
     const choice=definition.choices.find(c=>c.id===run.choice);
-    return {run,definition,choice,reflection:S.reflection.find(c=>c.id===run.reflection)};
+    return {run,definition,choice,reflection:S.reflection.find(c=>c.id===run.reflection),telling:telling(s,definition)};
   }
-  function canChoose(s,c) {return s.money>=Math.max(0,-(c.money||0))&&Object.entries(c.ingredients||{}).every(([id,n])=>s.inventory[id]>=n);}
+  function canChoose(s,c) {return s.money>=Math.max(0,-(c.money||0))&&Object.entries(c.ingredients||{}).every(([id,n])=>s.inventory[id]>=n)&&grownEnough(s,c);}
   function applyChoice(s,c,cast) {
     s.money+=c.money||0;if((c.money||0)<0)s.storyCosts-=c.money;
     Object.entries(c.ingredients||{}).forEach(([id,n])=>s.inventory[id]-=n);
@@ -566,7 +612,11 @@
       applyChoice(s,choice,run.cast);run.choice=id;run.step=1;return true;
     }
     if(run.step===1){const choice=S.reflection.find(c=>c.id===id);if(!choice)return false;applyChoice(s,choice,run.cast);run.reflection=id;run.step=2;s.event='resolved';s.eventChoice=run.choice;
-      const token={id:run.id,choice:run.choice,night:s.night+1};s.pendingConsequences.push(token);s.storyMemory=[...s.storyMemory,{...token,night:s.night}].slice(-200);return true;
+      const token={id:run.id,choice:run.choice,night:s.night+1};s.pendingConsequences.push(token);
+      // The memory keeps every chapter of the threads; when it is full the oldest single story goes first.
+      const memory=[...s.storyMemory,{...token,night:s.night,reflection:id}];
+      while(memory.length>200){const i=memory.findIndex(t=>!S.stories.find(x=>x.id===t.id)?.arc);memory.splice(i<0?0:i,1);}
+      s.storyMemory=memory;return true;
     }
     return false;
   }
@@ -581,7 +631,7 @@
     if (s.phase !== 'end') return false;
     archiveNight(s);s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { befriend,storyCarrier,Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { befriend,storyCarrier,ownerGrowth,grownEnough,Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();

@@ -51,3 +51,19 @@
    story thread, or news that arrived from last night. */
 #guest-dialog .talk-note{margin:10px 0 2px;padding:10px 12px;border-left:2px solid #a8763f;background:#fff8e455;color:#5b4a35;font-size:13px;line-height:1.7;white-space:pre-line;word-break:keep-all}
 #story-dialog .story-pointer{margin:14px 2px 18px;color:#5b4a35;font-size:13px;line-height:1.7;word-break:keep-all}
+
+/* The owner's growth at the head of the journal: washi with ink, the leading habit marked in the seal red */
+#story-dialog .owner-growth{margin:18px 0 6px;padding:13px 14px 12px;border:1px solid #b2987166;border-left:3px solid #a35138;background:#fff8e455;color:#493b2b}
+#story-dialog .owner-growth .owner-act{display:block;font-size:11px;letter-spacing:.04em;color:#91633c}
+#story-dialog .owner-growth strong{display:block;margin:4px 0 9px;font-size:16px;font-weight:400;line-height:1.5;color:#3d3024;word-break:keep-all}
+#story-dialog .owner-growth ul{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0;padding:0;list-style:none}
+#story-dialog .owner-growth li{display:flex;align-items:baseline;justify-content:space-between;gap:4px;padding:6px 8px;border:1px solid #b2987155;font-size:12px;color:#5b4a35;white-space:nowrap}
+#story-dialog .owner-growth li b{font-weight:400;font-size:14px;color:#3d3024;font-variant-numeric:tabular-nums}
+#story-dialog .owner-growth li.lead{border-color:#a35138;background:#a3513812}
+#story-dialog .owner-growth small{display:block;margin-top:9px;font-size:11px;line-height:1.6;color:#6d5a42;word-break:keep-all}
+#story-dialog .story-source{margin:6px 2px 10px;font-size:11px;line-height:1.6;color:#7a6548;word-break:keep-all}
+/* Words the owner has not grown into yet: a dashed slip that cannot be picked */
+#guest-dialog #talk-choices>button.locked{opacity:.62;border-style:dashed;box-shadow:none;cursor:default;color:#6b5c45}
+#guest-dialog #talk-choices>button.locked:active{transform:none}
+/* Who the owner has become so far, under the nightly report heading */
+#report-dialog .report-heading .report-owner{margin-top:4px;font-size:12px;letter-spacing:.02em;opacity:.82}

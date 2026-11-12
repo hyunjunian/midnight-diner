@@ -169,7 +169,9 @@ test('early prep keeps canonical source keys for scoped portrait routing',()=>{
  assert.equal(E.Cooking.prepImage('negi_omelette','scallion'),'prep-hi-scallion');assert.equal(E.Cooking.prepImage('hiyayakko','vegetables'),'prep-hi-vegetables');assert.equal(E.Cooking.prepImage('butadon','scallion'),'prep-hi-scallion');assert.equal(E.Cooking.prepImage('onigiri','rice'),'prep-hi-rice');
 });
 test('completed stories stop attention and read news stays read after reload',()=>{
- const {s}=setup();E.arrive(s);assert.ok(E.conversation(s));assert.ok(E.storyNeedsAttention(s));E.markStoryRead(s);assert.ok(E.storyNeedsAttention(s),'an outstanding decision still needs attention');
+ const {s}=setup();E.arrive(s);assert.ok(E.conversation(s));assert.equal(E.storyNeedsAttention(s),false,'a guest will tell tonight\'s story: the sheet stays quiet');
+ // Once no seated guest can still tell it, the story sheet takes the decision over.
+ s.guests.forEach(g=>g.chat={node:'order'});assert.ok(E.storyNeedsAttention(s));E.markStoryRead(s);assert.ok(E.storyNeedsAttention(s),'an outstanding decision still needs attention');
  const view=E.story(s),choice=view.definition.choices.find(c=>E.canChoose(s,c));assert.ok(E.resolveEvent(s,choice.id));assert.ok(E.resolveEvent(s,E.storyContent.reflection[0].id));assert.equal(E.storyNeedsAttention(s),false);
  const st=E.storyContent.stories.find(x=>x.choices.some(c=>c.future)),c=st.choices.find(x=>x.future);s.nightNews=[{id:st.id,choice:c.id,night:s.night}];assert.ok(E.storyNeedsAttention(s));E.markStoryRead(s);assert.equal(E.storyNeedsAttention(s),false);assert.equal(E.storyNeedsAttention(E.restore(JSON.stringify(s))),false);
  const old=JSON.parse(JSON.stringify(s));delete old.nightNewsRead;assert.equal(E.storyNeedsAttention(E.restore(JSON.stringify(old))),false,'old completed stories do not light again');
