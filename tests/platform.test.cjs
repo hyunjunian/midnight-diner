@@ -546,7 +546,7 @@ function hearOut(E,s,id){let view=E.guestConversation(s,id);while(view.node==='t
 test('every night\'s story is told once through a guest\'s conversation, the threads in their authored order',()=>{
   const E=require('../docs/engine'),S=E.storyContent,s=E.fresh(),told=[];
   const chapters=S.stories.filter(t=>t.arc).map(t=>t.id),total=chapters.length;
-  assert.equal(total,42);assert.equal(new Set(S.stories.filter(t=>t.arc).map(t=>t.arc)).size,14);
+  assert.equal(total,45);assert.equal(new Set(S.stories.filter(t=>t.arc).map(t=>t.arc)).size,15);
   for(let night=1;night<=total+4;night++){
     E.open(s);const first=E.arrive(s);E.conversation(s);const guest=E.arrive(s);assert.ok(E.conversation(s)||s.event==='pending','night '+night);
     const run=E.story(s);told.push(run.definition.id);
@@ -630,7 +630,7 @@ test('the owner grows by what they choose: titles, remarks from guests, and word
   saved.storyMemory[0].reflection='nonsense';delete saved.storyMemory[1].reflection;
   const tolerant=E.restore(JSON.stringify(saved));assert.equal(tolerant.storyMemory.length,s.storyMemory.length);assert.equal(E.ownerGrowth(tolerant).counts.keep,growth.counts.keep-2);
   // An owner who has not grown that way sees the same words locked, in the conversation and in the engine.
-  const other=E.fresh();other.night=19;other.storyMemory=S.stories.filter(t=>t.arc).slice(0,17).map((t,i)=>({id:t.id,choice:t.choices.find(c=>c.trait==='act'&&!c.needs).id,night:i+2}));
+  const before=S.stories.filter(t=>t.arc).findIndex(t=>t.id==='brooch_two'),other=E.fresh();other.night=before+2;other.storyMemory=S.stories.filter(t=>t.arc).slice(0,before).map((t,i)=>({id:t.id,choice:t.choices.find(c=>c.trait==='act'&&!c.needs).id,night:i+2}));
   E.open(other);E.arrive(other);const g=E.arrive(other);E.conversation(other);E.answerGuest(other,g.id,'welcome');
   const chapter=E.story(other).definition;assert.equal(chapter.id,'brooch_two');
   const locked=hearOut(E,other,g.id).choices.find(c=>c.locked);
@@ -709,7 +709,7 @@ test('every story is complete, affordable somehow, and original',()=>{
   assert.equal(credited.size,8);
   for(const arc of credited)assert.ok(S.stories.filter(t=>t.arc===arc).every(t=>/^뼈대를 빌린 작품 · .+「.+」\(\d{4}\)$/.test(t.source)),arc);
   const text=JSON.stringify(S);
-  for(const word of ['야쿠자','비엔나','소시지','마스터','코스즈','마릴린','도시락','문어'])assert.ok(!text.includes(word),word+' belongs to the reference drama');
+  for(const word of ['야쿠자','비엔나','소시지','마스터','코스즈','마릴린','도시락','문어','네코맘마','고양이밥','가쓰오부시','가다랑어','미유키','엔카','홍백','작사가'])assert.ok(!text.includes(word),word+' belongs to the reference drama');
   // Names and places of the borrowed works stay out: only their structure is used.
   for(const word of ['김첨지','설렁탕','인력거','스크루지','흘레스타코프','다조마루','마틸드','지미 웰스','살쾡이','산고양이'])assert.ok(!text.includes(word),word+' belongs to a source work');
 });
