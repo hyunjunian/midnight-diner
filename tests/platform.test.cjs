@@ -582,8 +582,14 @@ test('every night\'s story is told once through a guest\'s conversation, the thr
     assert.equal(E.guestConversation(s,first.id).node==='tale',false,'the same story is not told twice');
     assert.equal(view.choices.length,3);assert.deepEqual(view.choices.map(c=>c.label),S.reflection.map(r=>r.labels[s.night%r.labels.length]),'closing words vary from night to night');
     assert.ok(E.answerGuest(s,guest.id,view.choices[night%3].id));
+    // The teller orders out of the story: no fresh introduction, the dish named in words that belong to the night.
     view=E.guestConversation(s,guest.id);
-    assert.equal(view.node,'intro');assert.ok(E.guestProfile(s,guest.person).known.includes('name'),'the usual introduction still follows');
+    assert.equal(view.node,'order');assert.equal(view.orderReady,true);assert.deepEqual(view.choices,[]);
+    assert.equal(view.line,run.definition.order.replace('{dish}',E.recipes[guest.recipe].name));
+    assert.ok(E.guestProfile(s,guest.person).known.includes('name'),'the guest is known by name without a separate introduction');
+    assert.equal(E.menuReady(s,s.guests.find(g=>g.id===guest.id)),true);
+    assert.equal(E.guestConversation(E.restore(JSON.stringify(s)),guest.id).line,view.line,'the order keeps its wording after a reload');
+    assert.notEqual(E.guestConversation(s,first.id).line,view.line,'only the teller orders in the story\'s words');
     assert.equal(s.event,'resolved');assert.equal(E.storyCarrier(s),false);
     s.guests.forEach(g=>g.status='left');s.arrived=s.target;s.nightScores=Array(s.target).fill(80);
     assert.ok(E.close(s));assert.ok(E.next(s));E.restore(JSON.stringify(s));
@@ -684,6 +690,7 @@ test('every story is complete, affordable somehow, and original',()=>{
     assert.ok(t.tale.every(b=>b.length>=20&&b.length<=110),t.id+' keeps each beat short enough for one bubble');
     assert.ok(Array.isArray(t.asks)&&t.asks.length===t.tale.length-1&&t.asks.every(a=>a.length>=3&&a.length<=24),t.id+' needs what the owner says between beats');
     assert.ok(t.afterword.length>20,t.id+' needs the guest\'s closing words');
+    assert.ok(t.order.length>=20&&t.order.length<=90&&t.order.split('{dish}').length===2&&/\{dish\},/.test(t.order),t.id+' needs an order that grows out of the story and names the dish');
     assert.ok(!/\{[ab]\}/.test(t.tale.join('')+t.afterword),t.id);
     assert.ok(t.lines.every(line=>/^\{[ab]\}: /.test(line)),t.id);
     assert.equal(new Set(t.choices.map(c=>c.id)).size,t.choices.length,t.id);
@@ -710,6 +717,8 @@ test('every story is complete, affordable somehow, and original',()=>{
   for(const arc of credited)assert.ok(S.stories.filter(t=>t.arc===arc).every(t=>/^뼈대를 빌린 작품 · .+「.+」\(\d{4}\)$/.test(t.source)),arc);
   const text=JSON.stringify(S);
   for(const word of ['야쿠자','비엔나','소시지','마스터','코스즈','마릴린','도시락','문어','네코맘마','고양이밥','가쓰오부시','가다랑어','미유키','엔카','홍백','작사가'])assert.ok(!text.includes(word),word+' belongs to the reference drama');
+  // An alley resident never shares a name with a seat guest who may be telling the story.
+  assert.ok(!text.includes('소라'),'the florist is 보라; 소라 is a guest name');
   // Names and places of the borrowed works stay out: only their structure is used.
   for(const word of ['김첨지','설렁탕','인력거','스크루지','흘레스타코프','다조마루','마틸드','지미 웰스','살쾡이','산고양이'])assert.ok(!text.includes(word),word+' belongs to a source work');
 });

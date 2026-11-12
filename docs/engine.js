@@ -254,7 +254,8 @@
     }else if(node==='taleResult'){
       const view=story(s),remark=growthRemark(s);caption=view.definition.series||'오늘 밤, 카운터에서';// The guest answers what the owner actually did, then closes the night's story.
       line=(view.choice.reply?view.choice.reply+' ':'')+view.telling.afterword+(remark?'\n'+remark:'');note=view.choice.result;
-      for(const c of S.reflection)choices.push({id:c.id,label:reflectionLabel(s,c),to:'intro'});
+      // The story runs straight into the order: no fresh introduction after all that talk.
+      for(const c of S.reflection)choices.push({id:c.id,label:reflectionLabel(s,c),to:'order'});
     }else if(node==='intro'){
       line=profile.known.includes('role')?`${p.name}입니다. 저를 기억해 주시니 반갑네요.`:`저는 ${p.name}입니다. 이렇게 인사하니 한결 편안하네요.`;
       offer('day','day');offer('menu','order');
@@ -270,7 +271,9 @@
       offer('order','order');
     }else{
       caption=g.status==='waiting'?'접수한 주문':'오늘의 주문';
-      line=g.status==='waiting'?`${recipes[g.recipe].name}, 편히 기다리고 있을게요.`:requests[Math.floor((g.lineKey||0)/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
+      // The guest who told tonight's story orders out of that story, in words that belong to it.
+      const told=S.stories.find(t=>t.id===g.chat?.told);
+      line=g.status==='waiting'?`${recipes[g.recipe].name}, 편히 기다리고 있을게요.`:(told?.order||requests[Math.floor((g.lineKey||0)/openings.length)%requests.length]).replace('{dish}',recipes[g.recipe].name);
     }
     return {node,beat,line,caption,note,choices,orderReady:node==='order',
       playerLine:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
@@ -283,9 +286,9 @@
     if(!goOn&&(view.node==='tale'||view.node==='taleResult')&&!resolveEvent(s,reply))return false;
     if(view.node==='hello'&&view.note)markStoryRead(s);
     const known=(memory.known||[]).filter(x=>guestFacts.includes(x));
-    const reveal=choice.to==='intro'?['name','style']:choice.to==='day'?['role','bio']:choice.to==='about'?['role','bio','age']:[];
+    const reveal=choice.to==='intro'||view.node==='taleResult'?['name','style']:choice.to==='day'?['role','bio']:choice.to==='about'?['role','bio','age']:[];
     const discovered=reveal.filter(x=>!known.includes(x));memory.known=[...new Set([...known,...reveal])];
-    g.chat={node:choice.to,reply,discovered};if(goOn)g.chat.beat=view.beat+1;if(['warm','quiet','order'].includes(choice.to))g.menuReadyAt=s.nightElapsedMs||0;return true;
+    g.chat={node:choice.to,reply,discovered};if(goOn)g.chat.beat=view.beat+1;if(view.node==='taleResult')g.chat.told=s.storyRun.id;if(['warm','quiet','order'].includes(choice.to))g.menuReadyAt=s.nightElapsedMs||0;return true;
   }
   function chooseRecipe(s,omakase) {
     const menuLevel=s.phase==='open'?Math.min(s.level,s.nightStart.level):s.level;
@@ -440,7 +443,7 @@
     // A corrupt optional conversation must not erase a valid older game or its money.
     for(const memory of Object.values(restored.customerBook))memory.known=Array.isArray(memory.known)?[...new Set(memory.known.filter(x=>guestFacts.includes(x)))]:[];
     for(const g of restored.guests){
-      if(g.chat&&guestNodes.includes(g.chat.node))g.chat={...(g.chat.node==='tale'&&integer(g.chat.beat,0,9)?{beat:g.chat.beat}:{}),node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
+      if(g.chat&&guestNodes.includes(g.chat.node))g.chat={...(g.chat.node==='tale'&&integer(g.chat.beat,0,9)?{beat:g.chat.beat}:{}),...(S.stories.some(t=>t.id===g.chat.told)?{told:g.chat.told}:{}),node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
       else delete g.chat;
     }
     const history=Array.isArray(v.menuRotation)?v.menuRotation:restored.recentOrders;
