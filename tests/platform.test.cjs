@@ -722,3 +722,95 @@ test('every story is complete, affordable somehow, and original',()=>{
   // Names and places of the borrowed works stay out: only their structure is used.
   for(const word of ['김첨지','설렁탕','인력거','스크루지','흘레스타코프','다조마루','마틸드','지미 웰스','살쾡이','산고양이'])assert.ok(!text.includes(word),word+' belongs to a source work');
 });
+
+// ---- The hidden episode ----
+// Plays whole nights; a "digging" owner takes the long way through every conversation and asks
+// about anything odd, a "rushing" owner goes straight to the order.
+function playNights(E,nights,dig,each){
+  const W=E.storyContent.whispers,s=E.fresh();
+  for(let night=1;night<=nights;night++){
+    E.open(s);const tonight={hooks:0,notes:0,before:[...s.whispers]};
+    for(let i=0;i<9;i++){
+      const last=s.guests[s.guests.length-1];s.guests.forEach(x=>{if(x!==last||i%3===0)x.status='left';});
+      const g=E.arrive(s);E.conversation(s);
+      let v=E.guestConversation(s,g.id),guard=0;
+      while(!v.orderReady&&guard++<30){
+        if(v.choices.some(c=>c.id==='probe'))tonight.hooks++;
+        if(v.node==='hello'&&v.whisper)tonight.notes++;
+        const pick=dig?(v.choices.find(c=>['probe','probe2'].includes(c.id))||v.choices.find(c=>['go_on','day','warm','settle','broth'].includes(c.id))||v.choices.find(c=>!c.locked))
+          :(v.choices.find(c=>['go_on','menu','order','settle'].includes(c.id))||v.choices.find(c=>!c.locked));
+        assert.ok(E.answerGuest(s,g.id,pick.id),'night '+night+' '+v.node+' '+pick.id);v=E.guestConversation(s,g.id);
+      }
+    }
+    if(each)each(s,night,tonight,W);
+    s.guests.forEach(g=>g.status='left');s.arrived=s.target;s.nightScores=Array(s.target).fill(80);
+    assert.ok(E.close(s),'night '+night);E.next(s);
+  }
+  return s;
+}
+test('the hidden episode surfaces piece by piece only for an owner who digs, in an order that can be put together',()=>{
+  const E=require('../docs/engine'),W=E.storyContent.whispers,when={};
+  const s=playNights(E,70,true,(state,night,tonight)=>{
+    assert.ok(tonight.hooks<=1,'at most one guest a night lets something slip');assert.ok(tonight.notes<=1,'at most one thing noticed a night');
+    if(night<W.startNight)assert.equal(state.whispers.length,0,'the first nights are ordinary');
+    for(const id of state.whispers)if(!when[id])when[id]=night;
+  });
+  const all=[...W.fragments,...W.notes];
+  for(const f of all)assert.ok(when[f.id],f.id+' is eventually heard by an owner who asks');
+  for(const f of all)for(const need of f.needs)assert.ok(when[need]<=when[f.id],f.id+' comes after '+need);
+  for(const f of W.fragments.filter(x=>x.tell2))assert.ok(when[f.id+'+']>=when[f.id],f.id+' has more for an owner who keeps asking');
+  const last=W.fragments[W.fragments.length-1];assert.equal(last.strand,'owner');
+  assert.ok(W.fragments.every(f=>when[f.id]<=when[last.id]),'what it says about the owner comes last');
+  assert.ok(when[last.id]>=25,'it takes many nights to put together');
+  assert.ok(when.quiet>when.q3,'the quiet night only happens to an owner who has heard what the last page says');
+  // The same nights played without curiosity reveal no fragment at all.
+  const hurried=playNights(E,70,false);
+  assert.ok(hurried.whispers.every(id=>W.notes.some(n=>n.id===id)),'an owner who only takes orders hears nothing from guests');
+  assert.ok(hurried.whispers.length<=1);
+  // What was heard survives a reload; unknown or broken entries are dropped without losing the save.
+  const saved=JSON.parse(JSON.stringify(s));assert.deepEqual([...E.restore(JSON.stringify(saved)).whispers],[...s.whispers]);
+  saved.whispers=['p1','nonsense','p1',7];assert.deepEqual([...E.restore(JSON.stringify(saved)).whispers],['p1']);
+  delete saved.whispers;assert.deepEqual([...E.restore(JSON.stringify(saved)).whispers],[]);
+});
+test('a fragment is only a remark until the owner asks, and the quiet night answers to what the owner says',()=>{
+  const E=require('../docs/engine'),W=E.storyContent.whispers,s=E.fresh();
+  // Find a night and seat that carries the first fragment.
+  let night=W.startNight,carrier=null;
+  for(;night<200&&!carrier;night++){s.night=night;s.phase='prep';E.open(s);for(let i=0;i<9&&!carrier;i++){s.guests.forEach(g=>g.status='left');const g=E.arrive(s);g.chat={node:'warm',reply:'warm',discovered:[]};if(E.guestConversation(s,g.id).whisper)carrier=g;}if(!carrier){s.phase='prep';}}
+  assert.ok(carrier,'some guest carries a fragment');
+  let view=E.guestConversation(s,carrier.id);const slip=W.fragments.find(f=>f.id===view.whisper);
+  assert.ok(view.line.endsWith('\n'+slip.hook));assert.ok(view.line.includes(E.recipes[carrier.recipe].name),'the ordinary line is still there');
+  assert.deepEqual(view.choices.map(c=>c.id).filter(id=>id!=='about'),['order','probe']);assert.equal(view.choices.find(c=>c.id==='probe').label,slip.ask);
+  assert.equal(E.guestConversation(E.restore(JSON.stringify(s)),carrier.id).whisper,slip.id,'the same guest carries it after a reload');
+  assert.deepEqual([...s.whispers],[],'hearing the remark alone records nothing');
+  assert.ok(E.answerGuest(s,carrier.id,'probe'));view=E.guestConversation(s,carrier.id);
+  assert.equal(view.node,'odd');assert.equal(view.line,slip.tell);assert.deepEqual([...s.whispers],[slip.id]);
+  assert.equal(E.guestConversation(E.restore(JSON.stringify(s)),carrier.id).line,slip.tell);
+  assert.ok(E.answerGuest(s,carrier.id,'order'));assert.equal(E.guestConversation(s,carrier.id).orderReady,true);
+  // The quiet night.
+  const q=E.fresh();q.whispers=['q1','q2','q3'];let guest=null;
+  for(let n=5;n<400&&!guest;n++){q.night=n;q.phase='prep';E.open(q);for(let i=0;i<W.quiet.guest;i++){q.guests.forEach(g=>g.status='left');guest=E.arrive(q);}if(E.guestConversation(q,guest.id).line!==W.quiet.line)guest=null;}
+  assert.ok(guest,'the quiet night comes, rarely');
+  view=E.guestConversation(q,guest.id);assert.deepEqual(view.choices.map(c=>c.id),['welcome','broth','echo']);
+  const twin=E.restore(JSON.stringify(q));
+  assert.ok(E.answerGuest(q,guest.id,'echo'));assert.equal(E.guestConversation(q,guest.id).line,W.quiet.after.echo);assert.ok(q.whispers.includes('quiet'));
+  assert.equal(E.guestConversation(E.restore(JSON.stringify(q)),guest.id).line,W.quiet.after.echo);
+  assert.ok(E.answerGuest(twin,guest.id,'broth'));assert.equal(E.guestConversation(twin,guest.id).line,W.quiet.after.broth);
+  assert.ok(E.answerGuest(twin,guest.id,'settle'));assert.equal(E.guestConversation(twin,guest.id).node,'intro');
+  const unaware=E.fresh();unaware.night=q.night;E.open(unaware);let g4=null;for(let i=0;i<W.quiet.guest;i++){unaware.guests.forEach(g=>g.status='left');g4=E.arrive(unaware);}
+  assert.notEqual(E.guestConversation(unaware,g4.id).line,W.quiet.line,'an owner who has not heard of it has an ordinary night');
+});
+test('the hidden episode has no screen of its own and borrows only ideas',()=>{
+  const E=require('../docs/engine'),W=E.storyContent.whispers,ids=[...W.fragments,...W.notes].map(f=>f.id);
+  assert.equal(new Set(ids).size,ids.length);
+  for(const f of [...W.fragments,...W.notes]){for(const need of f.needs)assert.ok(ids.includes(need),f.id+' needs '+need);if(f.after)assert.ok(E.storyContent.stories.some(t=>t.id===f.after),f.id);}
+  for(const f of W.fragments){
+    assert.ok(f.hook.length>=12&&f.hook.length<=70&&f.ask.length>=4&&f.ask.length<=24&&f.tell.length>=40&&f.tell.length<=190,f.id);
+    assert.equal(Boolean(f.ask2),Boolean(f.tell2),f.id);
+    assert.ok(ids.indexOf(f.id)>Math.max(-1,...f.needs.filter(n=>W.fragments.some(x=>x.id===n)).map(n=>ids.indexOf(n))),f.id+' is listed after what it needs');
+  }
+  // Told only through conversation and chance: nothing in the interface names, lists or counts it.
+  for(const file of ['docs/game.js','docs/index.html','docs/approved.html','docs/ad-events.js'])assert.ok(!/whisper/i.test(fs.readFileSync(file,'utf8')),file+' knows nothing of the hidden episode');
+  const text=JSON.stringify(W);
+  for(const word of ['SCP','재단','Foundation','스크립트','대본','라틴','나이트클럽','클럽','원로원','격리','박사'])assert.ok(!text.includes(word),word+' belongs to the source of the idea');
+});
