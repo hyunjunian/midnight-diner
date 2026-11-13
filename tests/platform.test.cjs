@@ -741,7 +741,7 @@ test('the clip exchange keeps the departing guest voice and disclosure without c
 // ---- The hidden episode ----
 // Plays whole nights; a "digging" owner takes the long way through every conversation and asks
 // about anything odd, a "rushing" owner goes straight to the order.
-function playNights(E,nights,dig,each){
+function playNights(E,nights,dig,each,ending){
   const W=E.storyContent.whispers,s=E.fresh();
   for(let night=1;night<=nights;night++){
     E.open(s);const tonight={hooks:0,notes:0,before:[...s.whispers]};
@@ -752,8 +752,8 @@ function playNights(E,nights,dig,each){
       while((!v.orderReady||(dig&&v.choices.some(c=>c.id==='hum')))&&guard++<30){
         if(v.choices.some(c=>c.id==='probe'))tonight.hooks++;
         if(v.choices.some(c=>c.id==='hum'))tonight.hums=(tonight.hums||0)+1;
-        if(v.node==='hello'&&v.whisper)tonight.notes++;
-        const pick=dig?(v.choices.find(c=>c.to==='song'&&c.id==='song'+(v.step+1))||v.choices.find(c=>['probe','probe2','hum','hum2','heard'].includes(c.id))||v.choices.find(c=>['go_on','day','warm','settle','broth'].includes(c.id))||v.choices.find(c=>!c.locked))
+        if(v.node==='hello'&&(v.whisper||v.till))tonight.notes++;
+        const pick=dig?(v.choices.find(c=>c.to==='song'&&c.id==='song'+(v.step+1))||v.choices.find(c=>['probe','probe2','hum','hum2','heard','witness','witness2','accuse','winter',ending||'keepon'].includes(c.id))||v.choices.find(c=>['go_on','day','warm','settle','broth'].includes(c.id))||v.choices.find(c=>!c.locked))
           :(v.choices.find(c=>['go_on','menu','order','settle'].includes(c.id))||v.choices.find(c=>!c.locked));
         assert.ok(E.answerGuest(s,g.id,pick.id),'night '+night+' '+v.node+' '+pick.id);v=E.guestConversation(s,g.id);
       }
@@ -782,8 +782,9 @@ test('the hidden episode surfaces piece by piece only for an owner who digs, in 
   assert.ok(when.quiet>when.q3,'the quiet night only happens to an owner who has heard what the last page says');
   // The same nights played without curiosity reveal no fragment at all.
   const hurried=playNights(E,70,false);
-  assert.ok(hurried.whispers.every(id=>W.notes.some(n=>n.id===id)),'an owner who only takes orders hears nothing from guests, of either hidden episode');
-  assert.ok(hurried.whispers.length<=1);
+  const noticed=hurried.whispers.filter(id=>!/^coin/.test(id));
+  assert.ok(noticed.every(id=>W.notes.some(n=>n.id===id)),'an owner who only takes orders hears nothing from guests, of any hidden episode');
+  assert.ok(noticed.length<=1);
   // What was heard survives a reload; unknown or broken entries are dropped without losing the save.
   const saved=JSON.parse(JSON.stringify(s));assert.deepEqual([...E.restore(JSON.stringify(saved)).whispers],[...s.whispers]);
   saved.whispers=['p1','nonsense','p1',7];assert.deepEqual([...E.restore(JSON.stringify(saved)).whispers],['p1']);
@@ -896,4 +897,61 @@ test('only an owner who has worked out the order can give a guest the rest of th
   const marks=['해 지거든','달 뜨거든','개 짖거든','별 지거든','닭 울거든','문 열거든'];
   Y.lines.forEach((l,i)=>{assert.ok(l.text.startsWith(marks[i]),l.id);assert.ok(l.tell.includes('“'+l.text)&&l.tell.length<=170&&l.ask2.length<=24&&l.tell2.length>=40&&l.tell2.length<=170,l.id);});
   for(const file of ['docs/game.js','docs/index.html','docs/approved.html','docs/ad-events.js'])assert.ok(!/lullaby|자장가/.test(fs.readFileSync(file,'utf8')),file+' knows nothing of the song');
+});
+
+// ---- The third hidden episode ----
+test('a coin too many turns up in the till now and then, with real money, whether or not anyone asks',()=>{
+  const E=require('../docs/engine'),Z=E.storyContent.till;let coins=0,last=null,extra=0;
+  const s=playNights(E,400,false,(state,night,tonight)=>{
+    assert.ok(tonight.notes<=1,'at most one thing is noticed a night');
+    const now=state.whispers.filter(id=>/^coin\d+$/.test(id)).length;
+    if(now>coins){assert.equal(now,coins+1);assert.ok(night>=Z.startNight);extra+=Z.coin;coins=now;last=night;}
+  });
+  assert.equal(coins,Z.cap-1,'the coins stop one short of the count');assert.ok(s.whispers.includes('coin_paid'),'and a note comes in place of the last');
+  assert.ok(!s.whispers.some(id=>/^see|coin_known|coin_keepon|coin_enough|coin_visit|coin_after/.test(id)),'an owner who never asks learns nothing more');
+  // The money is real and appears exactly once per coin.
+  const t=E.fresh();let guest=null;
+  for(let night=Z.startNight;night<300&&!guest;night++){t.night=night;t.phase='prep';E.open(t);for(let i=0;i<3&&!guest;i++){const g=E.arrive(t);if(E.guestConversation(t,g.id).till)guest=g;}if(!guest)t.guests.forEach(g=>g.status='left');}
+  let view=E.guestConversation(t,guest.id);assert.equal(view.node,'hello');assert.equal(view.till.id,'coin1');assert.ok(view.note.endsWith(Z.found[0]));
+  const before=t.money,twin=E.restore(JSON.stringify(t));assert.equal(E.guestConversation(twin,guest.id).till.id,'coin1','the same coin waits after a reload');
+  assert.ok(E.answerGuest(t,guest.id,'welcome'));assert.equal(t.money,before+Z.coin);assert.deepEqual([...t.whispers],['coin1']);
+  for(const g of t.guests)assert.equal(E.guestConversation(t,g.id).till,null,'it is found once');
+  assert.equal(E.restore(JSON.stringify(t)).money,before+Z.coin);
+});
+test('guests can be asked what they saw, and only the right kind of guest admits to the coin',()=>{
+  const E=require('../docs/engine'),D=require('../docs/guest-dialogue.js'),Z=E.storyContent.till,when={};
+  const s=playNights(E,160,true,(state,night)=>{for(const id of state.whispers)if(!when[id])when[id]=night;},'enough');
+  for(let i=0;i<Z.seen.length;i++){const f=Z.seen[i];assert.ok(when[f.id]>when.coin1,f.id+' is only told to an owner who has found a coin');if(i)assert.ok(when[f.id]>=when[Z.seen[i-1].id]);}
+  assert.ok(when.coin_known>=Math.max(...Z.needs.map(id=>when[id])),'the question can only be put once the telling details are heard');
+  assert.ok(when.coin_enough>=when.coin_known);assert.ok(when.coin_after>when.coin_enough,'after it is called off the till is noticed to be right, once');
+  const stopped=s.whispers.filter(id=>/^coin\d+$/.test(id)).length;assert.ok(stopped<Z.cap-1&&!s.whispers.includes('coin_paid'),'no more coins once the debt is called settled');
+  // Asking outright: appears only with the three details heard, only for three kinds of guest.
+  const scene=(job,whispers,memory=[])=>{const t=E.fresh();t.whispers=[...whispers];t.storyMemory=memory;
+    for(let night=Z.startNight;night<600;night++){t.night=night;t.phase='prep';E.open(t);
+      for(let i=0;i<9;i++){t.guests.forEach(g=>g.status='left');const g=E.arrive(t);if(g.person%D.voices.length!==job)continue;g.chat={node:'day',reply:'day',discovered:[]};
+        const view=E.guestConversation(t,g.id);if(view.choices.some(c=>c.id==='accuse'))return {t,g,view};}}
+    return null;};
+  const ready=['coin1',...Z.needs];
+  assert.equal(scene(19,['coin1','see2','see4']),null,'not before the bicycle is heard of');
+  assert.equal(scene(5,ready),null,'never for a guest the details do not fit');
+  assert.equal(scene(19,[...ready,'coin_known']),null,'not again once it is known');
+  for(const job of [20,21]){const {t,g}=scene(job,ready);assert.ok(E.answerGuest(t,g.id,'accuse'));const view=E.guestConversation(t,g.id);
+    assert.equal(view.node,'denied');assert.equal(view.line,Z.denied[job]);assert.ok(!t.whispers.includes('coin_known'));assert.deepEqual(view.choices.map(c=>c.id),['order']);}
+  const {t,g,view}=scene(19,ready);assert.equal(view.choices.find(c=>c.id==='accuse').label,Z.accuse);
+  assert.ok(E.answerGuest(t,g.id,'accuse'));let v=E.guestConversation(t,g.id);
+  assert.equal(v.node,'confess');assert.equal(v.line,Z.confess);assert.ok(t.whispers.includes('coin_known'));
+  assert.deepEqual(v.choices.map(c=>c.id),['winter','keepon','enough'],'the old owner can only be named by an owner who knows where he is');
+  assert.equal(E.guestConversation(E.restore(JSON.stringify(t)),g.id).node,'confess');
+  assert.ok(E.answerGuest(t,g.id,'winter'));v=E.guestConversation(t,g.id);assert.equal(v.line,Z.winter.tell);assert.deepEqual(v.choices.map(c=>c.id),['keepon','enough']);
+  assert.ok(E.answerGuest(t,g.id,'keepon'));v=E.guestConversation(t,g.id);assert.equal(v.line,Z.endings[0].tell);assert.ok(t.whispers.includes('coin_keepon'));
+  assert.equal(E.guestConversation(E.restore(JSON.stringify(t)),g.id).line,Z.endings[0].tell);
+  assert.ok(E.answerGuest(t,g.id,'order'));assert.equal(E.guestConversation(t,g.id).orderReady,true);
+  const far=scene(19,ready,[{id:'orders_three',choice:'rest',night:40}]);assert.deepEqual(far.view.choices.filter(c=>c.id==='accuse').length,1);
+  assert.ok(E.answerGuest(far.t,far.g.id,'accuse'));assert.deepEqual(E.guestConversation(far.t,far.g.id).choices.map(c=>c.id),['winter','keepon','enough','visit']);
+  assert.ok(E.answerGuest(far.t,far.g.id,'visit'));assert.equal(E.guestConversation(far.t,far.g.id).line,Z.endings[2].tell);assert.ok(far.t.whispers.includes('coin_visit'));
+  // Content and secrecy.
+  assert.equal(new Set(Z.seen.map(f=>f.id)).size,Z.seen.length);for(const f of Z.seen)assert.ok(f.tell.length>=30&&f.tell.length<=170&&Boolean(f.ask2)===Boolean(f.tell2),f.id);
+  for(const id of Z.needs)assert.ok(Z.seen.some(f=>f.id===id));
+  assert.deepEqual(Object.keys(Z.suspects).filter(k=>Z.suspects[k]==='confess'),['19']);assert.match(D.voices[19].bye,/자전거/,'the one who leaves the coin is the one who mends bicycles');
+  for(const file of ['docs/game.js','docs/index.html','docs/approved.html','docs/ad-events.js','docs/guest-dialogue.js'])assert.ok(!/돈통|coin_|tillAsk/.test(fs.readFileSync(file,'utf8')),file+' knows nothing of the coin');
 });

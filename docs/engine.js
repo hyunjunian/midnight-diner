@@ -112,7 +112,7 @@
   // Knowledge belongs to a person, while the conversation position belongs to this visit.
   // Both are optional v11 additions: older saves retain their entire service/financial state.
   const guestFacts=['name','role','age','style','bio'];
-  const guestNodes=['hello','tale','taleResult','intro','day','warm','quiet','about','order','odd','odder','hush','hum','hum2','song','lost','sung','sung2'];
+  const guestNodes=['hello','tale','taleResult','intro','day','warm','quiet','about','order','odd','odder','hush','hum','hum2','song','lost','sung','sung2','coin','coin2','denied','confess','confess2','coinEnd'];
   const guestReplies={
     welcome:'어서 오세요. 편히 앉으세요.',
     day:'오늘은 좀 어떠셨어요?',
@@ -121,7 +121,7 @@
     quiet:'편히 쉬었다 가세요.',
     about:'실례지만 나이가 어떻게 되세요?',
     order:'드실 음식은 정하셨어요?',
-    probe:'',probe2:'',broth:'',echo:'',settle:'',hum:'',hum2:'',pass:'',heard:'',
+    probe:'',probe2:'',broth:'',echo:'',settle:'',hum:'',hum2:'',pass:'',heard:'',witness:'',witness2:'',accuse:'',winter:'',keepon:'',enough:'',visit:'',
   };
   function guestProfile(s,id){
     const p=person(id),known=(s.customerBook[id]?.known||[]).filter(x=>guestFacts.includes(x));
@@ -153,7 +153,7 @@
   }
   // Something the owner notices alone: at most one a night, at one early guest's greeting.
   function whisperNote(s,g){
-    if(s.night<W.startNight||whisperHash('note',s.night)%100>=W.noteChance||g.id!==1+whisperHash('noteSeat',s.night)%3)return null;
+    if(s.night<W.startNight||tillTonight(s)||whisperHash('note',s.night)%100>=W.noteChance||g.id!==1+whisperHash('noteSeat',s.night)%3)return null;
     return [...W.notes,...Y.notes].find(f=>whisperOpen(s,f))||null;
   }
   const quietNight=(s,g)=>g.id===W.quiet.guest&&W.quiet.needs.every(id=>heard(s,id))&&whisperHash('quiet',s.night)%100<W.quiet.chance;
@@ -181,6 +181,31 @@
     const decoys=later.length>=2?[pool[start],pool[(start+1+whisperHash('other'+sung,s.night)%(pool.length-1))%pool.length]]:pool.slice(0,2);
     const three=[want,...decoys],turn=whisperHash('turn'+sung*7,s.night*31+sung)%3;
     return [...three.slice(turn),...three.slice(0,turn)].map(id=>({id,label:'“'+Y.lines.find(l=>l.id===id).text+'”',to:'song'}));
+  }
+  // ---- The third hidden episode: the coin in the till ----
+  // Now and then the owner counts one coin too many (the money is real, and no ledger line explains
+  // it). After the first, on some nights one guest can be asked what they saw; with the bell, the
+  // hands and the bicycle heard, the owner may ask three kinds of guest outright, and one of them
+  // is the one. How it ends decides whether the coins go on. Same save field, and no screen.
+  const Z=S.till;
+  const coinsFound=s=>(s.whispers||[]).filter(id=>/^coin\d+$/.test(id)).length;
+  // What the till holds tonight, if anything: a coin, the last note, or the quiet after it stopped.
+  function tillTonight(s){
+    if(s.night<Z.startNight||whisperHash('till',s.night)%100>=Z.chance)return null;
+    if(heard(s,'coin_enough')||heard(s,'coin_visit'))return heard(s,'coin_after')?null:{id:'coin_after',text:heard(s,'coin_visit')?Z.afterVisit:Z.afterEnough};
+    const n=coinsFound(s);
+    if(n>=Z.cap-1)return heard(s,'coin_paid')?null:{id:'coin_paid',text:Z.paid};
+    return {id:'coin'+(n+1),money:Z.coin,text:heard(s,'coin_keepon')?Z.known:Z.found[n<Z.found.length?n:Z.found.length-2+n%2]};
+  }
+  const tillSeat=(s,g)=>g.id===1+whisperHash('tillSeat',s.night)%3;
+  // The one question the owner may put to this guest about the coin tonight.
+  function tillAsk(s,g){
+    if(!heard(s,'coin1')||heard(s,'coin_known'))return null;
+    const kind=Z.suspects[g.person%D.voices.length];
+    if(kind&&Z.needs.every(id=>heard(s,id))&&whisperHash('accuse',s.night,g.id)%100<Z.accuseChance)return {id:'accuse',label:Z.accuse,to:kind};
+    const next=Z.seen.find(f=>!heard(s,f.id));
+    if(!next||whisperHash('see',s.night)%100>=Z.seeChance||g.id!==1+whisperHash('seeSeat',s.night)%9)return null;
+    return {id:'witness',label:Z.ask,to:'coin',see:next.id};
   }
   // ---- The owner's growth ----
   // Every story choice and closing reflection carries a trait: listening, stepping in, or keeping
@@ -244,13 +269,14 @@
     let node=guestNodes.includes(g.chat?.node)?g.chat.node:'hello';
     if((node==='tale'&&tale!==0)||(node==='taleResult'&&tale!==1))node='hello';
     const talk=D.replies(s,g),choices=[],offer=(id,to,label=guestReplies[id])=>choices.push({id,label,to});
-    let line='',caption='서로 알아가는 중',note='',beat=0,whisper=null,step=0;
+    let line='',caption='서로 알아가는 중',note='',beat=0,whisper=null,step=0,till=null;
     if(node==='hello'){
       caption=profile.known.includes('name')?'다시 만난 반가운 얼굴':'첫 인사';
       line=D.say(g,D.returning(s,g)?'revisit':'hello');
       // News from last night's choice reaches the owner at the first greeting of the night.
       if(s.nightNews.length>(s.nightNewsRead||0))note=news(s).slice(s.nightNewsRead||0).map(n=>'지난밤 소식 · '+n.text).join('\n');
       const found=whisperNote(s,g);if(found){note=[note,found.text].filter(Boolean).join('\n');whisper=found.id;}
+      const coin=tillSeat(s,g)?tillTonight(s):null;if(coin){note=[note,coin.text].filter(Boolean).join('\n');till=coin;}
       if(tale<0&&quietNight(s,g)){
         line=W.quiet.line;offer('welcome','hush');for(const c of W.quiet.choices)choices.push({id:c.id,label:c.label,to:'hush'});
       }else if(tale<0&&songNight(s,g)){
@@ -279,6 +305,8 @@
     }else if(node==='day'){
       line=`${g.chat?.discovered?.includes('role')?D.job(g)+' ':''}${D.day(s,g)}`;
       offer('warm','warm',talk[0]);offer('quiet','quiet',talk[2]);offer('order','order');
+      // An owner who has found a coin in the till may, some nights, ask this guest about it.
+      const ask=tillAsk(s,g);if(ask){choices.push({id:ask.id,label:ask.label,to:ask.to});if(ask.see)whisper=ask.see;}
     }else if(node==='warm'||node==='quiet'){
       line=talk[node==='warm'?1:3];
       offer('order','order');if(node==='warm'&&g.person%D.voices.length!==16&&!profile.known.includes('age'))offer('about','about');
@@ -289,6 +317,19 @@
       line=slip?(node==='odder'&&slip.tell2?slip.tell2:slip.tell):'…아니에요, 아무것도.';
       if(slip&&node==='odd'&&slip.ask2){whisper=slip.id;choices.push({id:'probe2',label:slip.ask2,to:'odder'});}
       offer('order','order');
+    }else if(node==='coin'||node==='coin2'){
+      const seen=Z.seen.find(f=>f.id===g.chat?.see)||Z.seen[0];
+      line=node==='coin2'&&seen.tell2?seen.tell2:seen.tell;
+      if(node==='coin'&&seen.ask2){whisper=seen.id;choices.push({id:'witness2',label:seen.ask2,to:'coin2'});}
+      offer('order','order');
+    }else if(node==='denied'){
+      line=Z.denied[g.person%D.voices.length]||Object.values(Z.denied)[0];offer('order','order');
+    }else if(node==='confess'||node==='confess2'){
+      line=node==='confess'?Z.confess:Z.winter.tell;
+      if(node==='confess')choices.push({id:'winter',label:Z.winter.label,to:'confess2'});
+      for(const e of Z.endings)if(!e.after||hasMemory(s,e.after))choices.push({id:e.id,label:e.label,to:'coinEnd'});
+    }else if(node==='coinEnd'){
+      line=(Z.endings.find(e=>e.id===g.chat?.reply)||Z.endings[0]).tell;offer('order','order');
     }else if(node==='hum'||node==='hum2'){
       const hum=Y.lines.find(l=>l.id===g.chat?.hum)||Y.lines[0];
       line=node==='hum2'?hum.tell2:hum.tell;
@@ -316,7 +357,7 @@
       // Some nights a guest hums a line of an old song after ordering; the owner may ask about it.
       const hum=humFor(s,g);if(hum){note=Y.hook[whisperHash('hook',s.night)%Y.hook.length];whisper=hum.id;choices.push({id:'hum',label:Y.ask,to:'hum'});}
     }
-    return {node,beat,whisper,step,line,caption,note,choices,orderReady:node==='order',
+    return {node,beat,whisper,step,till,line,caption,note,choices,orderReady:node==='order',
       playerLine:g.chat?.reply==='warm'?talk[0]:g.chat?.reply==='quiet'?talk[2]:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
   }
   function answerGuest(s,id,reply){
@@ -331,6 +372,12 @@
     if(view.node==='hello'&&choice.to==='hush')hear(s,'quiet');
     if(reply==='probe'&&view.whisper)hear(s,view.whisper);
     if(reply==='probe2'&&view.whisper)hear(s,view.whisper+'+');
+    // The coin: finding it adds the money once; asking, being told, and how it ends are remembered.
+    if(view.node==='hello'&&view.till){hear(s,view.till.id);if(view.till.money)s.money+=view.till.money;}
+    if(reply==='witness'&&view.whisper)hear(s,view.whisper);
+    if(reply==='witness2'&&view.whisper)hear(s,view.whisper+'+');
+    if(reply==='accuse'&&choice.to==='confess')hear(s,'coin_known');
+    if(choice.to==='coinEnd')hear(s,'coin_'+reply);
     if(reply==='hum'&&view.whisper)hear(s,view.whisper);
     if(reply==='hum2'&&view.whisper)hear(s,view.whisper+'+');
     // Putting the song in order: a wrong line ends it gently, the sixth completes it.
@@ -339,7 +386,7 @@
     const known=(memory.known||[]).filter(x=>guestFacts.includes(x));
     const reveal=choice.to==='intro'||view.node==='taleResult'?['name','style']:choice.to==='day'?['role','bio']:choice.to==='about'?['role','bio','age']:[];
     const discovered=reveal.filter(x=>!known.includes(x));memory.known=[...new Set([...known,...reveal])];
-    g.chat={node:to,reply,discovered};if(sung)g.chat.step=sung;if(reply==='hum'){g.chat.hum=view.whisper;g.chat.hummed=true;}else if(view.node==='hum'||view.node==='hum2'){g.chat.hum=g.chat.hum||view.whisper||null;g.chat.hummed=true;}if(goOn)g.chat.beat=view.beat+1;if(view.node==='taleResult')g.chat.told=s.storyRun.id;if(reply==='probe')g.chat.whisper=view.whisper;else if(reply==='probe2')g.chat.whisper=g.chat.whisper||view.whisper;if(['warm','quiet','order'].includes(choice.to))g.menuReadyAt=s.nightElapsedMs||0;return true;
+    g.chat={node:to,reply,discovered};if(sung)g.chat.step=sung;if(reply==='witness')g.chat.see=view.whisper;if(reply==='hum'){g.chat.hum=view.whisper;g.chat.hummed=true;}else if(view.node==='hum'||view.node==='hum2'){g.chat.hum=g.chat.hum||view.whisper||null;g.chat.hummed=true;}if(goOn)g.chat.beat=view.beat+1;if(view.node==='taleResult')g.chat.told=s.storyRun.id;if(reply==='probe')g.chat.whisper=view.whisper;else if(reply==='probe2')g.chat.whisper=g.chat.whisper||view.whisper;if(['warm','quiet','order'].includes(choice.to))g.menuReadyAt=s.nightElapsedMs||0;return true;
   }
   function chooseRecipe(s,omakase) {
     const menuLevel=s.phase==='open'?Math.min(s.level,s.nightStart.level):s.level;
@@ -418,7 +465,7 @@
     const restored = { ...s, ...v,version:11,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
     restored.fridgeDoorHintSeen=v.fridgeDoorHintSeen===true;
     // What has been heard of the hidden episode is optional and never fatal to a save.
-    {const known=new Set([...W.fragments.flatMap(f=>[f.id,f.id+'+']),...W.notes.map(f=>f.id),'quiet',...Y.lines.flatMap(l=>[l.id,l.id+'+']),...Y.notes.map(f=>f.id),'sung']);restored.whispers=[...new Set(Array.isArray(v.whispers)?v.whispers.filter(id=>known.has(id)):[])];}
+    {const known=new Set([...W.fragments.flatMap(f=>[f.id,f.id+'+']),...W.notes.map(f=>f.id),'quiet',...Y.lines.flatMap(l=>[l.id,l.id+'+']),...Y.notes.map(f=>f.id),'sung',...Z.seen.flatMap(f=>[f.id,f.id+'+']),...Array.from({length:Z.cap-1},(_,i)=>'coin'+(i+1)),'coin_paid','coin_after','coin_known',...Z.endings.map(e=>'coin_'+e.id)]);restored.whispers=[...new Set(Array.isArray(v.whispers)?v.whispers.filter(id=>known.has(id)):[])];}
     restored.nightElapsedMs=Number.isFinite(v.nightElapsedMs)&&v.nightElapsedMs>=0?Math.min(1e9,Math.round(v.nightElapsedMs)):0;
     // The closing reflection is an optional part of a memory; an unknown one is dropped, never fatal.
     restored.storyMemory=(restored.storyMemory||[]).map(t=>{const {reflection,...rest}=t;return S.reflection.some(c=>c.id===reflection)?t:rest;});
@@ -496,7 +543,7 @@
     // A corrupt optional conversation must not erase a valid older game or its money.
     for(const memory of Object.values(restored.customerBook))memory.known=Array.isArray(memory.known)?[...new Set(memory.known.filter(x=>guestFacts.includes(x)))]:[];
     for(const g of restored.guests){
-      if(g.chat&&guestNodes.includes(g.chat.node))g.chat={...(g.chat.node==='tale'&&integer(g.chat.beat,0,9)?{beat:g.chat.beat}:{}),...(S.stories.some(t=>t.id===g.chat.told)?{told:g.chat.told}:{}),...(W.fragments.some(f=>f.id===g.chat.whisper)?{whisper:g.chat.whisper}:{}),...(Y.lines.some(l=>l.id===g.chat.hum)?{hum:g.chat.hum}:{}),...(g.chat.hummed===true?{hummed:true}:{}),...(integer(g.chat.step,2,5)?{step:g.chat.step}:{}),node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
+      if(g.chat&&guestNodes.includes(g.chat.node))g.chat={...(g.chat.node==='tale'&&integer(g.chat.beat,0,9)?{beat:g.chat.beat}:{}),...(S.stories.some(t=>t.id===g.chat.told)?{told:g.chat.told}:{}),...(W.fragments.some(f=>f.id===g.chat.whisper)?{whisper:g.chat.whisper}:{}),...(Y.lines.some(l=>l.id===g.chat.hum)?{hum:g.chat.hum}:{}),...(g.chat.hummed===true?{hummed:true}:{}),...(integer(g.chat.step,2,5)?{step:g.chat.step}:{}),...(Z.seen.some(f=>f.id===g.chat.see)?{see:g.chat.see}:{}),node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
       else delete g.chat;
     }
     const history=Array.isArray(v.menuRotation)?v.menuRotation:restored.recentOrders;

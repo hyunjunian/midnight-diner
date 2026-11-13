@@ -14,6 +14,8 @@
    conversation, a few things the owner notices alone, and one rare night; no screen lists them.
    "lullaby" is a second hidden episode: six lines of one song, each hummed by a different
    guest after ordering; the owner who has heard them all may one night be asked to put them in order.
+   "till" is a third hidden episode: now and then the till holds one real coin too many; guests
+   can be asked what they saw, and with enough heard the owner may ask the right kind of guest outright.
    "source" names the public-domain work whose
    structure a thread borrows. All people, places, events and sentences are original. */
 (()=>{const content={
@@ -482,6 +484,96 @@
       "passed": "그렇죠, 아실 리가 없죠. 괜한 걸 물었네요. 그래도 이 집에 오면 금방이라도 생각날 것 같아요.",
       "settle": "편히 앉으세요. 국은 금방 됩니다."
     }
+  },
+  "till": {
+    "startNight": 6,
+    "chance": 18,
+    "coin": 500,
+    "cap": 12,
+    "found": [
+      "마감 뒤에 세어 둔 돈통을 다시 세었다. 오백 엔 동전 하나가 더 있다. 세 번을 세어도 그렇다.",
+      "또 오백 엔이 남는다. 거스름돈을 덜 준 손님이 있었나 싶어 어제 주문을 다 떠올려 봤지만, 틀린 데가 없다.",
+      "오늘도 동전 하나가 더 있다. 유난히 닳은 동전이다. 지난번 것과 나란히 놓으니 한쪽 면에 같은 줄이 그어져 있다.",
+      "돈통에 오백 엔이 더 있다. 이제는 놀라지 않는다. 다만 누가 놓고 가는지 궁금하다.",
+      "줄 그은 오백 엔 동전이 또 하나. 따로 모아 둔 종지가 조금씩 찬다."
+    ],
+    "known": "오늘도 동전이 하나 놓여 있다. 이제는 누가 놓았는지 안다. 종지에 넣으며 한 그릇을 지웠다.",
+    "paid": "오늘 돈통에는 동전 대신 접힌 쪽지가 있었다. “다 갚았습니다. 내일부터는 손님으로만 올게요.”",
+    "afterEnough": "돈통이 맞는다. 며칠째 맞는다. 처음으로, 맞는 계산이 조금 허전하다.",
+    "afterVisit": "요양원에서 엽서가 왔다. 떨리는 붓펜 글씨다. “묵은 외상을 받았음. 이자는 우동 한 그릇으로 침.”",
+    "seeChance": 35,
+    "ask": "계산대에 동전을 더 놓고 가는 손님, 본 적 있으세요?",
+    "seen": [
+      {
+        "id": "see1",
+        "tell": "동전요? 본 것 같아요. 계산하고 나가면서 동전 하나를 돈통 옆에 뒤집어 놓고 가는 사람이 있었어요. 잘못 놓은 줄 알았는데 일부러 그러는 것 같았어요. 얼굴은 못 봤어요."
+      },
+      {
+        "id": "see2",
+        "tell": "사람은 못 봤어요. 그런데 그런 날엔 가게 앞에서 따르릉 소리가 났어요. 문 닫을 때쯤에요."
+      },
+      {
+        "id": "see3",
+        "tell": "그 동전 저도 봤어요. 많이 닳았더라고요. 한쪽에 칼로 그은 것 같은 줄이 있었어요.",
+        "ask2": "줄이 그어져 있었다고요?",
+        "tell2": "네, 표시해 둔 것 같았어요. 저희 할머니도 따로 모으는 돈엔 그렇게 표시를 하셨거든요. 쓸 데가 정해진 돈이요."
+      },
+      {
+        "id": "see4",
+        "tell": "손은 기억나요. 손톱 밑이 까맸어요. 기름 만지는 사람 손이요. 젊은 손이었고요."
+      },
+      {
+        "id": "see5",
+        "tell": "포장마차 때 얘기를 들은 적 있어요. 어느 겨울에 우동 먹고 돈이 없어서 도망친 애가 있었대요. 어르신이 쫓아가지도 않고 외상으로 적지도 않았대요."
+      },
+      {
+        "id": "see6",
+        "tell": "그 애가 그 겨울 내내 왔대요. 신문 배달하던 애였는데, 자전거 뒤에 신문을 싣고 와서 한 그릇 먹고 갔다고요. 나중에 이 근처에 자전거 가게를 냈다는 말도 있어요."
+      },
+      {
+        "id": "see7",
+        "tell": "그 사람이 갚으러 왔을 땐 포장마차가 없어졌대요. 주인도 바뀌고요. 몇 해 전에 돌아가셨다고 들었어요. 그래서 그 빚은 그대로 남은 줄 알았죠."
+      }
+    ],
+    "needs": [
+      "see2",
+      "see4",
+      "see6"
+    ],
+    "accuseChance": 60,
+    "accuse": "혹시 돈통에 동전을 놓고 가시는 분이세요?",
+    "suspects": {
+      "19": "confess",
+      "20": "denied",
+      "21": "denied"
+    },
+    "denied": {
+      "20": "저요? 아니에요. 전 거스름돈도 꼭 받아 가요. 손에 기름때가 있어서 그러셨구나. 정비하는 사람 손은 다 이래요.",
+      "21": "저 아닙니다. 이 골목을 자주 지나긴 하는데요. 전 오토바이라서 벨이 없어요."
+    },
+    "confess": "…아, 들켰네요. 네, 저예요. 아버지 빚이에요. 어릴 때 여기 포장마차에서 겨울 내내 우동을 얻어먹었대요. 갚으러 왔을 땐 포장마차가 없어졌고요. 돌아가시기 전에 동전 통을 저한테 주셨어요. 한 그릇 값씩 표시해 둔 거요.",
+    "winter": {
+      "label": "그 겨울 얘기를 들려주세요.",
+      "tell": "아버지가 신문 배달을 했대요. 돈이 없어서 먹고 도망쳤는데, 어르신이 다음 날 곱빼기를 주셨대요. 뛰려면 든든해야 한다고요. 그 얘길 할 때마다 웃으셨어요."
+    },
+    "endings": [
+      {
+        "id": "keepon",
+        "label": "모른 척할게요. 다 갚을 때까지 놓고 가세요.",
+        "tell": "고맙습니다. 몇 그릇 남았는지는 제가 세고 있어요. 다 갚는 날엔 말로 인사할게요."
+      },
+      {
+        "id": "enough",
+        "label": "그 빚은 받은 걸로 할게요. 이제 그만 놓고 가세요.",
+        "tell": "…그래도 돼요? 그럼 남은 동전은, 돈 없이 들어오는 애가 있으면 그 애 밥값으로 써 주세요. 아버지도 그게 낫다고 하실 거예요."
+      },
+      {
+        "id": "visit",
+        "after": "orders_three",
+        "label": "그 어르신, 요양원에 계세요. 직접 갚으러 가 보세요.",
+        "tell": "살아 계세요? …아버지는 돌아가신 줄 아셨는데. 주소 좀 적어 주세요. 동전 통 들고 가 볼게요. 우동도 사 가야겠네요."
+      }
+    ]
   },
   "stories": [
     {
