@@ -162,7 +162,7 @@
   // Knowledge belongs to a person, while the conversation position belongs to this visit.
   // Both are optional v11 additions: older saves retain their entire service/financial state.
   const guestFacts=['name','role','age','style','bio'];
-  const guestNodes=['hello','tale','taleResult','intro','day','warm','quiet','about','order','odd','odder','hush'];
+  const guestNodes=['hello','tale','taleResult','intro','day','warm','quiet','about','order','odd','odder','hush','hum','hum2','song','lost','sung','sung2'];
   const guestReplies={
     welcome:'어서 오세요. 편히 앉으세요.',
     day:'오늘은 어떤 하루를 보내셨어요?',
@@ -171,7 +171,7 @@
     quiet:'편히 쉬었다 가세요.',
     about:'괜찮으시면 이야기를 조금 더 들려주세요.',
     order:'오늘 드실 음식을 준비해 드릴까요?',
-    probe:'',probe2:'',broth:'',echo:'',settle:'',
+    probe:'',probe2:'',broth:'',echo:'',settle:'',hum:'',hum2:'',pass:'',heard:'',
   };
   const guestJobs=[
     '출판사에서 책을 만드는 편집 일을 해요.', '이 근처에서 꽃집을 하고 있어요.',
@@ -207,7 +207,7 @@
   const W=S.whispers;
   const whisperHash=(...parts)=>{let h=2166136261;for(const ch of parts.join('|')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>9)%1000;};
   const heard=(s,id)=>(s.whispers||[]).includes(id);
-  const heardCount=s=>(s.whispers||[]).filter(id=>!id.endsWith('+')).length;
+  const heardCount=s=>(s.whispers||[]).filter(id=>W.fragments.some(f=>f.id===id)||W.notes.some(f=>f.id===id)).length;
   const whisperOpen=(s,f)=>!heard(s,f.id)&&f.needs.every(id=>heard(s,id))&&heardCount(s)>=(f.count||0)&&(!f.after||hasMemory(s,f.after));
   function whisperFor(s,g){
     // At most one guest a night carries a fragment, and not every night.
@@ -218,10 +218,34 @@
   // Something the owner notices alone: at most one a night, at one early guest's greeting.
   function whisperNote(s,g){
     if(s.night<W.startNight||whisperHash('note',s.night)%100>=W.noteChance||g.id!==1+whisperHash('noteSeat',s.night)%3)return null;
-    return W.notes.find(f=>whisperOpen(s,f))||null;
+    return [...W.notes,...Y.notes].find(f=>whisperOpen(s,f))||null;
   }
   const quietNight=(s,g)=>g.id===W.quiet.guest&&W.quiet.needs.every(id=>heard(s,id))&&whisperHash('quiet',s.night)%100<W.quiet.chance;
   function hear(s,id){if(!heard(s,id))s.whispers=[...(s.whispers||[]),id];}
+  // ---- The second hidden episode: a song in six lines ----
+  // Each line is known to a different guest, who hums it after ordering on some nights; the owner
+  // may ask. The lines are met out of order. When all six have been heard, on a rare night a
+  // guest who knows only the first asks for the rest, and only an owner who has worked out the
+  // order can give them. It shares the "whispers" save field and, like the first, has no screen.
+  const Y=S.lullaby;
+  const songKnown=s=>Y.lines.every(l=>heard(s,l.id));
+  function humFor(s,g){
+    if(s.night<Y.startNight||g.status!=='seated'||g.chat?.told||g.chat?.hummed)return null;
+    if(whisperHash('hum',s.night)%100>=Y.chance||g.id!==1+whisperHash('humSeat',s.night)%9)return null;
+    // The next line not yet heard, in the order they are found; afterwards any line may come round again.
+    const id=Y.found.find(x=>!heard(s,x))||Y.found[whisperHash('again',s.night)%Y.found.length];
+    return Y.lines.find(l=>l.id===id);
+  }
+  const songNight=(s,g)=>g.id===Y.finale.guest&&songKnown(s)&&!heard(s,'sung')&&whisperHash('song',s.night)%100<Y.finale.chance;
+  // Three lines to choose from for the one that follows line number "sung": the right one and two
+  // others, lines not yet sung where there are enough of them, in a place that changes by night.
+  function songChoices(s,g,sung){
+    const want='song'+(sung+1),ids=Y.lines.map(l=>l.id),later=ids.slice(sung+1),earlier=ids.slice(0,sung-1).reverse();
+    const pool=later.length>=2?later:[...later,...earlier],start=whisperHash('decoy'+sung,s.night)%pool.length;
+    const decoys=later.length>=2?[pool[start],pool[(start+1+whisperHash('other'+sung,s.night)%(pool.length-1))%pool.length]]:pool.slice(0,2);
+    const three=[want,...decoys],turn=whisperHash('turn'+sung*7,s.night*31+sung)%3;
+    return [...three.slice(turn),...three.slice(0,turn)].map(id=>({id,label:'“'+Y.lines.find(l=>l.id===id).text+'”',to:'song'}));
+  }
   // ---- The owner's growth ----
   // Every story choice and closing reflection carries a trait: listening, stepping in, or keeping
   // quiet. The tally is derived from the story memory, so it needs no save field of its own.
@@ -284,7 +308,7 @@
     let node=guestNodes.includes(g.chat?.node)?g.chat.node:'hello';
     if((node==='tale'&&tale!==0)||(node==='taleResult'&&tale!==1))node='hello';
     const talk=dayTalk(g),choices=[],offer=(id,to,label=guestReplies[id])=>choices.push({id,label,to});
-    let line='',caption='서로 알아가는 중',note='',beat=0,whisper=null;
+    let line='',caption='서로 알아가는 중',note='',beat=0,whisper=null,step=0;
     if(node==='hello'){
       caption=profile.known.includes('name')?'다시 만난 반가운 얼굴':'첫 인사';
       line=profile.known.includes('name')?`또 들렀어요. 오늘도 잠깐 쉬어 가도 괜찮죠?`:openings[(g.lineKey||0)%openings.length];
@@ -293,6 +317,8 @@
       const found=whisperNote(s,g);if(found){note=[note,found.text].filter(Boolean).join('\n');whisper=found.id;}
       if(tale<0&&quietNight(s,g)){
         line=W.quiet.line;offer('welcome','hush');for(const c of W.quiet.choices)choices.push({id:c.id,label:c.label,to:'hush'});
+      }else if(tale<0&&songNight(s,g)){
+        step=1;line='“'+Y.lines[0].text+'”\n'+Y.finale.open;choices.push(...songChoices(s,g,1));offer('welcome','intro');
       }else offer('welcome',tale===0?'tale':tale===1?'taleResult':'intro');
     }else if(node==='tale'){
       const view=story(s),growth=ownerGrowth(s),beats=view.telling.tale;caption=view.definition.series||'오늘 밤, 카운터에서';
@@ -327,6 +353,20 @@
       line=slip?(node==='odder'&&slip.tell2?slip.tell2:slip.tell):'…아니에요, 아무것도.';
       if(slip&&node==='odd'&&slip.ask2){whisper=slip.id;choices.push({id:'probe2',label:slip.ask2,to:'odder'});}
       offer('order','order');
+    }else if(node==='hum'||node==='hum2'){
+      const hum=Y.lines.find(l=>l.id===g.chat?.hum)||Y.lines[0];
+      line=node==='hum2'?hum.tell2:hum.tell;
+      if(node==='hum'){whisper=hum.id;choices.push({id:'hum2',label:hum.ask2,to:'hum2'});}
+      offer('order','order');
+    }else if(node==='song'){
+      step=Math.max(2,Math.min(5,g.chat?.step||2));
+      line='“'+Y.lines[step-1].text+'”\n'+Y.finale.after['song'+step];
+      choices.push(...songChoices(s,g,step),{id:'pass',label:Y.finale.pass,to:'lost'});
+    }else if(node==='lost'){
+      line=g.chat?.reply==='pass'?Y.finale.passed:Y.finale.wrong;choices.push({id:'settle',label:Y.finale.settle,to:'intro'});
+    }else if(node==='sung'||node==='sung2'){
+      line=node==='sung'?'“'+Y.lines[5].text+'”\n'+Y.finale.sung:Y.finale.sung2;
+      choices.push(node==='sung'?{id:'heard',label:Y.finale.heard,to:'sung2'}:{id:'settle',label:Y.finale.settle,to:'intro'});
     }else if(node==='hush'){
       line=W.quiet.after[g.chat?.reply]||W.quiet.after.welcome;choices.push({id:'settle',label:W.quiet.settle,to:'intro'});
     }else if(node==='about'){
@@ -337,8 +377,10 @@
       // The guest who told tonight's story orders out of that story, in words that belong to it.
       const told=S.stories.find(t=>t.id===g.chat?.told);
       line=g.status==='waiting'?`${recipes[g.recipe].name}, 편히 기다리고 있을게요.`:(told?.order||requests[Math.floor((g.lineKey||0)/openings.length)%requests.length]).replace('{dish}',recipes[g.recipe].name);
+      // Some nights a guest hums a line of an old song after ordering; the owner may ask about it.
+      const hum=humFor(s,g);if(hum){note=Y.hook[whisperHash('hook',s.night)%Y.hook.length];whisper=hum.id;choices.push({id:'hum',label:Y.ask,to:'hum'});}
     }
-    return {node,beat,whisper,line,caption,note,choices,orderReady:node==='order',
+    return {node,beat,whisper,step,line,caption,note,choices,orderReady:node==='order',
       playerLine:g.chat?.reply==='warm'?talk[0]:g.chat?.reply==='quiet'?talk[2]:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
   }
   function answerGuest(s,id,reply){
@@ -353,10 +395,15 @@
     if(view.node==='hello'&&choice.to==='hush')hear(s,'quiet');
     if(reply==='probe'&&view.whisper)hear(s,view.whisper);
     if(reply==='probe2'&&view.whisper)hear(s,view.whisper+'+');
+    if(reply==='hum'&&view.whisper)hear(s,view.whisper);
+    if(reply==='hum2'&&view.whisper)hear(s,view.whisper+'+');
+    // Putting the song in order: a wrong line ends it gently, the sixth completes it.
+    let to=choice.to,sung=0;
+    if(to==='song'){if(reply!=='song'+(view.step+1))to='lost';else if(view.step+1===6){to='sung';hear(s,'sung');}else sung=view.step+1;}
     const known=(memory.known||[]).filter(x=>guestFacts.includes(x));
     const reveal=choice.to==='intro'||view.node==='taleResult'?['name','style']:choice.to==='day'?['role','bio']:choice.to==='about'?['role','bio','age']:[];
     const discovered=reveal.filter(x=>!known.includes(x));memory.known=[...new Set([...known,...reveal])];
-    g.chat={node:choice.to,reply,discovered};if(goOn)g.chat.beat=view.beat+1;if(view.node==='taleResult')g.chat.told=s.storyRun.id;if(reply==='probe')g.chat.whisper=view.whisper;else if(reply==='probe2')g.chat.whisper=g.chat.whisper||view.whisper;if(['warm','quiet','order'].includes(choice.to))g.menuReadyAt=s.nightElapsedMs||0;return true;
+    g.chat={node:to,reply,discovered};if(sung)g.chat.step=sung;if(reply==='hum'){g.chat.hum=view.whisper;g.chat.hummed=true;}else if(view.node==='hum'||view.node==='hum2'){g.chat.hum=g.chat.hum||view.whisper||null;g.chat.hummed=true;}if(goOn)g.chat.beat=view.beat+1;if(view.node==='taleResult')g.chat.told=s.storyRun.id;if(reply==='probe')g.chat.whisper=view.whisper;else if(reply==='probe2')g.chat.whisper=g.chat.whisper||view.whisper;if(['warm','quiet','order'].includes(choice.to))g.menuReadyAt=s.nightElapsedMs||0;return true;
   }
   function chooseRecipe(s,omakase) {
     const menuLevel=s.phase==='open'?Math.min(s.level,s.nightStart.level):s.level;
@@ -435,7 +482,7 @@
     const restored = { ...s, ...v,version:11,prepChoice:null,nightReviews:[],nightPurchases:0,stoveTutorialDone:v.version>=9&&typeof v.stoveTutorialDone==='boolean'?v.stoveTutorialDone:false,lastResult:null };
     restored.fridgeDoorHintSeen=v.fridgeDoorHintSeen===true;
     // What has been heard of the hidden episode is optional and never fatal to a save.
-    {const known=new Set([...W.fragments.flatMap(f=>[f.id,f.id+'+']),...W.notes.map(f=>f.id),'quiet']);restored.whispers=[...new Set(Array.isArray(v.whispers)?v.whispers.filter(id=>known.has(id)):[])];}
+    {const known=new Set([...W.fragments.flatMap(f=>[f.id,f.id+'+']),...W.notes.map(f=>f.id),'quiet',...Y.lines.flatMap(l=>[l.id,l.id+'+']),...Y.notes.map(f=>f.id),'sung']);restored.whispers=[...new Set(Array.isArray(v.whispers)?v.whispers.filter(id=>known.has(id)):[])];}
     restored.nightElapsedMs=Number.isFinite(v.nightElapsedMs)&&v.nightElapsedMs>=0?Math.min(1e9,Math.round(v.nightElapsedMs)):0;
     // The closing reflection is an optional part of a memory; an unknown one is dropped, never fatal.
     restored.storyMemory=(restored.storyMemory||[]).map(t=>{const {reflection,...rest}=t;return S.reflection.some(c=>c.id===reflection)?t:rest;});
@@ -513,7 +560,7 @@
     // A corrupt optional conversation must not erase a valid older game or its money.
     for(const memory of Object.values(restored.customerBook))memory.known=Array.isArray(memory.known)?[...new Set(memory.known.filter(x=>guestFacts.includes(x)))]:[];
     for(const g of restored.guests){
-      if(g.chat&&guestNodes.includes(g.chat.node))g.chat={...(g.chat.node==='tale'&&integer(g.chat.beat,0,9)?{beat:g.chat.beat}:{}),...(S.stories.some(t=>t.id===g.chat.told)?{told:g.chat.told}:{}),...(W.fragments.some(f=>f.id===g.chat.whisper)?{whisper:g.chat.whisper}:{}),node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
+      if(g.chat&&guestNodes.includes(g.chat.node))g.chat={...(g.chat.node==='tale'&&integer(g.chat.beat,0,9)?{beat:g.chat.beat}:{}),...(S.stories.some(t=>t.id===g.chat.told)?{told:g.chat.told}:{}),...(W.fragments.some(f=>f.id===g.chat.whisper)?{whisper:g.chat.whisper}:{}),...(Y.lines.some(l=>l.id===g.chat.hum)?{hum:g.chat.hum}:{}),...(g.chat.hummed===true?{hummed:true}:{}),...(integer(g.chat.step,2,5)?{step:g.chat.step}:{}),node:g.chat.node,reply:Object.hasOwn(guestReplies,g.chat.reply)?g.chat.reply:null,discovered:Array.isArray(g.chat.discovered)?g.chat.discovered.filter(x=>guestFacts.includes(x)&&restored.customerBook[g.person].known.includes(x)):[]};
       else delete g.chat;
     }
     const history=Array.isArray(v.menuRotation)?v.menuRotation:restored.recentOrders;

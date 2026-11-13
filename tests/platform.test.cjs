@@ -734,10 +734,11 @@ function playNights(E,nights,dig,each){
       const last=s.guests[s.guests.length-1];s.guests.forEach(x=>{if(x!==last||i%3===0)x.status='left';});
       const g=E.arrive(s);E.conversation(s);
       let v=E.guestConversation(s,g.id),guard=0;
-      while(!v.orderReady&&guard++<30){
+      while((!v.orderReady||(dig&&v.choices.some(c=>c.id==='hum')))&&guard++<30){
         if(v.choices.some(c=>c.id==='probe'))tonight.hooks++;
+        if(v.choices.some(c=>c.id==='hum'))tonight.hums=(tonight.hums||0)+1;
         if(v.node==='hello'&&v.whisper)tonight.notes++;
-        const pick=dig?(v.choices.find(c=>['probe','probe2'].includes(c.id))||v.choices.find(c=>['go_on','day','warm','settle','broth'].includes(c.id))||v.choices.find(c=>!c.locked))
+        const pick=dig?(v.choices.find(c=>c.to==='song'&&c.id==='song'+(v.step+1))||v.choices.find(c=>['probe','probe2','hum','hum2','heard'].includes(c.id))||v.choices.find(c=>['go_on','day','warm','settle','broth'].includes(c.id))||v.choices.find(c=>!c.locked))
           :(v.choices.find(c=>['go_on','menu','order','settle'].includes(c.id))||v.choices.find(c=>!c.locked));
         assert.ok(E.answerGuest(s,g.id,pick.id),'night '+night+' '+v.node+' '+pick.id);v=E.guestConversation(s,g.id);
       }
@@ -757,6 +758,7 @@ test('the hidden episode surfaces piece by piece only for an owner who digs, in 
   });
   const all=[...W.fragments,...W.notes];
   for(const f of all)assert.ok(when[f.id],f.id+' is eventually heard by an owner who asks');
+  assert.ok(Object.keys(when).filter(id=>all.some(f=>f.id===id)).length===all.length);
   for(const f of all)for(const need of f.needs)assert.ok(when[need]<=when[f.id],f.id+' comes after '+need);
   for(const f of W.fragments.filter(x=>x.tell2))assert.ok(when[f.id+'+']>=when[f.id],f.id+' has more for an owner who keeps asking');
   const last=W.fragments[W.fragments.length-1];assert.equal(last.strand,'owner');
@@ -765,7 +767,7 @@ test('the hidden episode surfaces piece by piece only for an owner who digs, in 
   assert.ok(when.quiet>when.q3,'the quiet night only happens to an owner who has heard what the last page says');
   // The same nights played without curiosity reveal no fragment at all.
   const hurried=playNights(E,70,false);
-  assert.ok(hurried.whispers.every(id=>W.notes.some(n=>n.id===id)),'an owner who only takes orders hears nothing from guests');
+  assert.ok(hurried.whispers.every(id=>W.notes.some(n=>n.id===id)),'an owner who only takes orders hears nothing from guests, of either hidden episode');
   assert.ok(hurried.whispers.length<=1);
   // What was heard survives a reload; unknown or broken entries are dropped without losing the save.
   const saved=JSON.parse(JSON.stringify(s));assert.deepEqual([...E.restore(JSON.stringify(saved)).whispers],[...s.whispers]);
@@ -813,4 +815,70 @@ test('the hidden episode has no screen of its own and borrows only ideas',()=>{
   for(const file of ['docs/game.js','docs/index.html','docs/approved.html','docs/ad-events.js'])assert.ok(!/whisper/i.test(fs.readFileSync(file,'utf8')),file+' knows nothing of the hidden episode');
   const text=JSON.stringify(W);
   for(const word of ['SCP','재단','Foundation','스크립트','대본','라틴','나이트클럽','클럽','원로원','격리','박사'])assert.ok(!text.includes(word),word+' belongs to the source of the idea');
+});
+
+// ---- The second hidden episode ----
+test('six lines of one song are met out of order, only by an owner who asks about the humming',()=>{
+  const E=require('../docs/engine'),Y=E.storyContent.lullaby,when={};
+  const s=playNights(E,60,true,(state,night,tonight)=>{
+    assert.ok((tonight.hums||0)<=1,'at most one guest a night hums');
+    if(night<Y.startNight)assert.ok(!state.whispers.some(id=>id.startsWith('song')));
+    for(const id of state.whispers)if(!when[id])when[id]=night;
+  });
+  for(const line of Y.lines)assert.ok(when[line.id]&&when[line.id+'+']>=when[line.id],line.id);
+  const metInOrder=Y.lines.map(l=>l.id).sort((a,b)=>when[a]-when[b]);
+  assert.deepEqual(metInOrder,[...Y.found],'the lines are found in their own order');
+  assert.notDeepEqual([...Y.found],Y.lines.map(l=>l.id),'which is not the order of the song');
+  assert.ok(when.sung>Math.max(...Y.lines.map(l=>when[l.id])),'the whole song is only asked for once every line has been heard');
+  assert.equal(s.whispers.filter(id=>id==='sung').length,1);
+  // The humming is told as narration beside an ordinary order, and each guest is asked once.
+  const t=E.fresh();let guest=null;
+  for(let night=Y.startNight;night<200&&!guest;night++){t.night=night;t.phase='prep';E.open(t);for(let i=0;i<9&&!guest;i++){t.guests.forEach(g=>g.status='left');const g=E.arrive(t);g.chat={node:'order',reply:'menu',discovered:[]};if(E.guestConversation(t,g.id).choices.length)guest=g;}}
+  let view=E.guestConversation(t,guest.id);const first=Y.lines.find(l=>l.id===Y.found[0]);
+  assert.equal(view.orderReady,true);assert.ok(Y.hook.includes(view.note));assert.ok(view.line.includes(E.recipes[guest.recipe].name));assert.ok(!view.line.includes(first.text));
+  assert.deepEqual(view.choices.map(c=>[c.id,c.label]),[['hum',Y.ask]]);assert.deepEqual([...t.whispers],[]);
+  const told={...guest,chat:{...guest.chat,told:E.storyContent.stories[0].id}};t.guests=[told];assert.deepEqual(E.guestConversation(t,guest.id).choices,[],'the guest who told the night\'s story does not hum');t.guests=[guest];
+  assert.ok(E.answerGuest(t,guest.id,'hum'));view=E.guestConversation(t,guest.id);
+  assert.equal(view.node,'hum');assert.equal(view.line,first.tell);assert.ok(view.line.includes(first.text));assert.deepEqual([...t.whispers],[first.id]);
+  assert.equal(E.guestConversation(E.restore(JSON.stringify(t)),guest.id).line,first.tell);
+  assert.ok(E.answerGuest(t,guest.id,'hum2'));assert.equal(E.guestConversation(t,guest.id).line,first.tell2);assert.deepEqual([...t.whispers],[first.id,first.id+'+']);
+  assert.ok(E.answerGuest(t,guest.id,'order'));view=E.guestConversation(t,guest.id);
+  assert.equal(view.orderReady,true);assert.deepEqual(view.choices,[],'the same guest does not hum a second line');assert.equal(view.note,'');
+  assert.deepEqual(E.guestConversation(E.restore(JSON.stringify(t)),guest.id).choices,[]);
+});
+test('only an owner who has worked out the order can give a guest the rest of the song',()=>{
+  const E=require('../docs/engine'),Y=E.storyContent.lullaby,all=Y.lines.map(l=>l.id);
+  const seat=(whispers)=>{const s=E.fresh();s.whispers=[...whispers];let guest=null;
+    for(let n=Y.startNight;n<400&&!guest;n++){s.night=n;s.phase='prep';E.open(s);for(let i=0;i<Y.finale.guest;i++){s.guests.forEach(g=>g.status='left');guest=E.arrive(s);}if(!E.guestConversation(s,guest.id).choices.some(c=>c.to==='song'))guest=null;}
+    return {s,guest};};
+  assert.equal(seat(all.slice(0,5)).guest,null,'with a line missing nobody asks for the song');
+  assert.equal(seat([...all,'sung']).guest,null,'a song once sung through is not asked for again');
+  const {s,guest}=seat(all);assert.ok(guest,'the night comes, rarely');
+  let view=E.guestConversation(s,guest.id);
+  assert.ok(view.line.startsWith('“'+Y.lines[0].text+'”'));assert.equal(view.step,1);
+  assert.equal(view.choices.length,4);assert.equal(view.choices[3].id,'welcome');
+  assert.ok(view.choices.slice(0,3).some(c=>c.id==='song2'));assert.equal(new Set(view.choices.map(c=>c.id)).size,4);
+  for(const c of view.choices.slice(0,3))assert.equal(c.label,'“'+Y.lines.find(l=>l.id===c.id).text+'”','the choices are whole lines, with no hint of their place');
+  // A wrong line and a shrug both end it gently; nothing is lost and the night can come again.
+  const wrong=E.restore(JSON.stringify(s)),bad=view.choices.slice(0,3).find(c=>c.id!=='song2');
+  assert.ok(E.answerGuest(wrong,guest.id,bad.id));assert.equal(E.guestConversation(wrong,guest.id).line,Y.finale.wrong);assert.ok(!wrong.whispers.includes('sung'));
+  assert.ok(E.answerGuest(wrong,guest.id,'settle'));assert.equal(E.guestConversation(wrong,guest.id).node,'intro');
+  const plain=E.restore(JSON.stringify(s));assert.ok(E.answerGuest(plain,guest.id,'welcome'));assert.equal(E.guestConversation(plain,guest.id).node,'intro');
+  // The right lines, one after another.
+  for(let n=2;n<=5;n++){
+    assert.ok(E.answerGuest(s,guest.id,'song'+n));view=E.guestConversation(s,guest.id);
+    assert.equal(view.node,'song');assert.equal(view.step,n);assert.equal(view.line,'“'+Y.lines[n-1].text+'”\n'+Y.finale.after['song'+n]);
+    assert.ok(view.choices.some(c=>c.id==='song'+(n+1))&&view.choices.some(c=>c.id==='pass')&&view.choices.length===4);
+    assert.equal(E.guestConversation(E.restore(JSON.stringify(s)),guest.id).step,n,'the place in the song survives a reload');
+    if(n===3){const quit=E.restore(JSON.stringify(s));assert.ok(E.answerGuest(quit,guest.id,'pass'));assert.equal(E.guestConversation(quit,guest.id).line,Y.finale.passed);}
+  }
+  assert.ok(E.answerGuest(s,guest.id,'song6'));view=E.guestConversation(s,guest.id);
+  assert.equal(view.node,'sung');assert.ok(view.line.includes(Y.lines[5].text)&&view.line.endsWith(Y.finale.sung));assert.ok(s.whispers.includes('sung'));
+  assert.ok(E.answerGuest(s,guest.id,'heard'));assert.equal(E.guestConversation(s,guest.id).line,Y.finale.sung2);
+  assert.ok(E.answerGuest(s,guest.id,'settle'));assert.equal(E.guestConversation(s,guest.id).node,'intro');
+  // The song itself: six lines whose own words give their order, and nothing in the interface about it.
+  assert.equal(Y.lines.length,6);assert.deepEqual([...Y.found].sort(),[...all].sort());
+  const marks=['해 지거든','달 뜨거든','개 짖거든','별 지거든','닭 울거든','문 열거든'];
+  Y.lines.forEach((l,i)=>{assert.ok(l.text.startsWith(marks[i]),l.id);assert.ok(l.tell.includes('“'+l.text)&&l.tell.length<=170&&l.ask2.length<=24&&l.tell2.length>=40&&l.tell2.length<=170,l.id);});
+  for(const file of ['docs/game.js','docs/index.html','docs/approved.html','docs/ad-events.js'])assert.ok(!/lullaby|자장가/.test(fs.readFileSync(file,'utf8')),file+' knows nothing of the song');
 });
