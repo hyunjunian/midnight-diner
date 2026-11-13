@@ -129,9 +129,9 @@ test('guest background is learned through dialogue while the name is visible fro
  const hello=E.guestConversation(s,g.id);assert.equal(hello.node,'hello');assert.equal(hello.orderReady,false);assert.deepEqual(s,before);
  assert.equal(E.answerGuest(s,g.id,'about'),false);assert.deepEqual(s,before);
  assert.equal(E.answerGuest(s,g.id,'welcome'),true);assert.equal(E.guestProfile(s,g.person).name,E.person(g.person).name);assert.equal(E.guestProfile(s,g.person).role,null);assert.equal(E.guestProfile(s,g.person).age,null);assert.ok(E.guestProfile(s,g.person).style);
- assert.equal(E.answerGuest(s,g.id,'day'),true);assert.equal(E.guestProfile(s,g.person).role,E.person(g.person).role);assert.equal(E.guestProfile(s,g.person).age,null);assert.ok(E.guestConversation(s,g.id).line.includes('주인장님은'));
- assert.deepEqual(E.guestConversation(s,g.id).choices.map(x=>x.id),['warm','quiet','about']);
- assert.equal(E.answerGuest(s,g.id,'warm'),true);const warm=E.guestConversation(s,g.id).line;assert.match(E.guestConversation(s,g.id).playerLine,/좋은 재료/);assert.ok(warm.includes(E.recipes[g.recipe].name));
+ assert.equal(E.answerGuest(s,g.id,'day'),true);assert.equal(E.guestProfile(s,g.person).role,E.person(g.person).role);assert.equal(E.guestProfile(s,g.person).age,null);assert.ok(E.guestConversation(s,g.id).line.includes('원고'));
+ assert.deepEqual(E.guestConversation(s,g.id).choices.map(x=>x.id),['warm','quiet','order']);
+ assert.equal(E.answerGuest(s,g.id,'warm'),true);const warm=E.guestConversation(s,g.id).line;assert.match(E.guestConversation(s,g.id).playerLine,/원고/);assert.ok(warm.includes(E.recipes[g.recipe].name));
  assert.equal(E.answerGuest(s,g.id,'about'),true);assert.equal(E.guestProfile(s,g.person).age,E.person(g.person).age);assert.match(E.guestConversation(s,g.id).line,/세예요/);
  assert.equal(E.answerGuest(s,g.id,'order'),true);assert.equal(E.guestConversation(s,g.id).orderReady,true);assert.match(E.guestConversation(s,g.id).line,new RegExp(E.recipes[g.recipe].name));
  assert.equal(s.money,before.money);assert.equal(s.xp,before.xp);assert.equal(s.totalServed,0);assert.equal(g.status,'seated');
@@ -216,4 +216,29 @@ test('newly unlocked dishes precede repeat orders and old saves inherit their re
  let s=E.restore(JSON.stringify(original));assert.deepEqual(s.menuRotation,['onigiri','tamago','tonjiru']);
  s.level=2;E.progress(s);const newly=s.unlocked.filter(id=>E.recipes[id].level===2);E.open(s);
  const orders=Array.from({length:3},()=>E.arrive(s).recipe);assert.deepEqual(new Set(orders),new Set(newly));
+});
+
+test('every guest receives replies to their own day, can order directly, and can rest without more questions',()=>{
+ const days=new Set(),responses=new Set();
+ for(let person=0;person<E.people.length*2;person++){
+  for(const reply of ['warm','quiet','order']){
+   const s=E.fresh();E.open(s);s.nextVisitor=person;const g=E.arrive(s);assert.equal(g.person,person);
+   for(const id of ['welcome','day'])assert.ok(E.answerGuest(s,g.id,id));
+   const before=structuredClone(s),day=E.guestConversation(s,g.id);
+   assert.deepEqual(s,before,'reading does not mutate a save');
+   assert.doesNotMatch(day.line,/주인장님은 지친 날|어떤 한 끼가 생각/);
+   assert.deepEqual(day.choices.map(c=>c.id),['warm','quiet','order']);
+   if(reply==='warm')days.add(day.choices[0].label);
+   const chosen=day.choices.find(c=>c.id===reply).label;
+   assert.ok(E.answerGuest(s,g.id,reply));const view=E.guestConversation(s,g.id);
+   assert.equal(view.playerLine,chosen);assert.ok(view.line.includes(E.recipes[g.recipe].name));
+   if(reply==='warm')responses.add(view.line.split('\n')[0]);
+   if(reply==='quiet'||person%E.people.length===16)assert.deepEqual(view.choices.map(c=>c.id),reply==='order'?[]:['order']);
+   assert.equal(s.money,before.money);assert.equal(s.xp,before.xp);assert.deepEqual(s.inventory,before.inventory);assert.equal(g.recipe,before.guests[0].recipe);
+   const loaded=E.restore(JSON.stringify(s));assert.deepEqual(E.guestConversation(loaded,g.id),view);
+   if(reply!=='order')assert.ok(E.answerGuest(loaded,g.id,'order'));
+   assert.ok(E.acceptOrder(loaded,g.id));
+  }
+ }
+ assert.equal(days.size,E.people.length);assert.equal(responses.size,E.people.length);
 });

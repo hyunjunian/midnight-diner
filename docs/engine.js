@@ -131,6 +131,34 @@
     '반납된 책에 예쁜 책갈피가 남아 있었어요. 주인이 찾으러 오셨으면 좋겠네요.',
     '오늘 들어온 책들을 다 정리했어요. 책 냄새 대신 밥 냄새가 필요한 시간이에요.'
   ];
+  // Match each reply to the day this guest just described; keep legacy branch IDs for saves.
+  const guestDayTalk=[
+    ["원고를 보내셨으니 한숨 돌리시겠어요.","전송하고도 몇 번을 확인했어요. 이제야 끝났다는 실감이 나네요.","눈도 좀 쉬게 해 주세요.","네, 오늘은 화면을 더 안 보려고요."],
+    ["마지막 꽃은 어떤 꽃이었어요?","노란 튤립이요. 한참 고르시더니 한 송이만 안고 가셨어요.","오늘은 꽃집 문도 일찍 닫으셨겠네요.","네. 평소보다 일찍 나왔더니 어디로 갈지 잠깐 망설였어요."],
+    ["짧은 인사가 오래 남을 때가 있죠.","늘 말없이 내리시던 분이라 더 그랬나 봐요. 내일도 타실지 모르겠네요.","운전 끝나셨으니 편히 쉬세요.","핸들을 놓고 앉으니 어깨가 좀 풀리네요."],
+    ["사진에는 불빛이 어떻게 담겼어요?","젖은 바닥에 비친 빛이 길게 나왔어요. 맑은 날과는 전혀 다르더라고요.","카메라는 잠깐 내려놓으셔도 돼요.","그러려고요. 사진 고르는 건 내일 해도 되니까요."],
+    ["새벽 준비를 벌써 마치셨군요.","반죽은 제가 쉬는 동안에도 부풀 테니까요. 아침에는 굽기만 하면 돼요.","여기서는 차려 주는 밥 드세요.","그 말이 참 반갑네요. 오늘은 제 손으로 안 만들어도 되겠어요."],
+    ["걷다가 우연히 들어오신 거예요?","네. 큰길로 돌아가려다 이쪽 불빛이 보여서 와 봤어요.","길 찾기는 식사 뒤에 하셔도 돼요.","좋아요. 다음에 올 때는 이 골목부터 찾게 될 것 같네요."],
+    ["어떤 소식을 보내 왔나요?","자기도 교사가 됐대요. 교탁 앞에 서니 제 생각이 났다더군요.","천천히 떠올리며 쉬었다 가세요.","고마워요. 답장 첫 문장을 생각하고 있었거든요."],
+    ["끝까지 해낸 날이네요.","중간에는 그만하고 싶었는데, 마지막 동작이 한 번 됐어요. 그걸로 됐죠.","오늘 연습은 여기까지 해 두세요.","맞아요. 밥 먹을 때까지 연습 생각을 할 뻔했네요."],
+    ["오래 아끼던 옷이었나 봐요.","안주머니에 예전 영화표도 있더라고요. 그대로 넣어 달라고 하셨어요.","바느질하느라 손이 고단하시겠어요.","단추가 많아서 좀 뻐근하네요. 수저 들 힘은 남았어요."],
+    ["늦게까지 현장에 계셨군요.","마지막 자재 덮는 데 시간이 걸렸어요. 내일 비가 온다기에 그냥 나올 수가 없었죠.","짐 내려놓고 편히 앉으세요.","고맙습니다. 가방까지 내려놓으니 이제 퇴근한 것 같네요."],
+    ["이제 본인 식사 챙기실 차례네요.","네. 저녁 먹었냐고 남들한테만 물었지, 제 밥은 까맣게 잊었어요.","드시는 동안은 편히 쉬세요.","잠깐이라도 아무 호출 없이 앉아 있고 싶었어요."],
+    ["그분은 어떤 곡까지 듣고 가셨어요?","앵콜도 아닌 짧은 곡이었어요. 끝나고 고개만 끄덕여 주셨는데 참 좋더라고요.","공연 끝의 여운이 남아 있겠어요.","아직 귀에 마지막 음이 남아 있어요. 조금만 이대로 앉아 있을게요."],
+    ["무대 뒤에서도 표정이 보이나 봐요.","옷 갈아입으러 뛰어올 때 보이죠. 오늘은 다들 웃으면서 나갔어요.","이제 의상 걱정은 내려놓으세요.","네. 바늘통도 닫고 왔으니 오늘 일은 끝이에요."],
+    ["작은 글씨를 온종일 보셨군요.","한 글자 틀린 걸 찾고 나면 또 다른 게 보여요. 끝이 없더라고요.","여기서는 눈 좀 쉬세요.","고마워요. 메뉴도 오래 들여다보지 말고 골라야겠어요."],
+    ["어떤 색이 눈에 들어왔어요?","나무에 비친 노란빛이요. 물감을 섞을 땐 안 나오던 색인데 여기 있네요.","그림 생각도 잠시 쉬어 가요.","그러려고 나왔는데 또 그림 얘기네요. 연필은 가방에 넣어 둘게요."],
+    ["어디를 보고 그렇게 느끼셨어요?","모서리가 매끈해요. 매일 닦은 나무는 손이 닿는 곳부터 달라지거든요.","오늘은 일 보듯 살피지 않으셔도 돼요.","직업 버릇이네요. 오늘은 팔꿈치만 편하게 얹어 둘게요."],
+    ["그럼 주문만 여쭤볼게요.","고마워요. 대답할 말을 고르지 않아도 되니 편하네요.","네, 편히 계세요. 음식 정해지면 말씀 주세요.","그럴게요. 잠깐 앉아 있으니 벌써 좀 낫네요."],
+    ["다른 사람이 만든 밥이 반가운 날이죠.","맞아요. 제가 간을 보지 않아도 되는 식사가 가끔 필요해요.","오늘은 손님으로 편히 드세요.","네. 주방 쪽을 자꾸 보는 버릇부터 참아 볼게요."],
+    ["오늘도 새로 만난 분이 있었나요?","처음 오신 분이 찻잔을 두 손으로 꼭 쥐시더라고요. 나갈 땐 웃으셨어요.","차 내리셨으니 이제 식사하셔야죠.","그러네요. 남의 잔은 몇 번이나 채우고 제 밥은 늦었어요."],
+    ["오늘은 어떤 자전거를 고치셨어요?","오래 세워 둔 어린이 자전거요. 바퀴가 돌아가자 아이가 바로 타 보겠대요.","공구 내려놓고 쉬는 시간이네요.","네. 손에 기름 냄새가 안 나니까 이제 좀 배가 고파요."],
+    ["늦은 정비는 잘 끝났나요?","시동이 한 번에 걸렸어요. 그 소리를 들어야 마음 놓고 퇴근하죠.","수고하셨어요. 이제 식사하셔야죠.","네. 손도 깨끗이 씻었으니 바로 먹을 수 있어요."],
+    ["마지막 배달은 어디였어요?","언덕 꼭대기 집이요. 현관 불을 켜 놓고 기다리고 계셨어요.","이번에는 여기서 밥을 받으실 차례네요.","그러네요. 오늘 마지막 도착지는 이 자리로 할게요."],
+    ["어떤 책갈피였어요?","꽃을 눌러 말린 거였어요. 잃어버리면 아쉬울 것 같아 따로 보관해 뒀죠.","찾으러 오시면 반가우시겠어요.","네. 책보다 그걸 먼저 물어보실지도 모르겠네요."],
+    ["오늘은 어떤 책이 들어왔나요?","손때 묻은 요리책이요. 자주 펼친 쪽에만 얼룩이 남아 있더라고요.","책 정리는 끝내셨으니 밥 드셔야죠.","맞아요. 책 속 음식만 보다가 진짜 밥이 그리워졌어요."],
+  ];
+  function dayTalk(g){return guestDayTalk[g.person%guestDayTalk.length];}
   // Knowledge belongs to a person, while the conversation position belongs to this visit.
   // Both are optional v11 additions: older saves retain their entire service/financial state.
   const guestFacts=['name','role','age','style','bio'];
@@ -139,9 +167,9 @@
     welcome:'어서 오세요. 편히 앉으세요.',
     day:'오늘은 어떤 하루를 보내셨어요?',
     menu:'우선 드시고 싶은 음식을 여쭤볼게요.',
-    warm:'그날 좋은 재료로 만든 음식을 먹고 싶어요.',
-    quiet:'천천히 맛보며 쉬어 갈 수 있는 한 끼가 좋아요.',
-    about:'괜찮다면, 자기소개를 조금 더 해 주실래요?',
+    warm:'조금 더 들려주세요.',
+    quiet:'편히 쉬었다 가세요.',
+    about:'괜찮으시면 이야기를 조금 더 들려주세요.',
     order:'오늘 드실 음식을 준비해 드릴까요?',
     probe:'',probe2:'',broth:'',echo:'',settle:'',
   };
@@ -255,7 +283,7 @@
     const tale=chapterStep(s);
     let node=guestNodes.includes(g.chat?.node)?g.chat.node:'hello';
     if((node==='tale'&&tale!==0)||(node==='taleResult'&&tale!==1))node='hello';
-    const choices=[],offer=(id,to)=>choices.push({id,label:guestReplies[id],to});
+    const talk=dayTalk(g),choices=[],offer=(id,to,label=guestReplies[id])=>choices.push({id,label,to});
     let line='',caption='서로 알아가는 중',note='',beat=0,whisper=null;
     if(node==='hello'){
       caption=profile.known.includes('name')?'다시 만난 반가운 얼굴':'첫 인사';
@@ -284,15 +312,14 @@
       // The story runs straight into the order: no fresh introduction after all that talk.
       for(const c of S.reflection)choices.push({id:c.id,label:reflectionLabel(s,c),to:'order'});
     }else if(node==='intro'){
-      line=profile.known.includes('role')?`${p.name}입니다. 저를 기억해 주시니 반갑네요.`:`저는 ${p.name}입니다. 이렇게 인사하니 한결 편안하네요.`;
+      line=profile.known.includes('role')?`오늘도 여기서 한 끼 먹고 가려고요.`:`저는 ${p.name}입니다. 이렇게 인사하니 한결 편안하네요.`;
       offer('day','day');offer('menu','order');
     }else if(node==='day'){
-      line=`${guestJobs[g.person%guestJobs.length]} ${guestDays[g.person%guestDays.length]}\n주인장님은 지친 날에 어떤 한 끼가 생각나세요?`;
-      offer('warm','warm');offer('quiet','quiet');
-      if(!profile.known.includes('age'))offer('about','about');
+      line=`${profile.known.includes('role')&&!g.chat?.discovered?.includes('role')?'':guestJobs[g.person%guestJobs.length]+' '}${guestDays[g.person%guestDays.length]}`;
+      offer('warm','warm',talk[0]);offer('quiet','quiet',talk[2]);offer('order','order');
     }else if(node==='warm'||node==='quiet'){
-      line=node==='warm'?`재료에 따라 매번 다른 맛을 만나는 것도 좋죠. 저는 오늘 ${recipes[g.recipe].name}, 그걸 먹고 싶어요.`:`그런 자리도 꼭 필요하죠. 오늘은 ${recipes[g.recipe].name} 먹으면서 느긋하게 쉬어 가고 싶네요.`;
-      offer('order','order');if(!profile.known.includes('age'))offer('about','about');
+      line=`${talk[node==='warm'?1:3]}\n${recipes[g.recipe].name}, 부탁드릴게요.`;
+      offer('order','order');if(node==='warm'&&g.person%guestDayTalk.length!==16&&!profile.known.includes('age'))offer('about','about');
       // Now and then a guest lets something slip here; the owner may ask, or let it pass.
       const slip=whisperFor(s,g);if(slip){line+='\n'+slip.hook;whisper=slip.id;choices.push({id:'probe',label:slip.ask,to:'odd'});}
     }else if(node==='odd'||node==='odder'){
@@ -303,7 +330,7 @@
     }else if(node==='hush'){
       line=W.quiet.after[g.chat?.reply]||W.quiet.after.welcome;choices.push({id:'settle',label:W.quiet.settle,to:'intro'});
     }else if(node==='about'){
-      line=`저는 ${p.age}예요. ${guestJobs[g.person%guestJobs.length]}\n${guestDays[g.person%guestDays.length]} 제 이야기를 들어 주셔서 고마워요.`;
+      line=`${p.bio}\n어느새 ${p.age}예요. 제 이야기를 들어 주셔서 고마워요.`;
       offer('order','order');
     }else{
       caption=g.status==='waiting'?'접수한 주문':'오늘의 주문';
@@ -312,7 +339,7 @@
       line=g.status==='waiting'?`${recipes[g.recipe].name}, 편히 기다리고 있을게요.`:(told?.order||requests[Math.floor((g.lineKey||0)/openings.length)%requests.length]).replace('{dish}',recipes[g.recipe].name);
     }
     return {node,beat,whisper,line,caption,note,choices,orderReady:node==='order',
-      playerLine:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
+      playerLine:g.chat?.reply==='warm'?talk[0]:g.chat?.reply==='quiet'?talk[2]:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
   }
   function answerGuest(s,id,reply){
     const view=guestConversation(s,id),choice=view?.choices.find(x=>x.id===reply);if(!choice||choice.locked)return false;
