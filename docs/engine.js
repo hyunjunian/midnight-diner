@@ -2,6 +2,7 @@
 (() => {
   'use strict';
   const C=typeof module!=='undefined'?require('./catalog.js'):window.MidnightCatalog;
+  const D=typeof module!=='undefined'?require('./guest-dialogue.js'):window.MidnightGuestDialogue;
   const S=typeof module!=='undefined'?require('./stories.js'):window.MidnightStories;
   const Cooking=typeof module!=='undefined'?require('./cooking-rules.js'):window.MidnightCookingRules;
   const Growth=typeof module!=='undefined'?require('./growth-v77.js'):window.MidnightGrowth;
@@ -27,32 +28,33 @@
   }
   const ingredientAvailable=(s,id)=>Object.hasOwn(ingredients,id)&&ingredients[id].level<=s.level;
   const people = [
-    { name: '하루', role: '막차를 놓친 편집자', age: '32세', style: '깔끔하고 단정한 스타일', bio: '작은 출판사에서 일해요. 마감 뒤에는 바삭한 밥 한 입으로 하루를 정리합니다.', color: '#c88b69', hair: '#382c32', line: '긴 하루였어요. 바삭한 주먹밥 하나면 좋겠네요.', dish: 'onigiri' },
-    { name: '렌', role: '동네 꽃집 주인', age: '34세', style: '안경과 포근한 카디건', bio: '골목 입구 꽃집을 지켜요. 남의 마음은 잘 읽지만 자기 이야기는 조금 서툴러요.', color: '#819c8c', hair: '#4c3930', line: '오늘은 조금 부드러운 게 당기네요. 달걀말이 될까요?', dish: 'tamago' },
-    { name: '유키', role: '야간 버스 기사', age: '48세', style: '단정한 남색 작업복', bio: '마지막 운행을 끝내고 찾아옵니다. 뜨거운 국물을 천천히 먹는 시간을 좋아해요.', color: '#8193b2', hair: '#282b38', line: '뜨끈한 국물이 생각나서 왔어요. 된장국 한 그릇 주세요.', dish: 'tonjiru' },
-    { name: '소라', role: '골목의 사진가', age: '28세', style: '짧은 머리와 머스터드 재킷', bio: '밤의 골목을 카메라에 담아요. 처음 만난 가게에서는 주인장의 추천을 믿어요.', color: '#bb9b67', hair: '#564138', line: '오늘 한 끼는 주인장에게 맡겨도 될까요?', dish: 'special' },
-    { name: '나오', role: '새벽의 제빵사', age: '38세', style: '묶은 머리와 차분한 셔츠', bio: '반죽이 부푸는 동안 잠깐 쉬러 와요. 정성스러운 밥에서 일할 힘을 얻습니다.', color: '#ac84a0', hair: '#413332', line: '빵 말고 밥이 먹고 싶은 날이 있어요. 오늘 추천으로 주세요.', dish: 'special' },
-    { name: '아키', role: '여행 온 손님', age: '27세', style: '편안한 여행 차림', bio: '지도에 없는 골목을 좋아해요. 맛있는 기억이 생기면 며칠 더 머무릅니다.', color: '#b57870', hair: '#343c3d', line: '골목에서 좋은 냄새가 나서요. 주인장 추천으로 부탁해요.', dish: 'special' },
+    { name: '하루', role: '막차를 놓친 편집자', age: '32세', style: '깔끔하고 단정한 스타일', bio: '작은 출판사에서 일해요. 마감 뒤에는 바삭한 밥 한 입으로 하루를 정리합니다.', color: '#c88b69', hair: '#382c32', dish: 'onigiri' },
+    { name: '렌', role: '동네 꽃집 주인', age: '34세', style: '안경과 포근한 카디건', bio: '골목 입구 꽃집을 지켜요. 남의 마음은 잘 읽지만 자기 이야기는 조금 서툴러요.', color: '#819c8c', hair: '#4c3930', dish: 'tamago' },
+    { name: '유키', role: '야간 버스 기사', age: '48세', style: '단정한 남색 작업복', bio: '마지막 운행을 끝내고 찾아옵니다. 뜨거운 국물을 천천히 먹는 시간을 좋아해요.', color: '#8193b2', hair: '#282b38', dish: 'tonjiru' },
+    { name: '소라', role: '골목의 사진가', age: '28세', style: '짧은 머리와 머스터드 재킷', bio: '밤의 골목을 카메라에 담아요. 처음 만난 가게에서는 주인장의 추천을 믿어요.', color: '#bb9b67', hair: '#564138', dish: 'special' },
+    { name: '나오', role: '새벽의 제빵사', age: '38세', style: '묶은 머리와 차분한 셔츠', bio: '반죽이 부푸는 동안 잠깐 쉬러 와요. 정성스러운 밥에서 일할 힘을 얻습니다.', color: '#ac84a0', hair: '#413332', dish: 'special' },
+    { name: '아키', role: '여행 온 손님', age: '27세', style: '편안한 여행 차림', bio: '지도에 없는 골목을 좋아해요. 맛있는 기억이 생기면 며칠 더 머무릅니다.', color: '#b57870', hair: '#343c3d', dish: 'special' },
   ];
   people[2].age='52세';people[3].age='25세';people[4].age='48세';people[4].style='둥근 얼굴과 새치 섞인 묶음머리';people[5].age='22세';
-  people.push({"name": "후미", "role": "은퇴한 국어 선생님", "age": "72세", "style": "은빛 파마머리와 둥근 안경", "bio": "책을 덮은 뒤에는 골목을 천천히 걸어요. 오랫동안 학생들과 나누었던 이야기를 기억합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "다이치", "role": "체육학과 대학생", "age": "19세", "style": "짧은 머리와 청록 후드", "bio": "늦은 연습을 마치면 든든한 한 끼가 필요해요. 누구보다 맛있게 밥을 먹습니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "사치", "role": "골목의 재봉사", "age": "66세", "style": "회색 땋은 머리와 올리브 숄", "bio": "작은 수선집에서 오래된 옷을 고쳐요. 서두르지 않는 식당을 좋아합니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "고로", "role": "현장 반장", "age": "43세", "style": "넓은 어깨와 주황 작업복", "bio": "밤 공사를 마치고 찾아왔어요. 동료들과 나눌 다음 식당 이야기를 찾습니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "마키", "role": "야간 병동 간호사", "age": "39세", "style": "직사각 안경과 단정한 묶음머리", "bio": "다른 사람의 식사를 챙기다 이제야 쉬러 왔어요. 편안한 한 끼가 필요합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "신지", "role": "재즈 연주자", "age": "61세", "style": "은빛 수염과 검은 터틀넥", "bio": "마지막 연주가 끝나면 허기가 찾아와요. 오래된 노래와 담백한 음식을 좋아합니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "케이코", "role": "극장 의상 담당", "age": "58세", "style": "짧은 적갈색 곱슬머리와 자주 코트", "bio": "공연이 끝난 뒤 의상을 정리해요. 따뜻한 가게에서 하루의 긴장을 풀고 싶어 합니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "미나토", "role": "잡지 교정자", "age": "29세", "style": "단정한 정장과 둥근 안경", "bio": "활자 사이의 작은 오자를 찾는 일을 해요. 식사할 때만큼은 천천히 쉬고 싶습니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "메이", "role": "미대 학생", "age": "21세", "style": "적갈색 짧은 곱슬머리와 민트 니트", "bio": "밤새 그린 그림 이야기를 좋아해요. 새로운 맛에서 영감을 얻곤 합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "이사오", "role": "은퇴한 목수", "age": "76세", "style": "흰 옆머리와 갈색 조끼", "bio": "이 골목의 오래된 가게들을 기억해요. 나무 향이 나는 공간을 좋아합니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "레이코", "role": "출판사 영업 담당", "age": "45세", "style": "짙은 일자머리와 붉은 재킷", "bio": "온종일 사람을 만나고 온 날이에요. 말없이 편하게 먹을 수 있는 자리를 찾습니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "히로", "role": "이웃 가게 요리사", "age": "36세", "style": "긴 웨이브 머리와 옅은 수염", "bio": "자기 가게를 마감하고 다른 사람의 요리를 먹으러 와요. 주인장의 정성을 잘 알아봅니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "치요", "role": "동네 차 선생님", "age": "68세", "style": "은빛 단발과 황토색 겉옷", "bio": "차를 가르치며 오래 살아온 동네예요. 조용한 예절과 소박한 맛을 좋아합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "타쿠", "role": "자전거 수리공", "age": "24세", "style": "바가지머리와 청바지 재킷", "bio": "가게 문을 닫고 손을 깨끗이 씻은 뒤 찾아와요. 밝은 웃음이 인상적입니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "아야", "role": "자동차 정비사", "age": "27세", "style": "높이 묶은 곱슬머리와 주근깨", "bio": "늦은 정비를 끝내고 따뜻한 밥을 먹으러 왔어요. 새로운 식당을 발견하면 기뻐합니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "겐", "role": "야간 배송 기사", "age": "55세", "style": "짧은 새치머리와 초록 작업복", "bio": "물건을 모두 전하고 나면 허기가 져요. 든든한 식사와 짧은 인사를 좋아합니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "리나", "role": "도서관 사서", "age": "34세", "style": "긴 검은 땋은 머리와 크림 숄", "bio": "책 정리를 마치고 골목을 걸어요. 마음에 드는 식당은 책갈피처럼 오래 기억합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
-  people.push({"name": "오사무", "role": "중고서점 주인", "age": "40세", "style": "소금빛 짧은 머리와 푸른 셔츠", "bio": "서점 불을 끄고 저녁을 먹으러 왔어요. 누군가 골라 준 음식에 작은 기대를 품습니다.", "color": "#62786e", "hair": "#423b33", "dish": "special", "line": "오늘은 주인장 추천으로 주세요. 따뜻한 한 끼가 먹고 싶어요."});
+  people.push({"name": "후미", "role": "은퇴한 국어 선생님", "age": "72세", "style": "은빛 파마머리와 둥근 안경", "bio": "책을 덮은 뒤에는 골목을 천천히 걸어요. 오랫동안 학생들과 나누었던 이야기를 기억합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "다이치", "role": "체육학과 대학생", "age": "19세", "style": "짧은 머리와 청록 후드", "bio": "늦은 연습을 마치면 든든한 한 끼가 필요해요. 누구보다 맛있게 밥을 먹습니다.", "color": "#62786e", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "사치", "role": "골목의 재봉사", "age": "66세", "style": "회색 땋은 머리와 올리브 숄", "bio": "작은 수선집에서 오래된 옷을 고쳐요. 서두르지 않는 식당을 좋아합니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "고로", "role": "현장 반장", "age": "43세", "style": "넓은 어깨와 주황 작업복", "bio": "밤 공사를 마치고 찾아왔어요. 동료들과 나눌 다음 식당 이야기를 찾습니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "마키", "role": "야간 병동 간호사", "age": "39세", "style": "직사각 안경과 단정한 묶음머리", "bio": "다른 사람의 식사를 챙기다 이제야 쉬러 왔어요. 편안한 한 끼가 필요합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "신지", "role": "재즈 연주자", "age": "61세", "style": "은빛 수염과 검은 터틀넥", "bio": "마지막 연주가 끝나면 허기가 찾아와요. 오래된 노래와 담백한 음식을 좋아합니다.", "color": "#62786e", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "케이코", "role": "극장 의상 담당", "age": "58세", "style": "짧은 적갈색 곱슬머리와 자주 코트", "bio": "공연이 끝난 뒤 의상을 정리해요. 따뜻한 가게에서 하루의 긴장을 풀고 싶어 합니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "미나토", "role": "잡지 교정자", "age": "29세", "style": "단정한 정장과 둥근 안경", "bio": "활자 사이의 작은 오자를 찾는 일을 해요. 식사할 때만큼은 천천히 쉬고 싶습니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "메이", "role": "미대 학생", "age": "21세", "style": "적갈색 짧은 곱슬머리와 민트 니트", "bio": "밤새 그린 그림 이야기를 좋아해요. 새로운 맛에서 영감을 얻곤 합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "이사오", "role": "은퇴한 목수", "age": "76세", "style": "흰 옆머리와 갈색 조끼", "bio": "이 골목의 오래된 가게들을 기억해요. 나무 향이 나는 공간을 좋아합니다.", "color": "#62786e", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "레이코", "role": "출판사 영업 담당", "age": "45세", "style": "짙은 일자머리와 붉은 재킷", "bio": "온종일 사람을 만나고 온 날이에요. 말없이 편하게 먹을 수 있는 자리를 찾습니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "히로", "role": "이웃 가게 요리사", "age": "36세", "style": "긴 웨이브 머리와 옅은 수염", "bio": "자기 가게를 마감하고 다른 사람의 요리를 먹으러 와요. 주인장의 정성을 잘 알아봅니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "치요", "role": "동네 차 선생님", "age": "68세", "style": "은빛 단발과 황토색 겉옷", "bio": "차를 가르치며 오래 살아온 동네예요. 조용한 예절과 소박한 맛을 좋아합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "타쿠", "role": "자전거 수리공", "age": "24세", "style": "바가지머리와 청바지 재킷", "bio": "가게 문을 닫고 손을 깨끗이 씻은 뒤 찾아와요. 밝은 웃음이 인상적입니다.", "color": "#62786e", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "아야", "role": "자동차 정비사", "age": "27세", "style": "높이 묶은 곱슬머리와 주근깨", "bio": "늦은 정비를 끝내고 따뜻한 밥을 먹으러 왔어요. 새로운 식당을 발견하면 기뻐합니다.", "color": "#8e6860", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "겐", "role": "야간 배송 기사", "age": "55세", "style": "짧은 새치머리와 초록 작업복", "bio": "물건을 모두 전하고 나면 허기가 져요. 든든한 식사와 짧은 인사를 좋아합니다.", "color": "#6d6b7d", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "리나", "role": "도서관 사서", "age": "34세", "style": "긴 검은 땋은 머리와 크림 숄", "bio": "책 정리를 마치고 골목을 걸어요. 마음에 드는 식당은 책갈피처럼 오래 기억합니다.", "color": "#78755c", "hair": "#423b33", "dish": "special"});
+  people.push({"name": "오사무", "role": "중고서점 주인", "age": "40세", "style": "소금빛 짧은 머리와 푸른 셔츠", "bio": "서점 불을 끄고 저녁을 먹으러 왔어요. 누군가 골라 준 음식에 작은 기대를 품습니다.", "color": "#62786e", "hair": "#423b33", "dish": "special"});
+  people.forEach((p,i)=>{p.line=D.say({person:i},'hello');});
   const familyNames=['사토','모리','다나카','아오키','하야시','기무라','이노우에','오노','야마모토','다카하시','이시카와','고바야시'];
   function person(id) {
     const base=people[id%people.length];
@@ -81,9 +83,10 @@
   function heatLook(s,id,value){if(!Cooking.heated.includes(id))return 'good';const spec=cookSpec(s,id);return value<spec.ideal-spec.band/2?'raw':value>Math.min(.94,spec.ideal+spec.band*2)?'burnt':value>spec.ideal+spec.band/2?'dry':'good';}
   function kitchenLook(s){const k=s.kitchen,g=s.guests.find(g=>g.id===k?.guest);if(!g||!k)return 'good';const hi=Cooking.plan(g.recipe,recipes[g.recipe]).findIndex(st=>st.id==='heat');return hi>=0&&k.step>hi?heatLook(s,g.recipe,k.heatValue??cookSpec(s,g.recipe).ideal+(1-k.marks[hi])*cookSpec(s,g.recipe).tolerance):'good';}
   function reviewText(bill,seed=0){
-    const lines=bill.waitPenalty>0?['조금 기다렸지만 따뜻하게 먹고 가요.','다음에는 조금 더 빨리 만나면 좋겠어요.','기다림이 짧아지면 더 자주 오고 싶어요.','다음 한 끼는 더 여유 있게 먹고 싶네요.']:bill.heat<70?['음식이 조금 더 알맞게 익으면 좋겠어요.','익힘을 조금 더 신경 써 주시면 좋겠어요.','다음에는 더 촉촉한 한 끼를 기대할게요.','따뜻함과 익힘이 조금 아쉬웠어요.']:bill.score>=90?['마지막 한 입까지 맛있었어요. 또 들를게요!','정성이 느껴지는 한 끼였어요. 잘 먹었습니다.','이 골목에 아껴 둘 식당이 생겼네요.','오늘 하루가 이 한 끼로 따뜻해졌어요.']:bill.score>=70?['든든하게 잘 먹었어요. 다음 한 끼도 기대해요.','음식이 조금 더 맛있어지면 더 좋겠어요.','따뜻한 한 끼였어요. 조금만 더 섬세하면 좋겠네요.','편안히 먹고 쉬어 가요. 다음에도 들를게요.']:['오늘은 제 입맛과 조금 달랐어요.','다음에는 더 맛있는 한 끼를 기대할게요.','음식에 조금만 더 신경 써 주시면 좋겠어요.','맛과 익힘이 조금 아쉬웠어요.'];
-    return lines[Math.abs(seed)%lines.length];
+    const g={person:seed},key=bill.waitPenalty>0?'waitReview':bill.heat<70?'heatReview':bill.score>=90?'high':bill.score>=70?'mid':'low';
+    return D.say(g,key);
   }
+
   function satisfaction(s) { return s.totalServed ? Math.round(s.satisfactionTotal / s.totalServed) : 0; }
   function progress(s) {
     for (const l of levels) if (s.xp >= l.xp && l.level<=Growth.levelLimit(s)) s.level = Math.max(s.level, l.level);
@@ -99,93 +102,26 @@
     return {ideal:[.65,.56,.74,.48,.68,.77,.61][i%7]+shift,prepIdeal:.48+((s.night+i)%4)*.055,
       prepTime:Math.max(2100,2900-s.level*55),heatTime:Math.max(3600,5400-s.level*130),tolerance:Math.max(.095,.18-s.level*.009)+F.benefits(s).tolerance,band:Math.max(.065,.11-s.level*.004)+F.benefits(s).tolerance};
   }
-  const openings=['긴 하루 끝에 이 불빛이 보여서 들어왔어요.','오늘은 든든하게 한 끼 먹고 싶네요.','문을 여니 좋은 냄새가 먼저 반겨 주네요.','이 시간에 편히 식사할 수 있어 다행이에요.','조금 멀리 돌아왔는데, 여기까지 오길 잘했어요.','바깥은 바쁜데 여기는 시간이 천천히 흐르네요.','오늘은 평소와 다른 맛을 먹어 보고 싶어요.','잠깐 쉬었다 가려고요. 편한 자리가 있네요.','친구가 이 골목의 작은 가게를 알려 줬어요.','이런 나무 카운터 앞에 앉으면 마음이 놓여요.','배가 고픈 줄도 모르고 하루를 보냈네요.','들어오자마자 한결 편안해졌어요.'];
-  const requests=['{dish}, 부탁드릴게요.','오늘은 {dish}, 이게 가장 당기네요.','{dish}, 천천히 즐기고 싶어요.','저는 오늘 {dish}, 먹어 보고 싶어요.','하루 끝에 {dish}, 괜찮겠죠?','{dish}, 이 가게만의 맛이 궁금해요.','{dish}, 준비해 주실래요?','{dish}, 정성껏 부탁해요.','{dish}, 오늘은 이걸로 정했어요.','{dish}, 기다리는 동안 잠깐 쉬어 갈게요.'];
-  function dialogue(g) {
-    const k=g.lineKey||0,begin=openings[k%openings.length],end=requests[Math.floor(k/openings.length)%requests.length].replace('{dish}',recipes[g.recipe].name);
-    return `${begin} ${g.omakase?'주인장의 추천을 믿어 볼게요. ':''}${end}`;
+  function dialogue(g){return `${D.say(g,'hello')} ${D.say(g,'order',{dish:recipes[g.recipe].name})}`;}
+  function guestServiceLines(s,g){
+    const values={dish:recipes[g.recipe].name,total:`¥${g.bill?.total?.toLocaleString('ja-JP')||0}`};
+    if(g.status==='farewell')return [D.say(g,g.score>=90?'high':g.score>=65?'mid':'low'),D.say(g,D.returning(s,g)?'otherBye':'bye')];
+    if(g.status==='paying')return [D.say(g,'paying'),D.say(g,'receipt',values)];
+    return [D.say(g,'eating',values)];
   }
-  const guestDays=[
-    '마감 원고를 드디어 보냈어요. 화면만 보다가 나오니 밤공기가 참 좋네요.',
-    '오늘은 꽃이 다 팔렸어요. 빈 가게를 보니 뿌듯하기도 하고 조금 허전하기도 하네요.',
-    '마지막 버스에 탄 손님이 꾸벅 인사하고 내리더라고요. 그 인사가 자꾸 생각나요.',
-    '비 오는 골목 사진을 찍다가 불빛이 참 예뻐서 들어왔어요.',
-    '내일 아침 빵 반죽은 다 해 뒀어요. 지금은 남이 차려 주는 밥이 먹고 싶네요.',
-    '지도에는 없는 골목인데 좋은 가게를 찾은 것 같아요.',
-    '예전에 가르치던 학생한테 편지가 왔어요. 덕분에 오래전 생각이 났네요.',
-    '오늘 연습이 좀 힘들었어요. 그래도 끝까지 해냈으니 든든하게 먹으려고요.',
-    '오래 입은 코트를 고쳐 드렸더니 새 옷처럼 좋아하시더라고요.',
-    '공사가 생각보다 늦게 끝났네요. 불이 켜져 있어서 얼마나 반갑던지요.',
-    '다른 분들 식사만 챙기다 보니 제 밥은 이제야 먹네요.',
-    '마지막 곡을 연주하는데 관객 한 분이 끝까지 남아 계셨어요.',
-    '공연 의상을 다 정리했어요. 오늘 배우들 표정이 참 좋았답니다.',
-    '하루 종일 작은 글씨만 봤더니 눈이 피곤하네요. 여기서는 좀 쉬고 갈게요.',
-    '그림이 마음대로 안 풀렸는데, 이 가게 색을 보니까 또 그리고 싶어져요.',
-    '이 나무 카운터, 오래 잘 돌보셨네요. 손이 많이 갔겠어요.',
-    '오늘은 사람을 너무 많이 만났어요. 밥 먹을 땐 조용히 쉬어도 괜찮죠?',
-    '제 가게 불을 끄고 왔어요. 오늘은 다른 분이 만든 밥이 궁금하네요.',
-    '차를 한 잔씩 나누다 보면 처음 만난 사람도 가까워지더라고요.',
-    '고장 난 자전거가 다시 달리는 걸 보면 괜히 제가 신이 나요.',
-    '마지막 정비를 끝내고 손을 몇 번이나 씻었는지 몰라요. 이제 밥 먹을 준비 됐어요.',
-    '오늘 배달을 다 끝냈어요. 이제 제 밥 한 그릇만 잘 도착하면 되겠네요.',
-    '반납된 책에 예쁜 책갈피가 남아 있었어요. 주인이 찾으러 오셨으면 좋겠네요.',
-    '오늘 들어온 책들을 다 정리했어요. 책 냄새 대신 밥 냄새가 필요한 시간이에요.'
-  ];
-  // Match each reply to the day this guest just described; keep legacy branch IDs for saves.
-  const guestDayTalk=[
-    ["원고를 보내셨으니 한숨 돌리시겠어요.","전송하고도 몇 번을 확인했어요. 이제야 끝났다는 실감이 나네요.","눈도 좀 쉬게 해 주세요.","네, 오늘은 화면을 더 안 보려고요."],
-    ["마지막 꽃은 어떤 꽃이었어요?","노란 튤립이요. 한참 고르시더니 한 송이만 안고 가셨어요.","오늘은 꽃집 문도 일찍 닫으셨겠네요.","네. 평소보다 일찍 나왔더니 어디로 갈지 잠깐 망설였어요."],
-    ["짧은 인사가 오래 남을 때가 있죠.","늘 말없이 내리시던 분이라 더 그랬나 봐요. 내일도 타실지 모르겠네요.","운전 끝나셨으니 편히 쉬세요.","핸들을 놓고 앉으니 어깨가 좀 풀리네요."],
-    ["사진에는 불빛이 어떻게 담겼어요?","젖은 바닥에 비친 빛이 길게 나왔어요. 맑은 날과는 전혀 다르더라고요.","카메라는 잠깐 내려놓으셔도 돼요.","그러려고요. 사진 고르는 건 내일 해도 되니까요."],
-    ["새벽 준비를 벌써 마치셨군요.","반죽은 제가 쉬는 동안에도 부풀 테니까요. 아침에는 굽기만 하면 돼요.","여기서는 차려 주는 밥 드세요.","그 말이 참 반갑네요. 오늘은 제 손으로 안 만들어도 되겠어요."],
-    ["걷다가 우연히 들어오신 거예요?","네. 큰길로 돌아가려다 이쪽 불빛이 보여서 와 봤어요.","길 찾기는 식사 뒤에 하셔도 돼요.","좋아요. 다음에 올 때는 이 골목부터 찾게 될 것 같네요."],
-    ["어떤 소식을 보내 왔나요?","자기도 교사가 됐대요. 교탁 앞에 서니 제 생각이 났다더군요.","천천히 떠올리며 쉬었다 가세요.","고마워요. 답장 첫 문장을 생각하고 있었거든요."],
-    ["끝까지 해낸 날이네요.","중간에는 그만하고 싶었는데, 마지막 동작이 한 번 됐어요. 그걸로 됐죠.","오늘 연습은 여기까지 해 두세요.","맞아요. 밥 먹을 때까지 연습 생각을 할 뻔했네요."],
-    ["오래 아끼던 옷이었나 봐요.","안주머니에 예전 영화표도 있더라고요. 그대로 넣어 달라고 하셨어요.","바느질하느라 손이 고단하시겠어요.","단추가 많아서 좀 뻐근하네요. 수저 들 힘은 남았어요."],
-    ["늦게까지 현장에 계셨군요.","마지막 자재 덮는 데 시간이 걸렸어요. 내일 비가 온다기에 그냥 나올 수가 없었죠.","짐 내려놓고 편히 앉으세요.","고맙습니다. 가방까지 내려놓으니 이제 퇴근한 것 같네요."],
-    ["이제 본인 식사 챙기실 차례네요.","네. 저녁 먹었냐고 남들한테만 물었지, 제 밥은 까맣게 잊었어요.","드시는 동안은 편히 쉬세요.","잠깐이라도 아무 호출 없이 앉아 있고 싶었어요."],
-    ["그분은 어떤 곡까지 듣고 가셨어요?","앵콜도 아닌 짧은 곡이었어요. 끝나고 고개만 끄덕여 주셨는데 참 좋더라고요.","공연 끝의 여운이 남아 있겠어요.","아직 귀에 마지막 음이 남아 있어요. 조금만 이대로 앉아 있을게요."],
-    ["무대 뒤에서도 표정이 보이나 봐요.","옷 갈아입으러 뛰어올 때 보이죠. 오늘은 다들 웃으면서 나갔어요.","이제 의상 걱정은 내려놓으세요.","네. 바늘통도 닫고 왔으니 오늘 일은 끝이에요."],
-    ["작은 글씨를 온종일 보셨군요.","한 글자 틀린 걸 찾고 나면 또 다른 게 보여요. 끝이 없더라고요.","여기서는 눈 좀 쉬세요.","고마워요. 메뉴도 오래 들여다보지 말고 골라야겠어요."],
-    ["어떤 색이 눈에 들어왔어요?","나무에 비친 노란빛이요. 물감을 섞을 땐 안 나오던 색인데 여기 있네요.","그림 생각도 잠시 쉬어 가요.","그러려고 나왔는데 또 그림 얘기네요. 연필은 가방에 넣어 둘게요."],
-    ["어디를 보고 그렇게 느끼셨어요?","모서리가 매끈해요. 매일 닦은 나무는 손이 닿는 곳부터 달라지거든요.","오늘은 일 보듯 살피지 않으셔도 돼요.","직업 버릇이네요. 오늘은 팔꿈치만 편하게 얹어 둘게요."],
-    ["그럼 주문만 여쭤볼게요.","고마워요. 대답할 말을 고르지 않아도 되니 편하네요.","네, 편히 계세요. 음식 정해지면 말씀 주세요.","그럴게요. 잠깐 앉아 있으니 벌써 좀 낫네요."],
-    ["다른 사람이 만든 밥이 반가운 날이죠.","맞아요. 제가 간을 보지 않아도 되는 식사가 가끔 필요해요.","오늘은 손님으로 편히 드세요.","네. 주방 쪽을 자꾸 보는 버릇부터 참아 볼게요."],
-    ["오늘도 새로 만난 분이 있었나요?","처음 오신 분이 찻잔을 두 손으로 꼭 쥐시더라고요. 나갈 땐 웃으셨어요.","차 내리셨으니 이제 식사하셔야죠.","그러네요. 남의 잔은 몇 번이나 채우고 제 밥은 늦었어요."],
-    ["오늘은 어떤 자전거를 고치셨어요?","오래 세워 둔 어린이 자전거요. 바퀴가 돌아가자 아이가 바로 타 보겠대요.","공구 내려놓고 쉬는 시간이네요.","네. 손에 기름 냄새가 안 나니까 이제 좀 배가 고파요."],
-    ["늦은 정비는 잘 끝났나요?","시동이 한 번에 걸렸어요. 그 소리를 들어야 마음 놓고 퇴근하죠.","수고하셨어요. 이제 식사하셔야죠.","네. 손도 깨끗이 씻었으니 바로 먹을 수 있어요."],
-    ["마지막 배달은 어디였어요?","언덕 꼭대기 집이요. 현관 불을 켜 놓고 기다리고 계셨어요.","이번에는 여기서 밥을 받으실 차례네요.","그러네요. 오늘 마지막 도착지는 이 자리로 할게요."],
-    ["어떤 책갈피였어요?","꽃을 눌러 말린 거였어요. 잃어버리면 아쉬울 것 같아 따로 보관해 뒀죠.","찾으러 오시면 반가우시겠어요.","네. 책보다 그걸 먼저 물어보실지도 모르겠네요."],
-    ["오늘은 어떤 책이 들어왔나요?","손때 묻은 요리책이요. 자주 펼친 쪽에만 얼룩이 남아 있더라고요.","책 정리는 끝내셨으니 밥 드셔야죠.","맞아요. 책 속 음식만 보다가 진짜 밥이 그리워졌어요."],
-  ];
-  function dayTalk(g){return guestDayTalk[g.person%guestDayTalk.length];}
   // Knowledge belongs to a person, while the conversation position belongs to this visit.
   // Both are optional v11 additions: older saves retain their entire service/financial state.
   const guestFacts=['name','role','age','style','bio'];
   const guestNodes=['hello','tale','taleResult','intro','day','warm','quiet','about','order'];
   const guestReplies={
     welcome:'어서 오세요. 편히 앉으세요.',
-    day:'오늘은 어떤 하루를 보내셨어요?',
-    menu:'우선 드시고 싶은 음식을 여쭤볼게요.',
+    day:'오늘은 좀 어떠셨어요?',
+    menu:'뭘로 드릴까요?',
     warm:'조금 더 들려주세요.',
     quiet:'편히 쉬었다 가세요.',
-    about:'괜찮으시면 이야기를 조금 더 들려주세요.',
-    order:'오늘 드실 음식을 준비해 드릴까요?',
+    about:'실례지만 나이가 어떻게 되세요?',
+    order:'드실 음식은 정하셨어요?',
   };
-  const guestJobs=[
-    '출판사에서 책을 만드는 편집 일을 해요.', '이 근처에서 꽃집을 하고 있어요.',
-    '밤에는 버스를 운전해요.', '골목 사진을 찍는 일을 해요.',
-    '빵집에서 새벽 빵을 굽고 있어요.', '지금은 여행 중이에요.',
-    '국어를 가르치다 은퇴했어요.', '대학에서 체육을 공부하고 있어요.',
-    '오래된 옷을 고치는 재봉 일을 해요.', '공사 현장에서 사람들과 일해요.',
-    '병원에서 간호사로 일하고 있어요.', '작은 무대에서 재즈를 연주해요.',
-    '극장에서 공연 의상을 만들고 돌봐요.', '책의 오자와 문장을 살피는 일을 해요.',
-    '대학에서 그림을 공부해요.', '목수로 오래 일하다 지금은 쉬고 있어요.',
-    '출판사 책을 서점에 소개하는 일을 해요.', '근처 가게에서 요리를 해요.',
-    '사람들에게 차 우리는 법을 가르쳐요.', '고장 난 자전거를 고쳐요.',
-    '자동차 정비를 해요.', '밤에 물건을 배송하는 일을 해요.',
-    '도서관에서 책과 사람을 만나고 있어요.', '작은 중고서점을 하고 있어요.',
-  ];
   function guestProfile(s,id){
     const p=person(id),known=(s.customerBook[id]?.known||[]).filter(x=>guestFacts.includes(x));
     return {known,name:p.name,
@@ -259,11 +195,11 @@
     const tale=chapterStep(s);
     let node=guestNodes.includes(g.chat?.node)?g.chat.node:'hello';
     if((node==='tale'&&tale!==0)||(node==='taleResult'&&tale!==1))node='hello';
-    const talk=dayTalk(g),choices=[],offer=(id,to,label=guestReplies[id])=>choices.push({id,label,to});
+    const talk=D.replies(s,g),choices=[],offer=(id,to,label=guestReplies[id])=>choices.push({id,label,to});
     let line='',caption='서로 알아가는 중',note='',beat=0;
     if(node==='hello'){
       caption=profile.known.includes('name')?'다시 만난 반가운 얼굴':'첫 인사';
-      line=profile.known.includes('name')?`또 들렀어요. 오늘도 잠깐 쉬어 가도 괜찮죠?`:openings[(g.lineKey||0)%openings.length];
+      line=D.say(g,D.returning(s,g)?'revisit':'hello');
       // News from last night's choice reaches the owner at the first greeting of the night.
       if(s.nightNews.length>(s.nightNewsRead||0))note=news(s).slice(s.nightNewsRead||0).map(n=>'지난밤 소식 · '+n.text).join('\n');
       offer('welcome',tale===0?'tale':tale===1?'taleResult':'intro');
@@ -285,22 +221,22 @@
       // The story runs straight into the order: no fresh introduction after all that talk.
       for(const c of S.reflection)choices.push({id:c.id,label:reflectionLabel(s,c),to:'order'});
     }else if(node==='intro'){
-      line=profile.known.includes('role')?`오늘도 여기서 한 끼 먹고 가려고요.`:`저는 ${p.name}입니다. 이렇게 인사하니 한결 편안하네요.`;
+      line=profile.known.includes('name')&&!g.chat?.discovered?.includes('name')?D.say(g,'returnIntro'):D.say(g,'intro',{name:p.name});
       offer('day','day');offer('menu','order');
     }else if(node==='day'){
-      line=`${profile.known.includes('role')&&!g.chat?.discovered?.includes('role')?'':guestJobs[g.person%guestJobs.length]+' '}${guestDays[g.person%guestDays.length]}`;
+      line=`${g.chat?.discovered?.includes('role')?D.job(g)+' ':''}${D.day(s,g)}`;
       offer('warm','warm',talk[0]);offer('quiet','quiet',talk[2]);offer('order','order');
     }else if(node==='warm'||node==='quiet'){
-      line=`${talk[node==='warm'?1:3]}\n${recipes[g.recipe].name}, 부탁드릴게요.`;
-      offer('order','order');if(node==='warm'&&g.person%guestDayTalk.length!==16&&!profile.known.includes('age'))offer('about','about');
+      line=talk[node==='warm'?1:3];
+      offer('order','order');if(node==='warm'&&g.person%D.voices.length!==16&&!profile.known.includes('age'))offer('about','about');
     }else if(node==='about'){
-      line=`${p.bio}\n어느새 ${p.age}예요. 제 이야기를 들어 주셔서 고마워요.`;
+      line=D.say(g,'about',{age:p.age.replace('세','살'),name:p.name});
       offer('order','order');
     }else{
       caption=g.status==='waiting'?'접수한 주문':'오늘의 주문';
       // The guest who told tonight's story orders out of that story, in words that belong to it.
       const told=S.stories.find(t=>t.id===g.chat?.told);
-      line=g.status==='waiting'?`${recipes[g.recipe].name}, 편히 기다리고 있을게요.`:(told?.order||requests[Math.floor((g.lineKey||0)/openings.length)%requests.length]).replace('{dish}',recipes[g.recipe].name);
+      line=g.status==='waiting'?D.say(g,'waiting'):told?.order?told.order.replace('{dish}',recipes[g.recipe].name):D.order(s,g,{dish:recipes[g.recipe].name});
     }
     return {node,beat,line,caption,note,choices,orderReady:node==='order',
       playerLine:g.chat?.reply==='warm'?talk[0]:g.chat?.reply==='quiet'?talk[2]:guestReplies[g.chat?.reply]||'',discovered:g.chat?.discovered||[]};
@@ -581,7 +517,7 @@
   }
   function finishEating(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='eating');if(!g)return false;g.status='paying';return true;}
   function collect(s,id){const g=s.guests.find(g=>g.id===id&&g.status==='paying'&&!g.paid);if(s.phase!=='open'||!g||!g.bill)return null;const r=g.bill;
-    s.money+=r.total;s.nightRevenue+=r.total;s.nightTips+=r.tip;s.totalServed++;s.satisfactionTotal+=r.score;s.xp+=r.score;s.nightScores.push(r.score);s.nightReviews.push({guest:person(g.person).name,person:g.person,dish:recipes[g.recipe].name,score:r.score,text:reviewText(r,g.person+s.night)});
+    s.money+=r.total;s.nightRevenue+=r.total;s.nightTips+=r.tip;s.totalServed++;s.satisfactionTotal+=r.score;s.xp+=r.score;s.nightScores.push(r.score);s.nightReviews.push({guest:person(g.person).name,person:g.person,dish:recipes[g.recipe].name,score:r.score,text:reviewText(r,g.person)});
     s.customerBook[g.person].lastScore=r.score;s.reputation=clamp(s.reputation+(r.score>=85?4:r.score>=65?2:r.score>=40?-1:-4),0,100);progress(s);s.customerBook[g.person].dueLevel=s.level+2;g.paid=true;g.status='farewell';return r;
   }
   // A departing guest and the owner shared a moment (watching a clip together): the guest
@@ -674,7 +610,7 @@
     if (s.phase !== 'end') return false;
     archiveNight(s);s.night++;s.prepChoice=null; s.phase = 'prep'; s.guests = []; s.lastResult = null; return true;
   }
-  const api = { befriend,storyCarrier,ownerGrowth,grownEnough,reflectionLabel,Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
+  const api = { D,guestServiceLines,befriend,storyCarrier,ownerGrowth,grownEnough,reflectionLabel,Growth,growthBenefits,trialComplete,operatingCost,menuReady,storyNeedsAttention,markStoryRead,guestProfile,guestConversation,answerGuest,F,R,renovate,environment,equip,hasUpgrade,heatLook,kitchenLook,atmosphere,reviewText,stockPlan,restock,heatQuality,Cooking,ingredientAvailable,acceptOrder,beginCooking,selectIngredient,readyIngredients,prepareIngredients,completeCookingStep,deliver,finishEating,collect,depart,buyPrice,dialogue,chooseRecipe,story,news,canChoose,storyContent:S,patience,cookSpec,person, levels, satisfaction, progress, regular, gift, report, ingredients, recipes, people, upgrades, fresh, restore, open, arrive, buy, unlock, upgrade, serve, conversation, rescueNeeds, rescue, resolveEvent, canClose, close, next };
   if (typeof module !== 'undefined') module.exports = api;
   else window.MidnightEngine = api;
 })();

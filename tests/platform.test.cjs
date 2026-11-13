@@ -493,7 +493,7 @@ function clipTalk(options={}){
   const el=()=>Object.assign(new EventTarget(),{hidden:false,open:false,textContent:'',showModal(){},close(){}});
   const els={'bulletin-dialog':el(),app:el(),intro:el()};
   const document=Object.assign(new EventTarget(),{hidden:false,getElementById:id=>els[id]||null,documentElement:{hasAttribute:()=>false}});
-  const window={MidnightPlatform:{ads,config:{ads:{shareAffinity:2,bulletinMinPlayMinutes:12}}},MidnightApp:{befriend:(id,n)=>{befriended.push([id,n]);return true;},refreshTalk(){}}};
+  const window={MidnightGuestDialogue:options.voices?require('../docs/guest-dialogue'):undefined,MidnightPlatform:{ads,config:{ads:{shareAffinity:2,bulletinMinPlayMinutes:12}}},MidnightApp:{befriend:(id,n)=>{befriended.push([id,n]);return true;},refreshTalk(){}}};
   vm.runInNewContext(fs.readFileSync('docs/ad-events.js','utf8'),{window,document,localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)},location:{search:''},URLSearchParams,setInterval(){},Date,JSON,Promise,Number,Object,String});
   const api=window.MidnightAdEvents,guest={id:'g1',score:90,name:'고로',night:3};
   return{api,guest,shown,befriended,asked:()=>asked,settle:()=>new Promise(r=>setTimeout(r,5))};
@@ -515,7 +515,7 @@ test('the first time, the guest explains the coming question before any prompt a
   t.api.farewellScene(t.guest);t.api.answerScene('watch');await t.settle();
   let scene=t.api.farewellScene(t.guest);
   assert.equal(scene.key,'ask');assert.equal(t.asked(),0,'nothing is asked until the owner agrees to go on');assert.equal(t.shown.length,0);
-  assert.match(scene.line,/관심사를 알려 줄지 묻는 창/);assert.match(scene.line,/허용하지 않아도 영상은 똑같이 볼 수 있어요/);
+  assert.match(scene.line,/광고에 쓸 정보를 허용할지 묻는 창/);assert.match(scene.line,/허용하지 않아도 영상은 똑같이 볼 수 있어요/);
   assert.doesNotMatch(scene.line,/친밀도|보상|선물|드릴게요/,'no reward is tied to allowing');
   assert.deepEqual([...scene.choices].map(c=>c.id),['go']);
   t.api.answerScene('go');await t.settle();
@@ -657,7 +657,7 @@ test('earlier choices echo in later chapters and the last night answers to who t
   assert.ok(crowd.telling.tale[1].includes('그 등이요')&&crowd.telling.tale[1].includes('주먹밥을 두 개'),'an echo lands in the beat it was written for');
   assert.ok(!crowd.telling.tale.join(' ').includes('쪽지 묶음'),'at most two echoes are added to one telling');assert.equal(crowd.telling.tale[2],base.tale[2]);
   const quiet=Object.fromEntries(S.stories.filter(t=>t.arc).map(t=>[t.id,{choice:(t.choices.find(c=>c.trait==='keep'&&!c.needs)||t.choices[0]).id,reflection:'hold'}]));
-  const finale=at('carol_three',quiet);assert.ok(finale.telling.afterword.includes('아무 말도 안 하는 사람 앞에서'));
+  const finale=at('carol_three',quiet);assert.ok(finale.telling.afterword.includes('주인장이 재촉하지 않으니까'));
   for(const t of S.stories)for(const e of t.echo||[]){
     assert.ok(e.if||e.lead,t.id);assert.ok(e.tale||e.afterword||e.intro,t.id);
     if(e.beat!==undefined)assert.ok(e.tale&&Number.isInteger(e.beat)&&e.beat>=0&&e.beat<t.tale.length,t.id);
@@ -721,4 +721,19 @@ test('every story is complete, affordable somehow, and original',()=>{
   assert.ok(!text.includes('소라'),'the florist is 보라; 소라 is a guest name');
   // Names and places of the borrowed works stay out: only their structure is used.
   for(const word of ['김첨지','설렁탕','인력거','스크루지','흘레스타코프','다조마루','마틸드','지미 웰스','살쾡이','산고양이'])assert.ok(!text.includes(word),word+' belongs to a source work');
+});
+
+test('the clip exchange keeps the departing guest voice and disclosure without changing rewards',async()=>{
+ const D=require('../docs/guest-dialogue');
+ for(const person of [2,7,16]){
+  const t=clipTalk({voices:true});t.guest.person=person;
+  assert.equal(t.api.farewellScene(t.guest).line,D.voice(person).adOffer);
+  t.api.answerScene('watch');await t.settle();
+  assert.equal(t.api.farewellScene(t.guest).line,D.voice(person).adThanks);
+  assert.equal(t.befriended.length,1);
+  const declined=clipTalk({voices:true});declined.guest.person=person;
+  declined.api.farewellScene(declined.guest);declined.api.answerScene('pass');
+  assert.equal(declined.api.farewellScene(declined.guest).line,D.voice(person).adPass);
+  assert.equal(declined.shown.length,0);assert.equal(declined.befriended.length,0);
+ }
 });

@@ -101,20 +101,12 @@
     $('scene').classList.toggle('is-prep',state.phase==='prep');
     Scene.render(state,selectedGuest,!!state.kitchen);$('resume-kitchen').hidden=!state.kitchen;
   }
-  const thanksHigh=['정말 맛있었어요. 이 한 끼 덕분에 오늘 하루가 좋아졌네요.','마지막 한 입까지 아껴 먹었어요. 정성이 느껴지는 밥이네요.','배도 마음도 든든해졌어요. 늦은 시간에 이런 밥을 만나서 참 다행이에요.','이 맛을 기억해 둘래요. 오늘은 좋은 밤으로 남겠네요.','오길 잘했어요. 누군가 차려 준 밥이 이렇게 힘이 되네요.','젓가락을 내려놓기가 아쉬웠어요. 맛있게 잘 먹었습니다.'];
-  const thanksMid=['따뜻한 한 끼, 잘 먹었습니다. 한숨 돌리고 가요.','든든하게 먹었네요. 늦게까지 열어 주셔서 고마워요.','오늘 밥도 잘 먹었습니다. 잠깐 쉬었다 가니 좋네요.','배가 부르니 이제 좀 살 것 같네요. 고맙습니다.'];
-  const thanksLow=['잘 먹었습니다. 다음에는 익힘을 조금 더 신경 써 주시면 좋겠어요.','오늘은 제 입맛과 조금 달랐네요. 다음 한 끼는 더 기대해 볼게요.','수고하셨어요. 조금 더 촉촉했으면 좋았을 것 같아요.'];
-  const goodbyes=['이 골목을 지날 때 또 들를게요. 다음에도 잘 부탁드려요.','편안한 밤 보내세요. 가게 불빛을 기억해 둘게요.','잘 쉬었다 갑니다. 다음에 또 인사드릴게요.','밖에 비가 좀 잦아들었네요. 이제 천천히 걸어가 볼게요.','오늘은 푹 잘 수 있겠어요. 주인장도 잘 쉬세요.','다음에는 누군가와 함께 오고 싶네요. 고맙습니다.'];
-  function talkLines(g){
-    if(g.status==='farewell'){const comments=g.score>=90?thanksHigh:g.score>=65?thanksMid:thanksLow;return[comments[g.lineKey%comments.length],goodbyes[(g.lineKey+state.night)%goodbyes.length]];}
-    if(g.status==='paying')return['잘 먹었습니다. 계산 부탁드릴게요.',`음식값과 팁을 합쳐 ${yen(g.bill.total)}이네요. 감사합니다.`];
-    return ['따뜻할 때 천천히 먹고 갈게요. 잠깐만 기다려 주세요.'];
-  }
+  function talkLines(g){return E.guestServiceLines(state,g);}
   function renderTalk(){
     if(!$('guest-dialog').open)return;const g=state.guests.find(g=>g.id===selectedGuest&&g.status!=='left');if(!g){$('guest-dialog').close();return;}
     const p=E.person(g.person),profile=E.guestProfile(state,g.person),view=E.guestConversation(state,g.id),lines=view?null:talkLines(g),last=view?view.orderReady:talkIndex>=lines.length-1,other=state.kitchen&&state.kitchen.guest!==g.id;
     // At the goodbye a guest may bring up a clip to watch together (docs/ad-events.js); it speaks through this same panel.
-    const scene=!view&&g.status==='farewell'&&last?window.MidnightAdEvents?.farewellScene?.({id:g.id,score:g.score,name:profile.name,night:state.night})||null:null;
+    const scene=!view&&g.status==='farewell'&&last?window.MidnightAdEvents?.farewellScene?.({id:g.id,score:g.score,name:profile.name,person:g.person,night:state.night})||null:null;
     let action=g.status==='paying'?(last?'계산 받기 ':'계산해 드릴게요 '):g.status==='farewell'?(last?'조심히 돌아가세요 ':g.score<65?'말씀 새겨들을게요 ':g.score>=90?'맛있게 드셨다니 기뻐요 ':'들러 주셔서 고마워요 '):'편히 드세요 · 자리로 돌아가기';
     if(view)action=other?'진행 중인 요리를 먼저 마무리해 주세요':g.status==='waiting'?'접수한 주문 조리하러 가기 ':'주문 받고 부엌으로 ';
     // Keep the live mesh and controls intact through HUD/inventory/timer updates.

@@ -92,17 +92,15 @@
   // in their own words, the question the phone is about to ask. Nothing is promised for
   // saying yes, and saying no still plays the clip.
   const TEXT={
-    offers:['가기 전에 잠깐만요. 오는 길에 본 광고가 자꾸 생각나서요. 삼십 초쯤인데, 주인장도 같이 보실래요? 혼자 보긴 아까워서요.',
-      '아, 나가기 전에 하나만요. 요즘 눈에 밟히는 광고가 있는데 같이 보면 재밌을 것 같아요. 잠깐이면 돼요.',
-      '배가 부르니 떠오르네요. 어제 본 광고가 하나 있는데, 주인장한테도 보여 드리고 싶었어요. 같이 보실래요?'],
+    offers:['가기 전에 광고 영상 하나 같이 보실래요?','잠깐 시간 괜찮으세요? 광고 영상 하나 같이 보려고요.','광고 영상 하나 같이 보고 가도 될까요?'],
     watch:'같이 봐요 · 광고 시청 (친밀도 ↑)',pass:'오늘은 마음만 받을게요',
-    ask:'좋아요! 틀기 전에 화면에 관심사를 알려 줄지 묻는 창이 뜰 거예요. 광고 일 하는 친구 말로는, 알려 주면 뜬금없는 광고 대신 주인장 취향에 맞는 게 나온대요. 허용하지 않아도 영상은 똑같이 볼 수 있어요.',
+    ask:'처음엔 광고에 쓸 정보를 허용할지 묻는 창이 떠요. 광고 일 하는 친구가 그러는데, 허용하면 관심사에 맞는 광고를 보여 준대요. 허용하지 않아도 영상은 똑같이 볼 수 있어요.',
     go:'알겠어요, 틀어 주세요',
     loading:'잠깐만요, 금방 틀게요.',
-    thanks:'같이 보니까 더 재밌네요. 다음에 또 좋은 걸 찾으면 들고 올게요. 잘 먹고 갑니다.',
+    thanks:'같이 봐 주셔서 고마워요. 잘 먹었습니다.',
     early:'앗, 끝까지는 못 봤네요. 다시 틀어 볼까요?',again:'다시 볼게요 · 광고 시청',later:'다음에 볼게요',
-    fail:'어라, 지금은 영상이 안 열리네요. 다음에 꼭 보여 드릴게요. 잘 먹고 갑니다.',
-    declined:'괜찮아요. 다음에 재밌는 걸 찾으면 또 말씀드릴게요. 잘 먹고 갑니다.'
+    fail:'지금은 영상이 안 열리네요. 다음에 보죠. 잘 먹었습니다.',
+    declined:'네, 다음에 봐요. 잘 먹었습니다.'
   };
   let forcePrivacy=false;
   try{forcePrivacy=ads.browserTestMode?.()==='privacy';}catch{}
@@ -120,7 +118,8 @@
       if(!mine){memory.offerNight=guest.night;memory.offerGuest=guest.id;remember();}
       talk={id:guest.id,night:guest.night,name:guest.name,node:'offer',said:''};
     }
-    const n=talk.node,line=n==='offer'?TEXT.offers[guest.night%TEXT.offers.length]:TEXT[n];
+    const voice=Number.isInteger(guest.person)?window.MidnightGuestDialogue?.voice(guest.person):null;
+    const n=talk.node,line=n==='offer'?(voice?.adOffer||TEXT.offers[guest.night%TEXT.offers.length]):n==='thanks'?(voice?.adThanks||TEXT.thanks):n==='declined'?(voice?.adPass||TEXT.declined):TEXT[n];
     const choices=n==='offer'?[{id:'watch',label:TEXT.watch},{id:'pass',label:TEXT.pass}]
       :n==='ask'?[{id:'go',label:TEXT.go}]
       :n==='early'?[{id:'watch',label:TEXT.again},{id:'pass',label:TEXT.later}]:[];
