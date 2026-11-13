@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-13",
+  "tool": "image_gen.imagegen",
+  "purpose": "Make representative cosmetic themes visibly different while retaining an intimate midnight diner",
+  "newScenes": 10,
+  "baselineScenes": 2,
+  "productionAssetsModified": false,
+  "full50Redesigned": false,
+  "processing": "Original generated PNG bytes copied unchanged; SVG viewBox displays scene panels. No bitmap editing.",
+  "sources": [
+    {
+      "file": "assets/sheet-a.png",
+      "sha256": "f667acc936e36f05e4c8dd8e991d96ffdfb3f5671d19367153de46422d73933a",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-b.png",
+      "sha256": "c3ddd52c03a1ad008cf9e5e69bcbe69506be1e7ff8b32feec0467cdcbafaa4c7",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/sheet-c.png",
+      "sha256": "b6d82d5fbdd8ea248be050e797aa2b96ab0cea52419f20d409e66fe67aa0c30f",
+      "size": [
+        1536,
+        1024
+      ]
+    }
+  ]
+}

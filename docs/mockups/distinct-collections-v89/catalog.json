@@ -1,0 +1,549 @@
+{
+  "status": "representative_concepts_for_review",
+  "date": "2026-11-13",
+  "stages": [
+    {
+      "level": 2,
+      "title": "소박한 첫 불빛",
+      "description": "작은 불빛과 오래된 목재가 있는 출발점",
+      "palette": [
+        "#52351f",
+        "#d2b98e",
+        "#292e3a"
+      ],
+      "paletteLabel": "오래된 목재 | 수수한 불빛",
+      "designs": [
+        {
+          "area": "inside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/growth-early.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ],
+            "label": "레벨 2 이전 inside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/growth-early.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ],
+            "label": "레벨 2 기준 장면"
+          },
+          "changes": [
+            "생활감 있는 상판",
+            "짙은 목재 벽",
+            "작은 한지등"
+          ]
+        },
+        {
+          "area": "outside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/growth-early.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ],
+            "label": "레벨 2 이전 outside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/growth-early.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ],
+            "label": "레벨 2 기준 장면"
+          },
+          "changes": [
+            "오래된 나무 창호",
+            "남빛 노렌",
+            "작은 벽등"
+          ]
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "title": "꿀빛 나무",
+      "description": "정돈한 벽과 꿀빛 목재로 더 따뜻하게",
+      "palette": [
+        "#a5652d",
+        "#e3c89e",
+        "#c7b38c"
+      ],
+      "paletteLabel": "꿀빛 목재 | 오트밀색 천",
+      "designs": [
+        {
+          "area": "inside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/sheet-02.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ],
+            "label": "레벨 10 이전 inside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-a.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ],
+            "label": "레벨 10 수정 inside 시안"
+          },
+          "changes": [
+            "꿀빛 상판과 카운터 전면",
+            "크림색 벽 마감",
+            "단정한 수납문과 두 개의 조명"
+          ]
+        },
+        {
+          "area": "outside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/sheet-02.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ],
+            "label": "레벨 10 이전 outside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-a.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ],
+            "label": "레벨 10 수정 outside 시안"
+          },
+          "changes": [
+            "꿀빛 창호와 목재 외벽",
+            "오트밀색 노렌",
+            "목제 간판과 철제 벽등"
+          ]
+        }
+      ]
+    },
+    {
+      "level": 20,
+      "title": "연두빛 단골집",
+      "description": "밝은 원목과 연두빛으로 가게 인상이 달라져요",
+      "palette": [
+        "#c89c61",
+        "#8a9472",
+        "#ead9b6"
+      ],
+      "paletteLabel": "밝은 원목 | 차분한 연두빛",
+      "designs": [
+        {
+          "area": "inside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/sheet-04.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ],
+            "label": "레벨 20 이전 inside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-a.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ],
+            "label": "레벨 20 수정 inside 시안"
+          },
+          "changes": [
+            "밝은 원목 상판과 전면",
+            "연두빛 냉장고 외관과 수납문",
+            "밝은 벽과 납작한 한지등"
+          ]
+        },
+        {
+          "area": "outside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/sheet-04.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ],
+            "label": "레벨 20 이전 outside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-a.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ],
+            "label": "레벨 20 수정 outside 시안"
+          },
+          "changes": [
+            "밝은 원목 창호와 외벽",
+            "연두빛 직조 노렌",
+            "사각 등불과 도기 화분"
+          ]
+        }
+      ]
+    },
+    {
+      "level": 30,
+      "title": "남빛 나무",
+      "description": "짙은 남빛과 원목으로 취향이 선명하게",
+      "palette": [
+        "#273e51",
+        "#966235",
+        "#ded0a9"
+      ],
+      "paletteLabel": "깊은 남빛 | 참나무",
+      "designs": [
+        {
+          "area": "inside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/sheet-07.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ],
+            "label": "레벨 30 이전 inside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-b.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ],
+            "label": "레벨 30 수정 inside 시안"
+          },
+          "changes": [
+            "남빛 카운터 전면",
+            "남빛 냉장고 외관과 수납문",
+            "길쭉한 조명과 청화 그릇"
+          ]
+        },
+        {
+          "area": "outside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/sheet-07.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ],
+            "label": "레벨 30 이전 outside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-b.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ],
+            "label": "레벨 30 수정 outside 시안"
+          },
+          "changes": [
+            "남빛 하부 외벽",
+            "직조 테두리가 있는 남빛 노렌",
+            "한 쌍의 사각 등불"
+          ]
+        }
+      ]
+    },
+    {
+      "level": 40,
+      "title": "월넛의 온기",
+      "description": "큰 원목 면과 회벽의 깊이가 살아나요",
+      "palette": [
+        "#57341f",
+        "#b88460",
+        "#302c29"
+      ],
+      "paletteLabel": "짙은 월넛 | 따뜻한 흙빛",
+      "designs": [
+        {
+          "area": "inside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/sheet-09.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ],
+            "label": "레벨 40 이전 inside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-b.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              840,
+              508
+            ],
+            "label": "레벨 40 수정 inside 시안"
+          },
+          "changes": [
+            "넓은 월넛 패널과 두꺼운 상판",
+            "따뜻한 흙빛 회벽",
+            "짙은 냉장고 외관과 맞춤 수납"
+          ]
+        },
+        {
+          "area": "outside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/sheet-09.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ],
+            "label": "레벨 40 이전 outside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-b.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              514,
+              685,
+              508
+            ],
+            "label": "레벨 40 수정 outside 시안"
+          },
+          "changes": [
+            "월넛 창호와 목재 외벽",
+            "흙빛 회벽과 크림색 노렌",
+            "황동 벽등과 낮은 입구 등불"
+          ]
+        }
+      ]
+    },
+    {
+      "level": 50,
+      "title": "오래 아낀 심야식당",
+      "description": "작은 가게 전체에 수공예 마감이 쌓인 모습",
+      "palette": [
+        "#432a1c",
+        "#ead9b8",
+        "#642e2d"
+      ],
+      "paletteLabel": "고운 월넛 | 한지 | 붉은 갈색",
+      "designs": [
+        {
+          "area": "inside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/growth-late.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              514,
+              919,
+              508
+            ],
+            "label": "레벨 50 이전 inside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-c.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              2,
+              2,
+              840,
+              508
+            ],
+            "label": "레벨 50 수정 inside 시안"
+          },
+          "changes": [
+            "세로 원목살 카운터 전면",
+            "한지 미닫이 수납문",
+            "붉은 갈색 냉장고 외관과 작은 황동 손잡이"
+          ]
+        },
+        {
+          "area": "outside",
+          "before": {
+            "type": "sheet",
+            "file": "../cozy-collections-v88/assets/growth-late.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              928,
+              514,
+              606,
+              508
+            ],
+            "label": "레벨 50 이전 outside 시안"
+          },
+          "after": {
+            "type": "sheet",
+            "file": "assets/sheet-c.png",
+            "size": [
+              1536,
+              1024
+            ],
+            "rect": [
+              849,
+              2,
+              685,
+              508
+            ],
+            "label": "레벨 50 수정 outside 시안"
+          },
+          "changes": [
+            "촘촘한 목재살 외벽",
+            "붉은 갈색 직조 노렌",
+            "모서리가 둥근 간판과 한지 등불"
+          ]
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "baselineScenes": 2,
+    "newScenes": 10,
+    "displayedScenes": 12,
+    "full50Redesigned": false
+  },
+  "liveGameModified": false,
+  "allSeason": true,
+  "paidGameplayBenefits": false
+}
